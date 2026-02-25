@@ -407,6 +407,7 @@ class SBSYSDBSources:
 
             engine, tables, dp = sm.open(self)
             yield SBSYSDBHandles.Field(self, "Kommentar")
+            yield SBSYSDBHandles.Field(self, "Titel")
 
             logger.info(
                     "preparing to execute DokumentRegistrering query",
@@ -449,12 +450,30 @@ class SBSYSDBSources:
                         if file_info["is_deleted"]:
                             continue
 
-                        yield SBSYSDBHandles.Document(
+                        document_handle = SBSYSDBHandles.Document(
                                 self, file_info["path"], file_info["name"],
                                 draft=is_draft,
                                 hints={"file_info": file_info})
+                        yield document_handle
+                        yield from SBSYSDBSources.DocumentSource(document_handle).handles(sm)
 
             logger.info(
                     "DokumentRegistrering query execution completed",
                     case_id=self.handle.relative_path,
                     registration_count=int(document_counter))
+
+    @Source.mime_handler(SBSYSDBHandles.Document.type_label)
+    class DocumentSource(DerivedSource):
+        type_label = "sbsys-db-document-source"
+        derived_from = SBSYSDBHandles.Document
+
+        def _generate_state(self, sm: SourceManager):
+            yield from sm.open(self.handle.source)
+
+        def fetch(self, sm: SourceManager):
+            return {"Navn": self.handle._name}
+
+        def handles(self, sm: SourceManager):
+            if self.handle._name:
+                # Yield the document name as a field
+                yield SBSYSDBHandles.Field(self, "Navn")
