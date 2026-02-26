@@ -8,10 +8,11 @@ from sqlalchemy.orm import Session
 from sqlalchemy.engine import Engine
 from dataclasses import field, dataclass
 import cryptography.fernet as fernet
+import mimetypes
+from functools import wraps
 
-
-DDI_TABLES = ("DokumentDataInfo", "DokumentDataTypeOpslag",)
-
+DDI_TABLES = ("DokumentDataInfo", "DokumentDataTypeOpslag", "Kladde")
+DRAFT_TABLES = ("Kladde",)
 
 app = Flask(__name__)
 key = fernet.Fernet.generate_key()
@@ -115,6 +116,18 @@ def token_valid(token: str = __unspecified) -> str | bool:
         return "Invalid token"
 
 
+def token_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = get_auth_token()
+        if isinstance(error := token_valid(token), str):
+            return (f"{error} :|", 401)
+
+        conn_str = cryptctx.decrypt(token.encode()).decode()
+        return f(conn_str, *args, **kwargs)
+    return decorated_function
+
+
 @app.route(
         "/sbsys.document/test_token",
         methods=["POST"])
@@ -168,6 +181,17 @@ def get_ddi(
                     return None
 
 
+def get_draft(engine, metadata, draft_pk: int):
+    Draft = metadata.tables["Kladde"]
+    query = select().add_columns(
+            Draft.c.ID, Draft.c.FileName, Draft.c.FileExtension,
+            Draft.c.FileSize, Draft.c.DeletedState)
+
+    with Session(engine) as session:
+        result = session.execute(query.where(Draft.c.ID == draft_pk)).first()
+        return result._asdict() if result else None
+
+
 TYPE_NAME_MAPPING = {
     "Microsoft Word": "application/msword",
     ("Microsoft Word", ".docx"):
@@ -212,14 +236,25 @@ def type_name_label_to_mime_type(
         return "application/octet-stream"
 
 
+def extension_to_mime_type(file_extension: str) -> str:
+    """Guess mime type for file extension.
+    Used for drafts, as there isn't a lookup table like DokumentDataTypeOpslag for Dokumenter """
+    if not file_extension:
+        return "application/octet-stream"
+
+    if not file_extension.startswith('.'):
+        file_extension = f".{file_extension}"
+
+    # guess_type expects a filename, but it isn't really relevant, so we call it dummy_name.
+    mime_type, _ = mimetypes.guess_type(f"dummy_name{file_extension}")
+    return mime_type or "application/octet-stream"
+
+
 @app.route(
         "/sbsys.document/<int:doc_id>",
         methods=["GET"])
-def list_ddis(doc_id):
-    if isinstance(error := token_valid(token := get_auth_token()), str):
-        return (f"{error} :|", 401)
-
-    conn_str = cryptctx.decrypt(token).decode()
+@token_required
+def list_ddis(conn_str, doc_id):
     engine, metadata = open_connection(conn_str, DDI_TABLES)
 
     code = 500
@@ -264,12 +299,8 @@ def list_ddis(doc_id):
 @app.route(
         "/sbsys.document/<int:doc_id>/<int:ddi_id>",
         methods=["HEAD"])
-def get_metadata(doc_id: int, ddi_id: int):
-    if isinstance(error := token_valid(token := get_auth_token()), str):
-        return (f"{error} :|", 401)
-
-    conn_str = cryptctx.decrypt(token).decode()
-
+@token_required
+def get_metadata(conn_str, doc_id: int, ddi_id: int):
     engine, metadata = open_connection(conn_str, DDI_TABLES)
 
     match get_ddi(engine, metadata, doc_id, ddi_id):
@@ -292,12 +323,8 @@ def get_metadata(doc_id: int, ddi_id: int):
 @app.route(
         "/sbsys.document/<int:doc_id>/<int:ddi_id>/$value",
         methods=["GET"])
-def get_content(doc_id: int, ddi_id: int):
-    if isinstance(error := token_valid(token := get_auth_token()), str):
-        return (f"{error} :|", 401)
-
-    conn_str = cryptctx.decrypt(token).decode()
-
+@token_required
+def get_content(conn_str, doc_id: int, ddi_id: int):
     engine, metadata = open_connection(conn_str, DDI_TABLES)
 
     match get_ddi(engine, metadata, doc_id, ddi_id):
@@ -326,3 +353,86 @@ def get_content(doc_id: int, ddi_id: int):
                     return (";(", 404)  # Not Found
                 case (data,):
                     return (data, {"Content-Type": mime_type})
+
+
+@app.route(
+        "/sbsys.document/draft/<int:draft_id>",
+        methods=["GET"])
+@token_required
+def list_draft(conn_str, draft_id):
+    engine, metadata = open_connection(conn_str, DRAFT_TABLES)
+
+    meta = get_draft(engine, metadata, draft_id)
+    if not meta:
+        return make_response(({"status": "error", "message": "no draft found"}, 404, {}))
+
+    v = [{
+        "id": meta["ID"],
+        "name": f"{meta['FileName']}{meta['FileExtension']}",
+        "size": meta["FileSize"],
+        "mime_type": extension_to_mime_type(meta["FileExtension"]),
+        "alternate_of": None,
+        "is_deleted": meta["DeletedState"] != 0,
+        "path": f"draft/{draft_id}/file",
+        "content_link": urljoin(
+            request.host_url,
+            f"sbsys.document/draft/{draft_id}/file/$value")
+    }]
+    return make_response(({"status": "ok", "values": v}, 200, {}))
+
+
+@app.route(
+        "/sbsys.document/draft/<int:draft_id>/file",
+        methods=["HEAD"])
+@token_required
+def head_draft_metadata(conn_str, draft_id: int):
+    engine, metadata = open_connection(conn_str, DRAFT_TABLES)
+
+    meta = get_draft(engine, metadata, draft_id)
+    if not meta:
+        return (":|", 404)
+    if meta["DeletedState"] != 0:
+        return (":|", 410)
+
+    mime_type = extension_to_mime_type(meta["FileExtension"])
+    return make_response2(
+            None, 200,
+            {
+                "Content-Type": mime_type,
+                "Content-Length": str(meta["FileSize"])
+            },
+            automatically_set_content_length=False)
+
+
+@app.route(
+        "/sbsys.document/draft/<int:draft_id>/file/$value",
+        methods=["GET"])
+@token_required
+def get_draft_content(conn_str, draft_id: int):
+    engine, metadata = open_connection(conn_str, DRAFT_TABLES)
+
+    meta = get_draft(engine, metadata, draft_id)
+    if not meta:
+        return (":|", 404)
+    if meta["DeletedState"] != 0:
+        return (":|", 410)
+
+    mime_type = extension_to_mime_type(meta["FileExtension"])
+
+    draft_group = draft_id // 25_000
+    draft_conn_str = conn_str + f"Kladde{draft_group:04d}"
+
+    draft_db, draft_md = open_connection(draft_conn_str, ("KladdeData",))
+    DraftData = draft_md.tables["KladdeData"]
+
+    query = select().add_columns(DraftData.c.Data)
+
+    with Session(draft_db) as session:
+        content = session.execute(query.where(
+                DraftData.c.KladdeID == draft_id)
+        ).first()
+    match content:
+        case None:
+            return (";(", 404)
+        case (data,):
+            return (data, {"Content-Type": mime_type})

@@ -62,7 +62,7 @@ class SBSYSDBSource(Source):
         return self._reflect_tables or (
                 "Sag", "Person", "DokumentRegistrering",
                 "SecuritySetSikkerhedsgrupper", "KladdeRegistrering",
-                "KladdePartDokument")
+                "Kladde")
 
     def censor(self):
         return SBSYSDBSource(
@@ -330,8 +330,9 @@ class SBSYSDBHandles:
 
         @property
         def presentation_name(self):
-            return _("document \"{name}\" (attached to {handle})").format(
-                    name=self._name, handle=str(self.source.handle))
+            return _("{draft} document \"{name}\" (attached to {handle})").format(
+                    name=self._name, handle=str(self.source.handle),
+                    draft=_("draft") if self._draft else "")
 
         @property
         def presentation_place(self):
@@ -384,7 +385,7 @@ class SBSYSDBSources:
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)
 
-        def handles(self, sm: SourceManager, **kwargs):
+        def handles(self, sm: SourceManager, **kwargs):  # noqa, CCR001 cognitive complexity
             values = self.fetch(sm)
 
             engine, tables, dp = sm.open(self)
@@ -396,15 +397,15 @@ class SBSYSDBSources:
 
             DokReg = tables["DokumentRegistrering"]
             DraftReg = tables["KladdeRegistrering"]
-            DraftPartDoc = tables["KladdePartDokument"]
+            Draft = tables["Kladde"]
 
             doc_expr = select(DokReg.c.DokumentID).where(
                     DokReg.c.SagID == values["ID"])
 
-            draft_expr = select(DraftPartDoc.c.DokumentID).select_from(
-                DraftPartDoc.join(
+            draft_expr = select(Draft.c.ID).select_from(
+                Draft.join(
                     DraftReg,
-                    DraftPartDoc.c.KladdeID == DraftReg.c.KladdeID
+                    Draft.c.ID == DraftReg.c.KladdeID
                 )
             ).where(
                 DraftReg.c.SagID == values["ID"]
@@ -421,7 +422,8 @@ class SBSYSDBSources:
             for expr, is_draft in doc_sources:
                 for document_id, in exec_expr(
                         engine, expr, rows=document_counter):
-                    r = dp.get(f"{document_id}")
+                    url_path = f"draft/{document_id}" if is_draft else f"{document_id}"
+                    r = dp.get(url_path)
                     for file_info in r.json()["values"]:
                         if (file_info["alternate_of"] is not None
                                 and ignore_alt):

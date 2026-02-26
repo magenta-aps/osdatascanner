@@ -648,18 +648,16 @@ SbSysNetDrift["KladdeRegistrering"] = [
     }
 ]
 
-SbSysNetDrift["KladdePartDokument"] = [
-    {
-        "ID": 1,
-        "KladdeID": 1,
-        "DokumentID": 1337
-    }
-]
 
 # --
 
+# Document DB
 databases["SbSysNetDriftDokument0000"] = (_dr := {"tables": {}})
 SbSysNetDriftDokument0000 = _dr["tables"]
+
+# Kladde DB
+databases["SbSysNetDriftKladde0000"] = (_kr := {"tables": {}})
+SbSysNetDriftKladde0000 = _kr["tables"]
 
 
 def slurp(path) -> (int, bytes):
@@ -673,6 +671,32 @@ mail_body = slurp("mail.html")
 mail_body_alt = slurp("mail.pdf")
 
 kladde_pdf = slurp("Kladde udgave af fil.pdf")
+
+SbSysNetDriftKladde0000["KladdeData"] = [
+    {
+        "ID": 1,
+        "KladdeID": 1,          # Matches the ID in SbSysNetDrift["Kladde"]
+        "Data": kladde_pdf[1],
+        "Version": 1,           # Matches CurrentVersion in the Kladde table
+        "Created": datetime(2025, 12, 16)
+    }
+]
+
+SbSysNetDrift["Kladde"] = [
+    {
+        "ID": 1,
+        "FileName": "Kladde udgave af fil",
+        "FileExtension": ".pdf",
+        "FileSize": kladde_pdf[0],
+        "CurrentVersion": 1,
+        "Navn": "Kladde vedrørende personfølsomme informationer",
+        "KeepCheckedOut": 0,
+        "KladdeFletteStrategi": 1,
+        "KladdeRedigeringGenoptaget": 0,
+        "DeletedState": 0,
+        "IndexingStatus": 0,
+    }
+]
 
 
 SbSysNetDriftDokument0000["DokumentData"] = [
@@ -693,12 +717,6 @@ SbSysNetDriftDokument0000["DokumentData"] = [
         "DokumentID": 1274,
         "DokumentDataInfoID": 144_000,
         "Data": mail_body_alt[1],
-    },
-    {
-        "ID": 16243,
-        "DokumentID": 1337,
-        "DokumentDataInfoID": 144_003,
-        "Data": kladde_pdf[1],
     },
 ]
 
@@ -733,17 +751,6 @@ SbSysNetDrift["DokumentDataInfo"] = [
         "DokumentDataInfoType": 3,  # Alternate...
         "AlternateOfID": 144_002,  # ... of the HTML mail body
     },
-    {
-        "ID": 144_003,
-        "DokumentID": 1337,
-        "FileName": "Kladde udgave af fil",
-        "FileExtension": ".pdf",
-        "FileSize": kladde_pdf[0],
-        "DokumentDataType": 6,  # PDF
-        "DokumentDataInfoType": 0,  # Attachment
-        "AlternateOfID": None,
-    },
-
 ]
 
 
@@ -756,14 +763,6 @@ SbSysNetDrift["Dokument"] = [
         "DokumentType": 0,
         "Navn": "1111111118.pdf",
     },
-    {
-        "ID": 1337,
-        "DokumentArtID": 9,
-        "OprettetAfID": 1,
-        "Oprettet": datetime(2025, 12, 16),
-        "DokumentType": 0,
-        "Navn": "Kladde udgave af fil.pdf",
-    }
 ]
 
 
