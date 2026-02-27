@@ -17,7 +17,7 @@
 
 ### Bugfixes
 
-- 
+- Fixed the rule loader modal on the miniscanner page not showing all rules.
 
 ## Version 3.31.1, 17th February 2026
 
