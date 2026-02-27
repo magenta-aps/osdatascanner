@@ -43,6 +43,7 @@ def assign_permissions(apps, schema_editor):
     ])
 
     admins.permissions.add(*admin_permissions)
+    superadmins.permissions.add(*admin_permissions)
     superadmins.permissions.add(*superadmin_permissions)
 
 
