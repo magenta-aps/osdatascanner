@@ -106,31 +106,33 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                     total_time=timedelta(seconds=message.process_time_worker)
                     )
 
-        if message.object_hash:
+        if message.content_identifier:
             try:
                 with transaction.atomic():
                     # Try to store the hash in the cache.
                     HashCache.objects.create(
                         scan_status=scan_status,
-                        object_hash=message.object_hash
+                        object_hash=message.content_identifier
                     )
             except IntegrityError:
-                # If the hash was not created, it's a duplicate.
-                with transaction.atomic():
-                    try:
+                try:
+                    with transaction.atomic():
+                        # If the hash was not created, it's a duplicate.
                         DuplicationStat.objects.create(
                             scan_status=scan_status,
-                            object_hash=message.object_hash,
+                            object_hash=message.content_identifier,
                             file_size=message.object_size,
                             mime_type=message.object_type,
                             occurrences=2
                         )
-                    except IntegrityError:
-                        # The duplication was already recorded. Increment the occurrence count.
-                        DuplicationStat.objects.select_for_update().filter(
-                            scan_status=scan_status,
-                            object_hash=message.object_hash
-                        ).update(occurrences=F('occurrences') + 1)
+                except IntegrityError:
+                    # The duplication was already recorded. Increment the occurrence count.
+                    DuplicationStat.objects.filter(
+                        scan_status=scan_status,
+                        object_hash=message.content_identifier,
+                        file_size=message.object_size,
+                        mime_type=message.object_type
+                    ).update(occurrences=F('occurrences') + 1)
 
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()

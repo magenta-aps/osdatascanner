@@ -662,8 +662,10 @@ class StatusMessage(NamedTuple):
     (Historically this field contained the elapsed CPU time of the Python
     process, but this didn't make much sense as a user-visible metric.)"""
 
-    object_hash: Optional[str] = None
-    """The hash value of the object that has just been scanned."""
+    content_identifier: Optional[str] = None
+    """The content identifier of the of the object that has just been scanned.
+    This is usually the hash value of the object's content or another string that
+    uniquely identifies the content of an object."""
 
     def to_json_object(self):
         return {
@@ -678,7 +680,7 @@ class StatusMessage(NamedTuple):
 
             "object_size": self.object_size,
             "object_type": self.object_type,
-            "object_hash": self.object_hash,
+            "content_identifier": self.content_identifier,
 
             "process_time_worker": self.process_time_worker,
         }
@@ -697,7 +699,7 @@ class StatusMessage(NamedTuple):
                 object_size=obj.get("object_size"),
                 object_type=obj.get("object_type"),
                 process_time_worker=obj.get("process_time_worker"),
-                object_hash=obj.get("object_hash"))
+                content_identifier=obj.get("content_identifier"))
 
 
 def check_metadata_dict(cls_metadata, obj_metadata):

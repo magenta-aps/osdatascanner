@@ -594,7 +594,8 @@ class DuplicationStat(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['scan_status', 'object_hash'],
+                # To avoid a hash collision being tracked as duplicate we include all info as a constraint.
+                fields=['scan_status', 'object_hash', 'mime_type', 'file_size'],
                 name='unique_object_hash'
             )
         ]

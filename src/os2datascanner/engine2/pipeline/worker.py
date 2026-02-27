@@ -5,7 +5,6 @@
 
 from collections.abc import Generator
 import structlog
-import hashlib
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
 
@@ -104,14 +103,6 @@ def tag(sm, msg):
     yield from tagger_handler(msg, sm)
 
 
-def hash_resource(resource):
-    hasher = hashlib.blake2b()
-    with resource.make_stream() as stream:
-        while chunk := stream.read(8192):
-            hasher.update(chunk)
-    return hasher.hexdigest()
-
-
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
     global total_matches
     total_matches = 0
@@ -120,7 +111,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
     message = messages.ConversionMessage.from_json_object(body)
 
-    object_hash = None
+    content_identifier = None
 
     try:
         yield from dispatch(
@@ -140,8 +131,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                     resource.get_size)
             computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.compute_type)
-            object_hash = TimeoutRetrier(max_tries=3, seconds=60).run(
-                    lambda: hash_resource(resource))
+            content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
+                    resource.content_identifier)
 
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in
@@ -162,7 +153,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 object_type=computed_type,
                 process_time_worker=process_time_total,
                 matches_found=total_matches,
-                object_hash=object_hash).to_json_object())
+                content_identifier=content_identifier).to_json_object())
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()
