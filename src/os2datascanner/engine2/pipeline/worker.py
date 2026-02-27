@@ -7,6 +7,7 @@ from collections.abc import Generator
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from os2datascanner.engine2 import settings
 
 from ..utilities.backoff import TimeoutRetrier
 from .utilities.stage import dispatch
@@ -131,8 +132,10 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                     resource.get_size)
             computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.compute_type)
-            content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
-                    resource.content_identifier)
+
+            if settings.pipeline['worker']['CHECK_DUPLICATION']:
+                content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
+                        resource.content_identifier)
 
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in

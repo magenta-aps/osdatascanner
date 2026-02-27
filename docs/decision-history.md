@@ -269,9 +269,10 @@ Note that this feature does **not** affect which files are scanned. Every file
 is processed normally regardless of whether it has been seen before. Duplicate
 detection only collects statistics.
 
-When `CHECK_DUPLICATION` is enabled, the worker computes a BLAKE2b hash of the
-full contents of each file after processing it. BLAKE2b was chosen over 
-alternatives such as SHA-256 for performance, while still
+When `CHECK_DUPLICATION` is enabled, the worker, by default, computes a BLAKE2b hash of the
+full contents of each file after processing it. This is done through the `content_identifier`
+property now present on `Resource`s which should be overwritten, whenever hashing is not desired
+such as on emails. BLAKE2b was chosen over alternatives such as SHA-256 for performance, while still
 providing strong collision resistance for non-adversarial use cases.
 
 Full-file hashing is used rather than partial hashing (e.g. hashing only the

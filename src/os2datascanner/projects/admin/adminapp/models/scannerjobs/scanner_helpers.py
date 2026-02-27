@@ -571,9 +571,9 @@ class DuplicationStat(models.Model):
         related_name='duplication_stats'
     )
 
-    object_hash = models.CharField(
+    content_identifier = models.CharField(
         max_length=256,
-        verbose_name=_("File hash"),
+        verbose_name=_("Unique Content Identifier"),
     )
 
     file_size = models.PositiveBigIntegerField(
@@ -581,7 +581,7 @@ class DuplicationStat(models.Model):
         verbose_name=_("File size in bytes")
     )
 
-    occurrences = models.IntegerField(
+    occurrences = models.PositiveIntegerField(
         default=2,  # A DuplicationStat only exists when a hash has been seen at least twice
         verbose_name=_("Number of occurrences")
     )
@@ -594,8 +594,7 @@ class DuplicationStat(models.Model):
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                # To avoid a hash collision being tracked as duplicate we include all info as a constraint.
-                fields=['scan_status', 'object_hash', 'mime_type', 'file_size'],
+                fields=['scan_status', 'content_identifier', 'mime_type', 'file_size'],
                 name='unique_object_hash'
             )
         ]
@@ -610,20 +609,30 @@ class HashCache(models.Model):
         related_name='hash_cache'
     )
 
-    object_hash = models.CharField(
+    content_identifier = models.CharField(
         max_length=256,
-        verbose_name=_("File hash"),
+        verbose_name=_("Unique Content Identifier"),
+    )
+
+    file_size = models.PositiveBigIntegerField(
+        default=0,
+        verbose_name=_("File size in bytes")
+    )
+
+    mime_type = models.CharField(
+        max_length=256,
+        verbose_name=_("MIME type"),
     )
 
     class Meta:
         constraints = [
             models.UniqueConstraint(
-                fields=['scan_status', 'object_hash'],
+                fields=['scan_status', 'content_identifier', 'mime_type', 'file_size'],
                 name='unique_object_hash_per_scan'
             )
         ]
         indexes = [
-            models.Index(fields=['scan_status', 'object_hash']),
+            models.Index(fields=['scan_status', 'content_identifier']),
         ]
 
 

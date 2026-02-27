@@ -112,7 +112,9 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                     # Try to store the hash in the cache.
                     HashCache.objects.create(
                         scan_status=scan_status,
-                        object_hash=message.content_identifier
+                        content_identifier=message.content_identifier,
+                        file_size=message.object_size,
+                        mime_type=message.object_type
                     )
             except IntegrityError:
                 try:
@@ -120,7 +122,7 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                         # If the hash was not created, it's a duplicate.
                         DuplicationStat.objects.create(
                             scan_status=scan_status,
-                            object_hash=message.content_identifier,
+                            content_identifier=message.content_identifier,
                             file_size=message.object_size,
                             mime_type=message.object_type,
                             occurrences=2
@@ -129,7 +131,7 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                     # The duplication was already recorded. Increment the occurrence count.
                     DuplicationStat.objects.filter(
                         scan_status=scan_status,
-                        object_hash=message.content_identifier,
+                        content_identifier=message.content_identifier,
                         file_size=message.object_size,
                         mime_type=message.object_type
                     ).update(occurrences=F('occurrences') + 1)

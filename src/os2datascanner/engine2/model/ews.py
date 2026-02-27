@@ -322,7 +322,6 @@ class EWSMailResource(FileResource):
         return self.get_message_object().message_id
 
 
-
 class EWSMailHandle(Handle):
     type_label = "ews"
     resource_type = EWSMailResource
