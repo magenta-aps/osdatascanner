@@ -10,8 +10,27 @@ def assign_permissions(apps, schema_editor):
 
     permission = Permission.objects.get(codename="change_permissions_account")
 
+    # Add previously missing permission
+    superadmins.permissions.add(*admins.permissions.all())
+
     superadmins.permissions.add(permission)
     admins.permissions.add(permission)
+
+
+def remove_permissions(apps, schema_editor):
+    Group = apps.get_model("auth", "Group")
+    Permission = apps.get_model("auth", "Permission")
+
+    superadmins = Group.objects.get(name="superadmins")
+    admins = Group.objects.get(name="admins")
+
+    permission = Permission.objects.get(codename="change_permissions_account")
+
+    superadmins.permissions.remove(permission)
+    admins.permissions.remove(permission)
+
+    # Remove previously missing permission
+    superadmins.permissions.remove(*admins.permissions.all())
 
 
 class Migration(migrations.Migration):
@@ -21,5 +40,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RunPython(assign_permissions, reverse_code=migrations.RunPython.noop)
+        migrations.RunPython(assign_permissions, reverse_code=remove_permissions)
     ]
