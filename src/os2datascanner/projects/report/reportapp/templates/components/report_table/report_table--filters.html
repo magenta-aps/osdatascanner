@@ -65,7 +65,7 @@
               <div class="dropdown__wrapper">
                 <div class="dropdown__label">
                   <label for="resolution_status" class="match_filtering_label">{% trans "Resolution Status" %}</label>
- 
+
                   <button type="button"
                           class="match_filtering_clear_button"
                           name="clear_resolution_status"
@@ -78,14 +78,14 @@
                           hx-params="not resolution_status"
                           hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
                 </div>
- 
+
                 <div class="match_filtering dropdown">
                   <select name="resolution_status" id="resolution_status" autocomplete="off">
                     <option value="all"
                             {% if chosen_resolution_status == "all" %}selected="selected"{% endif %}>
                       {% trans "All resolution statuses" %}
                     </option>
- 
+
                     {% for method in resolution_status_choices %}
                       <option value="{{ method.resolution_status|stringformat:'i' }}"
                               {% if chosen_resolution_status == method.resolution_status|stringformat:"i" %}selected="selected"{% endif %}>
@@ -97,13 +97,13 @@
               </div>
             </div>
           {% endif %}
- 
+
           <div id="sensitivity_filter"
                {% if request.GET.sensitivity_checkbox == on %}hidden{% endif %}>
             <div class="dropdown__wrapper">
               <div class="dropdown__label">
                 <label for="sensitivities" class="match_filtering_label">{% trans "Sensitivity" %}</label>
- 
+
                 <button type="button"
                         class="match_filtering_clear_button"
                         name="clear_sensitivities"
@@ -116,7 +116,7 @@
                         hx-params="not sensitivities"
                         hx-indicator="#report-page-indicator">{% trans "Clear" %}</button>
               </div>
- 
+
               <div class="match_filtering dropdown">
                 <select name="sensitivities" id="sensitivities" autocomplete="off">
                   <option value="all"
@@ -144,7 +144,7 @@
                   <use xlink:href="/static/svg/symbol-defs.svg#icon-funnel"></use>
                 </svg>
               </button>
- 
+
               {% comment %}
               Can we avoid using inline styling here?
               {% endcomment %}
@@ -165,7 +165,7 @@
                               onclick="toggleCheckbox(event, 'sensitivity_checkbox')"></button>
                     </div>
                   </ul>
- 
+
                   <ul class="report">
                     <button class="button--cta button"
                             onclick="hideOptions('report_filter_toggle_options')">Vis</button>

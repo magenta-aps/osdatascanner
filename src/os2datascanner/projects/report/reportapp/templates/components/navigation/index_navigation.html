@@ -44,14 +44,14 @@
            class="tabs__control{% if name == "sbsys-undistributed" %} active{% endif %}"
            id="sbsys-undistributed">{% trans "Undistributed - SBSYS" %}</a>
       {% endif %}
- 
+
     {% endif %}
 
     {# Scannerjob list #}
     {% if perms.organizations.view_scannerjob_list and "/archive" not in request.path %}
       <a href="{% url "scannerjobs" %}"
          class="tabs__control{% if name == "scannerjobs" %} active{% endif %}"
-         id="scannerjobs">{% trans "Scannerjob" %}</a>
+         id="scannerjobs_tab">{% trans "Scannerjob" %}</a>
     {% endif %}
 
   {% endwith %}
