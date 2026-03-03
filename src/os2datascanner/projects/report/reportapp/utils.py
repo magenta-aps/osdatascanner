@@ -404,9 +404,10 @@ class DjangoDBMetricCollector(object):
         self.metric_cache = []
 
     def collect(self):
-        now = time_now
+        now = time_now()
 
         if not self.last_scrape or (now - self.last_scrape) > self.cache_life_time:
+            logger.trace("DjangoDBMetricCollector: fetching new data")
             self.metric_cache = self._fetch_metric_data()
             self.last_scrape = now
 
@@ -448,7 +449,7 @@ class DjangoDBMetricCollector(object):
             labels=['active_this_month']
         )
 
-        past_month = time_now - timedelta(days=30)
+        past_month = time_now() - timedelta(days=30)
 
         active_users_total = User.objects.filter(is_active=True).count()
 
