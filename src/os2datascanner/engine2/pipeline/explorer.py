@@ -81,22 +81,24 @@ def message_received(  # noqa: CCR001
                 # that specific Handle) went wrong. Send a problem message
                 yield from process_exploration_error(message, *handle)
                 error_count += 1
-            elif not message.source.yields_independent_sources:
+
+            # Check if the handle should be excluded.
+            if not is_handle_relevant(handle, message.filter_rule):
+                log.info("handle excluded", handle=handle)
+                continue
+
+            if not message.source.yields_independent_sources:
                 # This Handle is just a normal reference to a scannable object.
                 # Send it on to be processed
 
                 yield messages.ConversionMessage(message, handle, progress)
                 handle_count += 1
             else:
-                # Check if the handle should be excluded.
-                if is_handle_relevant(handle, message.filter_rule):
-                    # This Handle is a thin wrapper around an independent Source.
-                    # Construct that Source and enqueue it for further exploration
-                    new_source = Source.from_handle(handle)
-                    yield message._replace(source=new_source)
-                    source_count = (source_count or 0) + 1
-                else:
-                    log.info("handle excluded", handle=handle)
+                # This Handle is a thin wrapper around an independent Source.
+                # Construct that Source and enqueue it for further exploration
+                new_source = Source.from_handle(handle)
+                yield message._replace(source=new_source)
+                source_count = (source_count or 0) + 1
 
         # Exploration is complete
         log.info(
