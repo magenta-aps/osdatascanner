@@ -229,6 +229,17 @@ class TestEngine2Pipeline:
         assert len(self.unhandled) == 1
         assert self.unhandled[0][0]["origin"] == "os2ds_problems"
 
+    def test_filter_rule_crash(self, raw_scan_spec):
+        raw_scan_spec["filter_rule"] = {
+            "type": "buggy"
+        }
+
+        self.messages.append((raw_scan_spec, "os2ds_scan_specs",))
+        self.run_pipeline()
+
+        assert len(self.unhandled) == 1
+        assert self.unhandled[0][0]["origin"] == "os2ds_problems"
+
     def test_zip_worker(self, raw_scan_spec):
         bio = BytesIO()
         with ZipFile(bio, "w") as zf:
@@ -250,3 +261,25 @@ class TestEngine2Pipeline:
         assert results["os2ds_matches"]["matches"] == expected_matches
 
         assert stat_dict["total_objects"] == 1, "incorrect scanned object count"
+
+    def test_filter_rule_skips_on_match(self, raw_scan_spec):
+        raw_scan_spec["filter_rule"] = {
+            "type": "fallback"
+        }
+        self.messages.append((raw_scan_spec, "os2ds_scan_specs",))
+        self.run_pipeline()
+
+        assert len(self.unhandled) == 0
+
+    def test_filter_rule_no_match(self, raw_scan_spec):
+        raw_scan_spec["filter_rule"] = {
+            "type": "dummy"
+        }
+        self.messages.append((raw_scan_spec, "os2ds_scan_specs",))
+        self.run_pipeline()
+
+        assert len(self.unhandled) == 2
+        results = {body["origin"]: body for body, _ in self.unhandled}
+
+        assert results["os2ds_matches"]["matched"], "RegexRule match failed"
+        assert results["os2ds_matches"]["matches"] == expected_matches
