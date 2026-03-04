@@ -9,12 +9,10 @@ import json
 import hashlib
 import warnings
 from time import sleep
-from datetime import timedelta
 import structlog
 
 from django.core.exceptions import SuspiciousOperation
-from django.contrib.auth.models import User
-from django.db.models import Q, Count
+from django.db.models import Q
 from django.template.response import TemplateResponse
 from django.shortcuts import redirect
 from mozilla_django_oidc import auth
@@ -26,10 +24,8 @@ from .models.documentreport import DocumentReport
 from os2datascanner.engine2.utilities.equality import TypePropertyEquality
 from os2datascanner.projects.report.organizations.models import (
     Alias, AliasType, Organization, Account)
-from os2datascanner.utils.system_utilities import time_now
 
 from mozilla_django_oidc.views import OIDCAuthenticationCallbackView
-from prometheus_client.core import GaugeMetricFamily
 
 logger = structlog.get_logger("reportapp")
 
@@ -394,72 +390,3 @@ def prepare_json_object(o):
         return o
     else:
         return o
-
-
-class DjangoDBMetricCollector(object):
-    def __init__(self):
-        # Create a cache to lessen amount of calls to the database
-        self.cache_life_time = timedelta(days=1)
-        self.last_scrape = None
-        self.metric_cache = []
-
-    def collect(self):
-        now = time_now()
-
-        if not self.last_scrape or (now - self.last_scrape) > self.cache_life_time:
-            logger.trace("DjangoDBMetricCollector: fetching new data")
-            self.metric_cache = self._fetch_metric_data()
-            self.last_scrape = now
-
-        for metric in self.metric_cache:
-            yield metric
-
-    def _fetch_metric_data(self):
-        metrics = []
-
-        # Collect metrics related to DocumentReports
-        report_gauge_total = GaugeMetricFamily(
-            'osds_reports_total',
-            'Total number of reports per resolution status',
-            labels=['status', 'is_withheld']
-        )
-
-        reports_with_status = DocumentReport.objects.filter(
-            number_of_matches__gte=1).values(
-            'resolution_status',
-            'only_notify_superadmin').annotate(
-            total=Count('id'))
-
-        resolution_choices = dict(DocumentReport.ResolutionChoices.choices)
-
-        for report in reports_with_status:
-            resolution_value = report['resolution_status']
-            status_label = resolution_choices.get(resolution_value, "unhandled").lower()
-
-            withheld_label = "true" if report['only_notify_superadmin'] else "false"
-
-            report_gauge_total.add_metric([status_label, withheld_label], report['total'])
-
-        metrics.append(report_gauge_total)
-
-        # Collect metrics related to Users
-        user_gauge_total = GaugeMetricFamily(
-            'osds_users_total',
-            'Total number of active users and their activity status the past 30 days',
-            labels=['active_this_month']
-        )
-
-        past_month = time_now() - timedelta(days=30)
-
-        active_users_total = User.objects.filter(is_active=True).count()
-
-        active_users_past_month = User.objects.filter(
-            is_active=True, last_login__gte=past_month).count()
-        inactive_users_past_month = active_users_total - active_users_past_month
-
-        user_gauge_total.add_metric(["true"], active_users_past_month)
-        user_gauge_total.add_metric(["false"], inactive_users_past_month)
-
-        metrics.append(user_gauge_total)
-
-        return metrics

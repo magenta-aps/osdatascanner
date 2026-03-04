@@ -8,7 +8,8 @@
 
 - SBSYS results can now be marked as false positives.
 
-- Two new Prometheus metrics have been added:
+- Two new Prometheus metrics have been added together with a `push_db_metrics` command
+  that pushes these metrics to Pushgateway:
   - osds_reports_total: Shows the total number of DocumentReports per resolution status 
     and whether or not the results are withheld.
   - osds_users_total: Shows the total number of active users and their activity status 

@@ -52,6 +52,8 @@ OIDC_OP_JWKS_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protoco
 # login and logout urls
 LOGOUT_URL = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/logout"
 
+# [Prometheus pushgateway]
+PUSHGATEWAY_HOST = "http://pushgateway:9091"
 
 # Redirect urls
 LOGIN_REDIRECT_URL = "http://localhost:8040/"
