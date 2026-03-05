@@ -19,6 +19,8 @@
 
 - Fixed the rule loader modal on the miniscanner page not showing all rules.
 
+- "Scannerjob" tab is no longer highlighted when filtering for scannerjobs in the report module.
+
 ## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"
