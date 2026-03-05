@@ -214,6 +214,34 @@ def is_suspicious(field: str) -> bool:
                     "_service_account",))
 
 
+def postprocess_object(obj):
+    for key, value in obj.items():
+        if is_suspicious(key):
+            obj[key] = censor(value)
+        elif isinstance(
+                value,
+                (uuid.UUID, datetime.date, datetime.datetime,
+                    recurrence.Recurrence,)):
+            # Types for which we trust str() (with a tag)
+            type_name = get_full_typename(type(value))
+            obj[key] = f"{value!s} [{type_name}]"
+        elif not isinstance(
+                value,
+                (int, float, dict, str, list, type(None))):
+            sv = str(value)
+            sl = len(sv)
+            rv = repr(value)
+            rl = len(rv)
+            obj[key] = {
+                "unserialisable": True,
+                "module": (type_here := type(value)).__module__,
+                "qualname": type_here.__qualname__,
+                "str": sv[:256] + (f" (... {sl - 256} characters trimmed)" if sl > 256 else ""),
+                "repr": rv[:256] + (f" (... {rl - 256} characters trimmed)" if rl > 256 else ""),
+            }
+    return obj
+
+
 class Command(BaseCommand):
     help = __doc__
 
@@ -400,26 +428,7 @@ class Command(BaseCommand):
                             obj.update(qs.values().get())
                             break
 
-                for key, value in obj.items():
-                    if is_suspicious(key):
-                        obj[key] = censor(value)
-                    elif isinstance(
-                            value,
-                            (uuid.UUID, datetime.date, datetime.datetime,
-                             recurrence.Recurrence,)):
-                        # Types for which we trust str() (with a tag)
-                        type_name = get_full_typename(type(value))
-                        obj[key] = f"{value!s} [{type_name}]"
-                    elif not isinstance(
-                            value,
-                            (int, float, dict, str, list, type(None))):
-                        obj[key] = {
-                            "unserialisable": True,
-                            "module": (type_here := type(value)).__module__,
-                            "qualname": type_here.__qualname__,
-                            "str": str(value),
-                            "repr": repr(value),
-                        }
+                postprocess_object(obj)
 
         match format:
             case "json":

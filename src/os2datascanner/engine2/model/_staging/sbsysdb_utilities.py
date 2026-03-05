@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import Generator
 import structlog
 
 from sqlalchemy import (
@@ -237,7 +238,8 @@ def convert_rule_to_select(
 
 
 def exec_expr(
-        engine, expr: Select, *labels: str, rows: Counter | None = None):
+        engine, expr: Select, *labels: str,
+        rows: Counter | None = None) -> Generator[dict] | Generator[tuple]:
     with engine.connect() as connection, connection.begin():
         logger.debug(
                 "executing SBSYS database query",
