@@ -114,7 +114,7 @@ function drawTimelines(snapshotData, pk) {
         datasets: [{
           data: snapshotData,
           fill: 0,
-          stepped: true, // Make the lines straight.
+          tension: 0, // This makes the lines straight, with no curve
           pointRadius: 0,
           pointHitRadius: 20,
           borderWidth: 4,
