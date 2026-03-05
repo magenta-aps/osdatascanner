@@ -15,6 +15,9 @@
 
 - Determine archive mode in the view instead of templates.
 
+- The `initial_setup` management command no longer creates a superuser, but rather creates a user
+  and adds it to the "superadmins" group.
+
 ### Bugfixes
 
 - Fixed the rule loader modal on the miniscanner page not showing all rules.

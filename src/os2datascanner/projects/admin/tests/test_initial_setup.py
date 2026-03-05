@@ -7,7 +7,7 @@ import pytest
 from io import StringIO
 
 from django.core.management import call_command
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.conf import settings
 
 from ..core.models.client import Client
@@ -97,23 +97,11 @@ class TestInitialSetup:
         assert user.check_password("setup")
         assert account.username == "os"
 
-    def test_user_is_super(self):
+    def test_user_is_superadmin(self):
         self.call_command(username="user")
 
         user = User.objects.get(username="user")
-        assert user.is_superuser
-
-    def test_user_is_staff(self):
-        self.call_command(username="user")
-
-        user = User.objects.get(username="user")
-        assert user.is_staff
-
-    def test_account_is_super(self):
-        self.call_command(username="account")
-
-        account = Account.objects.get(username="account")
-        assert account.is_superuser
+        assert Group.objects.get(name="superadmins") in user.groups.all()
 
     def test_all_arguments(self):
         try:

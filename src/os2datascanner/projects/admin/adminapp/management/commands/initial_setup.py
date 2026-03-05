@@ -4,7 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group, Permission
 from django.core.management.base import BaseCommand
 from django.core.management import call_command
 from django.db import IntegrityError, transaction
@@ -12,6 +12,7 @@ from django.db import IntegrityError, transaction
 from ....core.models.client import Client
 from ....organizations.models.organization import Organization, OrganizationSerializer
 from ....organizations.models.account import Account, AccountSerializer
+from ....organizations.models import SyncedPermission
 from ....organizations.broadcast_bulk_events import BulkCreateEvent
 from ....organizations.publish import publish_events
 from ....adminapp.models.rules import Rule
@@ -20,11 +21,10 @@ from ....adminapp.models.rules import Rule
 def setup_user(username, password, email):
     user = User.objects.create(
         username=username,
-        email=email,
-        is_superuser=True,
-        is_staff=True)
+        email=email)
     user.set_password(password)
     user.save()
+    user.groups.add(Group.objects.get(name="superadmins"))
     return user
 
 
@@ -72,15 +72,15 @@ class Command(BaseCommand):
         parser.add_argument(
             "--password",
             type=str,
-            metavar="SUPERUSER_PASSWORD",
-            help="Password for the superuser",
+            metavar="SUPERADMIN_PASSWORD",
+            help="Password for the superadmin",
             default=self.default_password,
         )
         parser.add_argument(
             "--username",
             type=str,
-            metavar="SUPERUSER_USERNAME",
-            help="Username for the superuser",
+            metavar="SUPERADMIN_USERNAME",
+            help="Username for the superadmin",
             default="os",
         )
         parser.add_argument(
@@ -111,21 +111,31 @@ class Command(BaseCommand):
             return
         self.stdout.write(self.style.SUCCESS("Organization created succesfully"))
 
-        self.stdout.write(f"Creating superuser {username}")
+        self.stdout.write(f"Creating superadmin {username}")
         try:
             setup_user(username, password, email)
         except IntegrityError:
             self.stdout.write(self.style.NOTICE(
                 f"User with name {username} already exists. Command failed"))
             return
-        self.stdout.write(self.style.SUCCESS("Superuser created succesfully"))
+        self.stdout.write(self.style.SUCCESS("Superadmin created succesfully"))
         if password == self.default_password:
             self.stdout.write(self.style.WARNING("Default password used. CHANGE THIS IMMEDIATELY"))
 
         self.stdout.write("Creating & synchronizing corresponding Account")
         account = Account.objects.create(username=username, organization=org)
-        account.is_superuser = True
-        account.save()
+
+        # Add all synced permissions to user
+        account.permissions.add(*Permission.objects.filter(
+                content_type__app_label=SyncedPermission._meta.app_label,
+                content_type__model=SyncedPermission._meta.model_name
+            ).exclude(codename__in=[
+                "add_syncedpermission",
+                "delete_syncedpermission",
+                "change_syncedpermission",
+                "view_syncedpermission"
+            ]))
+
         self.stdout.write(self.style.SUCCESS("Account created successfully!"))
 
         self.stdout.write("Synchronizing Organization and Account to Report module ...")
@@ -148,5 +158,4 @@ class Command(BaseCommand):
             rule.organizations.add(organization)
             self.stdout.write(self.style.SUCCESS(f"{organization} added to CPR rule!"))
 
-        self.stdout.write(self.style.SUCCESS(
-            "Done! Run initial_setup in the Report module to create superuser there"))
+        self.stdout.write(self.style.SUCCESS("Done!"))
