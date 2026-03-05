@@ -1191,15 +1191,16 @@ $font-size_subtitle: 0.875rem;
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
-@mixin pill-variant($bgColor, $textColor, $font-size: 0.875rem) {
+@mixin pill-variant($bgColor, $textColor) {
   @include flex-center;
+
+  $font-size: 0.875rem;
 
   background-color: $bgColor;
   color: $textColor;
   font-size: $font-size;
-  line-height: 1;
 
-  padding: ($font-size * 0.5) 0.75rem;
+  padding: 0.344rem 0.75rem; // 5.5px 12px
   border-radius: $font-size;
   width: fit-content;
 
@@ -1953,6 +1954,24 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         );
 
         font-weight: 500; // Light text on dark backgrounds need extra weight to compensate visually.
+      }
+
+      @media (max-width: $break-lg) {
+        .status {
+          max-width: 80%;
+        }
+      }
+
+      @media (min-width: $break-lg) {
+        .status,
+        .status__wrapper,
+        .status__label {
+          max-width: 100%;
+        }
+
+        .status .status__wrapper {
+          display: inline-block;
+        }
       }
     }
 
