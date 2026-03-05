@@ -11,3 +11,4 @@
 ################################################################################
 
 0 6 * * * ./manage.py send_notifications --all-results
+0 3 * * * ./manage.py push_db_metrics
