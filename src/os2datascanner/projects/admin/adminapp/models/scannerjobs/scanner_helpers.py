@@ -449,7 +449,7 @@ mime_to_file_map = {
     "application/json": _("JSON file"),
     "application/msonenote": _("OneNote"),
     "application/msword": _("Word document (.doc)"),
-    "application/octet-stream": pgettext_lazy("General use", "other"),
+    "application/octet-stream": pgettext_lazy("MIME type", "unknown file type"),
     "application/vnd.ms-excel": _("Excel workbook (.xls)"),
     "application/vnd.ms-excel.addin.macroEnabled.12": _("Excel add-in (.xlam)"),
     "application/vnd.ms-excel.sheet.binary.macroEnabled.12": _("Excel binary workbook (.xlsb)"),

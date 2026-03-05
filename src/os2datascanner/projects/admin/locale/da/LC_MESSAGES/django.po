@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-20 12:45+0100\n"
+"POT-Creation-Date: 2026-03-05 15:06+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -854,9 +854,9 @@ msgid "Word document (.doc)"
 msgstr "Word-dokument (.doc)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
-msgctxt "General use"
-msgid "other"
-msgstr "andet"
+msgctxt "MIME type"
+msgid "unknown file type"
+msgstr "ukendt filtype"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Excel workbook (.xls)"
@@ -3261,6 +3261,10 @@ msgstr "Resultater fundet"
 #: adminapp/views/status_views.py
 msgid "Scanning time"
 msgstr "Scanningstid"
+
+#: adminapp/views/status_views.py
+msgid "Miscellaneous"
+msgstr "Diverse"
 
 #: adminapp/views/user_error_log_views.py
 msgid "Scan time"
