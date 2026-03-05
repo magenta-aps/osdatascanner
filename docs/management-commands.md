@@ -42,7 +42,7 @@ To execute this command run:
 
 ### `initial_setup`
 
-This command is used to set up an initial client, organization, and superuser.
+This command is used to set up an initial client, organization, and superadmin user.
 The client and organization can be given a name using `--client-name` and `--org-name`
 respectively, and if no name is given, they will take the name from `settings.NOTIFICATION_INSTITUTION`.
 The name of the user and corresponding account can be set with `--username`. "os" is the default value for username.
@@ -57,7 +57,7 @@ The available arguments are:
 * `--username <username>`, sets username for created user and corresponding account. Default: "os"
 * `--client-name <client name>`, sets name of created client
 * `--org-name <organization name>`, sets name of created organization
-* `--password <password>`, sets password for superuser
+* `--password <password>`, sets password for the superadmins user
 * `--load-cpr-rule`, loads the "rules-cpr-da" fixture and adds the loaded system rule to the created organization.
 
 The corresponding command in the Report module needs to be run after this
@@ -233,7 +233,7 @@ This command updates the user created by running `initial_setup` in the admin mo
 The available arguments are:
 
 * `--username <username>`, `<username>` must be the same username used in the admin module
-* `--password <password>`, sets the password of the superuser
+* `--password <password>`, sets the password of the superadmins user
 
 
 ### `quickstart_dev`
