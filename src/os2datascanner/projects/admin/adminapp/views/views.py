@@ -17,6 +17,7 @@ from django.urls import reverse_lazy
 from os2datascanner.projects.admin.utilities import UserWrapper
 from ..models.scannerjobs.dropboxscanner import DropboxScanner
 from ..models.scannerjobs.exchangescanner import ExchangeScanner
+from ..models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.gmail import GmailScanner
 from ..models.scannerjobs.msgraph import (
@@ -177,6 +178,7 @@ class DialogSuccess(TemplateView):
         'webscanners': WebScanner,
         'filescanners': FileScanner,
         'exchangescanners': ExchangeScanner,
+        'exchangecalendarscanners': ExchangeCalendarScanner,
         'dropboxscanners': DropboxScanner,
         'msgraphfilescanners': MSGraphFileScanner,
         'msgraphmailscanners': MSGraphMailScanner,
@@ -211,6 +213,7 @@ class IndexView(LoginRequiredMixin, RedirectView):
             (WebScanner, reverse_lazy("webscanners")),
             (FileScanner, reverse_lazy("filescanners")),
             (ExchangeScanner, reverse_lazy("exchangescanners")),
+            (ExchangeCalendarScanner, reverse_lazy("exchangecalendarscanners")),
             (GoogleDriveScanner, reverse_lazy("googledrivescanners")),
             (GmailScanner, reverse_lazy("gmailscanners")),
             (MSGraphMailScanner, reverse_lazy("msgraphmailscanners")),

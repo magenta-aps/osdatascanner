@@ -52,6 +52,7 @@ from .views.user_views import MyUserView, UserDetailView, UserUpdateView
 from .models.scannerjobs.filescanner import FileScanner
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.exchangescanner import ExchangeScanner
+from .models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
 from .models.scannerjobs.gmail import GmailScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
@@ -162,9 +163,9 @@ urlpatterns = [
     path("users/<int:pk>/edit", UserUpdateView.as_view(), name="user-edit"),
 
     # General success handler
-    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(created)/$',  # noqa
+    re_path(r'^(webscanners|filescanners|exchangescanners|exchangecalendarscanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(created)/$',  # noqa
             DialogSuccess.as_view()),
-    re_path(r'^(webscanners|filescanners|exchangescanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(saved)/$',  # noqa
+    re_path(r'^(webscanners|filescanners|exchangescanners|exchangecalendarscanners|dropboxscanners|googledrivescanners|googleshareddrivescanners|gmailscanners)/(\d+)/(saved)/$',  # noqa
             DialogSuccess.as_view()),
     re_path(r'^(rules/regex|rules/cpr)/(\d+)/(created)/$',
             DialogSuccess.as_view()),
@@ -256,6 +257,7 @@ for model in [
         FileScanner,
         DropboxScanner,
         ExchangeScanner,
+        ExchangeCalendarScanner,
         GmailScanner,
         GoogleDriveScanner,
         GoogleSharedDriveScanner,

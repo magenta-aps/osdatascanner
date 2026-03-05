@@ -24,6 +24,7 @@ from .scanner_views import (
 from ..serializers import OrganizationalUnitSerializer
 from ..models.scannerjobs.exchangescanner import (
         ExchangeScanner, get_users_from_file)
+from ..models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
 from ...core.models import Feature
 from ...organizations.models import OrganizationalUnit
 
@@ -283,3 +284,167 @@ class ExchangeScannerCleanup(ScannerCleanupStaleAccounts):
     belonging to accounts, which have gone stale for this scanner."""
     model = ExchangeScanner
     type = "exchange"
+
+
+exchange_calendar_scanner_fields = [
+    'mail_domain',
+    'userlist',
+    'service_endpoint',
+    'ews_grant',
+    'org_units',
+    'scan_attachments',
+]
+
+class ExchangeCalendarScannerList(ScannerList):
+    """Displays list of exchange scanners."""
+
+    model = ExchangeCalendarScanner
+    type = 'exchangecalendar'
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+class ExchangeCalendarScannerBase(View):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = UserWrapper(self.request.user)
+        context["org_units"] = (
+                OrganizationalUnit.objects.filter(user.make_org_Q()))
+
+        # Needed to upheld feature flags.
+        context['FEATURES'] = Feature.__members__
+        context['client'] = user.get_client()
+        return context
+
+
+class ExchangeCalendarScannerCreate(ExchangeCalendarScannerBase, GrantMixin, ScannerCreate):
+    """Create an Exchange scanner view."""
+
+    model = ExchangeCalendarScanner
+    fields = ScannerBase.fields + exchange_calendar_scanner_fields
+
+    if settings.MSGRAPH_EWS_AUTH:
+        fields.append("graph_grant")
+    type = 'exchangecalendar'
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
+
+    def get_success_url(self):
+        """The URL to redirect to after successful creation."""
+        return '/exchangecalendarscanners/%s/created/' % self.object.pk
+
+    def get_form(self, form_class=None):
+        """Adds special field password."""
+        if form_class is None:
+            form_class = self.get_form_class()
+
+        form = super().get_form(form_class)
+
+        form = initialize_form(form)
+        if self.request.method == 'POST':
+            form.is_valid()
+            form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
+            form = validate_grant_selected(form)
+
+        return form
+
+
+class ExchangeCalendarScannerCopy(ExchangeCalendarScannerBase, GrantMixin, ScannerCopy):
+    """Create a new copy of an existing ExchangeScanner"""
+
+    model = ExchangeCalendarScanner
+    fields = ScannerBase.fields + exchange_calendar_scanner_fields
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
+
+    if settings.MSGRAPH_EWS_AUTH:
+        fields.append("graph_grant")
+    type = 'exchangecalendar'
+
+    def get_form(self, form_class=None):
+        if form_class is None:
+            form_class = self.get_form_class()
+
+        form = super().get_form(form_class)
+
+        form = initialize_form(form)
+        if self.request.method == 'POST':
+            form.is_valid()
+            form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
+            form = validate_grant_selected(form)
+
+        return form
+
+    def get_initial(self):
+        initial = super(ExchangeCalendarScannerCopy, self).get_initial()
+        initial["userlist"] = self.get_scanner_object().userlist
+        return initial
+
+
+class ExchangeCalendarScannerUpdate(ExchangeCalendarScannerBase, GrantMixin, ScannerUpdate):
+    """Update a scanner view."""
+
+    model = ExchangeCalendarScanner
+    fields = ScannerBase.fields + exchange_calendar_scanner_fields
+
+    if settings.MSGRAPH_EWS_AUTH:
+        fields.append("graph_grant")
+    type = 'exchangecalendar'
+
+    def get_grant_form_classes(self):
+        if settings.MSGRAPH_EWS_AUTH:
+            return {
+                "ews_grant": EWSGrantScannerForm,
+                "graph_grant": MSGraphGrantScannerForm
+            }
+
+        return {"ews_grant": EWSGrantScannerForm}
+
+    def get_success_url(self):
+        """The URL to redirect to after successful updating.
+
+        Will redirect the user to the validate view if the form was submitted
+        with the 'save_and_validate' button.
+        """
+        if 'save_and_validate' in self.request.POST:
+            return 'validate/'
+        else:
+            return '/exchangecalendarscanners/%s/saved/' % self.object.pk
+
+    def get_form(self, form_class=None):
+        """Adds special field password and decrypts password."""
+        if form_class is None:
+            form_class = self.get_form_class()
+
+        form = super().get_form(form_class)
+        form = initialize_form(form)
+
+        if self.request.method == 'POST':
+            form.is_valid()
+            form = validate_userlist_or_org_units(form)
+            form = validate_domain(form)
+            form = validate_grant_selected(form)
+
+        return form
+
+class ExchangeCalendarScannerCleanup(ScannerCleanupStaleAccounts):
+    """Prompts the user for confirmation before deleting document reports
+    belonging to accounts, which have gone stale for this scanner."""
+    model = ExchangeCalendarScanner
+    type = "exchangecalendar"

@@ -32,6 +32,7 @@ from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.webscanner import WebScanner
 from ..models.scannerjobs.exchangescanner import ExchangeScanner
+from ..models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
 from ..models.scannerjobs.msgraph import (MSGraphFileScanner, MSGraphMailScanner,
                                           MSGraphCalendarScanner, MSGraphTeamsFileScanner,
                                           MSGraphSharepointScanner)
@@ -79,7 +80,7 @@ class ScannerList(RestrictedListView):
 
     def add_scanner_tabs(self, context):
         scanner_models = [
-            WebScanner, FileScanner, ExchangeScanner, MSGraphMailScanner, MSGraphFileScanner,
+            WebScanner, FileScanner, ExchangeScanner, ExchangeCalendarScanner, MSGraphMailScanner, MSGraphFileScanner,
             MSGraphTeamsFileScanner, MSGraphCalendarScanner, MSGraphSharepointScanner,
             GoogleDriveScanner, GoogleSharedDriveScanner, GmailScanner, SBSYSDBScanner
         ]
