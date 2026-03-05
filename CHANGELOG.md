@@ -24,6 +24,8 @@
 
 - "Scannerjob" tab is no longer highlighted when filtering for scannerjobs in the report module.
 
+- The explorer now executes exclusion rules on explored handles.
+
 ## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"
