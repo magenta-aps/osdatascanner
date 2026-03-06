@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-05 15:06+0100\n"
+"POT-Creation-Date: 2026-03-06 13:41+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3066,7 +3066,7 @@ msgstr "Ingen regler fundet for de valgte kategorier."
 
 #: adminapp/templatetags/utility_tags.py
 msgctxt "compact duration"
-msgid "under 1 s"
+msgid "under 1 sec"
 msgstr "under 1 sek"
 
 #: adminapp/templatetags/utility_tags.py
@@ -3109,7 +3109,7 @@ msgstr "minutter"
 
 #: adminapp/templatetags/utility_tags.py
 msgctxt "abbreviated time unit"
-msgid "m"
+msgid "min"
 msgstr "min"
 
 #: adminapp/templatetags/utility_tags.py
@@ -3122,7 +3122,7 @@ msgstr "sekunder"
 
 #: adminapp/templatetags/utility_tags.py
 msgctxt "abbreviated time unit"
-msgid "s"
+msgid "sec"
 msgstr "sek"
 
 #: adminapp/views/exchangescanner_views.py

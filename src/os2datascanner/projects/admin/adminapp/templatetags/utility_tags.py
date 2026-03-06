@@ -61,7 +61,7 @@ def format_timespan(seconds, style="sentence"):
 
     style:
       - "sentence": e.g. "1 hour and 23 minutes", "under 1 second"
-      - "compact": e.g. "1 h 23 m", "under 1 s"
+      - "compact": e.g. "1 h 23 m", "under 1 sec"
     """
 
     try:
@@ -72,7 +72,7 @@ def format_timespan(seconds, style="sentence"):
 
     if seconds < 1:
         if style == "compact":
-            return pgettext_lazy("compact duration", "under 1 s")
+            return pgettext_lazy("compact duration", "under 1 sec")
         return _("under 1 second")
 
     time_formats = {
@@ -91,13 +91,13 @@ def format_timespan(seconds, style="sentence"):
         "minutes": {
             "single": _("minute"),
             "multiple": _("minutes"),
-            "abbr": pgettext_lazy("abbreviated time unit", "m"),
+            "abbr": pgettext_lazy("abbreviated time unit", "min"),
             "seconds": 60
         },
         "seconds": {
             "single": _("second"),
             "multiple": _("seconds"),
-            "abbr": pgettext_lazy("abbreviated time unit", "s"),
+            "abbr": pgettext_lazy("abbreviated time unit", "sec"),
             "seconds": 1
         },
     }
