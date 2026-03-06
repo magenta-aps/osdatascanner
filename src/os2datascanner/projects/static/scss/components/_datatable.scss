@@ -1191,64 +1191,58 @@ $font-size_subtitle: 0.875rem;
 $sidemenu_and_content: calc(var(--width-sidemenu) + var(--padding-content));
 $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
-@mixin pill-variant($bgColor, $textColor, $font-size: 0.875rem) {
+@mixin pill-variant($bgColor, $textColor) {
+  @include flex-center;
+
+  $font-size: 0.875rem;
+
   background-color: $bgColor;
   color: $textColor;
   font-size: $font-size;
-  line-height: $font-size;
 
-  padding: 0 0.75rem; // 12px side padding
-  border-radius: 50px;
-  height: 1.75rem; // 28px
+  padding: 0.344rem 0.75rem; // 5.5px 12px
+  border-radius: $font-size;
   width: fit-content;
-  text-wrap: nowrap;
 
-  .status {
-    &__wrapper {
-      @include flex-center;
-      gap: 0.25rem;
-      height: inherit;
+  .status__wrapper {
+    @include flex-center;
+    gap: 0.25rem;
+  }
 
-      /* Styles for when both `.status__icon` and `.status__label` exist inside `.status__wrapper`. */
-      &:has(.status__icon + .status__label) {
-        /* Add extra spacing on the right to adjust the visual weight. */
-        padding-right: 0.25rem; // 4px
+  .status__wrapper:has(.status__icon + .status__label) {
+    /* Add extra spacing on the right to adjust the visual weight. */
+    padding-right: 0.25rem; // 4px
 
-        .status__label {
-          /* Google's recommended alignment correction for text next to icons */
-          margin-top: calc(14px * 0.115);
-          font-weight: 500;
-        }
-      }
+    .status__label {
+      font-weight: 500;
+    }
+  }
+
+  .status__icon {
+    @include flex-center;
+    height: $font-size;
+
+    .material-symbols,
+    .material-symbols-outlined {
+      $icon-size: 1.25rem; // 20px
+      font-size: $icon-size;
+      width: $icon-size;
     }
 
-    &__icon {
-      &.material-symbols,
-      &.material-symbols-outlined {
-        $pill-icon-size: 1.25rem; // 20px
-        font-size: $pill-icon-size;
-        width: $pill-icon-size;
-      }
-
-      &.material-symbols {
-        font-variation-settings:
-          "FILL" 1,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 20;
-      }
-
-      &.material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 400,
-          "GRAD" 0,
-          "opsz" 20;
-      }
+    .material-symbols {
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 20;
     }
 
-    &__label {
-      // Empty
+    .material-symbols-outlined {
+      font-variation-settings:
+        "FILL" 0,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 20;
     }
   }
 }
@@ -1945,48 +1939,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           var(--color-primary-lightest),
           var(--color-primary-dark)
         );
-
-        /* We should consider colour coding the status chips. For now I'm not sure how to do it
-        in a non-judgemental way. */
-        // &[data-status="0"] {
-        //   // "Other"
-        //   @include pill-variant(
-        //     var(--color-btn-neutral),
-        //     var(--color-text-secondary)
-        //   );
-        // }
-
-        // &[data-status="1"] {
-        //   // "Edited"
-        //   @include pill-variant(
-        //     var(--color-status-ok),
-        //     var(--color-ok)
-        //   );
-        // }
-
-        // &[data-status="2"] {
-        //   // "Journalized and moved"
-        //   @include pill-variant(
-        //     var(--color-status-good),
-        //     var(--color-ok-dark)
-        //   );
-        // }
-
-        // &[data-status="3"] {
-        //   // "Deleted"
-        //   @include pill-variant(
-        //     var(--color-status-good),
-        //     var(--color-ok-dark)
-        //   );
-        // }
-
-        // &[data-status="4"] {
-        //   // "False positive"
-        //   @include pill-variant(
-        //     var(--color-status-bad),
-        //     var(--color-error)
-        //   );
-        // }
       }
     }
 
@@ -2000,6 +1952,26 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           var(--color-primary-lighter),
           var(--color-text-white)
         );
+
+        font-weight: 500; // Light text on dark backgrounds need extra weight to compensate visually.
+      }
+
+      @media (max-width: $break-lg) {
+        .status {
+          max-width: 80%;
+        }
+      }
+
+      @media (min-width: $break-lg) {
+        .status,
+        .status__wrapper,
+        .status__label {
+          max-width: 100%;
+        }
+
+        .status .status__wrapper {
+          display: inline-block;
+        }
       }
     }
 

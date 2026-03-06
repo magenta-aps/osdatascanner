@@ -61,10 +61,13 @@
       <td class="column--deviations">
         <div class="td__flex-container">
           {% for deviation in document_report.deviations %}
-            <div class="status">
-              <div class="status__wrapper"
+
+
+
+            <div class="status tooltip">
+              <div class="status__wrapper overflow-ellipsis"
                    data-status="{{ document_report.deviations }}">
-                <span class="status__label">{{ deviation }}</span>
+                <span class="status__label" data-tooltip-text>{{ deviation }}</span>
               </div>
             </div>
           {% empty %}
@@ -145,7 +148,7 @@
               <i class="material-icons text-secondary" aria-hidden="true">archive</i>
               <span>{% trans "Handle" %}</span>
             </button>
-            
+ 
             <button class="matches-handle button button--icon-button"
                     type="button"
                     title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"

@@ -33,6 +33,8 @@
 
 - The explorer now executes exclusion rules on explored handles.
 
+- SBSYS deviation labels can now handle long text strings better.
+
 ## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"

@@ -89,7 +89,9 @@
                   <div class="status status--valid">
                     <div class="status__wrapper"
                          title="{% trans "Validation status for this scanner job has been set to" %} &quot;{% trans "Valid"|lower %}&quot;">
-                      <i id="check" class="material-symbols status__icon">check</i>
+                      <span class="status__icon">
+                        <i id="check" class="material-symbols">check</i>
+                      </span>
 
                       <span class="status__label">{% trans "Valid" %}</span>
                     </div>
@@ -98,7 +100,9 @@
                   <div class="status status--invalid">
                     <div class="status__wrapper"
                          title="{% trans "Validation status for this scanner job has been set to" %} &quot;{% trans "Invalid"|lower %}&quot;">
-                      <i id="close" class="material-symbols status__icon">close</i>
+                      <span class="status__icon">
+                        <i id="close" class="material-symbols">close</i>
+                      </span>
 
                       <span class="status__label">{% trans "Invalid" %}</span>
                     </div>
