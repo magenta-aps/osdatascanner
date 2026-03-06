@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from collections.abc import Sequence
 from io import BytesIO
 from typing import Iterable
 from functools import cached_property
@@ -21,6 +22,7 @@ from os2datascanner.engine2.conversions import registry
 from os2datascanner.engine2.conversions.types import OutputType
 
 from .sbsysdb_rule import SBSYSDBRule  # noqa
+from . import sbsysdb_tables
 from .sbsysdb_utilities import (
         exec_expr, convert_rule_to_select, resolve_complex_column_names)
 
@@ -58,7 +60,13 @@ class SBSYSDBSource(Source):
         self._base_weblink = base_weblink
 
     @property
-    def reflect_tables(self):
+    def reflect_tables(self) -> Sequence[str]:
+        """Returns the table names to be reflected from the database, or the
+        default table names if none were given to the constructor.
+
+        The state object produced for this SBSYSDBSource will support at least
+        the named tables, and perhaps others too, if prebaked table information
+        or foreign key relations are present."""
         return self._reflect_tables or (
                 "Sag", "Person", "DokumentRegistrering",
                 "SecuritySetSikkerhedsgrupper", "KladdeRegistrering",
@@ -80,11 +88,14 @@ class SBSYSDBSource(Source):
                 wrapper=WebRetrier().run,
                 post_timeout=settings.utils["oauth2"]["cc_token_timeout"])
 
+    def _make_connection_string(self):
+        return ("mssql+pymssql://"
+                f"{self._user}:{self._password}"
+                f"@{self._server}:{self._port}/{self._db}")
+
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(
-                "mssql+pymssql://"
-                f"{self._user}:{self._password}"
-                f"@{self._server}:{self._port}/{self._db}",
+                self._make_connection_string(),
                 # This Engine gets cached, so make sure it aggressively checks
                 # for connection validity
                 pool_pre_ping=True)
@@ -95,8 +106,14 @@ class SBSYSDBSource(Source):
         else:
             dp_caller = None
 
-        metadata_obj = MetaData()
-        metadata_obj.reflect(bind=engine, only=self.reflect_tables)
+        if conf.get("force_reflection") or self._reflect_tables is not None:
+            logger.info(
+                    "reflecting database tables; this may take a moment",
+                    source=self)
+            metadata_obj = MetaData()
+            metadata_obj.reflect(bind=engine, only=self.reflect_tables)
+        else:
+            metadata_obj = sbsysdb_tables.metadata
 
         yield engine, metadata_obj.tables, dp_caller
 
