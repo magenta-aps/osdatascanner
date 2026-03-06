@@ -15,7 +15,7 @@ from os2datascanner.engine2.rules.logical import AndRule
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
 from os2datascanner.engine2.model._staging.sbsysdb_utilities import (
-        exec_expr, convert_rule_to_select)
+        exec_expr, convert_rule_to_select, resolve_complex_column_names)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs import sbsysdb
 from os2datascanner.projects.utils.print_objects import (
         postprocess_object, CollectorActionFactory)
@@ -139,10 +139,12 @@ class Command(BaseCommand):
             print(f" table:        {src._db}.{base_table},"
                   f" {row_count} row(s)")
 
-            column_labels = {c.name: c for c in table.columns}
+            constraint, columns = resolve_complex_column_names(
+                    table, tables, *fields)
+            column_labels = {c.name: c for c in table.columns} | dict(zip(fields, columns))
             s = convert_rule_to_select(
                     rule, table, tables, select(),
-                    column_labels)
+                    column_labels).where(*constraint)
             if limit is not None:
                 s = s.limit(limit)
 
