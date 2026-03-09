@@ -43,6 +43,8 @@
 
 - Removed unnecessary `:hover` effect on `ScanStatus` linechart.
 
+- SBSYS results now have a label on DPO overview circle chart.
+
 ## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"

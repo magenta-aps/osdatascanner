@@ -257,11 +257,12 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                              for choice in DocumentReport.ResolutionChoices}
 
         source_type = {
-            'other': {'label': _('other source')},
-            'webscan': {'label': _('web scan')},
-            'filescan': {'label': _('file scan')},
-            'mailscan': {'label': _('mail scan')},
-            'teamsscan': {'label': _('Teams scan')},
+            'other':        {'label': _('other source')},
+            'webscan':      {'label': _('web scan')},
+            'filescan':     {'label': _('file scan')},
+            'mailscan':     {'label': _('mail scan')},
+            'teamsscan':    {'label': _('Teams scan')},
+            'sbsys-db':     {'label': _('SBSYS scan')},
             'calendarscan': {'label': _('calendar scan')},
         }
         for key in source_type.keys():
@@ -285,6 +286,8 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                     source_category = 'teamsscan'
                 case {'source_type': 'msgraph-calendar'}:
                     source_category = 'calendarscan'
+                case {'source_type': 'sbsys-db'}:
+                    source_category = 'sbsys-db'
                 case _:
                     source_category = 'other'
 
