@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-16 13:03+0100\n"
+"POT-Creation-Date: 2026-03-06 13:41+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -138,7 +138,8 @@ msgid ""
 "Select one or more organizational units, or choose to scan the entire "
 "organization."
 msgstr ""
-"Vælg én eller flere organisatoriske enheder, eller vælg at scanne hele organisationen."
+"Vælg én eller flere organisatoriske enheder, eller vælg at scanne hele "
+"organisationen."
 
 #: adminapp/forms/shared.py
 #: adminapp/templates/components/scanner/scanner_form.html
@@ -853,9 +854,9 @@ msgid "Word document (.doc)"
 msgstr "Word-dokument (.doc)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
-msgctxt "General use"
-msgid "other"
-msgstr "andet"
+msgctxt "MIME type"
+msgid "unknown file type"
+msgstr "ukendt filtype"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Excel workbook (.xls)"
@@ -991,7 +992,7 @@ msgstr "PowerPoint-skabelon (.potx)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Excel workbook (.xlsx)"
-msgstr "Excel-projektmappe (.xslx)"
+msgstr "Excel-projektmappe (.xlsx)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Excel template (.xltx)"
@@ -2526,7 +2527,7 @@ msgstr "1 kendt %(on)s sprunget over"
 #: adminapp/templates/components/scanstatus/card_summary.html
 #, python-format
 msgid "%(num)s known %(onp)s skipped"
-msgstr "%(num)s kendt %(onp)s sprunget over"
+msgstr "%(num)s kendte %(onp)s sprunget over"
 
 #: adminapp/templates/components/scanstatus/card_summary.html
 msgid "All detected objects were scanned."
@@ -3064,12 +3065,26 @@ msgid "No rules match the selected categories."
 msgstr "Ingen regler fundet for de valgte kategorier."
 
 #: adminapp/templatetags/utility_tags.py
+msgctxt "compact duration"
+msgid "under 1 sec"
+msgstr "under 1 sek"
+
+#: adminapp/templatetags/utility_tags.py
+msgid "under 1 second"
+msgstr "under 1 sekund"
+
+#: adminapp/templatetags/utility_tags.py
 msgid "day"
 msgstr "dag"
 
 #: adminapp/templatetags/utility_tags.py
 msgid "days"
 msgstr "dage"
+
+#: adminapp/templatetags/utility_tags.py
+msgctxt "abbreviated time unit"
+msgid "d"
+msgstr "d"
 
 #: adminapp/templatetags/utility_tags.py
 msgid "hour"
@@ -3080,12 +3095,22 @@ msgid "hours"
 msgstr "timer"
 
 #: adminapp/templatetags/utility_tags.py
+msgctxt "abbreviated time unit"
+msgid "h"
+msgstr "t"
+
+#: adminapp/templatetags/utility_tags.py
 msgid "minute"
 msgstr "minut"
 
 #: adminapp/templatetags/utility_tags.py
 msgid "minutes"
 msgstr "minutter"
+
+#: adminapp/templatetags/utility_tags.py
+msgctxt "abbreviated time unit"
+msgid "min"
+msgstr "min"
 
 #: adminapp/templatetags/utility_tags.py
 msgid "second"
@@ -3096,12 +3121,9 @@ msgid "seconds"
 msgstr "sekunder"
 
 #: adminapp/templatetags/utility_tags.py
-msgid "millisecond"
-msgstr "millisekund"
-
-#: adminapp/templatetags/utility_tags.py
-msgid "milliseconds"
-msgstr "millisekunder"
+msgctxt "abbreviated time unit"
+msgid "sec"
+msgstr "sek"
 
 #: adminapp/views/exchangescanner_views.py
 msgid "No organizational units has been selected"
@@ -3239,6 +3261,10 @@ msgstr "Resultater fundet"
 #: adminapp/views/status_views.py
 msgid "Scanning time"
 msgstr "Scanningstid"
+
+#: adminapp/views/status_views.py
+msgid "Miscellaneous"
+msgstr "Diverse"
 
 #: adminapp/views/user_error_log_views.py
 msgid "Scan time"

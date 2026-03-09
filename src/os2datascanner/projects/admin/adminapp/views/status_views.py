@@ -165,6 +165,24 @@ class StatusCompletedCSVView(CSVExportMixin, PermissionRequiredMixin, StatusComp
     permission_required = 'os2datascanner.export_completed_scanstatus'
 
 
+def _top_rows_with_misc(rows):
+    """
+    Return the top 10 rows by count and group the remaining under "Miscellaneous".
+    """
+    remaining_label = _("Miscellaneous")
+    n = 10
+
+    sorted_rows = sorted(rows, key=lambda d: -d["count"])
+    top_rows = sorted_rows[:n]
+    remaining_rows = sorted_rows[n:]
+
+    remaining_count = sum(d["count"] for d in remaining_rows)
+    if remaining_count:
+        top_rows.append({"label": remaining_label, "count": remaining_count})
+
+    return top_rows
+
+
 class StatusTimeline(RestrictedDetailView):
     model = ScanStatus
     template_name = "components/scanstatus/scan_status--statistics.html"
@@ -179,12 +197,13 @@ class StatusTimeline(RestrictedDetailView):
 
         status = context['status']
         context['snapshot_data'] = status.timeline()
-        context['bytes_data'] = [{"label": k, "count": v["size"]} for k, v in
-                                 status.data_types().items()]
-        context['bytes_data'].sort(key=lambda d: -d["count"])
-        context['time_data'] = [{"label": k, "count": v["time"].total_seconds()} for k, v in
-                                status.data_types().items()]
-        context['time_data'].sort(key=lambda d: -d["count"])
+
+        bytes_data = [{"label": k, "count": v["size"]} for k, v in status.data_types().items()]
+        time_data = [{"label": k, "count": v["time"].total_seconds()} for k, v in
+                     status.data_types().items()]
+
+        context['bytes_data'] = _top_rows_with_misc(bytes_data)
+        context['time_data'] = _top_rows_with_misc(time_data)
         context['updated'] = self.request.GET.get("updated", False) == "true"
 
         return context
