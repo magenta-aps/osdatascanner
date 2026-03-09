@@ -1,7 +1,5 @@
 {% extends 'organizations/base.html' %}
-{% load static %}
-{% load i18n %}
-{% load tz %}
+{% load static i18n tz %}
 
 {% block title %}
   {% trans "organizations"|capfirst %}
@@ -24,5 +22,6 @@
 
   <div class="organizations-overview">{% include "organizations/org_table.html" %}</div>
 
+  {% include "organizations/org_pagination.html" %}
 
 {% endblock %}

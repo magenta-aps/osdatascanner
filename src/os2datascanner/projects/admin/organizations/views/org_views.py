@@ -30,14 +30,14 @@ logger = structlog.get_logger("admin_organizations")
 
 
 class OrganizationListView(RestrictedListView):
-    model = Organization
-    paginate_by = 10  # TODO: reasonable number? Possibly irrelevant?
+    model = Client
+    paginate_by = 10
     context_object_name = 'client_list'
+    template_name = "organizations/org_list.html"
 
     # filter list based on user
     def get_queryset(self):
         user = self.request.user
-        queryset = super().get_queryset(org_path="uuid")
         if user.has_perm('core.view_client'):
             queryset = Client.objects.all()
         elif hasattr(user, 'administrator_for'):
@@ -49,10 +49,6 @@ class OrganizationListView(RestrictedListView):
         context = super().get_context_data()
         context['FEATURES'] = Feature.__members__
         return context
-
-    def get_template_names(self):
-        is_htmx = self.request.headers.get('HX-Request') == "true"
-        return 'organizations/org_table.html' if is_htmx else "organizations/org_list.html"
 
 
 class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
