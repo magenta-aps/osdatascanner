@@ -21,7 +21,6 @@ from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 from os2datascanner.projects.admin.core.models import Client, Feature, Administrator
 from ..models.organization import Organization
 
-from django import forms
 from django.conf import settings
 
 import structlog
@@ -134,7 +133,6 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         if not (has_ewsgrant and has_graphgrant):
             form.fields.pop('prioritize_graphgrant', None)
 
-        # Conditionally remove the sbsystab_access field based on the setting
         if not settings.ENABLE_SBSYSSCAN:
             form.fields.pop('sbsystab_access', None)
 
@@ -146,6 +144,7 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
 
         if not settings.ENABLE_MSGRAPH_MAILSCAN:
             form.fields.pop('outlook_delete_email_permission', None)
+            form.fields.pop('outlook_categorize_email_permission', None)
 
         if not settings.ENABLE_MSGRAPH_FILESCAN:
             form.fields.pop('onedrive_delete_permission', None)
@@ -155,12 +154,6 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
 
         if not settings.ENABLE_GOOGLEDRIVESCAN:
             form.fields.pop('gdrive_delete_permission', None)
-
-        # Customize the outlook field
-        outlook_field = form.fields['outlook_categorize_email_permission']
-        outlook_field.widget = forms.RadioSelect()
-        outlook_field.choices = Organization._meta.get_field(
-            'outlook_categorize_email_permission').choices
 
         form.required_css_class = 'required-form'
         # TODO: Overhaul styling of form: Dropdowns & Helptext

@@ -120,25 +120,27 @@
 
       .form__row__item {
         padding-top: 0.5rem;
+      }
+    }
 
-        > label:first-child {
-          font-weight: 600;
-          margin-bottom: 1rem;
-        }
+    &--retention-policy .form__row__item {
+      > label:first-child {
+        font-weight: 600;
+        margin-bottom: 1rem;
+      }
 
-        &__radiocontainer {
-          display: flex;
-          flex-direction: column;
-          gap: 0.75rem;
-        }
+      &__radiocontainer {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
 
-        .radio-button,
-        &__checkboxcontainer {
-          margin-top: 0.75rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
+      .radio-button,
+      &__checkboxcontainer {
+        margin-top: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
     }
 

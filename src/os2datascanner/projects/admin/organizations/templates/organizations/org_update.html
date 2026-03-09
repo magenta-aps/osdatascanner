@@ -176,7 +176,7 @@
           <span class="form__row__title">{% trans "Leader overview settings" %}</span>
 
           <div class="form__row__item {% if form.leadertab_config.errors %}has-error{% endif %}">
-            <label for="{{ form.leadertab_config.if_for_label }}">{{ form.leadertab_config.label }}</label>
+            <label for="{{ form.leadertab_config.id_for_label }}">{{ form.leadertab_config.label }}</label>
             {{ form.leadertab_config }}
             {% if form.leadertab_config.errors %}{{ form.leadertab_config.errors }}{% endif %}
           </div>
@@ -208,34 +208,26 @@
           </div>
         </div>
 
-        <div class="form__row--outlook">
-          <span class="form__row__title">{% trans "Microsoft Tenant Settings" %}</span>
+        {% if form.outlook_categorize_email_permission %}
+          <div class="form__row--outlook">
+            <span class="form__row__title">{% trans "Microsoft Tenant Settings" %}</span>
+            <span class="secondary_text">{{ form.outlook_categorize_email_permission.help_text }}</span>
 
-          <div class="form__row__item {% if form.outlook_categorize_email_permission.errors %}has-error{% endif %}">
+            <div class="form__row__item {% if form.outlook_categorize_email_permission.errors %}has-error{% endif %}">
+              <label class="required-form"
+                     for="{{ form.outlook_categorize_email_permission.id_for_label }}">
+                {{ form.outlook_categorize_email_permission.label }}
+              </label>
+ 
+              {{ form.outlook_categorize_email_permission }}
 
-            <label class="required-form"
-                   for="{{ form.outlook_categorize_email_permission.id_for_label }}">
-              {{ form.outlook_categorize_email_permission.label }}
-            </label>
-            {% if form.outlook_categorize_email_permission.errors %}
-              {{ form.outlook_categorize_email_permission.errors }}
-            {% endif %}
-
-            <div class="form__row__item__radiocontainer">
-              {% for radio in form.outlook_categorize_email_permission %}
-                <label class="radio radio-before">
-                  <span class="radio__input">
-                    {{ radio.tag }}
-                    <span class="radio__control radio__control--notify"></span>
-                  </span>
-
-                  <span class="radio__label" for="{{ radio.id_for_label }}">{{ radio.choice_label }}</span>
-                </label>
-              {% endfor %}
+              {% if form.outlook_categorize_email_permission.errors %}
+                {{ form.outlook_categorize_email_permission.errors }}
+              {% endif %}
             </div>
           </div>
+        {% endif %}
 
-        </div>
 
         {% if show_delete_fields %}
           <div class="form__row--deletion">
