@@ -328,11 +328,11 @@
             <tfoot>
               {% if perms.os2datascanner.resolve_usererrorlog or perms.os2datascanner.mark_view_usererrorlog %}
                 {% with colspan=6 %}
-                  {% include "components/datatables/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+                  {% include "components/datatables/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" include_selector="[id='errormessage_filters']" %}
                 {% endwith %}
               {% else %}
                 {% with colspan=4 %}
-                  {% include "components/datatables/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+                  {% include "components/datatables/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" include_selector="[id='errormessage_filters']" %}
                 {% endwith %}
               {% endif %}
             </tfoot>
