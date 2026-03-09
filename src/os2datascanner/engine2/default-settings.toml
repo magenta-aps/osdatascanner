@@ -108,6 +108,8 @@ timeout = 30
 document_proxy = ""
 # If we find a SBSYS file flagged as an alternate, should we ignore it?
 ignore_alternates = true
+# Force runtime reflection to be used over the prebaked sbsysdb_tables module?
+force_reflection = false
 
 [utils.oauth2]
 # The number of seconds to wait for a client credentials response from an OAuth
