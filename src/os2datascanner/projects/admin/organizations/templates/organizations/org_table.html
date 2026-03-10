@@ -5,17 +5,17 @@
 {% block scripts %}
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
   <script src="{% static 'js/index.js' %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% for client in client_list %}
   <div class="content-header">
     <div class="aside">
-      <h1 class="page-title">{% trans 'organizations for'|capfirst %} {{ client }}</h1>
+      <h1 class="page-title">{% trans "organizations for"|capfirst %} {{ client }}</h1>
       {% if perms.organizations.add_organization %}
         <div class="btn">
           <a href="{% url 'add-organization-for' client_id=client.pk %}"
-             aria-label="{% trans 'Add new organization' %}"
-             title="{% trans 'Add new organization' %}"
+             aria-label="{% trans "Add new organization" %}"
+             title="{% trans "Add new organization" %}"
              class="button button--cta-button button--icon-text-button">
             <svg class="icon button__plus-icon">
               <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
@@ -77,7 +77,6 @@
                   </div>
                 </td>
 
-
                 {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
                   <td id="import_column__{{ organization.slug }}"
                       class="column column--import">
@@ -87,25 +86,25 @@
                         {% if not organization.importservice %}
                           <a href="{% url 'add-ldap' org_id=organization.pk %}"
                              id="button-add-configuration"
-                             aria-label="{% trans 'Edit LDAP configuration' %}"
-                             title="{% trans 'Edit LDAP configuration' %}"
+                             aria-label="{% trans "Edit LDAP configuration" %}"
+                             title="{% trans "Edit LDAP configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                         {% else %}
                           <a href="{% url 'edit-ldap' pk=organization.pk %}"
                              id="button-add-configuration"
-                             aria-label="{% trans 'Edit LDAP configuration' %}"
-                             title="{% trans 'Edit LDAP configuration' %}"
+                             aria-label="{% trans "Edit LDAP configuration" %}"
+                             title="{% trans "Edit LDAP configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                           <button type="button"
-                                  aria-label="{% trans 'sync'|capfirst %}"
-                                  title="{% trans 'sync'|capfirst %}"
+                                  aria-label="{% trans "sync"|capfirst %}"
+                                  title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url 'import-ldap' pk=organization.pk %}"
+                                  hx-get="{% url "import-ldap" pk=organization.pk %}"
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -126,25 +125,25 @@
                         {% if not organization.importservice %}
                           <a href="{% url 'add-os2mo' org_id=organization.pk %}"
                              id="button-add-os2mo-configuration"
-                             aria-label="{% trans 'Add OS2mo configuration' %}"
-                             title="{% trans 'Add OS2mo configuration' %}"
+                             aria-label="{% trans "Add OS2mo configuration" %}"
+                             title="{% trans "Add OS2mo configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                         {% else %}
-                          <a href="{% url 'edit-os2mo' pk=organization.pk %}"
+                          <a href="{% url "edit-os2mo" pk=organization.pk %}"
                              id="button-add-configuration"
-                             aria-label="{% trans 'edit OS2mo configuration'|capfirst %}"
-                             title="{% trans 'edit OS2mo configuration'|capfirst %}"
+                             aria-label="{% trans "edit OS2mo configuration"|capfirst %}"
+                             title="{% trans "edit OS2mo configuration"|capfirst %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                           <button type="button"
-                                  aria-label="{% trans 'sync'|capfirst %}"
-                                  title="{% trans 'sync'|capfirst %}"
+                                  aria-label="{% trans "sync"|capfirst %}"
+                                  title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url 'import-os2mo' pk=organization.pk %}"
+                                  hx-get="{% url "import-os2mo" pk=organization.pk %}"
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -164,18 +163,18 @@
                       <div class="button-group">
                         {% if not organization.importservice %}
                           {% if not tenant_id %}
-                            <a href="{% url 'add-msgraph' org_id=organization.pk %}"
+                            <a href="{% url "add-msgraph" org_id=organization.pk %}"
                                id="button-add-msgraph-configuration"
-                               aria-label="{% trans 'Add Microsoft Graph configuration' %}"
-                               title="{% trans 'Add Microsoft Graph configuration' %}"
+                               aria-label="{% trans "Add Microsoft Graph configuration" %}"
+                               title="{% trans "Add Microsoft Graph configuration" %}"
                                class="button button--outline-button button--icon-button">
                               <i id="library_add_check" class="material-icons">library_add_check</i>
                             </a>
                           {% else %}
-                            <a href="{% url 'add-msgraph' org_id=organization.pk tenant_id=tenant_id %}"
+                            <a href="{% url "add-msgraph" org_id=organization.pk tenant_id=tenant_id %}"
                                id="button-add-msgraph-configuration"
-                               aria-label="{% trans 'Add Microsoft Graph configuration' %}"
-                               title="{% trans 'Add Microsoft Graph configuration' %}"
+                               aria-label="{% trans "Add Microsoft Graph configuration" %}"
+                               title="{% trans "Add Microsoft Graph configuration" %}"
                                class="button button--outline-button button--icon-button">
                               <i id="library_add_check" class="material-icons">library_add_check</i>
                             </a>
@@ -183,17 +182,17 @@
                         {% else %}
                           <a href="{% url 'edit-msgraph' pk=organization.pk %}"
                              id="button-add-msgraph-configuration"
-                             aria-label="{% trans 'Edit Microsoft Graph configuration' %}"
-                             title="{% trans 'Edit Microsoft Graph configuration' %}"
+                             aria-label="{% trans "Edit Microsoft Graph configuration" %}"
+                             title="{% trans "Edit Microsoft Graph configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                           <button type="button"
-                                  aria-label="{% trans 'sync'|capfirst %}"
-                                  title="{% trans 'sync'|capfirst %}"
+                                  aria-label="{% trans "sync"|capfirst %}"
+                                  title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url 'import-msgraph' pk=organization.pk %}"
+                                  hx-get="{% url "import-msgraph" pk=organization.pk %}"
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -213,25 +212,25 @@
                         {% if not organization.importservice %}
                           <a href="{% url 'add-googleworkspace' org_id=organization.pk %}"
                              id="button-add-googleworkspace-configuration"
-                             aria-label="{% trans 'Edit Google Workspace configuration' %}"
-                             title="{% trans 'Edit Google Workspace configuration' %}"
+                             aria-label="{% trans "Edit Google Workspace configuration" %}"
+                             title="{% trans "Edit Google Workspace configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                         {% else %}
-                          <a href="{% url 'edit-googleworkspace' pk=organization.pk %}"
+                          <a href="{% url "edit-googleworkspace" pk=organization.pk %}"
                              id="button-add-googleworkspace-configuration"
-                             aria-label="{% trans 'Edit Google Workspace configuration' %}"
-                             title="{% trans 'Edit Google Workspace configuration' %}"
+                             aria-label="{% trans "Edit Google Workspace configuration" %}"
+                             title="{% trans "Edit Google Workspace configuration" %}"
                              class="button button--outline-button button--icon-button">
                             <i id="library_add_check" class="material-icons">library_add_check</i>
                           </a>
                           <button type="button"
-                                  aria-label="{% trans 'sync'|capfirst %}"
-                                  title="{% trans 'sync'|capfirst %}"
+                                  aria-label="{% trans "sync"|capfirst %}"
+                                  title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-post="{% url 'import-googleworkspace' pk=organization.pk %}"
+                                  hx-post="{% url "import-googleworkspace" pk=organization.pk %}"
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -248,25 +247,25 @@
                 <td class="column column--actions">
                   <div class="action-wrapper button-group">
                     {% if FEATURES.ORG_STRUCTURE in client.enabled_features and perms.organizations.view_organizationalunit %}
-                      <a href="{% url 'orgunit-list' organization.slug %}"
+                      <a href="{% url "orgunit-list" organization.slug %}"
                          class="button button--icon-button"
-                         aria-label="{% trans 'View organizational units.' %}"
-                         title="{% trans 'View organizational units.' %}">
+                         aria-label="{% trans "View organizational units." %}"
+                         title="{% trans "View organizational units." %}">
                         {% include "../components/svg-icons/org.svg" %}
                       </a>
                     {% endif %}
                     <a href="{% url 'accounts' organization.slug %}"
                        class="button button--icon-button"
-                       aria-label="{% trans 'View accounts.' %}"
-                       title="{% trans 'View accounts.' %}">{% include "../components/svg-icons/people.svg" %}</a>
+                       aria-label="{% trans "View accounts." %}"
+                       title="{% trans "View accounts." %}">{% include "../components/svg-icons/people.svg" %}</a>
                     {% if perms.organizations.delete_organization %}
                       {% if organization.scanners_running %}
                         <a href="#delete-org-blocked"
                            data-modal="modal:open"
                            data-src="{% url 'org_delete_block' slug=organization.slug %}"
                            class="button button--icon-button"
-                           aria-label="{% trans 'Delete' %}"
-                           title="{% trans 'Delete' %}">
+                           aria-label="{% trans "Delete" %}"
+                           title="{% trans "Delete" %}">
                           <i id="delete_forever" class="material-icons">delete_forever</i>
                         </a>
                       {% else %}
@@ -276,19 +275,19 @@
                           {{ form.as_p }}
                           <button type="submit"
                                   class="button button--icon-button"
-                                  onclick="return confirm(`{% trans 'Do you really want to delete this organization?' %}\n\n{{ organization.name }}\n\n{% trans 'This will delete all associated import- and scannerjobs. The action cannot be reversed' %}`)"
-                                  aria-label="{% trans 'Delete' %}"
-                                  title="{% trans 'Delete' %}">
+                                  onclick="return confirm(`{% trans "Do you really want to delete this organization?" %}\n\n{{ organization.name }}\n\n{% trans "This will delete all associated import- and scannerjobs. The action cannot be reversed" %}`)"
+                                  aria-label="{% trans "Delete" %}"
+                                  title="{% trans "Delete" %}">
                             <i id="delete_forever" class="material-icons">delete_forever</i>
                           </button>
                         </form>
                       {% endif %}
                     {% endif %}
                     {% if organization.realm and organization.realm.providers.exists %}
-                      <a href="{% url 'edit-sso' organization.pk %}"
+                      <a href="{% url "edit-sso" organization.pk %}"
                          class="button button--icon-button"
-                         aria-label="{% trans 'Edit Single SignOn configuration' %}"
-                         title="{% trans 'Edit Single SignOn configuration' %}">
+                         aria-label="{% trans "Edit Single SignOn configuration" %}"
+                         title="{% trans "Edit Single SignOn configuration" %}">
                         <div id="sso-icon-container">
                           <i id="cloud" class="material-symbols">cloud</i>
                           <i id="key" class="material-symbols">key</i>
@@ -298,8 +297,8 @@
                       <a href="{% url 'add-sso' organization.pk %}"
                          class="button button--icon-button"
                          id="sso-button"
-                         aria-label="{% trans 'Configure Single SignOn' %}"
-                         title="{% trans 'Configure Single SignOn' %}">
+                         aria-label="{% trans "Configure Single SignOn" %}"
+                         title="{% trans "Configure Single SignOn" %}">
                         <div id="sso-icon-container">
                           <i id="cloud" class="material-symbols">cloud</i>
                           <i id="key" class="material-symbols">key</i>
@@ -331,6 +330,6 @@
          data-href="{% url 'add-organization-for' client_id=client.pk %}">
       <iframe src="about:blank" frameborder="0"></iframe>
     </div>
-  {% endblock %}
+  {% endblock modal %}
 
 {% endfor %}
