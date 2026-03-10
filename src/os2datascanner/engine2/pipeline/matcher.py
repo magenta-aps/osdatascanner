@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from copy import copy
 from collections.abc import Generator
 import structlog
 
@@ -116,7 +117,7 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
                 message=exception_message)
         return
 
-    final_matches = message.progress.matches
+    final_matches = copy(message.progress.matches)
     for match in new_matches:
         sub_rule, matches = postprocess_match(message.scan_spec.rule, match)
         final_matches.append(messages.MatchFragment(sub_rule, matches))
