@@ -1,6 +1,6 @@
 # Changelog
 
-## Next release, ???
+## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"
 
