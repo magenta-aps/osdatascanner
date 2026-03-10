@@ -38,3 +38,4 @@ from . import gmail  # noqa
 from . import derived  # noqa
 from . import googleshareddrive  # noqa
 from . import webdav  # noqa
+from . import ewscalendar # noqa

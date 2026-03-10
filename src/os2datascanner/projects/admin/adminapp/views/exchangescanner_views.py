@@ -295,14 +295,13 @@ exchange_calendar_scanner_fields = [
     'scan_attachments',
 ]
 
+
 class ExchangeCalendarScannerList(ScannerList):
-    """Displays list of exchange scanners."""
+    """Displays list of exchange calendar scanners."""
 
     model = ExchangeCalendarScanner
     type = 'exchangecalendar'
 
-    def get_queryset(self):
-        return super().get_queryset()
 
 class ExchangeCalendarScannerBase(View):
     def get_context_data(self, **kwargs):
@@ -318,7 +317,7 @@ class ExchangeCalendarScannerBase(View):
 
 
 class ExchangeCalendarScannerCreate(ExchangeCalendarScannerBase, GrantMixin, ScannerCreate):
-    """Create an Exchange scanner view."""
+    """Create an Exchange Calendar scanner view."""
 
     model = ExchangeCalendarScanner
     fields = ScannerBase.fields + exchange_calendar_scanner_fields
@@ -392,7 +391,7 @@ class ExchangeCalendarScannerCopy(ExchangeCalendarScannerBase, GrantMixin, Scann
         return form
 
     def get_initial(self):
-        initial = super(ExchangeCalendarScannerCopy, self).get_initial()
+        initial = super().get_initial()
         initial["userlist"] = self.get_scanner_object().userlist
         return initial
 
@@ -442,6 +441,7 @@ class ExchangeCalendarScannerUpdate(ExchangeCalendarScannerBase, GrantMixin, Sca
             form = validate_grant_selected(form)
 
         return form
+
 
 class ExchangeCalendarScannerCleanup(ScannerCleanupStaleAccounts):
     """Prompts the user for confirmation before deleting document reports

@@ -80,9 +80,10 @@ class ScannerList(RestrictedListView):
 
     def add_scanner_tabs(self, context):
         scanner_models = [
-            WebScanner, FileScanner, ExchangeScanner, ExchangeCalendarScanner, MSGraphMailScanner, MSGraphFileScanner,
-            MSGraphTeamsFileScanner, MSGraphCalendarScanner, MSGraphSharepointScanner,
-            GoogleDriveScanner, GoogleSharedDriveScanner, GmailScanner, SBSYSDBScanner
+            WebScanner, FileScanner, ExchangeScanner, ExchangeCalendarScanner, MSGraphMailScanner,
+            MSGraphFileScanner, MSGraphTeamsFileScanner, MSGraphCalendarScanner,
+            MSGraphSharepointScanner, GoogleDriveScanner, GoogleSharedDriveScanner, GmailScanner,
+            SBSYSDBScanner
         ]
 
         context["scanner_tabs"] = [scanner for scanner in scanner_models if scanner.enabled()]

@@ -4,7 +4,6 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
-import chardet
 import structlog
 
 from django.db import models
@@ -13,36 +12,20 @@ from django.utils.translation import pgettext_lazy
 from django.utils.translation import gettext_lazy as _
 
 from exchangelib.errors import ErrorNonExistentMailbox
-from os2datascanner.engine2.model.ews import EWSCalendarSource
+from os2datascanner.engine2.model.ewscalendar import EWSCalendarSource
 from os2datascanner.engine2.model.core import SourceManager
 
 from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 from ....organizations.models.account import Account
 from ...utils import upload_path_exchange_users
 from .scanner import Scanner
-from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
+from .exchangescanner import get_users_from_file
 
 logger = structlog.get_logger("adminapp")
 
 
-def get_users_from_file(userlist):
-    position = userlist.tell()
-    try:
-        content = userlist.read()
-        ed = chardet.detect(content)
-        if not (encoding := ed["encoding"]):
-            raise ValueError
-        else:
-            return [stripped_line
-                    for line in content.decode(encoding).split("\n")
-                    if (stripped_line := line.strip())]
-    finally:
-        # Make sure we don't actually consume the bytes we read!
-        userlist.seek(position)
-
-
 class ExchangeCalendarScanner(Scanner):
-    """Scanner for Exchange Web Services accounts"""
+    """Scanner for Exchange calendar items via EWS."""
 
     @staticmethod
     def enabled():
@@ -132,7 +115,8 @@ class ExchangeCalendarScanner(Scanner):
                 user_mail_address: str = account.email
                 if user_mail_address:
                     local_part = user_mail_address.split("@", maxsplit=1)[0]
-                    yield account, _make_source(user=local_part, scan_attachments=self.scan_attachments)
+                    yield account, _make_source(user=local_part,
+                                                scan_attachments=self.scan_attachments)
         elif self.userlist:
             user_list = get_users_from_file(self.userlist)
             for u in user_list:
@@ -141,18 +125,25 @@ class ExchangeCalendarScanner(Scanner):
             raise ValueError("No users available")
 
     def verify(self) -> bool:
-        for account in self.generate_sources():
+        try:
+            sources = list(self.generate_sources())
+        except ValueError as e:
+            logger.warning("Cannot verify scanner", reason=str(e))
+            return False
+        for account in sources:
             with SourceManager() as sm:
                 try:
                     exchangelib_object = sm.open(account)
                     if exchangelib_object.msg_folder_root:
                         logger.info(
-                            "OS2datascanner has access to calendar for {0}".format(
-                                account.address
-                            )
+                            "OS2datascanner has access to calendar",
+                            address=account.address,
                         )
                 except ErrorNonExistentMailbox:
-                    logger.info("Calendar for {0} does not exits".format(account.address))
+                    logger.info(
+                        "Calendar does not exist",
+                        address=account.address,
+                    )
                     return False
         return True
 
