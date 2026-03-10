@@ -45,6 +45,9 @@
 
 - SBSYS results now have a label on DPO overview circle chart.
 
+- The pipeline's alternate serialisation-free interface no longer causes
+  some matches to be reported more than once for the same file.
+
 ## Version 3.31.1, 17th February 2026
 
 "Fastelavns-rice"
