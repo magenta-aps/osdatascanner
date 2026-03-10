@@ -1088,6 +1088,22 @@ msgstr "Filformat"
 msgid "Total size in bytes"
 msgstr "Samlet størrelse i bytes"
 
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Unique Content Identifier"
+msgstr "Unik indholdsidentifikation"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "File size in bytes"
+msgstr "Fil størrelse i bytes"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Number of occurrences"
+msgstr "Antal forekomster"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Total process time"
+msgstr "Total behandlingstid"
+
 #: adminapp/models/scannerjobs/webscanner.py
 msgid "validation method"
 msgstr "valideringsmetode"

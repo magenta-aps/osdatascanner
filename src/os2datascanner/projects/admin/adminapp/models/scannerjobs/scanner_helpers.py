@@ -591,6 +591,11 @@ class DuplicationStat(models.Model):
         verbose_name=_("MIME type"),
     )
 
+    process_time = models.DurationField(
+        default=0,
+        verbose_name=_("Total process time")
+    )
+
     class Meta:
         constraints = [
             models.UniqueConstraint(

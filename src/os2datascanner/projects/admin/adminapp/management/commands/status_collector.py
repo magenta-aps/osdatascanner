@@ -125,7 +125,8 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                             content_identifier=message.content_identifier,
                             file_size=message.object_size,
                             mime_type=message.object_type,
-                            occurrences=2
+                            occurrences=2,
+                            process_time=timedelta(seconds=message.process_time_worker)
                         )
                 except IntegrityError:
                     # The duplication was already recorded. Increment the occurrence count.
@@ -134,7 +135,9 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                         content_identifier=message.content_identifier,
                         file_size=message.object_size,
                         mime_type=message.object_type
-                    ).update(occurrences=F('occurrences') + 1)
+                    ).update(occurrences=F('occurrences') + 1,
+                             process_time=F('process_time') + timedelta(
+                                 seconds=message.process_time_worker))
 
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()

@@ -57,6 +57,8 @@
   - osds_users_total: Shows the total number of active users and their activity status
     over the past 30 days.
 
+- Added optional tracking of files scanned multiple times within the same scan. 
+
 ### General improvements
 
 - The `explore_scannerjob` management command is now SmartDelta-aware and so
