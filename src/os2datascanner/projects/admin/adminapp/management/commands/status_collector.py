@@ -22,7 +22,9 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
-from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat
+from ...models.scannerjobs.scanner_helpers import (
+        MIMETypeProcessStat, delete_per_scan_queue,
+        notify_new_conversion_queue, _per_scan_queue_name)
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
@@ -135,6 +137,8 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                 FinishedScannerNotificationEmail(scanner, scan_status).notify()
                 scan_status.email_sent = True
                 scan_status.save()
+                # Clean up the per-scan conversion queue now that all work is done.
+                delete_per_scan_queue(scan_status.scan_tag)
             else:
                 logger.warning(
                     "BUG: received status message for a ScanStatus marked as complete!",
@@ -143,10 +147,34 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
     yield from []
 
 
+_REBROADCAST_INTERVAL_TICKS = 600  # ~60 seconds at 0.1s/tick
+
+
 class StatusCollectorRunner(PikaPipelineThread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         start_http_server(9091)
+
+    def _processing_complete(self, tick):
+        if tick and tick % _REBROADCAST_INTERVAL_TICKS == 0:
+            self._rebroadcast_active_queues()
+        return super()._processing_complete(tick)
+
+    def _rebroadcast_active_queues(self):
+        """Re-announces all active per-scan conversion queues so that recently
+        restarted worker containers can subscribe to them without missing a
+        broadcast."""
+        active = ScanStatus.objects.exclude(
+                ScanStatus._completed_or_cancelled_Q).values_list("scan_tag", flat=True)
+        rebroadcast_count = 0
+        for tag in active:
+            if queue_name := _per_scan_queue_name(tag):
+                notify_new_conversion_queue(queue_name)
+                rebroadcast_count += 1
+        if rebroadcast_count:
+            logger.debug(
+                    "Re-broadcast active per-scan queues",
+                    count=rebroadcast_count)
 
     def handle_message(self, routing_key, body):
         with SUMMARY.time():

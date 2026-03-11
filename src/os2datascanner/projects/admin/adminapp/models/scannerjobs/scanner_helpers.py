@@ -574,19 +574,26 @@ def _per_scan_queue_name(tag: dict) -> str | None:
     return None
 
 
-def _purge_queue(queue_name: str):
-    """Purges all messages from the named RabbitMQ queue if it exists."""
+def _delete_queue(queue_name: str):
+    """Deletes the named RabbitMQ queue (and any remaining messages) if it exists."""
     try:
         with PikaConnectionHolder() as conn:
-            conn.channel.queue_purge(queue_name)
-            logger.info("Purged per-scan conversion queue", queue=queue_name)
+            conn.channel.queue_delete(queue_name, if_unused=False, if_empty=False)
+            logger.info("Deleted per-scan conversion queue", queue=queue_name)
     except pika.exceptions.ChannelClosedByBroker:
-        # Queue doesn't exist — scan may have already completed and been cleaned up
-        logger.debug("Per-scan queue not found during purge", queue=queue_name)
+        # Queue doesn't exist — already cleaned up or never created
+        logger.debug("Per-scan queue not found during deletion", queue=queue_name)
     except Exception:
         logger.warning(
-                "Could not purge per-scan queue",
+                "Could not delete per-scan queue",
                 queue=queue_name, exc_info=True)
+
+
+def delete_per_scan_queue(tag: dict):
+    """Deletes the per-scan conversion queue for the given scan tag, if one exists.
+    Safe to call on completion or cancellation — idempotent if already gone."""
+    if queue_name := _per_scan_queue_name(tag):
+        _delete_queue(queue_name)
 
 
 def notify_new_conversion_queue(queue_name: str):
@@ -619,10 +626,10 @@ def cancel_scan_tag_messages(tag: dict, purge_queue: bool = False):
         p.run()
 
     if purge_queue:
-        # Fast path: discard all queued conversion messages server-side in one
-        # operation, instead of each being individually dequeued and rejected.
+        # Fast path: delete the queue entirely, discarding all remaining messages
+        # server-side in one operation rather than draining them one-by-one.
         if queue_name := _per_scan_queue_name(tag):
-            _purge_queue(queue_name)
+            _delete_queue(queue_name)
 
 
 @receiver(post_delete)
