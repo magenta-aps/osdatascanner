@@ -563,11 +563,16 @@ class Scanner(models.Model):
         self.save()
 
         # Create a model object to track the status of this scan...
+        is_delta = (spec_template.explorer_queue
+                    == self.organization.client.explorer_delta_queue)
+        conversion_queue_priority = 10 if is_delta else 1
+
         new_status = ScanStatus.objects.create(
                 scanner=self, scan_tag=scan_tag.to_json_object(),
                 last_modified=scan_tag.time,
                 total_sources=int(source_counter),
-                total_objects=int(checkup_counter))
+                total_objects=int(checkup_counter),
+                conversion_queue_priority=conversion_queue_priority)
 
         # Synchronize the 'covered_accounts'-field with accounts, which are
         # about to be scanned.
@@ -575,7 +580,11 @@ class Scanner(models.Model):
 
         # Notify workers about the new per-scan queue before sending specs, so
         # they are subscribed and ready before conversion messages start arriving.
-        notify_new_conversion_queue(spec_template.conversion_queue)
+        # Delta scans get higher priority so incremental results aren't delayed
+        # by concurrent full scans.
+        notify_new_conversion_queue(
+                spec_template.conversion_queue,
+                priority=conversion_queue_priority)
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(

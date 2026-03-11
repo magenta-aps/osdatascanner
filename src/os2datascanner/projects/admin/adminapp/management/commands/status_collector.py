@@ -165,11 +165,12 @@ class StatusCollectorRunner(PikaPipelineThread):
         restarted worker containers can subscribe to them without missing a
         broadcast."""
         active = ScanStatus.objects.exclude(
-                ScanStatus._completed_or_cancelled_Q).values_list("scan_tag", flat=True)
+                ScanStatus._completed_or_cancelled_Q).values_list(
+                "scan_tag", "conversion_queue_priority")
         rebroadcast_count = 0
-        for tag in active:
+        for tag, priority in active:
             if queue_name := _per_scan_queue_name(tag):
-                notify_new_conversion_queue(queue_name)
+                notify_new_conversion_queue(queue_name, priority=priority)
                 rebroadcast_count += 1
         if rebroadcast_count:
             logger.debug(

@@ -775,12 +775,24 @@ class CommandMessage(NamedTuple):
     workers should subscribe to. Sent by the admin module when a new scan
     starts, before the ScanSpecMessage is dispatched."""
 
+    new_queue_priority: Optional[int] = None
+    """If set alongside new_queue, the scheduling priority of that queue.
+    Higher values are processed first. Delta scans use a higher priority
+    than full scans so that incremental results are not delayed by bulk work."""
+
+    delete_queue: Optional[str] = None
+    """If set, the name of a per-scan conversion queue that is about to be
+    deleted. Workers should cancel their consumer for this queue before it
+    disappears, to avoid broker-initiated channel closures."""
+
     def to_json_object(self):
         return {
             "abort": self.abort.to_json_object() if self.abort else None,
             "log_level": self.log_level,
             "profiling": self.profiling,
             "new_queue": self.new_queue,
+            "new_queue_priority": self.new_queue_priority,
+            "delete_queue": self.delete_queue,
         }
 
     @classmethod
@@ -792,4 +804,6 @@ class CommandMessage(NamedTuple):
                 if abort else None,
                 log_level=obj.get("log_level"),
                 profiling=obj.get("profiling"),
-                new_queue=obj.get("new_queue"))
+                new_queue=obj.get("new_queue"),
+                new_queue_priority=obj.get("new_queue_priority"),
+                delete_queue=obj.get("delete_queue"))

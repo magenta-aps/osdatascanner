@@ -244,6 +244,11 @@ class ScanStatus(AbstractScanStatus):
         default=False
     )
 
+    conversion_queue_priority = models.IntegerField(
+        verbose_name=_("conversion queue priority"),
+        default=1,
+    )
+
     @property
     def estimated_completion_time(self) -> datetime.datetime | None:
         """Returns an estimate of the completion time of the scan, based on a
@@ -575,7 +580,18 @@ def _per_scan_queue_name(tag: dict) -> str | None:
 
 
 def _delete_queue(queue_name: str):
-    """Deletes the named RabbitMQ queue (and any remaining messages) if it exists."""
+    """Broadcasts a delete_queue notice so workers can cleanly unsubscribe,
+    then deletes the named RabbitMQ queue (and any remaining messages)."""
+    msg = messages.CommandMessage(delete_queue=queue_name)
+    try:
+        with PikaPipelineThread() as p:
+            p.enqueue_message("", msg.to_json_object(), "broadcast", priority=10)
+            p.enqueue_stop()
+            p.run()
+    except Exception:
+        logger.warning(
+                "Could not broadcast queue deletion notice",
+                queue=queue_name, exc_info=True)
     try:
         with PikaConnectionHolder() as conn:
             conn.channel.queue_delete(queue_name, if_unused=False, if_empty=False)
@@ -596,12 +612,15 @@ def delete_per_scan_queue(tag: dict):
         _delete_queue(queue_name)
 
 
-def notify_new_conversion_queue(queue_name: str):
+def notify_new_conversion_queue(queue_name: str, priority: int = 1):
     """Declares the per-scan conversion queue on the broker and broadcasts a
     CommandMessage telling all pipeline workers to subscribe to it. Must be
     called before dispatching any ScanSpecMessages that route to that queue,
-    so the queue exists before the explorer starts publishing to it."""
-    msg = messages.CommandMessage(new_queue=queue_name)
+    so the queue exists before the explorer starts publishing to it.
+
+    The priority parameter lets workers prefer delta-scan queues (high) over
+    full-scan queues (low) when both have pending messages."""
+    msg = messages.CommandMessage(new_queue=queue_name, new_queue_priority=priority)
     with PikaPipelineThread(write={queue_name}) as p:
         p.enqueue_message("", msg.to_json_object(), "broadcast", priority=10)
         p.enqueue_stop()

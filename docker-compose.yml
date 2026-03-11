@@ -465,7 +465,9 @@ services:
       - SCHEDULE_ON_CPU=0
       - ENABLE_RUSAGE=true
       - OSDS_DEBUG_OAUTH2=true
-      - QUEUE_PRIORITY=conversions_delta conversions_full os2ds_conversions
+      # FULL
+      - CONVERSION_PRIORITY=1
+
     tty:
       true
     volumes:
@@ -488,7 +490,8 @@ services:
       - SCHEDULE_ON_CPU=1
       - ENABLE_RUSAGE=true
       - OSDS_DEBUG_OAUTH2=true
-      - QUEUE_PRIORITY=conversions_full conversions_delta
+      # DELTA
+      - CONVERSION_PRIORITY=2
     tty:
       true
     volumes:

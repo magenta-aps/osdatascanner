@@ -58,7 +58,8 @@ def restart_process():
 class GenericRunner(PikaPipelineThread):
     def __init__(self,
                  source_manager: SourceManager, *args,
-                 stage: str, module,  limit, queue_priorities, **kwargs):
+                 stage: str, module,  limit, queue_priorities,
+                 conversion_priority: int = 0, **kwargs):
         super().__init__(*args, **kwargs,
                          read=tuple(set(module.READS_QUEUES).union(set(queue_priorities))),
                          write=module.WRITES_QUEUES,
@@ -82,7 +83,10 @@ class GenericRunner(PikaPipelineThread):
         # Flags are booleans and list.append/pop are GIL-atomic, so no lock needed.
         self._pending_drain = False
         self._draining = False
-        self._pending_new_queues: list[str] = []
+        self._pending_new_queues: list[tuple[str, int]] = []
+        self._pending_delete_queues: list[str] = []
+        self._per_scan_queue_priorities: dict[str, int] = {}
+        self._conversion_priority = conversion_priority
 
         self._queue_priorities = queue_priorities
         if self._queue_priorities:
@@ -114,18 +118,19 @@ class GenericRunner(PikaPipelineThread):
 
         return consumer_tags
 
-    def _subscribe_to_queue(self, queue_name: str):
+    def _subscribe_to_queue(self, queue_name: str, priority: int = 1):
         """(Background thread.) Subscribe to a new per-scan conversion queue."""
         if queue_name in self._read:
             return
         self._read.add(queue_name)
+        self._per_scan_queue_priorities[queue_name] = priority
         self.channel.queue_declare(
                 queue_name,
                 passive=False, durable=True, exclusive=False, auto_delete=False)
         consumer_tag = self.channel.basic_consume(
                 queue_name, self.handle_message_raw, exclusive=False)
         self._consumer_tags[queue_name] = consumer_tag
-        logger.info("Subscribed to per-scan queue", queue=queue_name)
+        logger.info("Subscribed to per-scan queue", queue=queue_name, priority=priority)
 
     def _check_drain_complete(self):
         """(Background thread.) Restore normal prefetch once all read queues are empty."""
@@ -155,28 +160,45 @@ class GenericRunner(PikaPipelineThread):
                     prefetch_count=_DRAIN_PREFETCH_COUNT)
 
         while self._pending_new_queues:
-            queue_name = self._pending_new_queues.pop(0)
+            queue_name, priority = self._pending_new_queues.pop(0)
             if self._stage == "worker":
                 # Only workers read from per-scan conversion queues; explorers
                 # and exporters must not subscribe or they will silently consume
                 # and drop ConversionMessages they cannot process.
-                self._subscribe_to_queue(queue_name)
+                self._subscribe_to_queue(queue_name, priority)
+
+        while self._pending_delete_queues:
+            queue_name = self._pending_delete_queues.pop(0)
+            if queue_name in self._consumer_tags:
+                try:
+                    self.channel.basic_cancel(self._consumer_tags.pop(queue_name))
+                except Exception:
+                    self._consumer_tags.pop(queue_name, None)
+            self._per_scan_queue_priorities.pop(queue_name, None)
+            self._read.discard(queue_name)
+            logger.info("Unsubscribed from deleted per-scan queue", queue=queue_name)
 
         if tick and tick % 50 == 0:
             if self._draining:
                 self._check_drain_complete()
             if self._stage in ("worker", "explorer",) and self._queue_priorities:
                 self._check_and_switch_priority()
+            if (self._stage == "worker"
+                    and self._conversion_priority
+                    and self._per_scan_queue_priorities):
+                self._check_per_scan_priority()
         return super()._processing_complete(tick)
 
     def _check_and_switch_priority(self):  # noqa CCR001, cognitive complexity (17 > 15)
         """Switch consumers dynamically based on queue message counts."""
-        # TODO: Queue declare could be a helper function to guard against pika exceptions if a
-        # queue is missing  .. beware that many different ones can be thrown.
-        queue_msg_counts = {
-            queue: self.channel.queue_declare(queue=queue, passive=True).method.message_count
-            for queue in self._queue_priorities
-        }
+        queue_msg_counts = {}
+        for queue in self._queue_priorities:
+            try:
+                queue_msg_counts[queue] = self.channel.queue_declare(
+                        queue=queue, passive=True).method.message_count
+            except Exception:
+                return  # Channel closed by broker (queue missing); bail out
+
 
         first_priority_count = queue_msg_counts[self._first_priority]
 
@@ -220,6 +242,52 @@ class GenericRunner(PikaPipelineThread):
                 # No action needed
                 logger.trace("No priority switch necessary.")
 
+    def _check_per_scan_priority(self):
+        """For workers with a configured conversion priority: prefer per-scan queues
+        that match this worker's priority, and only fall back to other queues when the
+        preferred ones are empty.
+
+        A worker with conversion_priority=10 focuses on delta-scan queues and only
+        helps with full-scan queues when there is no delta work left. A worker with
+        conversion_priority=1 does the reverse. Workers with conversion_priority=0
+        (the default) consume all queues without preference and never call this method."""
+        # Use passive queue_declare to get message counts. Any queue that no longer
+        # exists will have already been removed via the delete_queue broadcast, so
+        # failures here are unexpected — bail out without closing the channel cleanly.
+        queue_counts = {}
+        try:
+            for q in self._per_scan_queue_priorities:
+                queue_counts[q] = self.channel.queue_declare(
+                        queue=q, passive=True).method.message_count
+        except Exception:
+            return  # Unexpected queue gone; channel closed, bail out
+
+        queues_with_messages = {q: c for q, c in queue_counts.items() if c > 0}
+        if not queues_with_messages:
+            return
+
+        # Check if any of this worker's preferred queues have messages
+        preferred_queues = {
+            q: c for q, c in queues_with_messages.items()
+            if self._per_scan_queue_priorities[q] == self._conversion_priority
+        }
+        # If preferred queues have work, focus on them; otherwise help with anything
+        target_queues = preferred_queues if preferred_queues else queues_with_messages
+
+        for q, count in queue_counts.items():
+            has_consumer = q in self._consumer_tags
+            should_consume = q in target_queues
+            if should_consume and not has_consumer:
+                self._consumer_tags[q] = self.channel.basic_consume(
+                        q, self.handle_message_raw, exclusive=False)
+                logger.info("Resumed per-scan queue consumer", queue=q)
+            elif not should_consume and has_consumer:
+                try:
+                    self.channel.basic_cancel(self._consumer_tags.pop(q))
+                except Exception:
+                    self._consumer_tags.pop(q, None)
+                logger.info("Paused per-scan queue consumer", queue=q)
+
     def _handle_command(self, routing_key, body):
         command = messages.CommandMessage.from_json_object(body)
 
@@ -231,7 +299,12 @@ class GenericRunner(PikaPipelineThread):
 
         if command.new_queue:
             # Signal the background thread to subscribe to the new per-scan queue.
-            self._pending_new_queues.append(command.new_queue)
+            priority = command.new_queue_priority or 1
+            self._pending_new_queues.append((command.new_queue, priority))
+
+        if command.delete_queue:
+            # Signal the background thread to unsubscribe before the queue is deleted.
+            self._pending_delete_queues.append(command.delete_queue)
 
         if command.profiling is not None:
             profiling.print_stats(pstats.SortKey.CUMULATIVE, silent=True)
@@ -314,9 +387,15 @@ restarting = False
 @click.option("--queue-priority", envvar='QUEUE_PRIORITY',
               multiple=True, type=str,
               help='queue priorities, can be multiple: first entry equals highest priority.')
+@click.option("--conversion-priority", default=0,
+              type=int, envvar='CONVERSION_PRIORITY',
+              help='for worker stages: preferred per-scan queue priority.'
+                   ' Workers focus on queues with this priority and only help'
+                   ' with other queues when their preferred ones are empty.'
+                   ' 0 (default) means no preference.')
 def main(enable_profiling, enable_rusage, enable_metrics,
          prometheus_port, width, single_cpu, restart_after, stage,
-         queue_priority):
+         queue_priority, conversion_priority):
 
     for module_name in settings.pipeline.get("extra_modules") or []:
         logger.info(
@@ -362,7 +441,8 @@ def main(enable_profiling, enable_rusage, enable_metrics,
                 stage=stage,
                 module=module,
                 limit=restart_after,
-                queue_priorities=queue_priority).run_consumer()
+                queue_priorities=queue_priority,
+                conversion_priority=conversion_priority).run_consumer()
 
         if restarting:
             logger.info(f"restarting after {restart_after} messages")
