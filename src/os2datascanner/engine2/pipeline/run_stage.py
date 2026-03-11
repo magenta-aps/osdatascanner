@@ -26,6 +26,10 @@ from .utilities.pika import (ANON_QUEUE,
 
 logger = structlog.get_logger("run_stage")
 
+# When an abort is received, temporarily raise prefetch so cancelled messages
+# are bulk-drained quickly. Restored to module.PREFETCH_COUNT once all
+# read queues are empty.
+_DRAIN_PREFETCH_COUNT = 32
 
 _module_mapping = {
     "explorer": explorer,
@@ -74,6 +78,12 @@ class GenericRunner(PikaPipelineThread):
         self._limit = limit
         self._count = 0
 
+        # Drain state: set by main thread, consumed by background thread.
+        # Flags are booleans and list.append/pop are GIL-atomic, so no lock needed.
+        self._pending_drain = False
+        self._draining = False
+        self._pending_new_queues: list[str] = []
+
         self._queue_priorities = queue_priorities
         if self._queue_priorities:
             logger.info(
@@ -104,8 +114,57 @@ class GenericRunner(PikaPipelineThread):
 
         return consumer_tags
 
+    def _subscribe_to_queue(self, queue_name: str):
+        """(Background thread.) Subscribe to a new per-scan conversion queue."""
+        if queue_name in self._read:
+            return
+        self._read.add(queue_name)
+        self.channel.queue_declare(
+                queue_name,
+                passive=False, durable=True, exclusive=False, auto_delete=False)
+        consumer_tag = self.channel.basic_consume(
+                queue_name, self.handle_message_raw, exclusive=False)
+        self._consumer_tags[queue_name] = consumer_tag
+        logger.info("Subscribed to per-scan queue", queue=queue_name)
+
+    def _check_drain_complete(self):
+        """(Background thread.) Restore normal prefetch once all read queues are empty."""
+        try:
+            for queue in self._read:
+                count = self.channel.queue_declare(
+                        queue=queue, passive=True).method.message_count
+                if count > 0:
+                    return
+        except Exception:
+            return
+        self._draining = False
+        self.channel.basic_qos(prefetch_count=self._module.PREFETCH_COUNT)
+        logger.info(
+                "Drain complete, restoring normal prefetch",
+                prefetch_count=self._module.PREFETCH_COUNT)
+
     def _processing_complete(self, tick):
+        # Consume any pending channel operations signalled by the main thread.
+        # These are deferred here because self.channel belongs to this thread.
+        if self._pending_drain and not self._draining:
+            self._pending_drain = False
+            self._draining = True
+            self.channel.basic_qos(prefetch_count=_DRAIN_PREFETCH_COUNT)
+            logger.info(
+                    "Abort received, raising prefetch for fast drain",
+                    prefetch_count=_DRAIN_PREFETCH_COUNT)
+
+        while self._pending_new_queues:
+            queue_name = self._pending_new_queues.pop(0)
+            if self._stage == "worker":
+                # Only workers read from per-scan conversion queues; explorers
+                # and exporters must not subscribe or they will silently consume
+                # and drop ConversionMessages they cannot process.
+                self._subscribe_to_queue(queue_name)
+
         if tick and tick % 50 == 0:
+            if self._draining:
+                self._check_drain_complete()
             if self._stage in ("worker", "explorer",) and self._queue_priorities:
                 self._check_and_switch_priority()
         return super()._processing_complete(tick)
@@ -166,6 +225,13 @@ class GenericRunner(PikaPipelineThread):
 
         if command.abort:
             self._cancelled.appendleft(command.abort)
+            # Signal the background thread to raise prefetch for fast draining.
+            # We don't touch self.channel here — it belongs to the Pika thread.
+            self._pending_drain = True
+
+        if command.new_queue:
+            # Signal the background thread to subscribe to the new per-scan queue.
+            self._pending_new_queues.append(command.new_queue)
 
         if command.profiling is not None:
             profiling.print_stats(pstats.SortKey.CUMULATIVE, silent=True)

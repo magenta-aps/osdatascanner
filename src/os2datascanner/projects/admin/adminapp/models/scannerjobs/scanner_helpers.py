@@ -22,7 +22,9 @@ from django.contrib.auth.models import User
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle
 import os2datascanner.engine2.pipeline.messages as messages
-from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+import pika.exceptions
+from os2datascanner.engine2.pipeline.utilities.pika import (
+        PikaPipelineThread, PikaConnectionHolder)
 
 
 logger = structlog.get_logger("adminapp")
@@ -349,7 +351,7 @@ class ScanStatus(AbstractScanStatus):
         future messages from this job."""
         if self.is_running:
             # Instruct the pipeline to throw out all future messages from this scan
-            cancel_scan_tag_messages(self.scan_tag)
+            cancel_scan_tag_messages(self.scan_tag, purge_queue=True)
 
             # Remove CoveredAccounts for this scan to make sure no accounts are skipped during next
             # scan on account of this scan.
@@ -562,9 +564,51 @@ class MIMETypeProcessStat(models.Model):
         ]
 
 
-def cancel_scan_tag_messages(tag: dict):
-    """Requests that all running pipeline
-    components blacklist and ignore messages from the scan tag."""
+def _per_scan_queue_name(tag: dict) -> str | None:
+    """Returns the per-scan conversion queue name for the given scan tag dict,
+    or None if the tag is too old/incomplete to derive one."""
+    tag_obj = messages.ScanTagFragment.from_json_object(tag)
+    if tag_obj.scanner and tag_obj.time:
+        safe_time = tag_obj.time.strftime("%Y%m%dT%H%M%S")
+        return f"os2ds_conversions.{tag_obj.scanner.pk}_{safe_time}"
+    return None
+
+
+def _purge_queue(queue_name: str):
+    """Purges all messages from the named RabbitMQ queue if it exists."""
+    try:
+        with PikaConnectionHolder() as conn:
+            conn.channel.queue_purge(queue_name)
+            logger.info("Purged per-scan conversion queue", queue=queue_name)
+    except pika.exceptions.ChannelClosedByBroker:
+        # Queue doesn't exist — scan may have already completed and been cleaned up
+        logger.debug("Per-scan queue not found during purge", queue=queue_name)
+    except Exception:
+        logger.warning(
+                "Could not purge per-scan queue",
+                queue=queue_name, exc_info=True)
+
+
+def notify_new_conversion_queue(queue_name: str):
+    """Declares the per-scan conversion queue on the broker and broadcasts a
+    CommandMessage telling all pipeline workers to subscribe to it. Must be
+    called before dispatching any ScanSpecMessages that route to that queue,
+    so the queue exists before the explorer starts publishing to it."""
+    msg = messages.CommandMessage(new_queue=queue_name)
+    with PikaPipelineThread(write={queue_name}) as p:
+        p.enqueue_message("", msg.to_json_object(), "broadcast", priority=10)
+        p.enqueue_stop()
+        p.run()
+
+
+def cancel_scan_tag_messages(tag: dict, purge_queue: bool = False):
+    """Requests that all running pipeline components blacklist and ignore
+    messages from the scan tag.
+
+    If purge_queue is True, also instantly purges the per-scan conversion
+    queue so workers do not need to drain it message-by-message. Only pass
+    True for explicit user-initiated cancellation — not for error recovery
+    or cleanup paths, where the scan may still be producing valid results."""
     msg = messages.CommandMessage(
             abort=messages.ScanTagFragment.from_json_object(tag))
     with PikaPipelineThread() as p:
@@ -574,6 +618,12 @@ def cancel_scan_tag_messages(tag: dict):
         p.enqueue_stop()
         p.run()
 
+    if purge_queue:
+        # Fast path: discard all queued conversion messages server-side in one
+        # operation, instead of each being individually dequeued and rejected.
+        if queue_name := _per_scan_queue_name(tag):
+            _purge_queue(queue_name)
+
 
 @receiver(post_delete)
 def post_delete_callback(sender, instance, using, **kwargs):
@@ -581,5 +631,5 @@ def post_delete_callback(sender, instance, using, **kwargs):
     if not isinstance(instance, ScanStatus):
         return
 
-    cancel_scan_tag_messages(instance.scan_tag)
+    cancel_scan_tag_messages(instance.scan_tag, purge_queue=True)
     logger.info("ScanStatus deleted. Sending abort message to message queue.", instance=instance)

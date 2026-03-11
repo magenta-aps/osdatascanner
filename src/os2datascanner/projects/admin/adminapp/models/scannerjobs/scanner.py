@@ -41,7 +41,8 @@ from os2datascanner.projects.admin.organizations.models.organization import Orga
 
 from ..rules import Rule
 from .scanner_helpers import (  # noqa (interface backwards compatibility)
-        ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot)
+        ScanStatus, CoveredAccount, ScheduledCheckup, ScanStatusSnapshot,
+        notify_new_conversion_queue)
 
 logger = structlog.get_logger("adminapp")
 base_dir = os.path.dirname(
@@ -358,19 +359,21 @@ class Scanner(models.Model):
         has no associated Source, so make sure you put one in with _replace or
         messages.deep_replace before trying to scan with it."""
 
-        # Determine if we're running full or delta scan & set explorer and conversion queue
-        # accordingly
+        # Determine if we're running full or delta scan & set explorer queue accordingly
         is_true_delta_scan = (self.statuses.exists()
                               and self.do_last_modified_check) and not force
         explorer_queue = (self.organization.client.explorer_delta_queue if is_true_delta_scan
                           else self.organization.client.explorer_full_queue)
-        conversion_queue = (self.organization.client.conversion_delta_queue if is_true_delta_scan
-                            else self.organization.client.conversion_full_queue)
 
         rule = self._construct_rule(force)
         filter_rule = self._construct_filter_rule()
         scan_tag = self._construct_scan_tag(user)
         configuration = self._construct_configuration()
+
+        # Each scan gets a dedicated conversion queue named after the scanner PK
+        # and the scan start time. This allows instant cancellation via queue purge.
+        safe_time = scan_tag.time.strftime("%Y%m%dT%H%M%S")
+        conversion_queue = f"os2ds_conversions.{self.pk}_{safe_time}"
 
         return messages.ScanSpecMessage(
                 scan_tag=scan_tag, rule=rule, configuration=configuration,
@@ -569,6 +572,10 @@ class Scanner(models.Model):
         # Synchronize the 'covered_accounts'-field with accounts, which are
         # about to be scanned.
         self.record_covered_accounts(new_status)
+
+        # Notify workers about the new per-scan queue before sending specs, so
+        # they are subscribed and ready before conversion messages start arriving.
+        notify_new_conversion_queue(spec_template.conversion_queue)
 
         # ... and dispatch the scan specifications to the pipeline!
         with PikaPipelineThread(

@@ -770,11 +770,17 @@ class CommandMessage(NamedTuple):
     target process will print and clear any profiling statistics it might
     already have collected."""
 
+    new_queue: Optional[str] = None
+    """If set, the name of a new per-scan conversion queue that pipeline
+    workers should subscribe to. Sent by the admin module when a new scan
+    starts, before the ScanSpecMessage is dispatched."""
+
     def to_json_object(self):
         return {
             "abort": self.abort.to_json_object() if self.abort else None,
             "log_level": self.log_level,
-            "profiling": self.profiling
+            "profiling": self.profiling,
+            "new_queue": self.new_queue,
         }
 
     @classmethod
@@ -785,4 +791,5 @@ class CommandMessage(NamedTuple):
                 abort=ScanTagFragment.from_json_object(abort)
                 if abort else None,
                 log_level=obj.get("log_level"),
-                profiling=obj.get("profiling"))
+                profiling=obj.get("profiling"),
+                new_queue=obj.get("new_queue"))

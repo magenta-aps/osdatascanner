@@ -509,7 +509,7 @@ class TestScannerSourcesWithAccounts:
         scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
-        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+        assert scan_spec.conversion_queue.startswith(f"os2ds_conversions.{basic_scanner.pk}_")
 
     def test_second_run_with_delta_on_is_a_delta_scan(self, basic_scanner,
                                                       test_client_with_queue_priority,
@@ -526,7 +526,7 @@ class TestScannerSourcesWithAccounts:
         scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_delta_queue
-        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_delta_queue
+        assert scan_spec.conversion_queue.startswith(f"os2ds_conversions.{basic_scanner.pk}_")
 
     def test_force_run_on_delta_scan_is_full(self, basic_scanner,
                                              test_client_with_queue_priority,
@@ -543,7 +543,7 @@ class TestScannerSourcesWithAccounts:
         scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=True)
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
-        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+        assert scan_spec.conversion_queue.startswith(f"os2ds_conversions.{basic_scanner.pk}_")
 
     def test_disabled_last_modified_check_is_a_full_scan(self, basic_scanner,
                                                          test_client_with_queue_priority):
@@ -558,7 +558,7 @@ class TestScannerSourcesWithAccounts:
         scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
-        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+        assert scan_spec.conversion_queue.startswith(f"os2ds_conversions.{basic_scanner.pk}_")
 
     def test_disabled_last_modified_check_with_previous_run_is_full(self, basic_scanner,
                                                                     test_client_with_queue_priority,
@@ -574,7 +574,7 @@ class TestScannerSourcesWithAccounts:
         scan_spec = basic_scanner._construct_scan_spec_template(user=None, force=False)
 
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
-        assert scan_spec.conversion_queue == test_client_with_queue_priority.conversion_full_queue
+        assert scan_spec.conversion_queue.startswith(f"os2ds_conversions.{basic_scanner.pk}_")
 
     def test_sbsys_unusual_ca_handling(
             self, *,
