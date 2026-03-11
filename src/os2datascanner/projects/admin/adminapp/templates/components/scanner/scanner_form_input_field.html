@@ -1,4 +1,4 @@
-
+{% load l10n %}
 <div id="{{ field.auto_id }}_container"
      class="form__group{% if field.errors %} has-error{% endif %}">
   <label {% if required %}class="required-form"{% endif %}
@@ -7,7 +7,7 @@
          class="form-control"
          name="{{ field.name }}"
          id="id_{{ field.name }}"
-         {% if field.value and not password %}value="{{ field.value }}"{% endif %}
+         {% if field.value and not password %}value="{{ field.value|unlocalize }}"{% endif %}
          {% if not password or field.value %}placeholder="{{ placeholder }}"{% endif %}
          {% if autofocus %}autofocus{% endif %}>
   {% if field.help_text %}<span class="form__help-text">{{ field.help_text }}</span>{% endif %}

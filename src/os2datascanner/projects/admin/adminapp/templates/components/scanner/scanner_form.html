@@ -586,6 +586,12 @@
                   </div>
                 {% endif %}
 
+                {% if form.max_pdf_size %}
+                  <div class="input-group form__group">
+                    {% include "components/scanner/scanner_form_input_field.html" with field=form.max_pdf_size %}
+                  </div>
+                {% endif %}
+
                 {% if form.only_notify_superadmin %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.only_notify_superadmin %}
