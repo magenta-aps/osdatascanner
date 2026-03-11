@@ -5,6 +5,7 @@
 
 import os
 import sys
+import json
 import click
 import pstats
 import random
@@ -116,6 +117,15 @@ class GenericRunner(PikaPipelineThread):
                 ANON_QUEUE, self.handle_message_raw, exclusive=False)
         self._consumer_tags = consumer_tags
 
+        if self._stage == "worker":
+            # Announce our presence so the status_collector immediately
+            # re-broadcasts all active per-scan queues for us to subscribe to.
+            hello = messages.CommandMessage(worker_hello=True)
+            self.channel.basic_publish(
+                    exchange="broadcast",
+                    routing_key="",
+                    body=json.dumps(hello.to_json_object()).encode())
+
         return consumer_tags
 
     def _subscribe_to_queue(self, queue_name: str, priority: int = 1):
@@ -148,7 +158,7 @@ class GenericRunner(PikaPipelineThread):
                 "Drain complete, restoring normal prefetch",
                 prefetch_count=self._module.PREFETCH_COUNT)
 
-    def _processing_complete(self, tick):
+    def _processing_complete(self, tick):  # noqa: CCR001
         # Consume any pending channel operations signalled by the main thread.
         # These are deferred here because self.channel belongs to this thread.
         if self._pending_drain and not self._draining:
@@ -198,7 +208,6 @@ class GenericRunner(PikaPipelineThread):
                         queue=queue, passive=True).method.message_count
             except Exception:
                 return  # Channel closed by broker (queue missing); bail out
-
 
         first_priority_count = queue_msg_counts[self._first_priority]
 
@@ -274,7 +283,7 @@ class GenericRunner(PikaPipelineThread):
         # If preferred queues have work, focus on them; otherwise help with anything
         target_queues = preferred_queues if preferred_queues else queues_with_messages
 
-        for q, count in queue_counts.items():
+        for q, _ in queue_counts.items():
             has_consumer = q in self._consumer_tags
             should_consume = q in target_queues
             if should_consume and not has_consumer:

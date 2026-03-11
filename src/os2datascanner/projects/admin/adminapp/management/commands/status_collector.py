@@ -17,7 +17,7 @@ from prometheus_client import Summary, start_http_server
 
 from os2datascanner.utils import debug
 from os2datascanner.engine2.pipeline import messages
-from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+from os2datascanner.engine2.pipeline.utilities.pika import ANON_QUEUE, PikaPipelineThread
 
 
 from ...models.scannerjobs.scanner import (
@@ -155,6 +155,22 @@ class StatusCollectorRunner(PikaPipelineThread):
         super().__init__(*args, **kwargs)
         start_http_server(9091)
 
+    def make_channel(self):
+        channel = super().make_channel()
+        anon_queue = channel.queue_declare(
+                ANON_QUEUE,
+                passive=False, durable=False, exclusive=False,
+                auto_delete=True, arguments={"x-max-priority": 10})
+        channel.queue_bind(
+                exchange="broadcast", queue=anon_queue.method.queue)
+        return channel
+
+    def _basic_consume(self, *, exclusive=False):
+        consumer_tags = super()._basic_consume(exclusive=exclusive)
+        consumer_tags["anon"] = self.channel.basic_consume(
+                ANON_QUEUE, self.handle_message_raw, exclusive=False)
+        return consumer_tags
+
     def _processing_complete(self, tick):
         if tick and tick % _REBROADCAST_INTERVAL_TICKS == 0:
             self._rebroadcast_active_queues()
@@ -184,6 +200,14 @@ class StatusCollectorRunner(PikaPipelineThread):
                 routing_key=routing_key,
                 body=body
             )
+            if routing_key == "":
+                command = messages.CommandMessage.from_json_object(body)
+                if command.worker_hello:
+                    logger.info("Worker hello received, re-broadcasting active queues")
+                    self._rebroadcast_active_queues()
+                yield from []
+                return
+
             try:
                 with transaction.atomic():
                     if routing_key == "os2ds_status":

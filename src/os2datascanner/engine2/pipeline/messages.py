@@ -785,6 +785,11 @@ class CommandMessage(NamedTuple):
     deleted. Workers should cancel their consumer for this queue before it
     disappears, to avoid broker-initiated channel closures."""
 
+    worker_hello: Optional[bool] = None
+    """If set, a worker has just started up and is requesting that the
+    status_collector re-broadcast all active per-scan queue names so the
+    worker can subscribe to any ongoing scans it missed."""
+
     def to_json_object(self):
         return {
             "abort": self.abort.to_json_object() if self.abort else None,
@@ -793,6 +798,7 @@ class CommandMessage(NamedTuple):
             "new_queue": self.new_queue,
             "new_queue_priority": self.new_queue_priority,
             "delete_queue": self.delete_queue,
+            "worker_hello": self.worker_hello,
         }
 
     @classmethod
@@ -806,4 +812,5 @@ class CommandMessage(NamedTuple):
                 profiling=obj.get("profiling"),
                 new_queue=obj.get("new_queue"),
                 new_queue_priority=obj.get("new_queue_priority"),
-                delete_queue=obj.get("delete_queue"))
+                delete_queue=obj.get("delete_queue"),
+                worker_hello=obj.get("worker_hello"))
