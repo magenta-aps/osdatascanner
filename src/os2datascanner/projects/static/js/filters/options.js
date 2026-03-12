@@ -71,33 +71,109 @@ function hideOptions(toggleElement) { // jshint ignore:line
   toggleElem.style.display = "none";
 }
 
-function disableDistributeButton() {
-  const distributeSelect = document.getElementById('distribute-to');
-  let chosenOptions = [];
-  for (const option of distributeSelect.options) {
-    if (option.selected) {
-      chosenOptions.push(option);
-    }
+function distributeAnyChecked() {
+  return !!document.querySelector("input[name='distribute-to']:checked");
+}
+
+function updateDistributeButton() {
+  var btn = document.getElementById("distribute-matches");
+  if (!btn) {
+    return;
   }
-  const distributeButton = document.getElementById('distribute-matches');
-  if (chosenOptions.length > 0) {
-    distributeButton.disabled = false;
-  } else {
-    distributeButton.disabled = true;
+  btn.disabled = !distributeAnyChecked();
+}
+
+function updateActionButtons() {
+  // Handle dialog buttons state when options are selected:
+  var hasSelection = distributeAnyChecked();
+  var releaseBtn = document.getElementById("distribute-matches");
+  var clearBtn = document.getElementById("clear-distribute-selection");
+  if (releaseBtn) {
+    releaseBtn.disabled = !hasSelection;
   }
+  if (clearBtn) {
+    clearBtn.disabled = !hasSelection;
+  }
+}
+
+function updateDistributeButton() {
+  updateActionButtons();
 }
 
 function setDistributeSelectEvent() {
-  const distributeSelect = document.getElementById('distribute-to');
-  if (distributeSelect) {
-    distributeSelect.addEventListener('click', disableDistributeButton);
-    disableDistributeButton();
+  var boxes = document.querySelectorAll("input[name='distribute-to']");
+  if (!boxes.length) {
+    return;
   }
+  boxes.forEach(function (cb) {
+    cb.addEventListener("change", updateDistributeButton);
+  });
+  updateActionButtons();
 }
 
 htmx.onLoad(function () {
-  // When content is loaded with HTMX, reinstantiate dropdown and checkbox code
+  // When content is loaded with HTMX, reinstantiate dropdown and checkbox events:
   setDropdownEvent();
   setCheckEvents();
   setDistributeSelectEvent();
 });
+
+function wireDistributeDialog() {
+  var dialog = document.getElementById("distribute-results-modal");
+  var openBtn = document.getElementById("open-distribute-modal");
+
+  if (openBtn && dialog && dialog.showModal) {
+    openBtn.addEventListener("click", function () {
+      dialog.showModal();
+    });
+  }
+
+  // Close modal with any [data-close-dialog] button:
+  document.querySelectorAll("[data-close-dialog]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      if (dialog && dialog.open) {
+        dialog.close();
+      }
+    });
+  });
+
+  // Close modal when clicking outside the dialog box:
+  if (dialog) {
+    dialog.addEventListener("click", function (e) {
+      if (e.target === dialog) {
+        dialog.close();
+      }
+    });
+  }
+
+  // Make sure the "Distribute" button enable/disable still works with checkboxes:
+  if (typeof setDistributeSelectEvent === "function") {
+    setDistributeSelectEvent();
+  }
+
+  // Initialize dialog buttons when the dialog wires up:
+  if (typeof updateActionButtons === "function") {
+    updateActionButtons();
+  }
+
+  // Clear all selected checkboxes in the distribute dialog:
+  var clearBtn = dialog && dialog.querySelector("#clear-distribute-selection");
+  if (clearBtn) {
+    clearBtn.addEventListener("click", function () {
+      dialog.querySelectorAll("input[name='distribute-to']:checked")
+        .forEach(function (cb) { cb.checked = false; });
+      // Re-evaluate dialog buttons:
+      updateActionButtons();
+    });
+  }
+}
+
+if (window.htmx && typeof htmx.onLoad === "function") {
+  htmx.onLoad(() => {
+    wireDistributeDialog();
+  });
+} else {
+  document.addEventListener("DOMContentLoaded", () => {
+    wireDistributeDialog();
+  });
+}

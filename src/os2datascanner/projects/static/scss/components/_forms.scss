@@ -1,9 +1,3 @@
-@mixin hide-ou-page-container-layout {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .form {
   &__content {
     display: flex;
@@ -15,7 +9,7 @@
     }
 
     &__body {
-      @include hide-ou-page-container-layout;
+      @include layout-vertical(1rem);
 
       table#ou-visibility-form-pagitation {
         width: 100%;
@@ -798,8 +792,9 @@
   padding: 1px;
 }
 
-.hide-orgunits-list {
-  @include hide-ou-page-container-layout;
+.hide-orgunits-list,
+.distribute-withheld-list {
+  @include layout-vertical(1rem);
 
   &__wrapper {
     box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
@@ -807,7 +802,7 @@
   }
 
   &__container {
-    ul.orgunit-list {
+    ul {
       padding: 1rem 1.25rem;
       margin: 0;
 
@@ -838,6 +833,7 @@
             display: flex;
             align-items: center;
             gap: 0.125rem;
+            font-size: 0.75em;
 
             span {
               margin-left: 0.25rem;
@@ -847,6 +843,11 @@
       }
     }
   }
+}
+
+.distribute-withheld-list__container ul {
+  column-count: auto;
+  column-width: 32rem; // Each column should aim to be ~512px max.
 }
 
 input[type="file"] {
