@@ -38,6 +38,7 @@ class OrganizationListView(RestrictedListView):
     # filter list based on user
     def get_queryset(self):
         user = self.request.user
+        queryset = Client.objects.none()
         if user.has_perm('core.view_client'):
             queryset = Client.objects.all()
         elif hasattr(user, 'administrator_for'):
