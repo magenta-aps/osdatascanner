@@ -150,3 +150,10 @@
     box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.4);
   }
 }
+
+// Styles for pagination outside of tables
+.pagination_control {
+  display: flex;
+  justify-content: center;
+  border-top: none;
+}

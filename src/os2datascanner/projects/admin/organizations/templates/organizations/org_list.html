@@ -1,18 +1,16 @@
-{% extends 'organizations/base.html' %}
-{% load static %}
-{% load i18n %}
-{% load tz %}
+{% extends "organizations/base.html" %}
+{% load static i18n tz %}
 
 {% block title %}
   {% trans "organizations"|capfirst %}
-{% endblock %}
+{% endblock title %}
 
 {% block scripts %}
   {{ block.super }}
   <script type="text/javascript" src="/jsi18n/"></script>
   <script type="text/javascript" src="/admin/jsi18n/"></script>
   <script type="text/javascript" src="{% static 'js/ldap/ldapSync.js' %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% block content %}
 
@@ -24,5 +22,6 @@
 
   <div class="organizations-overview">{% include "organizations/org_table.html" %}</div>
 
+  {% include "organizations/org_pagination.html" %}
 
-{% endblock %}
+{% endblock content %}

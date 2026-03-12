@@ -1,4 +1,4 @@
-{% extends 'components/common/base.html' %}
+{% extends "components/common/base.html" %}
 {% load static %}
 {% load i18n %}
 
@@ -16,13 +16,13 @@
   <script src="{% static "js/recurrence_widget/recurrence-widget.js" %}"></script>
   <script type="text/javascript" src="{% static "recurrence/js/recurrence-widget.init.js" %}"></script>
   <script src="{% static "js/organization/orgUnitOverview.js" %}"></script>
-{% endblock %}
+{% endblock scripts %}
 
 {% block body %}
   <!-- override with empty block to remove header -->
   {% block header %}
-    {% include 'components/common/header.html' %}
-  {% endblock %}
+    {% include "components/common/header.html" %}
+  {% endblock header %}
   <meta name="htmx-config"
         content='{"historyEnabled": "false", "historyCacheSize": "0"}'>
   <main class="wrapper">
@@ -32,14 +32,15 @@
         <!-- TODO: does it make sense to separate the tag from the rest? -->
         {% include "components/navigation/navigation.html" with active_tab="organizations" %}
       </section>
-    {% endblock %}
+    {% endblock sidenav %}
 
     <div class="content">
-      {% block content %}{% endblock %}
+      {% block content %}
+      {% endblock content %}
     </div>
 
     <footer class="subtle_footer">
       {% trans "OSdatascanner version" %} {{ version }}
     </footer>
   </main>
-{% endblock %}
+{% endblock body %}

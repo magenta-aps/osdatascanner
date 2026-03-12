@@ -1,0 +1,40 @@
+{% load l10n i18n %}
+
+<div class="pagination pagination_control"
+     hx-target=".content"
+     hx-select=".content"
+     hx-swap="outerHTML"
+     hx-trigger="click"
+     hx-indicator="#organization-page-indicator">
+  {% if page_obj.has_previous %}
+    <a class="link link--pre flex"
+       href="#"
+       name="page-button"
+       hx-get="{{ request.path }}"
+       hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'>
+      <i id="chevron_left" class="material-icons">chevron_left</i>
+      {% trans "Previous" %}
+    </a>
+  {% else %}
+    <a class="link--pre disabled flex">
+      <i id="chevron_left" class="material-icons">chevron_left</i>
+      {% trans "Previous" %}
+    </a>
+  {% endif %}
+
+  {% if page_obj.has_next %}
+    <a class="link link--next flex"
+       href="#"
+       name="page-button"
+       hx-get="{{ request.path }}"
+       hx-vals='{"page": "{{ page_obj.next_page_number|unlocalize }}"}'>
+      {% trans "Next" %}
+      <i id="chevron_right" class="material-icons">chevron_right</i>
+    </a>
+  {% else %}
+    <a class="link--next disabled flex">
+      {% trans "Next" %}
+      <i id="chevron_right" class="material-icons">chevron_right</i>
+    </a>
+  {% endif %}
+</div>
