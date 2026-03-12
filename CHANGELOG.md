@@ -1,5 +1,12 @@
 # Changelog
 
+## Version 3.3?.?, 2?th March 2026
+
+### General improvements
+
+- Users with access to all clients in the admin module can now view more than ten clients
+  through pagination.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"
