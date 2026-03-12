@@ -41,6 +41,7 @@ class SBSYSDBScannerForm(ScanScopeMixin, ScannerForm):
                 "do_last_modified_check",
                 "do_ocr",
                 "rule",
+                "max_pdf_size",
                 Groups.SCOPE_SETTINGS,
             ]
         ),
