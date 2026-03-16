@@ -29,17 +29,23 @@
     </main>
 
     {% block scripts %}
-      <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
-      <script src="{% static '3rdparty/clipboard.min.js' %} "></script>
-      <script src="{% static '3rdparty/htmx.min.js' %}"></script>
-      <script src="{% static 'js/index.js' %} "></script>
-      <script src="{% static 'js/tables/tableBehavior.js' %} "></script>
-      <script src="{% static 'js/reports/show-more.js' %} "></script>
-      <script src="{% static 'js/filters/options.js' %} "></script>
-      <script src="{% static 'js/reports/distributeElement.js' %}"></script>
-      <script src="{% static 'js/modals/snackBars.js' %}"></script>
-      <script src="{% static 'js/modals/popover.js' %}"></script>
-      <script src="{% url 'jsi18n' %}"></script>
+      {# Translations #}
+      {# Placed on top because it should always run first out of the defered scripts after the HTML has parsed. #}
+      <script src="{% url "jsi18n" %}" defer></script>
+ 
+      {# 3rd party libraries #}
+      <script src="{% static "3rdparty/jquery-3.6.0.min.js" %}" defer></script>
+      <script src="{% static "3rdparty/clipboard.min.js" %}" defer></script>
+      <script src="{% static "3rdparty/htmx.min.js" %}" defer></script>
+ 
+      {# Our own app scripts #}
+      <script src="{% static "js/index.js" %}"></script>
+      <script src="{% static "js/tables/tableBehavior.js" %}" defer></script>
+      <script src="{% static "js/reports/show-more.js" %}" defer></script>
+      <script src="{% static "js/filters/options.js" %}" defer></script>
+      <script src="{% static "js/reports/distributeElement.js" %}" defer></script>
+      <script src="{% static "js/modals/snackBars.js" %}" defer></script>
+      <script src="{% static "js/modals/popover.js" %}" defer></script>
     {% endblock scripts %}
 
     {% block footer %}

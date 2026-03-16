@@ -76,6 +76,19 @@ body {
   @media (min-width: $break-lg) {
     padding: 0rem;
   }
+
+  &__wrapper {
+    @include layout-horizontal;
+    justify-content: space-between;
+  }
+
+  &__left {
+    // Empty
+  }
+
+  &__right {
+    margin-top: 1em;
+  }
 }
 
 .content-body,

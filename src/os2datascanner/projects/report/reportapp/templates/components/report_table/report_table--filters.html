@@ -219,23 +219,21 @@
 
       </div>
 
-      <div class="filtering-UI__footer">
-        <div class="checkbox_wrapper checkbox-group">
-          {% if retention_policy %}
-            {% blocktranslate asvar retention_label %} Include results, that are less than {{ retention_days }} days old {% endblocktranslate %}
+      {% if retention_policy or view.type == "personal" %}
+        <div class="filtering-UI__footer">
+          <div class="checkbox_wrapper checkbox-group">
+            {% if retention_policy %}
+              {% blocktranslate asvar retention_label %} Include results, that are less than {{ retention_days }} days old {% endblocktranslate %}
+              {% include "components/filter/filter_checkbox.html" with name="retention" value=retention label=retention_label %}
+            {% endif %}
 
-            {% include "components/filter/filter_checkbox.html" with name="retention" value=retention label=retention_label %}
-
-          {% endif %}
-          {% if view.type == "personal" %}
-            {% blocktranslate asvar include_shared_label %}Include results from shared mailboxes{% endblocktranslate %}
-
-            {% include "components/filter/filter_checkbox.html" with name="include-shared" value=include_shared label=include_shared_label %}
-
-          {% endif %}
+            {% if view.type == "personal" %}
+              {% blocktranslate asvar include_shared_label %}Include results from shared mailboxes{% endblocktranslate %}
+              {% include "components/filter/filter_checkbox.html" with name="include-shared" value=include_shared label=include_shared_label %}
+            {% endif %}
+          </div>
         </div>
-
-      </div>
+      {% endif %}
     </div>
   </form>
 </div>

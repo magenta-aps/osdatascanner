@@ -337,10 +337,6 @@
     transition: var(--transition-default);
     width: 100%;
   }
-
-  & + select#distribute-to {
-    margin-top: -1px;
-  }
 }
 
 span.text-highlight {

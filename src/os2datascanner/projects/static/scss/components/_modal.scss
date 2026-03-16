@@ -250,7 +250,7 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translateY(-50%) translateX(-50%);
+  transform: translate(-50%, -50%);
   min-height: 15rem;
   max-height: calc(100vh - 2rem);
   max-width: 24rem;
@@ -259,14 +259,16 @@
   border-radius: var(--border-radius-widget);
   border: none;
 
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.4);
+  }
+
   > form {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    // gap: 1.5rem; // ***** This should be the standard when the form style sheet has been refactored *****
     height: 100%;
-    padding: 1.75rem 1.75rem;
     padding: 2rem 2.25rem;
 
     > * {
@@ -297,4 +299,74 @@
       }
     }
   }
+
+  &__container {
+    @include layout-vertical(2rem);
+    padding: 2rem;
+  }
+
+  &__header {
+    @include layout-vertical(1.5rem);
+  }
+
+  &__body {
+    @include layout-vertical(1rem);
+
+    .body__header {
+      @include layout-horizontal;
+      justify-content: space-between;
+
+      .button--transparent-button {
+        padding: 0 !important;
+      }
+    }
+
+    // The list area (fixed min-height + scroll when long):
+    .distribute-withheld-list__container {
+      min-block-size: 22rem; //352px — Prevents shrinking on small data sets.
+      max-block-size: min(
+        55vh,
+        30rem
+      ); // Max-height is whichever is smaller of 55vh and 30rem(480px).
+      overflow: auto; // Allow scroll inside this element.
+    }
+  }
+
+  &__footer {
+    @include layout-horizontal(1rem);
+    justify-content: flex-end;
+    width: 100%;
+  }
+
+  &--distribute {
+    max-width: 75rem;
+
+    .title-close__wrapper {
+      @include layout-horizontal;
+      justify-content: space-between;
+      align-items: stretch;
+    }
+
+    .header__title,
+    .header__subtitle {
+      margin: 0;
+    }
+  }
+}
+
+// Prevent scroll on the page underneath the dialog:
+
+// Lock background scroll while any modal <dialog> is open:
+html:has(dialog[open]) {
+  overflow: hidden;
+}
+
+// Prevent layout shift when the scrollbar appears/disappears:
+html {
+  scrollbar-gutter: stable;
+}
+
+// Handle iOS rubber-banding while a dialog is open:
+html:has(dialog[open]) body {
+  overscroll-behavior: contain;
 }

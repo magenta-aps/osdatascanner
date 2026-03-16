@@ -1,6 +1,6 @@
 function searchFunctionality(){
     const searchBar = document.getElementById('search-bar');
-    const scannerJobList = document.getElementById('distribute-to');
+    const scannerJobList = document.getElementById("scannerjob-list");
 
     if (searchBar) {
         searchBar.addEventListener('input', function () {

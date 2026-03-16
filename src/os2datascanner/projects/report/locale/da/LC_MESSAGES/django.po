@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-09 10:49+0100\n"
+"POT-Creation-Date: 2026-03-12 14:10+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -483,6 +483,60 @@ msgstr "Hvorfor kan jeg ikke åbne matches fra filscan?"
 #: reportapp/templates/manual.html
 msgid "Why are my emails not categorized in Outlook?"
 msgstr "Hvorfor er mine emails ikke kategoriseret i Outlook?"
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "release results to users"
+msgstr "frigiv resultater til brugere"
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "Close the window without releasing results."
+msgstr "Luk vinduet uden at frigive resultater."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid ""
+"Choose the scanner jobs from the list below to include in the release. The "
+"targeted results will be made available immediately for the users when you "
+"click on &quot;release&quot;. This action cannot be reversed."
+msgstr ""
+"Vælg de scannerjobs fra listen herunder, der skal medtages i frigivelsen. De "
+"tilhørende resultater vil straks blive gjort tilgængelige for brugerne, når "
+"du klikker på &quot;Frigiv&quot;. Denne handling kan ikke fortrydes."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "search"
+msgstr "søg"
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "Clear all selected scannerjobs."
+msgstr "Ryd alle valgte scannerjobs."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "clear selected"
+msgstr "ryd valgte"
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "Select this scannerjob for release."
+msgstr "Markér dette scannerjob til frigivelse."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "cancel"
+msgstr "annullér"
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "Release results from the selected scannerjobs."
+msgstr "Frigiv resultaterne fra de valgte scannerjobs."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid ""
+"Are you sure you want to release the selected results to the users? This "
+"action cannot be reversed."
+msgstr ""
+"Er du sikker på, at du vil frigive de valgte resultater til brugerne? Denne "
+"handling kan ikke fortrydes."
+
+#: reportapp/templates/components/modals/modal__distribute-results.html
+msgid "release"
+msgstr "frigiv"
 
 #: reportapp/templates/components/navigation/index_navigation.html
 msgid "Personal"
@@ -1453,7 +1507,7 @@ msgid ""
 "overview."
 msgstr ""
 "Tilbageholdte resultater er resultater, der endnu ikke er synlige for "
-"brugeren, men som kan uddeles af en superbruger. Disse resultater tæller "
+"brugeren, men som kan frigives af en superbruger. Disse resultater tæller "
 "ikke med i udviklingsoverblikket."
 
 #: reportapp/templates/leader_statistics_template.html
@@ -1974,32 +2028,8 @@ msgstr "resultater"
 
 #: reportapp/templates/report_content--undistributed.html
 #: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "Distribute matches to users from"
-msgstr "Uddel matches til brugere fra"
-
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "Search Scannerjob"
-msgstr "Søg scannerjob"
-
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "Distribute"
-msgstr "Uddel"
-
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "matches"
-msgstr "matches"
-
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid ""
-"Are you sure you want to distribute matches to the users? This action cannot "
-"be reverted."
-msgstr ""
-"Er du sikker på, at du vil dele matches ud til brugerne? Denne handling kan "
-"ikke fortrydes."
+msgid "distribute results"
+msgstr "frigiv resultater"
 
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Scannerjobs"

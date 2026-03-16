@@ -7,6 +7,9 @@
 - Users with access to all clients in the admin module can now view more than ten clients
   through pagination.
 
+- Users can now distribute withheld results through a dedicated modal instead of the previously
+  embedded distribution UI.
+
 ### Bugfixes
 
 - The UserErrorLog view now again remembers filter parameters when changing page.
