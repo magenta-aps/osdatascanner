@@ -1,9 +1,20 @@
 {% load i18n %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="">
   <head>
     <title>{% translate "Developer credits" %}</title>
+
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="{% static 'favicons/favicon-gold-30x32.png' %}">
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="{% static 'favicons/favicon-gold-15x16.png' %}">
+
     <style>
 * {
     text-align: center;
