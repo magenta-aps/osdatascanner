@@ -42,9 +42,9 @@ class DPOContactChoices(models.TextChoices):
 
 
 class OutlookCategorizeChoices(models.TextChoices):
-    ORG_LEVEL = "ORG", _("Enable automatic categorization for entire organization")
-    INDIVIDUAL_LEVEL = "IND", _("Allow users to categorize emails")
-    NONE = "NON", _("No categorization")
+    ORG_LEVEL = "ORG", _("Automatic categorization for everyone")
+    INDIVIDUAL_LEVEL = "IND", _("Individual users manage categorization")
+    NONE = "NON", _("Categorization disabled")
 
 
 class LeaderTabConfigChoices(models.TextChoices):
@@ -122,9 +122,10 @@ class Organization(models.Model):
         choices=OutlookCategorizeChoices.choices,
         default=OutlookCategorizeChoices.NONE,
         verbose_name=_("Outlook category settings"),
-        help_text=_("configure whether OSdatascanner should create Outlook categories and"
-                    " categorize found matches, and decide whether you want to enforce this"
-                    " on an organizational level (all accounts) or leave it up to the individual.")
+        help_text=_(
+            "Choose whether matched emails are automatically categorized for the entire "
+            "organization, categorized individually by users, or not categorized at all."
+        )
     )
 
     # Onedrive/Sharepoint

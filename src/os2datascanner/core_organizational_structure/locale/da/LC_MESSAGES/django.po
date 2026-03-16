@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-10-22 14:11+0200\n"
+"POT-Creation-Date: 2026-03-09 14:44+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -159,16 +159,16 @@ msgid "Unit DPO"
 msgstr "Enheds DPO"
 
 #: models/organization.py
-msgid "Enable automatic categorization for entire organization"
-msgstr "Automatisk kategorisering for alle i organisationen"
+msgid "Automatic categorization for everyone"
+msgstr "Automatisk kategorisering for alle"
 
 #: models/organization.py
-msgid "Allow users to categorize emails"
-msgstr "Tillad brugere at kategorisere emails"
+msgid "Individual users manage categorization"
+msgstr "Brugerstyret kategorisering"
 
 #: models/organization.py
-msgid "No categorization"
-msgstr "Ingen kategorisering"
+msgid "Categorization disabled"
+msgstr "Kategorisering deaktiveret"
 
 #: models/organization.py
 msgid "Only allow managers to see units they manage in the leader overview"
@@ -222,13 +222,12 @@ msgstr "Outlook kategori indstillinger"
 
 #: models/organization.py
 msgid ""
-"configure whether OSdatascanner should create Outlook categories and "
-"categorize found matches, and decide whether you want to enforce this on an "
-"organizational level (all accounts) or leave it up to the individual."
+"Choose whether matched emails are automatically categorized for the entire "
+"organization, categorized individually by users, or not categorized at all."
 msgstr ""
-"konfigurér hvorvidt OSdatascanner skal oprette Outlook kategorier og "
-"kategorisere fundne resultater, samt hvorvidt du ønsker at håndhæve dette "
-"for hele organisationen, eller lade dette være op til den enkelte."
+"Vælg om emails med fund automatisk skal kategoriseres for hele "
+"organisationen, kategoriseres individuelt af brugerne eller slet ikke "
+"kategoriseres."
 
 #: models/organization.py
 msgid "allow deletion of online drive files directly"

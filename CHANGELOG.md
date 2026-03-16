@@ -11,6 +11,8 @@
 
 - The UserErrorLog view now again remembers filter parameters when changing page.
 
+- Form field for Outlook category settings was broken and now it works again.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"
