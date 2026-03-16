@@ -7,6 +7,10 @@
 - Users with access to all clients in the admin module can now view more than ten clients
   through pagination.
 
+### Bugfixes
+
+- The UserErrorLog view now again remembers filter parameters when changing page.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"

@@ -9,6 +9,7 @@
     * target_selector=""
     * select_selector=""
     * swap_type=""
+    * include_selector=""
 {% endcomment %}
 
 {% load i18n l10n pagination_tags %}
@@ -29,6 +30,7 @@
                hx-target="{{ target_selector }}"
                hx-select="{{ select_selector }}"
                hx-swap="{{ swap_type }}"
+               hx-include="{{ include_selector }}"
                hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'>
               <i id="chevron_left" class="material-icons">chevron_left</i>
 
@@ -56,6 +58,7 @@
                    hx-target="{{ target_selector }}"
                    hx-select="{{ select_selector }}"
                    hx-swap="{{ swap_type }}"
+                   hx-include="{{ include_selector }}"
                    hx-vals='{"page": "1"}'>1</a>
                 {% if n != 1 %}<span class="page--dot">...</span>{% endif %}
 
@@ -75,6 +78,7 @@
                    hx-target="{{ target_selector }}"
                    hx-select="{{ select_selector }}"
                    hx-swap="{{ swap_type }}"
+                   hx-include="{{ include_selector }}"
                    hx-vals='{"page": "{{ n|unlocalize }}"}'>{{ n }}</a>
 
               {% elif page_obj.number|add:'2' == n %}
@@ -89,6 +93,7 @@
                    hx-target="{{ target_selector }}"
                    hx-select="{{ select_selector }}"
                    hx-swap="{{ swap_type }}"
+                   hx-include="{{ include_selector }}"
                    hx-vals='{"page": "{{ paginator.num_pages|unlocalize }}"}'>{{ paginator.num_pages }}</a>
               {% endif %}
             {% endfor %}
@@ -102,6 +107,7 @@
                hx-target="{{ target_selector }}"
                hx-select="{{ select_selector }}"
                hx-swap="{{ swap_type }}"
+               hx-include="{{ include_selector }}"
                hx-vals='{"page": "{{ page_obj.next_page_number|unlocalize }}"}'>
               {% trans "Next" %}
 
