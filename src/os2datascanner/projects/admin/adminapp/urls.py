@@ -11,10 +11,13 @@ from django.urls import re_path, path
 from django.http import HttpResponse
 from django.views.i18n import JavaScriptCatalog
 from django.views.generic.base import TemplateView
+
 from os2datascanner import __version__, __commit__, __tag__, __branch__
 from os2datascanner.projects.admin.adminapp.views.analysis_views import (AnalysisPageView,
                                                                          AnalysisJobRunView)
 from os2datascanner.projects.shared.views import CustomPasswordResetView
+
+from os2datascanner.projects.shared.egg import EggView
 
 from os2datascanner.projects.admin import settings
 
@@ -181,6 +184,8 @@ urlpatterns = [
         Tag:       {__tag__}<br/>
         Branch:    {__branch__}
         """)),
+
+    path("<egg:e>", EggView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.ENABLE_MINISCAN:
