@@ -5,12 +5,17 @@
 
 # https://www.folklore.org/Signing_Party.html
 
+from random import choice
 import hashlib
 
 from django.conf import settings
 from django.urls import register_converter
 from django.views.generic.base import TemplateView
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+def choose(*args):
+    return choice(args)
 
 
 class EggConverter:
@@ -53,6 +58,26 @@ class EggView(LoginRequiredMixin, TemplateView):
             "everybody": [
                 {
                     "name": "Alexander Faithfull-Murawski",
+                    "quote": choose(
+                            "Motoren er død! Motoren længe leve!",
+                            "OS(2)datasauron is watching you",
+                            "Branch names are for silly jokes",
+                            "Seven and a half years well spent",
+                            "Endeligt afslører jeg mit CPR-nummer: "
+                            "█2████-████",
+                            "Visit Scotland! The girders are delicious",
+                            "Język polski jest według mnie bardzo trudny",
+                            "The whisky shelf was full eight bottles ago",
+                            "Thee's got'n where thee cassn't backn't, hassn't?",
+                            "Titanhusets Sodavandsforsyning",
+                            "Please tell me how the story ends 🥹",
+                            "Listen to Popper (Shinichi Osawa Distortion"
+                            " Disco Edit). Thank me later",
+                            "engine2 was quite a good idea, turns out",
+                            "Still very proud of the SBSYS query "
+                            "cross-compiler",
+                            "Årh, pyt, jeg har ødelagt min database igen!",
+                    ),
                 },
                 {
                     "name": "Alexander Normann Jepsen",

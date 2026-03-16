@@ -81,6 +81,7 @@ div.carousel div.group div.card {
           {% for person in everybody %}
             <div class="card">
               <h3>{{ person.name }}</h3>
+              {% if person.quote %}<q>{{ person.quote }}</q>{% endif %}
             </div>
           {% endfor %}
         </div>
