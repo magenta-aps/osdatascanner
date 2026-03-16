@@ -5,7 +5,7 @@
 
 # https://www.folklore.org/Signing_Party.html
 
-from random import choice
+from random import choice, sample
 import hashlib
 
 from django.conf import settings
@@ -16,6 +16,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 def choose(*args):
     return choice(args)
+
+
+def shuffled(seq):
+    return sample(seq, k=len(seq))
 
 
 class EggConverter:
@@ -55,7 +59,7 @@ class EggView(LoginRequiredMixin, TemplateView):
         # credits list is the only thing that should be available
         return {
             "repetitions": [0, 1],
-            "everybody": [
+            "everybody": shuffled([
                 {
                     "name": "Alexander Faithfull-Murawski",
                     "quote": choose(
@@ -214,5 +218,5 @@ class EggView(LoginRequiredMixin, TemplateView):
                 {
                     "name": "Youssef El-Mannouti",
                 }
-            ]
+            ])
         }
