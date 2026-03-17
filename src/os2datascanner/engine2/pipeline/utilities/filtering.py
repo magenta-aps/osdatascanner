@@ -27,8 +27,10 @@ def is_handle_relevant(handle: Handle, filter_rule: Rule) -> bool:
 
     # Apply the rule to the presentation of the handle.
     try:
-        representations = {OutputType.Text.value: str(handle)}
-        conclusion, _ = filter_rule.try_match(representations)
+        representations = {output_type.value: None for output_type in OutputType}
+        representations[OutputType.Presentation.value] = str(handle)
+
+        conclusion, _ = filter_rule.try_match(representations, obj_limit=1)
         return not conclusion
     except KeyError as error:
         exception_message = f"Filtering error. {type(error).__name__}: "

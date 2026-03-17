@@ -8,6 +8,7 @@ from unittest.mock import Mock
 
 from os2datascanner.engine2.pipeline.utilities.filtering import is_handle_relevant
 from os2datascanner.engine2.rules.regex import RegexRule
+from os2datascanner.engine2.rules.presentation import PresentationRule
 
 
 class FilteringRuleTests(unittest.TestCase):
@@ -19,7 +20,7 @@ class FilteringRuleTests(unittest.TestCase):
     """
 
     def setUp(self):
-        self.rule = RegexRule('PRIVAT')
+        self.rule = PresentationRule(RegexRule('PRIVAT'))
 
     def test_handle_with_private_matches(self):
         # Arrange
