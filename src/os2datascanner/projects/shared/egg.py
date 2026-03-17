@@ -5,6 +5,9 @@
 
 # https://www.folklore.org/Signing_Party.html
 
+import json
+from urllib.request import urlopen, Request
+from urllib.error import HTTPError
 from random import choice, sample
 import hashlib
 
@@ -20,6 +23,19 @@ def choose(*args):
 
 def shuffled(seq):
     return sample(seq, k=len(seq))
+
+
+def outsource_quote(url: str) -> dict:
+    try:
+        # Include dummy user-agent to trick silly little blacklists
+        req = Request(url, headers={'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) '
+                                                  'AppleWebKit/537.36 (KHTML, like Gecko) '
+                                                  'Chrome/35.0.1916.47 Safari/537.36'})
+        response = urlopen(req)
+        data = json.loads(response.read())
+        return data
+    except HTTPError:
+        return {}
 
 
 class EggConverter:
@@ -147,7 +163,10 @@ class EggView(LoginRequiredMixin, TemplateView):
                     "name": "Jakob Rydhof",
                 },
                 {
-                    "name": "Jesper Dam Knudgaard",
+                    "name": "Jesper Dam Gynther Knudgaard",
+                    "quote": outsource_quote("https://candscient.dk/ext/osds_credits.json"
+                                             ).get("wisdom", "I am not sure what to say.")
+
                 },
                 {
                     "name": "Jonas Kofoed Hansen",
