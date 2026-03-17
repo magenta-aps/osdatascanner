@@ -3,7 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import Any, Dict
+from typing import Any, Dict, override
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.urls import reverse_lazy
@@ -49,6 +49,14 @@ class OrganizationListView(RestrictedListView):
         context = super().get_context_data()
         context['FEATURES'] = Feature.__members__
         return context
+
+    @override
+    def get_template_names(self):
+        """Method inherited from way up the chain, from Django TemplateResponseMixin -
+        decides which template to use, the HTMX request here being a press on the sync button.
+        """
+        is_htmx = self.request.headers.get('HX-Request') == "true"
+        return 'organizations/org_table.html' if is_htmx else "organizations/org_list.html"
 
 
 class AddOrganizationView(PermissionRequiredMixin, RestrictedCreateView):
