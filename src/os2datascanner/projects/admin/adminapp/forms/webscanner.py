@@ -50,7 +50,7 @@ class WebScannerForm(ScannerForm):
         ),
         (
             _("Scan settings"),
-            ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule",
+            ["do_last_modified_check", "do_ocr", "rule", "exclusion_rule", "max_pdf_size",
                 (
                     _("Web scan settings"),
                     ["do_link_check", "exclude_urls"]

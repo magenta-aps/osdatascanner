@@ -213,6 +213,7 @@ class ScannerBase(object):
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
+        'max_pdf_size',
         'only_notify_superadmin',
         'rule',
         'exclusion_rule',

@@ -2,6 +2,10 @@
 
 ## Version 3.3?.?, 2?th March 2026
 
+### New in this release
+
+- Under scanner settings, it is now possible to limit the size of scanned PDF files.
+
 ### General improvements
 
 - Users with access to all clients in the admin module can now view more than ten clients

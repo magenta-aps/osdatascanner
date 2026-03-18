@@ -153,6 +153,7 @@ def emit_representation(
             for k, v in representation.parent.items()
             if isinstance(k, OutputType)
         }
+        dv[required.value] = representation
     else:
         dv = {required.value: representation}
 

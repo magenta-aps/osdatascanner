@@ -10,6 +10,7 @@ from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.derived import libreoffice
 from os2datascanner.engine2.model.file import FilesystemHandle
 from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules.meta import SizeRule
 from os2datascanner.engine2.conversions import convert
 
 
@@ -174,3 +175,21 @@ class TestEngine2CompoundSource:
             assert [r["match"] for r in results] == [
                 "0103XXXXXX", "0203XXXXXX", "0303XXXXXX", "0403XXXXXX"
             ]
+
+    @pytest.mark.parametrize("limit,expected", [
+        (20_000, True),
+        (30_000, False),
+        ])
+    def test_size_rule(self, limit, expected):
+        handle = FilesystemHandle.make_handle(
+            os.path.join(
+                test_data_path,
+                "pdf/embedded-cpr.pdf",
+            )
+        )
+        rule = SizeRule(limit)
+        with SourceManager() as sm:
+            resource = handle.follow(sm)
+            representation = convert(resource, rule.operates_on)
+            results = list(rule.match(representation))
+            assert bool(results) == expected

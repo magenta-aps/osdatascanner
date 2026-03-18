@@ -19,7 +19,7 @@ from os2datascanner.engine2.rules.logical import (
     AllRule,
     oxford_comma,
 )
-from os2datascanner.engine2.rules.meta import HasConversionRule
+from os2datascanner.engine2.rules.meta import HasConversionRule, SizeRule
 from os2datascanner.engine2.rules.name import NameRule
 from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
@@ -188,6 +188,26 @@ more!""",
         ),
         dict(field="This is a test subject"),
         [],
+    ),
+    (
+        SizeRule(100),
+        500,
+        [500],
+    ),
+    (
+        SizeRule(100),
+        100,
+        None,
+    ),
+    (
+        SizeRule(100),
+        50,
+        None,
+    ),
+    (
+        SizeRule(100),
+        None,
+        None,
     ),
     (
         PassportRule(),

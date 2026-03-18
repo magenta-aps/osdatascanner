@@ -117,6 +117,9 @@ class OutputType(Enum):
     MRZ = (  # str
             "mrz", str, str)
 
+    Size = (  # int
+            "size", int, int)
+
     DatabaseRow = (
             "db-row",  # dict[str, db_type]
             encode_db_row, decode_db_row)

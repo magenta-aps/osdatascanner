@@ -27,8 +27,8 @@ from recurrence.fields import RecurrenceField
 from os2datascanner.utils.ref import Counter
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Source
-from os2datascanner.engine2.rules.meta import HasConversionRule
-from os2datascanner.engine2.rules.logical import OrRule, AndRule, AllRule, make_if
+from os2datascanner.engine2.rules.meta import HasConversionRule, SizeRule
+from os2datascanner.engine2.rules.logical import OrRule, AndRule, AllRule, make_if, NotRule
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 import os2datascanner.engine2.pipeline.messages as messages
@@ -158,6 +158,15 @@ class Scanner(models.Model):
         verbose_name=_('keep false positives'),
         help_text=_('Retain false positives in the report module, regardless '
                     'of the current state of the matched sources.')
+    )
+
+    max_pdf_size = models.PositiveIntegerField(
+        blank=True,
+        null=True,
+        default=0,
+        verbose_name=_('maximum PDF size (MB)'),
+        help_text=_('The maximum size of PDF files to scan, in megabytes. '
+                    'Set to 0 for no limit.')
     )
 
     columns = models.CharField(validators=[validate_comma_separated_integer_list],
@@ -340,6 +349,10 @@ class Scanner(models.Model):
                             min_dim=128),
                     True)
             prerules.append(cr)
+
+        if self.max_pdf_size:
+            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
+            prerules.append(sr)
 
         # prerules includes: do_ocr, LastModifiedRule
         return AndRule.make(*prerules, rule)

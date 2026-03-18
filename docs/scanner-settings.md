@@ -132,3 +132,8 @@ This setting is only available for MSGraph mail scanners and gmail scanners.
 
 Turning on this setting will scan files attached to scanned emails.
 
+## Max PDF Size
+
+This settings limits the size (in megabytes) of scanned PDF files.
+
+If a limit is given, any PDF file encountered that is larger than the limit won't be scanned.

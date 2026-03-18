@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-06 13:41+0100\n"
+"POT-Creation-Date: 2026-03-11 10:22+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -681,6 +681,16 @@ msgid ""
 msgstr ""
 "Bevar falske positiver i rapportmodulet, uanset den nuværende tilstand af de "
 "matchede kilder."
+
+#: adminapp/models/scannerjobs/scanner.py
+msgid "maximum PDF size (MB)"
+msgstr "maksimum PDF størrelse (MB)"
+
+#: adminapp/models/scannerjobs/scanner.py
+msgid ""
+"The maximum size of PDF files to scan, in megabytes. Set to 0 for no limit."
+msgstr ""
+"Den maksimale størrelse af PDF-filer der skal scannes, i megabytes. Sæt til 0 for ingen begrænsning."
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "rule"
