@@ -29,6 +29,8 @@ def is_handle_relevant(handle: Handle, filter_rule: Rule) -> bool:
     try:
         representations = {output_type.value: None for output_type in OutputType}
         representations[OutputType.Presentation.value] = str(handle)
+        if size := handle.hint("size"):
+            representations[OutputType.Size.value] = size
 
         conclusion, _ = filter_rule.try_match(representations, obj_limit=1)
         return not conclusion

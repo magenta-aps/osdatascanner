@@ -33,17 +33,21 @@ class FilesystemSource(Source):
     def _process_dirent(
             self, f: Path, base_path: Path, cutoff: datetime | None):
         if f.is_file():
+            stat = f.stat()
             if cutoff:
                 # Note that this is *not* a good implementation of rule
                 # pre-execution: Python filesystem traversal doesn't give us
                 # the result of a stat(2) call. This trivial one is enough to
                 # satisfy the test suite, though
-                stat = f.stat()
                 mod_ts = datetime.fromtimestamp(stat.st_mtime, gettz())
                 if mod_ts < cutoff:
                     return
 
-            yield FilesystemHandle(self, str(f.relative_to(base_path)))
+            yield FilesystemHandle(
+                self,
+                str(f.relative_to(base_path)),
+                hints={"size": stat.st_size},
+            )
 
     def handles(self, sm, *, rule: Rule | None = None, **kwargs):
         cutoff = None

@@ -322,7 +322,8 @@ class SMBCSource(Source):
                 "ctime": unparse_datetime(
                         ctime := here.ctime.astimezone(gettz())),
                 "mtime": unparse_datetime(
-                        mtime := here.mtime.astimezone(gettz()))
+                        mtime := here.mtime.astimezone(gettz())),
+                "size": here.size,
             }
             if owner_sid:
                 hints["owner_sid"] = owner_sid
