@@ -119,6 +119,15 @@ class EggView(LoginRequiredMixin, TemplateView):
                 },
                 {
                     "name": "Asbjørn Lind",
+                    "quote": choose(
+                            "Only here for the lunch",
+                            "Suprisingly young for his age",
+                            "Hvordan kan jeg arbejde uden at blive ønsket "
+                            "'God Arbejdslyst'?",
+                            "Better known as Asbjøm",
+                            "3 years, and not a single interaction with a "
+                            "customer",
+                    )
                 },
                 {
                     "name": "Carl Bordum Hansen",
@@ -166,10 +175,17 @@ class EggView(LoginRequiredMixin, TemplateView):
                     "name": "Jesper Dam Gynther Knudgaard",
                     "quote": outsource_quote("https://candscient.dk/ext/osds_credits.json"
                                              ).get("wisdom", "I am not sure what to say.")
-
                 },
                 {
                     "name": "Jonas Kofoed Hansen",
+                    "quote": choose(
+                            "datadutten™",
+                            "Vir prudens non contra ventum mingit",
+                            "F",
+                            "mañana mañana",
+                            "Challenge your chair",
+                            "Dad jokes never go out of fashion",
+                    ),
                 },
                 {
                     "name": "Jørgen Gårdsted Jørgensen",
@@ -197,6 +213,14 @@ class EggView(LoginRequiredMixin, TemplateView):
                 },
                 {
                     "name": "Nikolaj Sievertsen Nørring",
+                    "quote": choose(
+                            "Change the color of a single button and get your"
+                            " name etched on this site forever",
+                            "God arbejdslyst Asbjøm!",
+                            "Alec glemte 7-tallet i sit CPR-nummer!",
+                            "Protector of developers from the horde of "
+                            "customer tickets",
+                    )
                 },
                 {
                     "name": "Novik Singh",
