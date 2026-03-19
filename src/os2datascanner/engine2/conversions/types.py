@@ -116,6 +116,8 @@ class OutputType(Enum):
             dict, dict)
     MRZ = (  # str
             "mrz", str, str)
+    Presentation = (  # Handle
+            "presentation", str, str)
 
     Size = (  # int
             "size", int, int)

@@ -19,3 +19,4 @@ from . import passport  # noqa
 from . import credit_card  # noqa
 from . import external  # noqa
 from . import license_plate  # noqa
+from . import presentation  # noqa

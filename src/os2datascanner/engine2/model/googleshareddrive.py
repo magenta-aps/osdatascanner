@@ -76,23 +76,25 @@ class GoogleSharedDriveSource(GoogleSource):
         while retry_count < max_retries:
             try:
                 files = self.paginated_get(
-                                    service=service.files(),
-                                    collection_name='files',
-                                    q=query,
-                                    fields='nextPageToken, files(id, name, mimeType, parents)',
-                                    driveId=drive.get('id'),
-                                    supportsAllDrives=True,
-                                    includeItemsFromAllDrives=True,
-                                    corpora='drive'
+                    service=service.files(),
+                    collection_name='files',
+                    q=query,
+                    fields='nextPageToken, files(id, name, mimeType, parents, size)',
+                    driveId=drive.get('id'),
+                    supportsAllDrives=True,
+                    includeItemsFromAllDrives=True,
+                    corpora='drive',
                 )
 
                 for file in files:
                     location = self.get_location(file.get('parents')[0], service, drive)
+                    size = file.get("size", None)
                     yield GoogleSharedDriveHandle(
                         self,
                         file.get('id'),
                         name=file.get('name'),
-                        location=location
+                        location=location,
+                        hints={"size": size} if size else {},
                     )
                 # Time to stop
                 break
@@ -264,8 +266,8 @@ class GoogleSharedDriveHandle(Handle):
     type_label = "googleshareddrive"
     resource_type = GoogleSharedDriveResource
 
-    def __init__(self, source, relpath, name, location):
-        super().__init__(source, relpath)
+    def __init__(self, source, relpath, name, location, **kwargs):
+        super().__init__(source, relpath, **kwargs)
         self._name = name
         self._location = location
 
@@ -299,5 +301,10 @@ class GoogleSharedDriveHandle(Handle):
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleSharedDriveHandle(Source.from_json_object(obj["source"]),
-                                       obj["path"], obj.get('name'), obj.get('location'))
+        return GoogleSharedDriveHandle(
+            Source.from_json_object(obj["source"]),
+            obj["path"],
+            obj.get('name'),
+            obj.get('location'),
+            hints=obj.get("hints"),
+        )

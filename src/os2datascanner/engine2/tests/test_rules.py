@@ -297,7 +297,7 @@ class TestRules:
     def test_compound_rule_matches(self, rule, tests):
         for input_string, outcome, evaluation_count in tests:
             representations = {"text": input_string}
-            conclusion, evaluations = rule.try_match(representations.get)
+            conclusion, evaluations = rule.try_match(representations)
 
             assert outcome == conclusion
             assert evaluation_count == len(evaluations)
@@ -307,7 +307,7 @@ class TestRules:
         they should still be able to run without problems."""
         representations = {"text": "Testing Testing"}
         rule = OrRule(RegexRule("Test"))
-        conclusion, evaluations = rule.try_match(representations.get)
+        conclusion, evaluations = rule.try_match(representations)
         assert conclusion
 
     def test_and_rule_one_component(self):
@@ -315,23 +315,23 @@ class TestRules:
         they should still be able to run without problems."""
         representations = {"text": "Testing Testing"}
         rule = AndRule(RegexRule("Test"))
-        conclusion, evaluations = rule.try_match(representations.get)
+        conclusion, evaluations = rule.try_match(representations)
         assert conclusion
 
     def test_resume(self):
         """Resuming execution of a rule after its try_match method has returned
         should complete the execution correctly."""
-        rule = AndRule(
+        rule = AllRule(
             RegexRule("First fragment"),
-            AlwaysMatchesRule(),
+            NeverMatchesRule(),
             RegexRule("second fragment"),
-            AlwaysMatchesRule()
+            NeverMatchesRule()
         )
 
         representations = {"text": "First fragment goes here, and then the second fragment"}
-        remaining, matches1 = rule.try_match(lambda k: representations[k])
-        representations["fallback"] = True
-        remaining, matches2 = remaining.try_match(lambda k: representations[k])
+        remaining, matches1 = rule.try_match(representations)
+        representations["dummy"] = True
+        remaining, matches2 = remaining.try_match(representations)
 
         assert remaining
         # Because Rule.try_match is allowed to perform optimisation, we can't
@@ -341,7 +341,7 @@ class TestRules:
         expected = {
             RegexRule("First fragment"),
             RegexRule("second fragment"),
-            AlwaysMatchesRule()
+            NeverMatchesRule()
         }
         assert set(r for r, _ in matches1) | set(r for r, _ in matches2) == expected
 

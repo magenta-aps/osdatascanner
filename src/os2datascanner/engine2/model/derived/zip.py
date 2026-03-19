@@ -29,7 +29,7 @@ class ZipSource(DerivedSource):
                 continue
             name = i.filename
             if not name[-1] == "/":
-                yield ZipHandle(self, name)
+                yield ZipHandle(self, name, hints={"size": i.file_size})
 
     def _generate_state(self, sm):
         with self.handle.follow(sm).make_path() as r, ZipFile(str(r)) as zp:

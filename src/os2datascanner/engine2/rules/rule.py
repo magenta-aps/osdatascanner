@@ -6,7 +6,7 @@
 from abc import abstractmethod
 from enum import Enum
 import json
-from typing import Union, Optional, Tuple, Iterator, Callable, Any, Iterable
+from typing import Union, Optional, Tuple, Iterator, Iterable
 from itertools import islice
 
 from .utilities.properties import RulePrecedence, RuleProperties
@@ -121,13 +121,9 @@ class Rule(TypePropertyEquality, JSONSerialisable):
 
     def try_match(
             self,
-            get_representation: Union[Callable[[str], Optional[Any]], dict],
+            representations: dict,
             *, obj_limit=None):
-        """Reduces this Rule as much as possible, given a helper function that
-        can (attempt to) produce new representations when required. When the
-        content of a representation is not available, the helper function
-        should raise a KeyError. (For convenience, this function also accepts a
-        dictionary; in this case it'll use its __getitem__ method.)
+        """Reduces this Rule as much as possible, given a dict of representations.
 
         Returns the (possibly trivial) continuation left over, along with a
         list of [(SimpleRule, list of match object)] pairs representing the
@@ -138,23 +134,26 @@ class Rule(TypePropertyEquality, JSONSerialisable):
 
         Note that this method can optimise the reduction of this Rule; the
         result of a SimpleRule might be cached and reused, for example."""
-        if isinstance(get_representation, dict):
-            get_representation = get_representation.__getitem__
+
+        representations[OutputType.AlwaysTrue.value] = None
 
         here = self
         matches = {}
         while not isinstance(here, bool):
             head, pve, nve = here.split()
-            try:
-                required_form = get_representation(head.operates_on.value)
-            except KeyError:
-                # Our helper callback can't produce the data we need. Stop
-                # evaluating rules and return what we have to the caller
+            if head.operates_on.value in representations:
+                if head not in matches:
+                    # We have the form required to match the next part of the rule.
+                    # Hooray! Let's do that
+                    representation = representations[head.operates_on.value]
+                    match_iterator = head.match(representation)
+                    matches[head] = list(islice(match_iterator, obj_limit))
+                here = pve if matches[head] else nve
+            else:
+                # We don't have the form required to match the next part. Stop
+                # and report what we have so far to the caller
                 break
-            if head not in matches:
-                matches[head] = list(
-                        islice(head.match(required_form), obj_limit))
-            here = pve if matches[head] else nve
+
         return (here, list(matches.items()))
 
     @abstractmethod

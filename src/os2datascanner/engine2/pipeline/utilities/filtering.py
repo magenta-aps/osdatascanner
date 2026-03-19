@@ -9,6 +9,7 @@ import structlog
 
 from ...model.core import Handle
 from ...rules.rule import Rule
+from os2datascanner.engine2.conversions.types import OutputType
 
 logger = structlog.get_logger("engine2")
 
@@ -26,7 +27,12 @@ def is_handle_relevant(handle: Handle, filter_rule: Rule) -> bool:
 
     # Apply the rule to the presentation of the handle.
     try:
-        conclusion, _ = filter_rule.try_match(lambda _: str(handle))
+        representations = {output_type.value: None for output_type in OutputType}
+        representations[OutputType.Presentation.value] = str(handle)
+        if size := handle.hint("size"):
+            representations[OutputType.Size.value] = size
+
+        conclusion, _ = filter_rule.try_match(representations, obj_limit=1)
         return not conclusion
     except KeyError as error:
         exception_message = f"Filtering error. {type(error).__name__}: "

@@ -58,14 +58,18 @@ class GoogleDriveSource(GoogleSource):
             service=service.files(),
             collection_name='files',
             q=query,
-            fields='nextPageToken, files(id, name, mimeType, parents)'
+            fields='nextPageToken, files(id, name, mimeType, parents, size)'
         )
 
         for file in files:
             location = self.get_location(file.get('parents')[0], service)
-            yield GoogleDriveHandle(self, file.get('id'),
-                                    name=file.get('name'),
-                                    location=location)
+            size = file.get("size", None)
+            yield GoogleDriveHandle(
+                self, file.get('id'),
+                name=file.get('name'),
+                location=location,
+                hints={"size": size} if size else {},
+            )
 
     # Censoring service account file info and user email.
     def censor(self):
@@ -168,8 +172,8 @@ class GoogleDriveHandle(Handle):
     type_label = "googledrive"
     resource_type = GoogleDriveResource
 
-    def __init__(self, source, relpath, name, location):
-        super().__init__(source, relpath)
+    def __init__(self, source, relpath, name, location, **kwargs):
+        super().__init__(source, relpath, **kwargs)
         self._name = name
         self._location = location
 
@@ -203,5 +207,10 @@ class GoogleDriveHandle(Handle):
     @staticmethod
     @Handle.json_handler(type_label)
     def from_json_object(obj):
-        return GoogleDriveHandle(Source.from_json_object(obj["source"]),
-                                 obj["path"], obj.get('name'), obj.get('location'))
+        return GoogleDriveHandle(
+            Source.from_json_object(obj["source"]),
+            obj["path"],
+            obj.get('name'),
+            obj.get('location'),
+            hints=obj.get("hints"),
+        )

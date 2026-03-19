@@ -21,7 +21,7 @@ class TarSource(DerivedSource):
         tarfile = sm.open(self)
         for f in tarfile.getmembers():
             if f.isfile():
-                yield TarHandle(self, f.name)
+                yield TarHandle(self, f.name, hints={"size": f.size})
 
     def _generate_state(self, sm):
         with self.handle.follow(sm).make_path() as r, open_tar(str(r), "r") as tp:

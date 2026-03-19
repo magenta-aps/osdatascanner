@@ -83,7 +83,9 @@ class GmailSource(GoogleSource):
                 headers = email["payload"]["headers"]
                 subject = [i['value'] for i in headers if i["name"] == "Subject"][0]
                 # Id of given email is set to be path.
-                yield GmailHandle(self, msgId, mail_subject=subject)
+                yield GmailHandle(
+                    self, msgId, mail_subject=subject,
+                    hints={'size': email.get('sizeEstimate')})
 
     # Censoring service account details
     def censor(self):
@@ -153,8 +155,8 @@ class GmailHandle(Handle):
     type_label = "gmail"
     resource_type = GmailResource
 
-    def __init__(self, source, relpath, mail_subject):
-        super().__init__(source, relpath)
+    def __init__(self, source, relpath, mail_subject, **kwargs):
+        super().__init__(source, relpath, **kwargs)
         self._mail_subject = mail_subject
 
     @property
@@ -195,4 +197,5 @@ class GmailHandle(Handle):
     def from_json_object(obj):
         return GmailHandle(
             Source.from_json_object(obj["source"]),
-            obj["path"], obj["mail_subject"])
+            obj["path"], obj["mail_subject"],
+            hints=obj.get("hints"))

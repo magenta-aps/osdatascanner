@@ -226,8 +226,12 @@ class MSGraphDriveSource(DerivedSource):
                 here = components + ([name] if not is_root else [])
                 if "file" in obj:
                     yield MSGraphFileHandle(
-                        self, "/".join(here),
-                        weblink=web_url, parent_weblink=parent_weblink)
+                        self,
+                        "/".join(here),
+                        weblink=web_url,
+                        parent_weblink=parent_weblink,
+                        hints={"size": obj.get("size")},
+                    )
                 elif "folder" in obj:
                     folder_id: str = obj["id"]
                     subfolder = gc.get(
@@ -288,8 +292,8 @@ class MSGraphFileHandle(Handle):
     type_label = "msgraph-drive-file"
     resource_type = MSGraphFileResource
 
-    def __init__(self, source, path, weblink=None, parent_weblink=None):
-        super().__init__(source, path)
+    def __init__(self, source, path, weblink=None, parent_weblink=None, **kwargs):
+        super().__init__(source, path, **kwargs)
         self._weblink = weblink
         self._parent_weblink = parent_weblink
 
@@ -327,4 +331,6 @@ class MSGraphFileHandle(Handle):
         return MSGraphFileHandle(
             Source.from_json_object(obj["source"]),
             obj["path"], obj.get("weblink"),
-            obj.get("parent_weblink"))
+            obj.get("parent_weblink"),
+            hints=obj.get("hints"),
+        )
