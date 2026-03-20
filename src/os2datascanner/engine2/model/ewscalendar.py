@@ -20,6 +20,8 @@ from ..utilities.backoff import DefaultRetrier
 from .core import Source, Handle, FileResource, Resource
 from .derived.derived import DerivedSource
 from .ews import EWSAccountSource, _retrieve_folder
+from ..rules.rule import Rule
+from ..rules.utilities.analysis import compute_mss
 
 DUMMY_MIME = "application/vnd.os2.datascanner.ewscalendaritem"
 
@@ -64,9 +66,11 @@ class EWSCalendarSource(EWSAccountSource):
                 continue
             yield container
 
+    _ITEM_FIELDS = ("subject", "start", "end", "location", "type", "last_modified_time")
+
     @staticmethod
     def _non_occurrence_items(
-            folder: Folder, *fields) -> Iterator[CalendarItem]:
+            folder: Folder, cutoff=None) -> Iterator[CalendarItem]:
         """Yield all single items and recurring masters from a folder.
 
         A regular queryset returns both of these types without a date range
@@ -74,9 +78,9 @@ class EWSCalendarSource(EWSAccountSource):
         Occurrences and exceptions are excluded here — exceptions are handled
         separately via CalendarView since they are not returned by folder.all().
         """
-        queryset = folder.all()
-        if fields:
-            queryset = queryset.only("id", *fields)
+        queryset = folder.all().only("id", *EWSCalendarSource._ITEM_FIELDS)
+        if cutoff:
+            queryset = queryset.filter(last_modified_time__gte=cutoff)
         yield from (
             item for item in queryset
             if isinstance(item, CalendarItem)
@@ -85,7 +89,7 @@ class EWSCalendarSource(EWSAccountSource):
 
     @staticmethod
     def _exception_items(
-            folder: Folder, start, end, *fields) -> Iterator[CalendarItem]:
+            folder: Folder, start, end, cutoff=None) -> Iterator[CalendarItem]:
         """Yield only exceptions (modified occurrences) via a CalendarView.
 
         Exceptions are the only item type not reachable via folder.all().
@@ -100,14 +104,17 @@ class EWSCalendarSource(EWSAccountSource):
         chunk_start = start
         while chunk_start < end:
             chunk_end = min(chunk_start + _TWO_YEARS, end)
-            view = folder.view(start=chunk_start, end=chunk_end).filter(
-                type=EXCEPTION)
-            if fields:
-                view = view.only("id", *fields)
-            yield from (item for item in view if isinstance(item, CalendarItem))
+            view = (folder.view(start=chunk_start, end=chunk_end)
+                    .only("id", *EWSCalendarSource._ITEM_FIELDS))
+            yield from (
+                item for item in view
+                if isinstance(item, CalendarItem)
+                and item.type == EXCEPTION
+                and (not cutoff or item.last_modified_time >= cutoff)
+            )
             chunk_start = chunk_end
 
-    def handles(self, sm, **kwargs) -> Iterator['EWSCalendarHandle']:  # noqa CCR001 Cognitive complexity
+    def handles(self, sm, *, rule: Rule | None = None, **kwargs) -> Iterator['EWSCalendarHandle']:  # noqa CCR001 Cognitive complexity
         account = sm.open(self)
         utc = EWSTimeZone.from_timezone(timezone.utc)
         now = EWSDateTime.now(tz=utc)
@@ -117,12 +124,17 @@ class EWSCalendarSource(EWSAccountSource):
         window_start = EWSDateTime(1970, 1, 1, 0, 0, tzinfo=utc)
         window_end = now + timedelta(days=2 * 365)
 
-        _fields = ("subject", "start", "end", "location", "type")
+        cutoff = None
+        for essential_rule in compute_mss(rule):
+            if essential_rule.type_label == "last-modified":
+                after = EWSDateTime.from_datetime(
+                    essential_rule.after.astimezone(timezone.utc))
+                cutoff = after if not cutoff else max(cutoff, after)
 
         for folder in self._relevant_folders(account):
             # Single items and recurring masters.
             try:
-                for item in self._non_occurrence_items(folder, *_fields):
+                for item in self._non_occurrence_items(folder, cutoff):
                     try:
                         yield EWSCalendarHandle(
                             self,
@@ -149,7 +161,7 @@ class EWSCalendarSource(EWSAccountSource):
             # Exceptions are modified occurrences and are invisible to folder.all().
             try:
                 for item in self._exception_items(
-                        folder, window_start, window_end, *_fields):
+                        folder, window_start, window_end, cutoff):
                     try:
                         yield EWSCalendarHandle(
                             self,
@@ -201,20 +213,35 @@ class EWSCalendarResource(Resource):
     EWSCalendarItemSource rather than attempting a direct conversion.
     """
 
-    def check(self) -> bool:
-        folder_id, item_id = self.handle.relative_path.split(".", maxsplit=1)
-        try:
+    _FETCH_FIELDS = ("last_modified_time", "datetime_created")
+
+    def __init__(self, handle, sm):
+        super().__init__(handle, sm)
+        self._item = None
+
+    def _get_item(self):
+        if self._item is None:
+            folder_id, item_id = self.handle.relative_path.split(".", maxsplit=1)
             account = self._get_cookie()
 
             def _retrieve_item():
                 folder = _retrieve_folder(account, folder_id)
-                return folder.all().only("id").get(id=item_id)
+                return folder.all().only("id", *self._FETCH_FIELDS).get(id=item_id)
 
-            item = DefaultRetrier(ErrorServerBusy).run(_retrieve_item)
+            self._item = DefaultRetrier(ErrorServerBusy).run(_retrieve_item)
+        return self._item
+
+    def check(self) -> bool:
+        try:
+            item = self._get_item()
             return not isinstance(
                     item, (ErrorItemNotFound, ErrorNonExistentMailbox))
         except (ErrorItemNotFound, ErrorNonExistentMailbox):
             return False
+
+    def get_last_modified(self):
+        item = self._get_item()
+        return item.last_modified_time or item.datetime_created
 
     def compute_type(self):
         return DUMMY_MIME
@@ -404,8 +431,8 @@ class EWSCalendarContentResource(FileResource):
         return len(str(self._get_item().body).encode())
 
     def get_last_modified(self):
-        o = self._get_item()
-        return o.last_modified_time or o.datetime_created
+        item = self._get_item()
+        return item.last_modified_time or item.datetime_created
 
     def compute_type(self):
         body = self._get_item().body

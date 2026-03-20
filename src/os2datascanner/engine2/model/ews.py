@@ -275,7 +275,7 @@ class EWSMailResource(FileResource):
             account = self._get_cookie()
 
             def _retrieve_message():
-                folder = self._retrieve_folder(account, folder_id)
+                folder = _retrieve_folder(account, folder_id)
                 return folder.all().only("message_id").get(id=mail_id)
 
             m = DefaultRetrier(ErrorServerBusy).run(_retrieve_message)
@@ -292,7 +292,7 @@ class EWSMailResource(FileResource):
             account = self._get_cookie()
 
             def _retrieve_message():
-                folder = self._retrieve_folder(account, folder_id)
+                folder = _retrieve_folder(account, folder_id)
                 return folder.get(id=mail_id)
             self._message = DefaultRetrier(
                     ErrorServerBusy, fuzz=0.25).run(_retrieve_message)

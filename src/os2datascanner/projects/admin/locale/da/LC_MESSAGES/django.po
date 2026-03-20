@@ -477,10 +477,6 @@ msgid "File scanner"
 msgstr "Filscanner"
 
 #: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
-msgid "Scan attachments"
-msgstr "Scan vedhæftninger"
-
-#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan attached files"
 msgstr "Scan vedhæftede filer"
 
