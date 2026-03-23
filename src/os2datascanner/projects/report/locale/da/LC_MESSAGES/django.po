@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-12 14:10+0100\n"
+"POT-Creation-Date: 2026-03-23 10:34+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -277,6 +277,10 @@ msgstr "Falsk positiv"
 #: reportapp/models/documentreport.py
 msgid "No longer relevant"
 msgstr "Ikke længere relevant"
+
+#: reportapp/models/documentreport.py
+msgid "Handled"
+msgstr "Håndteret"
 
 #: reportapp/models/documentreport.py
 msgid "number of matches"
