@@ -75,7 +75,7 @@ function drawCharts() {
   drawPie(sourceTypes, "datasources", DATASOURCE_COLORS);
   drawPie(
     // Change the order of the data structure
-    [3, 2, 1, 4, 0].map((i) => resolutionStatus[i]),
+    [3, 2, 1, 4, 5, 6, 0].map((i) => resolutionStatus[i]),
     "resolution_status",
     RESOLUTION_STATUS_COLORS
   );
