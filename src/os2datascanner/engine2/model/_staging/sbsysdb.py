@@ -4,9 +4,11 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from collections.abc import Sequence
+from datetime import datetime
 from io import BytesIO
-from typing import Iterable
+from typing import Iterable, override
 from functools import cached_property
+from dateutil import tz
 import structlog
 from contextlib import contextmanager
 
@@ -205,8 +207,17 @@ class SBSYSDBHandles:
             def check(self):
                 return True
 
+            @override
             def _generate_metadata(self):
                 row = registry.convert(self, OutputType.DatabaseRow) or {}
+                if isinstance(lm := row.get("LastChanged"), datetime):
+                    if lm.tzinfo is None:
+                        # SQL Server's DATETIME and DATETIME2 types don't
+                        # encode time zone information, because life is hard.
+                        # Groan. For now we assume the system timezone
+                        lm = lm.replace(tzinfo=tz.gettz())
+                    yield ("last-modified",
+                           OutputType.LastModified.encode_json_object(lm))
                 if upn := row.get("Behandler.UserPrincipalName"):
                     yield ("user-principal-name", upn)
 
@@ -402,7 +413,7 @@ class SBSYSDBSources:
 
         required_columns = (
                 "ID", "Nummer", "Titel", "Kommentar",
-                "Behandler.UserPrincipalName",)
+                "Behandler.UserPrincipalName", "LastChanged",)
 
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)
