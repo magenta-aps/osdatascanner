@@ -4,7 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 from datetime import datetime
 from functools import wraps
 from dataclasses import dataclass, field
@@ -132,6 +132,12 @@ class OutputType(Enum):
     NoConversions = (
             "dummy",
             None, None)
+
+    def encode_json_object(self, arg) -> Any:
+        ...
+
+    def decode_json_object(self, arg) -> Any:
+        ...
 
     def __new__(cls, value, dump, load):
         obj = object.__new__(cls)
