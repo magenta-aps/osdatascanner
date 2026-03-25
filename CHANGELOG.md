@@ -23,6 +23,7 @@
 - Outdated chart.js configs have been removed/updated for:
   - Line charts
   - Pie charts
+  - Doughnut charts
 
 ## Version 3.31.2, 10th March 2026
 
