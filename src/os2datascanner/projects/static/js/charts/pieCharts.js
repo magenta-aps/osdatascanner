@@ -62,10 +62,10 @@ function makePieChart(labels, data, colors, chartElement) {
                 return null; // Prevent any labels from appearing for empty charts
               }
 
-              let value = context.parsed ? context.parsed : 0;
               if (!context.parsed) {
                 return null; // prevent the tooltip from showing for slices with 0 value
               }
+              const value = context.parsed;
 
               const dataArr = context.chart.data.datasets[0].data;
               const sum = dataArr.reduce((total, frac) => total + frac);
@@ -114,7 +114,7 @@ function drawPie(data, ctxName, colors) {
 
   charts.push(pieChart);
 
-  $("#pie_legend_" + ctxName).html(unorderedListLegend(data, colors, pieChart)); // Generate the legend from the original data regardless of the pie chart state
+  document.querySelector("#pie_legend_" + ctxName).innerHTML = unorderedListLegend(data, colors, pieChart); // Generate the legend from the original data regardless of the pie chart state
 }
 
 function unorderedListLegend(data, colors, chart) {
