@@ -20,6 +20,8 @@
 
 - Form field for Outlook category settings was broken and now it works again.
 
+- Outdated chart.js configs have been removed/updated for line charts.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"

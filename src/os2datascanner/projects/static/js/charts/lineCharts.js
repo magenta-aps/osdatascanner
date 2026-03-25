@@ -3,7 +3,7 @@
 function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, yLabel = "") {
 
 	const chartAreaBorderPlugin = {
-		id: 'chartAreaBorder',
+		id: "chartAreaBorder",
 		beforeDraw(chart, args, options) {
 			const {ctx, chartArea: {left, top, width, height}} = chart;
 			ctx.save();
@@ -16,31 +16,35 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 		}
 	};
 
-	const noDataTextDrawPlugin = (ydata.length === 0) ? ({
-		id: 'noData',
-		afterDatasetsDraw(chart) {
-			const {ctx, chartArea: {left, top, width, height}} = chart;
-			ctx.save();
-			ctx.font = 'bold 20px sans-serif';
-			ctx.textAlign = 'center';
-			ctx.fillText(gettext('No data available'), left + width / 2, top + height / 2);
-		}
-	}) : {};
+	const plugins = [chartAreaBorderPlugin];
+	if (ydata.length === 0) {
+		plugins.push({
+			id: "noData",
+			afterDatasetsDraw(chart) {
+				const {ctx, chartArea: {left, top, width, height}} = chart;
+				ctx.save();
+				ctx.font = "bold 20px sans-serif";
+				ctx.textAlign = "center";
+				ctx.fillText(gettext("No data available"), left + width / 2, top + height / 2);
+				ctx.restore();
+			}
+		});
+	}
 
 	const lineChart = new Chart(chartElement, {
-		type: 'line',
+		type: "line",
 		data: {
 			labels: xdata,
 			datasets: [{
 				data: ydata,
 				fill: {
-					target: 'origin',
-					above: 'rgba(33, 117, 156, 0.5)'
+					target: "origin",
+					above: "rgba(33, 117, 156, 0.5)"
 				},
 				pointRadius: 0,
 				pointHitRadius: 20,
 				borderWidth: 4,
-				borderCapStyle: 'round',
+				borderCapStyle: "round",
 				tension: 0,
 				borderColor: "#21759c",
 				pointHoverRadius: 10,
@@ -48,6 +52,15 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 			}],
 		},
 		options: {
+			responsive: true,
+			maintainAspectRatio: false,
+			
+			elements: {
+				line: {
+					borderJoinStyle: "round"
+				}
+			},
+
 			plugins: {
 				tooltip: {
 					enabled: true,
@@ -55,15 +68,21 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 				datalabels: {
 					display: false
 				},
-				legend: false,
+				legend: {
+					display: false
+				},
+				chartAreaBorder: {
+					borderColor: "lightgray",
+					borderWidth: 1,
+				},
 				zoom: {
+					limits: {
+						x: {min: "original"}
+					},
 					zoom: {
-						limits: {
-							x: {min: 'original'}
-						},
 						wheel: {
 							enabled: true,
-							modifierKey: 'shift'
+							modifierKey: "shift"
 						},
 						drag: {
 							enabled: true,
@@ -72,37 +91,29 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 						pinch: {
 							enabled: true
 						},
-						mode: swapXY ? 'y' : 'x',
+						mode: swapXY ? "y" : "x",
 					}
 				},
 			},
-			responsive: true,
-			maintainAspectRatio: false,
-			elements: {
-				line: {
-					borderJoinStyle: 'round'
-				}
-			},
-			chartArea: {
-				backgroundColor: "#f5f5f5"
-			},
+
 			scales: {
 				x: {
 					title: {
-						
 						display: xLabel !== "",
 						text: xLabel,
-						labelString: xLabel,
-						fontSize: 16,
+						font: {
+							size: 14,
+						},
 					},
-					gridLines: {
-						offsetGridLines: true,
+					grid: {
+						offset: true,
 						display: true,
-						color: "#fff",
-						lineWidth: 3
+						lineWidth: 1,
 					},
 					ticks: {
-						fontSize: 16,
+						font: {
+							size: 14,
+						},
 					},
 	
 				},
@@ -111,35 +122,29 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 					title: {
 						display: yLabel !== "",
 						text: yLabel,
-						fontSize: 15,
+						font: {
+							size: 14,
+						},
 					},
-					gridLines: {
+					grid: {
 						display: false
 					},
 					ticks: {
-						fontSize: 15,
+						font: {
+							size: 15,
+						},
 						stepSize: stepSizeFunction(ydata, 2),
 					},
 				}
 			},
 		},
-		plugins: [
-			chartAreaBorderPlugin,
-			noDataTextDrawPlugin
-		]
+		plugins: plugins,
 	});
 
 	return lineChart;
 }
 
 function drawLine(data, ctxName) {
-	// Line chart
-	// //
-	// //
-	// //
-	// //
-	// //
-	// Creating xx line chart
 
 	var lineChartLabels = [];
 	var lineChartValues = [];
@@ -149,7 +154,10 @@ function drawLine(data, ctxName) {
 		lineChartValues.push(data[i][1]);
 	}
 
-	var lineChartCtx = document.querySelector("#line_chart_" + ctxName).getContext('2d');
+	const lineChartCtx = document
+		.querySelector("#line_chart_" + ctxName)
+		.getContext("2d");
+
 	charts.push(makeLineChart(lineChartLabels, lineChartValues, lineChartCtx));
 }
 
