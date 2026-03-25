@@ -24,6 +24,7 @@
   - Line charts
   - Pie charts
   - Doughnut charts
+  - Bar charts
 
 ## Version 3.31.2, 10th March 2026
 
