@@ -53,11 +53,11 @@
 
     {% if chart_data %}
 
-      <div class="charts-container-box">
-        <h2 class="page-title__sub">{% trans "Number of files" %}</h2>
-        <p class="chart_description">{% trans "Overview of the number of each identified file type" %}</p>
+      <div class="pie-charts-row">
+        <div class="charts-container-box">
+          <h2 class="page-title__sub">{% trans "Number of files" %}</h2>
+          <p class="chart_description">{% trans "Overview of the number of each identified file type" %}</p>
 
-        <div class="pie-charts-container">
           <div class="chart-container">
             <div class="pie-chart-content">
               <div class="chart-legend" id="pie1_legend"></div>
@@ -67,13 +67,11 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="charts-container-box">
-        <h2 class="page-title__sub">{% trans "Storage" %}</h2>
-        <p class="chart_description">{% trans "Overview of storage for different filetypes" %}</p>
+        <div class="charts-container-box">
+          <h2 class="page-title__sub">{% trans "Storage" %}</h2>
+          <p class="chart_description">{% trans "Overview of storage for different filetypes" %}</p>
 
-        <div class="pie-charts-container">
           <div class="chart-container">
             <div class="pie-chart-content">
               <div class="chart-legend" id="pie2_legend"></div>
@@ -92,18 +90,12 @@
         <div class="bar-charts-container">
           {% for i in bar_list %}
             <div class="chart-container">
-              <div class="bar-chart-content">
-                <div class="chart-canvas">
-                  <canvas id="bar{{ forloop.counter }}"> </canvas>
-                </div>
-              </div>
+              <canvas id="bar{{ forloop.counter }}"></canvas>
             </div>
           {% endfor %}
         </div>
       </div>
-
     {% endif %}
-
   {% else %}
     <p class="no-results">{% trans "Choose a scannerjob to start a new scan or view analysis" %}</p>
   {% endif %}
