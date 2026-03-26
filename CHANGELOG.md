@@ -14,6 +14,8 @@
 - Users can now distribute withheld results through a dedicated modal instead of the previously
   embedded distribution UI.
 
+- Add card for unhandled SBSYS results to DPO page.
+
 ### Bugfixes
 
 - The UserErrorLog view now again remembers filter parameters when changing page.
