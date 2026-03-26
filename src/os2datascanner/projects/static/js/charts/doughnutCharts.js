@@ -3,7 +3,7 @@
 const centerTextPlugin = {
 	id: "doughnutCenterText",
 	beforeDraw: function (chart) {
-		var ctx, centerConfig, fontStyle, txt, weight, color, maxFontSize, sidePadding, sidePaddingCalculated;
+		let ctx, centerConfig, fontStyle, txt, weight, color, maxFontSize, sidePadding, sidePaddingCalculated;
 		if (chart.config.options.elements.center) {
 			// Get ctx from string
 			ctx = chart.ctx;
@@ -22,19 +22,19 @@ const centerTextPlugin = {
 		}
 
 		// Get the width of the string and also the width of the element minus 10 to give it 5px side padding
-		var stringWidth = ctx.measureText(txt).width;
-		var elementWidth = (chart.getDatasetMeta(0).controller.innerRadius * 2) - sidePaddingCalculated;
+		const stringWidth = ctx.measureText(txt).width;
+		const elementWidth = (chart.getDatasetMeta(0).controller.innerRadius * 2) - sidePaddingCalculated;
 
 		// Find out how much the font can grow in width.
-		var widthRatio = elementWidth / stringWidth;
-		var newFontSize = Math.floor(30 * widthRatio);
-		var elementHeight = (chart.getDatasetMeta(0).controller.innerRadius * 2);
+		const widthRatio = elementWidth / stringWidth;
+		const newFontSize = Math.floor(30 * widthRatio);
+		const elementHeight = (chart.getDatasetMeta(0).controller.innerRadius * 2);
 
 		// Pick a new font size so it will not be larger than the height of label.
-		var fontSizeToUse = Math.min(newFontSize, elementHeight, maxFontSize);
-		var minFontSize = centerConfig.minFontSize;
-		var lineHeight = centerConfig.lineHeight || 25;
-		var wrapText = false;
+		let fontSizeToUse = Math.min(newFontSize, elementHeight, maxFontSize);
+		let minFontSize = centerConfig.minFontSize;
+		const lineHeight = centerConfig.lineHeight || 25;
+		let wrapText = false;
 
 		if (minFontSize === undefined) {
 			minFontSize = 20;
@@ -49,8 +49,8 @@ const centerTextPlugin = {
 		ctx.save();
 		ctx.textAlign = "center";
 		ctx.textBaseline = "middle";
-		var centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
-		var centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
+		const centerX = ((chart.chartArea.left + chart.chartArea.right) / 2);
+		let centerY = ((chart.chartArea.top + chart.chartArea.bottom) / 2);
 		ctx.font = weight + " " + fontSizeToUse + "px " + fontStyle;
 		ctx.fillStyle = color;
 
@@ -60,15 +60,15 @@ const centerTextPlugin = {
 			return;
 		}
 
-		var words = txt.split(" ");
-		var line = "";
-		var lines = [];
+		const words = txt.split(" ");
+		let line = "";
+		const lines = [];
 
 		// Break words up into multiple lines if necessary
-		for (var n = 0; n < words.length; n++) {
-			var testLine = line + words[n] + " ";
-			var metrics = ctx.measureText(testLine);
-			var testWidth = metrics.width;
+		for (let n = 0; n < words.length; n++) {
+			const testLine = line + words[n] + " ";
+			const metrics = ctx.measureText(testLine);
+			const testWidth = metrics.width;
 			if (testWidth > elementWidth && n > 0) {
 				lines.push(line);
 				line = words[n] + " ";
@@ -80,7 +80,7 @@ const centerTextPlugin = {
 		// Move the center up depending on line height and number of lines
 		centerY -= (lines.length / 2) * lineHeight;
 
-		for (var m = 0; m < lines.length; m++) {
+		for (let m = 0; m < lines.length; m++) {
 			ctx.fillText(lines[m], centerX, centerY);
 			centerY += lineHeight;
 		}
@@ -94,7 +94,7 @@ const roundedCornersPlugin = {
 	id: "doughnutRoundedCorners",
 	afterUpdate: function (chart) {
 		if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
-			var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
+			const arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
 			arc.round = {
 				x: (chart.chartArea.left + chart.chartArea.right) / 2,
 				y: (chart.chartArea.top + chart.chartArea.bottom) / 2,
@@ -107,10 +107,10 @@ const roundedCornersPlugin = {
 
 	afterDraw: function (chart) {
 		if (chart.config.options.elements.arc.roundedCornersFor !== undefined) {
-			var ctx = chart.ctx;
-			var arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
-			var startAngle = Math.PI / 2 - arc.startAngle;
-			var endAngle = Math.PI / 2 - arc.endAngle;
+			const ctx = chart.ctx;
+			const arc = chart.getDatasetMeta(0).data[chart.config.options.elements.arc.roundedCornersFor];
+			const startAngle = Math.PI / 2 - arc.startAngle;
+			const endAngle = Math.PI / 2 - arc.endAngle;
 
 			ctx.save();
 			ctx.translate(arc.round.x, arc.round.y);
@@ -173,12 +173,14 @@ function makeDoughnutChart(text, data, colors, chartElement) {
 }
 
 function drawDoughnut(totalHandledMatches, totalMatches, handledPercentage) {
-	var totalHandledDoughnutChartCtx = document.querySelector("#doughnut_chart_total").getContext("2d");
+	const totalHandledDoughnutChartCtx = document.querySelector("#doughnut_chart_total").getContext("2d");
+	// Only show the "blue" ring when the percentage is 1 or above:
+	const blueColor = (!isNaN(handledPercentage) && handledPercentage >= 1) ? "#21759c" : "transparent";
 	charts.push(makeDoughnutChart(
 		// logic to avoid 0 divided by 0 being NaN
 		isNaN(handledPercentage) ? gettext("No data") : handledPercentage.toFixed(0) + "%",
 		[totalHandledMatches, (totalMatches - totalHandledMatches)],
-		["#21759c", "#f5f5f5"],
+		[blueColor, "#f5f5f5"],
 		totalHandledDoughnutChartCtx
 	));
 }
