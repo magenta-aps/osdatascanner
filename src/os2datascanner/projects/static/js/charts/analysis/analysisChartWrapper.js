@@ -1,6 +1,6 @@
 function drawBars(){
   const dataElement = document.getElementById("chart_data");
-  if (typeof dataElement !== 'undefined' && dataElement.textContent !== '""'){
+  if (typeof dataElement !== "undefined" && dataElement.textContent !== '""'){
     const Data = JSON.parse(dataElement.textContent);
     JSON.parse(Data).forEach((dataset, i) => {
       let ctx = document.getElementById("bar"+(i+1).toString());
@@ -12,7 +12,7 @@ function drawBars(){
 }
 
 function drawPies() {
-  const colorList = ["rgba(84, 71, 140)", 
+  const colorList = ["rgba(84, 71, 140)",
     "rgba(44, 105, 154)",
     "rgba(4, 139, 168)",
     "rgba(13, 179, 158)",
@@ -24,7 +24,7 @@ function drawPies() {
   ];
   // using json_script to get context data here
   const dataElement = document.getElementById("chart_data");
-  if (typeof dataElement !== 'undefined' && dataElement.textContent !== '""'){
+  if (typeof dataElement !== "undefined" && dataElement.textContent !== '""'){
     const Data = JSON.parse(dataElement.textContent);
     const ctx1 = document.getElementById("pie1");
     const ctx2 = document.getElementById("pie2");
@@ -43,10 +43,10 @@ function clearCharts() {
       chart.destroy();
     }
     charts.length = 0;
-  }  
+}
 
 
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener("DOMContentLoaded", function () {
   htmx.onLoad(function (content) {
     if (content.classList.contains("page")||content.classList.contains("content")){
       clearCharts();
