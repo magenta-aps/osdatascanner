@@ -262,7 +262,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             'filescan':     {'label': _('file scan')},
             'mailscan':     {'label': _('mail scan')},
             'teamsscan':    {'label': _('Teams scan')},
-            'sbsys-db':     {'label': _('SBSYS scan')},
+            'sbsys_db':     {'label': _('SBSYS scan')},
             'calendarscan': {'label': _('calendar scan')},
         }
         for key in source_type.keys():
@@ -287,7 +287,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 case {'source_type': 'msgraph-calendar'}:
                     source_category = 'calendarscan'
                 case {'source_type': 'sbsys-db'}:
-                    source_category = 'sbsys-db'
+                    source_category = 'sbsys_db'
                 case _:
                     source_category = 'other'
 

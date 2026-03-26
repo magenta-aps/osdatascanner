@@ -101,6 +101,9 @@
         <!-- Total matches - Calendar -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.calendarscan total=total_by_source.calendarscan progress=calendarscan_monthly_progress %}
 
+        <!-- Total matches - SBSYS -->
+        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.sbsys_db total=total_by_source.sbsys_db progress=sbsys_db_monthly_progress %}
+
         <!-- Total matches - other sources -->
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.other total=total_by_source.other progress=other_monthly_progress %}
       </div>
