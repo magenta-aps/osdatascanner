@@ -11,7 +11,7 @@ Examples:
 /label ~trivial
 /milestone %"Next Release"
 <!-- Other recommended quick actions (remove # to apply and delete unwanted actions): -->
-#/request_review @af @jkh @jdk @nsn @sos @asl @en @cvs
+#/request_review @af @jkh @nsn @sos @asl @en
 #/label ~bug
 #/label ~feature
 
