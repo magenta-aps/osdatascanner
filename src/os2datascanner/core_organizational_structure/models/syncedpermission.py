@@ -15,6 +15,11 @@ class SyncedPermission(models.Model):
     class Meta:
         abstract = True
         permissions = [
+            # Try to get the translatable names of permissions right the first
+            # time -- Django's migration builder doesn't notice that they've
+            # changed, so you need to jump through some hoops (see migration
+            # 0070_unbreak_permission_name for the gory details)
+
             # SBSYS
             ("view_sbsys_tab", _("Can view the SBSYS tab in the report module")),
             # Leader Statistics Page
