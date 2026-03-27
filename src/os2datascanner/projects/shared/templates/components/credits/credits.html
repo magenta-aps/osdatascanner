@@ -1,0 +1,126 @@
+{% load i18n static %}
+
+<!DOCTYPE html>
+<html lang="">
+  <head>
+    <title>{% translate "Developer credits" %}</title>
+
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="{% static 'favicons/favicon-gold-30x32.png' %}">
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="{% static 'favicons/favicon-gold-15x16.png' %}">
+  </head>
+
+  <body id="dev-credits">
+    {% include "components/common/logo-o.html" %}
+    <div class="carousel">
+      {% for _ in repetitions %}
+        <div {% if forloop.last %}aria-hidden{% endif %}class="group">
+          {% for person in everybody %}
+            <div class="card">
+              <h3>{{ person.name }}</h3>
+              {% if person.quote %}<q>{{ person.quote }}</q>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+  </body>
+
+  <style>
+    * {
+      text-align: center;
+    }
+
+    .screen-reader-only {
+      display: none;
+    }
+
+    body#dev-credits {
+      display: flex;
+      flex-direction: column;
+      gap: 8rem;
+      align-items: center;
+      margin: 0;
+      padding: 10rem 0;
+    }
+
+    svg {
+      width: 60%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    div.logo {
+      align-self: stretch;
+    }
+
+    div.card > h3 {
+      margin: 0;
+    }
+
+    /* Carousel hacked up from https://blog.logto.io/css-only-infinite-scroll */
+    div.carousel {
+      max-width: 1000px;
+      overflow: hidden;
+      display: flex;
+
+      &:hover .group {
+        animation-play-state: paused;
+      }
+    }
+
+    div.carousel div.group {
+      display: flex;
+      gap: 20px;
+      padding-right: 20px;
+
+      height: fit-content;
+
+      will-change: transform;
+      animation-name: scrolling;
+      animation-duration: 90s;
+      animation-timing-function: linear;
+      animation-delay: 2s;
+      animation-iteration-count: infinite;
+    }
+
+    @keyframes scrolling {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-100%);
+      }
+    }
+
+    div.carousel div.group div.card {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+
+      padding: 20px;
+      width: 200px;
+      height: fit-content;
+      min-height: 200px;      
+      border-radius: 24px;
+      box-shadow: rgba(0, 0, 0, 10%) 5px 5px 20px 0;
+
+      color: white;
+
+      &:nth-child(odd) {
+        background-color: #3b88b0;
+      }
+
+      &:nth-child(even) {
+        background-color: #569fc7;
+      }
+    }
+  </style>
+</html>

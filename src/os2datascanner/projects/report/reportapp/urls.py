@@ -30,7 +30,9 @@ from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
 from .views.support_views import SupportButtonView
+from os2datascanner.projects.shared.egg import EggView
 from os2datascanner.projects.shared.views import CustomPasswordResetView
+
 
 reports_patterns = [
     # Pages related to unhandled reports:
@@ -134,7 +136,10 @@ urlpatterns = [
             JavaScriptCatalog.as_view(
                 packages=(['os2datascanner.projects.report.reportapp'])),
             name="jsi18n"),
-    path('htmx_endpoints/', include('os2datascanner.projects.report.reportapp.htmx_endpoints_urls'))
+    path('htmx_endpoints/',
+         include('os2datascanner.projects.report.reportapp.htmx_endpoints_urls')),
+
+    path("<egg:e>", EggView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
