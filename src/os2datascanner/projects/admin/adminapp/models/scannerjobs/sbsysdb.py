@@ -10,6 +10,7 @@ import structlog
 
 from os2datascanner.utils.ref import Counter
 from os2datascanner.engine2.model._staging import sbsysdb, sbsysdb_rule
+from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.rules.logical import AndRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.projects.grants.models import SMBGrant
@@ -89,35 +90,44 @@ class SBSYSDBScanner(Scanner):
         # CoveredAccount, but that's not how SBSYS scans work. Instead, we
         # yield a single scan spec with a tweaked Rule that filters out
         # everything not associated with a CoveredAccount
-        covered_accs = self.compute_covered_accounts()
         source, = self.generate_sources()
 
-        upn_set = set()
-        for acc in covered_accs:
-            acc_upns = {a._value
-                        for a in acc.aliases.filter(
-                                _alias_type=AliasType.USER_PRINCIPAL_NAME)}
-            logger.debug(
-                    "computed UPN set for account",
-                    scanner=self, account=acc, upn_set=acc_upns)
-            upn_set |= acc_upns
-        if not upn_set:
-            # No UPNs to scan, so don't emit a Source at all. Failing early is
-            # better than submitting a broken scan
-            logger.error(
-                    "final UPN set is empty, not creating a Source",
-                    scanner=self)
-            return
+        user_filter_rule: list[Rule] = []
+        # Only construct a filter rule if we're not scanning the whole
+        # organisation. Building a rule with tens of thousands of accounts
+        # /does/ work correctly, remarkably, but it's unnecessary -- and it
+        # stops us from scanning SBSYS users without an Account
+        if not self.scan_entire_org:
+            covered_accs = self.compute_covered_accounts()
+
+            upn_set = set()
+            for acc in covered_accs:
+                acc_upns = {a._value
+                            for a in acc.aliases.filter(
+                                    _alias_type=AliasType.USER_PRINCIPAL_NAME)}
+                logger.debug(
+                        "computed UPN set for account",
+                        scanner=self, account=acc, upn_set=acc_upns)
+                upn_set |= acc_upns
+            if not upn_set:
+                # No UPNs to scan, so don't emit a Source at all. Failing early is
+                # better than submitting a broken scan
+                logger.error(
+                        "final UPN set is empty, not creating a Source",
+                        scanner=self)
+                return
+
+            user_filter_rule.append(sbsysdb_rule.SBSYSDBRule(
+                    "Behandler.UserPrincipalName",
+                    "iin",
+                    list(upn_set),
+                    synthetic=True))
 
         Counter.try_incr(source_counter)
         yield spec_template._replace(
                 source=source,
                 rule=AndRule.make(
-                        sbsysdb_rule.SBSYSDBRule(
-                                "Behandler.UserPrincipalName",
-                                "iin",
-                                list(upn_set),
-                                synthetic=True),
+                        *user_filter_rule,
                         spec_template.rule))
 
     class Meta:
