@@ -4,9 +4,11 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from collections.abc import Sequence
+from datetime import datetime
 from io import BytesIO
-from typing import Iterable
+from typing import Iterable, override
 from functools import cached_property
+from dateutil import tz
 import structlog
 from contextlib import contextmanager
 
@@ -160,10 +162,11 @@ class SBSYSDBSource(Source):
                     weblink = f"{wl}#/sager/{cid}"
                 case _:
                     weblink = None
+            row_hint = OutputType.DatabaseRow.encode_json_object(db_row)
             yield SBSYSDBHandles.Case(
                     self,
                     db_row["Nummer"], db_row["Titel"], weblink,
-                    hints={"db_row": db_row})
+                    hints={"db_row": row_hint})
 
         logger.info(
                 "Sag query execution completed",
@@ -204,8 +207,17 @@ class SBSYSDBHandles:
             def check(self):
                 return True
 
+            @override
             def _generate_metadata(self):
                 row = registry.convert(self, OutputType.DatabaseRow) or {}
+                if isinstance(lm := row.get("LastChanged"), datetime):
+                    if lm.tzinfo is None:
+                        # SQL Server's DATETIME and DATETIME2 types don't
+                        # encode time zone information, because life is hard.
+                        # Groan. For now we assume the system timezone
+                        lm = lm.replace(tzinfo=tz.gettz())
+                    yield ("last-modified",
+                           OutputType.LastModified.encode_json_object(lm))
                 if upn := row.get("Behandler.UserPrincipalName"):
                     yield ("user-principal-name", upn)
 
@@ -364,7 +376,10 @@ class SBSYSDBHandles:
 
 @registry.conversion(OutputType.DatabaseRow, SBSYSDBHandles.Case._DUMMY_MIME)
 def get_database_row(r):
-    return r.handle.hint("db_row")
+    if row_hint := r.handle.hint("db_row"):
+        return OutputType.DatabaseRow.decode_json_object(row_hint)
+    else:
+        return None
 
 
 class SBSYSDBSources:
@@ -377,7 +392,8 @@ class SBSYSDBSources:
             engine, tables, dp = sm.open(self)
             Sag = tables["Sag"]
 
-            row_hints = self.handle.hint("db_row", {})
+            row_hints = OutputType.DatabaseRow.decode_json_object(
+                    self.handle.hint("db_row", {}))
 
             columns_to_select = [
                     getattr(Sag.c, col)
@@ -397,7 +413,7 @@ class SBSYSDBSources:
 
         required_columns = (
                 "ID", "Nummer", "Titel", "Kommentar",
-                "Behandler.UserPrincipalName",)
+                "Behandler.UserPrincipalName", "LastChanged",)
 
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)

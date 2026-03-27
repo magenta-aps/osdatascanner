@@ -5,6 +5,7 @@
 
 from abc import ABC, abstractmethod
 from sys import stderr
+from typing import Any, Generator, override
 import magic
 import inspect
 import warnings
@@ -50,7 +51,7 @@ class Resource(ABC):
         a file that cannot be read now is not the same as a file that cannot be
         read."""
 
-    def _generate_metadata(self):
+    def _generate_metadata(self) -> Generator[tuple[str, Any]]:
         """Yields zero or more (key, value) pairs of metadata properties. (Keys
         must be strings, and values must be suitable for JSON
         serialisation.)"""
@@ -163,6 +164,7 @@ class FileResource(TimestampedResource):
             with open(path, "rb") as fp:
                 yield fp
 
+    @override
     def _generate_metadata(self):
         yield "last-modified", unparse_datetime(self.get_last_modified())
 
