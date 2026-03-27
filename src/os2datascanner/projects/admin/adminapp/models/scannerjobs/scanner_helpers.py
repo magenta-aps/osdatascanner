@@ -563,7 +563,9 @@ class MIMETypeProcessStat(models.Model):
 
 
 class DuplicationStat(models.Model):
-    """Model used to record how often a scan hits duplicated files."""
+    """Records how often a scan encounters content it has already processed.
+      The file_size and process_time fields reflect only the duplicate encounters,
+      not the original, making them a measure of redundant work done by the scanner."""
 
     scan_status = models.ForeignKey(
         ScanStatus,
@@ -606,7 +608,9 @@ class DuplicationStat(models.Model):
 
 
 class HashCache(models.Model):
-    """A cache of file hashes for a given scan. Used to detect duplicates."""
+    """Tracks content identifiers seen during a single scan run to detect duplicates.
+    When a content identifier is encountered more than once, a DuplicationStat record
+    is created or updated to capture the redundant work."""
 
     scan_status = models.ForeignKey(
         'ScanStatus',
