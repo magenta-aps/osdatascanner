@@ -101,6 +101,8 @@ def find_scan_type(type_label):
             return _("MS Teams file")
         case "ews":
             return _("Exchange Mail")
+        case "ews-calendar":
+            return _("Exchange Calendar")
         case "gmail":
             return _("Gmail")
         case "msgraph-mail" | "msgraph-mail-account":

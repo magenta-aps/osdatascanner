@@ -284,7 +284,7 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                     source_category = 'mailscan'
                 case {'source_type': 'msgraph-teams-files'}:
                     source_category = 'teamsscan'
-                case {'source_type': 'msgraph-calendar'}:
+                case {'source_type': 'msgraph-calendar' | 'ews-calendar'}:
                     source_category = 'calendarscan'
                 case {'source_type': 'sbsys-db'}:
                     source_category = 'sbsys_db'
