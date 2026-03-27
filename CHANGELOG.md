@@ -33,6 +33,9 @@
 
 - The management command `scanstatus` now shows the correct total time spend scanning mime types.
 
+- When assigning synchronised permissions to accounts in the admin module,
+  permission names are now correctly translated.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"
