@@ -23,11 +23,20 @@ urlpatterns = [
 
 # Conditionally include urls for relevant active osdatascanner apps:
 if 'os2datascanner.projects.admin.organizations' in _active_apps:
-    urlpatterns.append(path('organizations/', include('organizations.urls')))
+    urlpatterns.append(
+        path(
+            'organizations/',
+            include('os2datascanner.projects.admin.organizations.urls')))
     # Appending grants under own
-    urlpatterns.append(path('grants/', include('organizations.grant_urls')))
+    urlpatterns.append(
+        path(
+            'grants/',
+            include('os2datascanner.projects.admin.organizations.grant_urls')))
 if 'os2datascanner.projects.admin.import_services' in _active_apps:
-    urlpatterns.append(path('imports/', include('import_services.urls')))
+    urlpatterns.append(
+        path(
+            'imports/',
+            include('os2datascanner.projects.admin.import_services.urls')))
 if (hasattr(settings, "OPTIONAL_APPS") and "debug_toolbar" in settings.OPTIONAL_APPS):
     import debug_toolbar
     urlpatterns.append(path('__debug__/', include(debug_toolbar.urls)))
