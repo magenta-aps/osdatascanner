@@ -28,7 +28,7 @@ function binAndCount(array, binVal){
   if (Number.isInteger(max/binSize)){
     nBins++;
   }
-  
+
   let counts = Array(nBins).fill(0);
   for (let i = 0; i < array.length; i++ ){
     const index = Math.floor(array[i]/binSize);
@@ -66,26 +66,26 @@ function getData(dataArray, granularity=5){ // jshint ignore:line
 
 function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
   const bar = new Chart(ctx, {
-    type: 'bar',
+    type: "bar",
     data: {
       datasets: [{
         data: data,
         backgroundColor: "rgba(100, 44, 145, 0.8)",
-        barPercentage: 1, 
+        barPercentage: 1,
         categoryPercentage: 1
       }]
     },
     options: {
       scales: {
         x: {
-            type: 'linear',
+            type: "linear",
             offset: false,
             grid: {
               offset: false
             },
             ticks: {
               stepSize: binSize,
-              color: 'black',
+              color: "black",
               font: {
                 size: 13
               },
@@ -93,25 +93,25 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
             },
             title: {
               display: true,
-              text: 'KB',
+              text: "KB",
               font: {
                   size: 16
               },
-              color: 'black'
+              color: "black"
             }
-        }, 
+        },
         y: {
             beginAtZero: true,
             title: {
               display: true,
-              text: gettext('Number of files'),
+              text: gettext("Number of files"),
               font: {
                   size: 16
               },
-              color: 'black'
+              color: "black"
             },
             ticks: {
-              color: 'black',
+              color: "black",
               font: {
                 size: 14
               },
@@ -121,7 +121,7 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
       },
       plugins: {
         legend: {
-        display: false
+          display: false
         },
         title: {
           display: true,
@@ -132,23 +132,16 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
           color: "black",
           align: "center"
         },
-        scales: {
-          x: {
-            ticks: {
-              fontSize: 12,
-              weight: 'bold'}
-          }
-        },
         datalabels: {
           display: false
         },
         tooltip: {
-          backgroundColor: 'white',
+          backgroundColor: "white",
           borderColor: "rgba(100, 44, 145, 0.8)",
           borderWidth: 1,
-          titleColor: 'black',
-          titleAlign: 'center',
-          bodyColor: 'black',
+          titleColor: "black",
+          titleAlign: "center",
+          bodyColor: "black",
           displayColors: false,
           padding: 10,
           callbacks: {
@@ -158,7 +151,7 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
                 return `${start}-${end} KB`;},
             title:(tooltipItem) =>{
               let val = tooltipItem[0].formattedValue;
-              if (val === '1'){
+              if (val === "1"){
                 return val.toString().concat(" ", gettext("file"));
               }
               else {
@@ -167,12 +160,10 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
             }
           }
         }
-      }
-        
+      },
+      maintainAspectRatio: false,
+      responsive: true,
     },
-    maintainAspectRatio: false,
-    responsive: true,
   });
   return bar;
 }
-

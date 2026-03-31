@@ -1,19 +1,26 @@
+.pie-charts-row {
+  display: flex;
+  flex-direction: column;
+
+  @media (min-width: 1920px) {
+    flex-direction: row;
+    gap: 2rem;
+
+    > * {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+  }
+}
+
 .charts-container-box {
   margin-top: 3rem;
   margin-bottom: 3rem;
   width: 100%;
-  align-items: left;
   background-color: white;
-  -webkit-box-shadow: 0px 0px 40px #22222229;
   box-shadow: 0px 0px 40px #22222229;
   border-radius: 1.25rem;
   padding: 2rem;
-}
-
-.pie-charts-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: minmax(0, auto);
 }
 
 .bar-charts-container {
@@ -26,8 +33,12 @@
 
 .chart-container {
   max-width: 90%;
-  /* height: 40vh; */
+  height: 28rem;
   position: relative;
+}
+
+.bar-charts-container .chart-container {
+  height: 24rem;
 }
 
 .chart-canvas {
@@ -35,33 +46,11 @@
 }
 
 .pie-chart-content {
-  display: -ms-grid;
   display: grid;
-  // -ms-grid-columns: 1fr;
-  // grid-template-columns: minmax(0, 1fr);
-  -ms-grid-columns: 1fr 1fr;
+  height: 100%;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  -ms-grid-rows: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
   align-items: center;
-  -webkit-box-align: center;
-  -ms-grid-row-align: center;
   grid-template-areas: "chrt lgnd";
-}
-
-.bar-chart-content {
-  display: -ms-grid;
-  display: grid;
-  -ms-grid-columns: 1fr;
-  grid-template-columns: minmax(0, 1fr);
-  -ms-grid-rows: minmax(0, 1fr);
-  grid-template-rows: minmax(0, 1fr);
-  align-items: center;
-  -webkit-box-align: center;
-  -ms-grid-row-align: center;
-  grid-template-areas:
-    "ttl"
-    "chrt";
 }
 
 .chart-legend {
@@ -77,13 +66,6 @@
   }
 }
 
-.charts-title {
-  text-align: left;
-  font-size: 1.5rem;
-  color: rgba(100, 100, 100, 1);
-  grid-area: ttl;
-}
-
 .bullet {
   content: "\2022 ";
   /* Add content: \2022 is the CSS Code/unicode for a bullet */
@@ -91,34 +73,4 @@
   padding-right: 0.2rem;
   font-size: 2rem;
   line-height: 1;
-}
-
-.scanner_dropdown {
-  width: 15rem;
-  padding-bottom: 10px;
-}
-
-.response_analysis {
-  display: flex;
-  align-items: center;
-  align-content: center;
-  font-size: 0.8rem;
-
-  .analysis-response-text {
-    display: flex;
-    margin-top: -0.75rem;
-  }
-
-  .analysis-response-icon {
-    display: flex;
-    margin: 0 0.25rem 0.75rem 0;
-    font-size: 0.8rem;
-
-    &--error {
-      color: var(--color-error);
-    }
-    &--success {
-      color: var(--color-ok-dark);
-    }
-  }
 }
