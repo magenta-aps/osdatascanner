@@ -70,7 +70,7 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
     data: {
       datasets: [{
         data: data,
-        backgroundColor: "rgba(100, 44, 145, 0.8)",
+        backgroundColor: ANALYSIS_BAR_COLOR,
         barPercentage: 1,
         categoryPercentage: 1
       }]
@@ -137,7 +137,7 @@ function createBars(data, ctx, titleText, binSize){ // jshint ignore:line
         },
         tooltip: {
           backgroundColor: "white",
-          borderColor: "rgba(100, 44, 145, 0.8)",
+          borderColor: ANALYSIS_BAR_COLOR,
           borderWidth: 1,
           titleColor: "black",
           titleAlign: "center",

@@ -12,16 +12,7 @@ function drawBars(){
 }
 
 function drawPies() {
-  const colorList = ["rgba(84, 71, 140)",
-    "rgba(44, 105, 154)",
-    "rgba(4, 139, 168)",
-    "rgba(13, 179, 158)",
-    "rgba(22, 219, 147)",
-    "rgba(131, 227, 119)",
-    "rgba(185, 231, 105)",
-    "rgba(239, 234, 90)",
-    "rgba(241, 196, 83)"
-  ];
+  const colorList = ANALYSIS_COLORS;
   // using json_script to get context data here
   const dataElement = document.getElementById("chart_data");
   if (typeof dataElement !== "undefined" && dataElement.textContent !== '""'){

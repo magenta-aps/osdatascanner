@@ -175,12 +175,12 @@ function makeDoughnutChart(text, data, colors, chartElement) {
 function drawDoughnut(totalHandledMatches, totalMatches, handledPercentage) {
 	const totalHandledDoughnutChartCtx = document.querySelector("#doughnut_chart_total").getContext("2d");
 	// Only show the "blue" ring when the percentage is 1 or above:
-	const blueColor = (!isNaN(handledPercentage) && handledPercentage >= 1) ? "#21759c" : "transparent";
+	const blueColor = (!isNaN(handledPercentage) && handledPercentage >= 1) ? DOUGHNUT_HANDLED_COLOR : "transparent";
 	charts.push(makeDoughnutChart(
 		// logic to avoid 0 divided by 0 being NaN
 		isNaN(handledPercentage) ? gettext("No data") : handledPercentage.toFixed(0) + "%",
 		[totalHandledMatches, (totalMatches - totalHandledMatches)],
-		[blueColor, "#f5f5f5"],
+		[blueColor, DOUGHNUT_EMPTY_COLOR],
 		totalHandledDoughnutChartCtx
 	));
 }
