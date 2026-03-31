@@ -127,9 +127,6 @@ function drawBar(data, ctxName, labels, swapXY, stacked) {
 		return;
 	}
 	
-	// Array of colors, changing colors of each dataset in the graph.
-	const colorArray = [ "#21759c","#d4efff", "#00496e", "#5ca4cd"];
-
 	// NumStacks is each dataset added, which uses the same labels for the x-axis,
 	// i.e. adding both handled matches and total matches for each org-unit in an organization.
 	const numStacks = data[0].length - 1;
@@ -157,7 +154,7 @@ function drawBar(data, ctxName, labels, swapXY, stacked) {
 	// [{'label': 'Handled matches', 'data': [0, 2, 5]}, {'label': 'Total matches', 'data': [9, 4, 8]}]
 
 	for (let i=0; i < barChartDatasets.length; i++) {
-		barChartDatasets[i].backgroundColor = colorArray[i % colorArray.length]; //Cycles colors in array
+		barChartDatasets[i].backgroundColor = BAR_CHART_COLORS[i % BAR_CHART_COLORS.length]; //Cycles colors in array
 	}
 
 	// SwapXY switches the x and y coordinates

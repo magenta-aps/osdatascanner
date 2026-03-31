@@ -1,13 +1,6 @@
-/* exported colorFunction, stepSizeFunction, resetZoomHighest, resetZoomDevelopment, avoidZero */
+// REFACTOR NOTE: This is where chart specific helpers should live.
 
-// Color function
-// reads colors from :root
-var colorFunction = function (color) {
-  "use strict";
-  return getComputedStyle(document.querySelector(":root")).getPropertyValue(
-    color
-  );
-};
+/* exported stepSizeFunction, resetZoomHighest, resetZoomDevelopment, avoidZero */
 
 // Step size function
 // Array = values
@@ -79,19 +72,12 @@ function drawCharts() {
   drawDoughnut(totalHandledMatches, totalMatches, handledPercentage);
 
   // Distribution of data types and resolution status
-  drawPie(sourceTypes, "datasources", [
-    "#fed149",
-    "#5ca4cd",
-    "#21759c",
-    "#00496e",
-    "#bfe474",
-    "#e47483",
-  ]);
+  drawPie(sourceTypes, "datasources", DATASOURCE_COLORS);
   drawPie(
     // Change the order of the data structure
     [3, 2, 1, 4, 0].map((i) => resolutionStatus[i]),
     "resolution_status",
-    ["#80ab82", "#a2e774", "#35bd57", "#1b512d", "#7e4672"]
+    RESOLUTION_STATUS_COLORS
   );
 
   if (
