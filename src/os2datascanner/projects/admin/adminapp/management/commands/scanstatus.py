@@ -80,7 +80,7 @@ class Command(BaseCommand):
 
         data_types = status.data_types()
         if data_types:
-            mime_types, sizes, times = zip(*[(k, p["size"], p["time"].seconds)
+            mime_types, sizes, times = zip(*[(k, p["size"], round(p["time"].total_seconds()))
                                              for k, p in data_types.items()])
 
             print("\n---Total size of scanned mime types [bytes]---")

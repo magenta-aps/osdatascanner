@@ -31,6 +31,8 @@
 
 - Button to Google Workspace SSO configuration no longer leads to an error page.
 
+- The management command `scanstatus` now shows the correct total time spend scanning mime types.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"
