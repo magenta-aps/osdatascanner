@@ -133,12 +133,13 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
-        if not (settings.KEYCLOAK_ENABLED and
+        if not (settings.KEYCLOAK_ENABLED and (
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or
+                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
                 settings.OIDC_CREATE_USER
-                ):
+        )):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
 
         realm, created = Realm.objects.get_or_create(
@@ -246,12 +247,13 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
-        if not (settings.KEYCLOAK_ENABLED and
+        if not (settings.KEYCLOAK_ENABLED and (
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or
+                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
                 settings.OIDC_CREATE_USER
-                ):
+        )):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
 
         return super().dispatch(request, *args, **kwargs)
