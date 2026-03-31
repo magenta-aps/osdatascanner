@@ -29,6 +29,8 @@
   - Bar charts
   - Analysis charts
 
+- Button to Google Workspace SSO configuration no longer leads to an error page.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"

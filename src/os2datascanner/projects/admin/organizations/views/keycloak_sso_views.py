@@ -137,6 +137,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or
+                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
                 settings.OIDC_CREATE_USER
                 ):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
@@ -250,6 +251,7 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
                 Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
                 Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
                 Feature.IMPORT_SERVICES in org.client.enabled_features or
+                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
                 settings.OIDC_CREATE_USER
                 ):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
