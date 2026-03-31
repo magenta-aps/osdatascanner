@@ -8,6 +8,7 @@ from collections.abc import Generator
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from os2datascanner.engine2.model.ewscalendar import EWSCalendarContentHandle
 
 from ..conversions.types import decode_dict
 from ...utils.replace_regions import replace_regions
@@ -143,6 +144,14 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
             rules = message.scan_spec.rule.flatten()
             censored_handle._item_name = censor_context(censored_handle._item_name, rules)
             messages.replace(message, handle=censored_handle)
+
+        # Censor calendar event subject in handle
+        # It's neater to match the class here since the attribute we are censoring
+        # is so far down the layers.
+        if isinstance(message.handle, EWSCalendarContentHandle):
+            rules = message.scan_spec.rule.flatten()
+            calendar_handle = message.handle.source.handle
+            calendar_handle._subject = censor_context(calendar_handle._subject, rules)
 
         yield messages.MatchesMessage(
                 scan_spec=message.scan_spec,

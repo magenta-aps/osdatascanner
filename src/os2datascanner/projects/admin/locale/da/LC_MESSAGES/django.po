@@ -407,7 +407,7 @@ msgstr "Kalender begivenheder"
 
 #: adminapp/models/scannerjobs/exchangecalendarscanner.py
 msgid "Exchange Calendar scanner"
-msgstr "Exchange Kalender-scanner"
+msgstr "Exchange-Kalenderscanner"
 
 #: adminapp/models/scannerjobs/exchangescanner.py
 #: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
