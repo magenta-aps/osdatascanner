@@ -119,12 +119,12 @@ class TestEngine2SourceManager:
             sm.open(tracker3aa)
 
             sm.clear_dependents()
-            for indie in (tracker1, tracker2, tracker3,):
-                assert indie.count == 1, f"independent Source {indie} was closed"
+            for c, indie in enumerate((tracker1, tracker2, tracker3,)):
+                assert indie.count == 1, (f"independent Source {indie} "
+                                          f"(tracker index {c}) was closed")
             for dependent in (tracker1a, tracker3a, tracker3aa,):
                 assert dependent.count == 0, f"dependent Source {dependent} was not closed"
 
-    @pytest.mark.skip(reason="SourceManager.width bug")
     def test_width_with_depth(self):
         self.test_dependent_clearing(width=3)
 
