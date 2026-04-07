@@ -57,3 +57,8 @@ scrape_configs:
     scrape_interval: 5s
     static_configs:
       - targets: ['queue:15692']
+
+  - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['cadvisor:8080']

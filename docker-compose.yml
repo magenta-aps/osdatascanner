@@ -586,6 +586,19 @@ services:
     profiles:
       - metric
 
+  cadvisor:
+    container_name: "cadvisor"
+    image: "gcr.io/cadvisor/cadvisor:v0.54.1"
+    # `cAdvisor` is run as root! This is required to read ``/var/lib/docker/``.
+    volumes:
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    restart: unless-stopped
+    profiles:
+      - metric
+
   idp:
     image: magentaaps/simplesamlphp:master
     environment:
