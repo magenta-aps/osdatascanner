@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% comment %} 
+{% comment %}
   This component shows a neat list of permissions as small little boxes.
   The component takes a few arguments:
   - permissions: A list of the permissions already applied.
@@ -10,9 +10,10 @@
 {% endcomment %}
 
 {% for permission in permissions %}
+  {% translate permission.name as translated_name %}
   {% if can_remove %}
     <div class="list_box can_remove"
-         title="{% trans "Click to remove" %} {{ permission.name }}"
+         title="{% trans "Click to remove" %} {{ translated_name }}"
          name="rem-permission"
          hx-post=""
          hx-swap="outerHTML"
@@ -21,13 +22,13 @@
          hx-trigger="click"
          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
          hx-vals='{"rem-permission": "{{ permission.pk }}"}'
-         hx-confirm="{% trans "Are you sure you want to remove" %} {{ permission.name }}?">
+         hx-confirm="{% trans "Are you sure you want to remove" %} {{ translated_name }}?">
       <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-      <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
+      <!-- djlint:off -->{{ translated_name }}</div><!--djlint:on-->
     {% else %}
       <div class="list_box">
         <!-- Turning djlint off here, as it will otherwise insert unwanted whitespace -->
-        <!-- djlint:off -->{{ permission.name }}</div><!--djlint:on-->
+        <!-- djlint:off -->{{ translated_name }}</div><!--djlint:on-->
       {% endif %}
     {% endfor %}
     {% if available_permissions and can_add %}
@@ -46,7 +47,8 @@
               autocomplete="off">
         <option value="" selected>{% trans "Choose permission" %}</option>
         {% for permission in available_permissions %}
-          <option value="{{ permission.pk }}">{{ permission.name }}</option>
+          {% translate permission.name as translated_name %}
+          <option value="{{ permission.pk }}">{{ translated_name }}</option>
         {% endfor %}
       </select>
     {% endif %}

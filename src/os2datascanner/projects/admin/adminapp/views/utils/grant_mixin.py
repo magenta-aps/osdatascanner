@@ -7,7 +7,7 @@ from django.forms import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth import PermissionDenied
-from utilities import UserWrapper
+from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.organizations.models.grant_extra import (GrantExtra,
                                                                             GrantExtraForm)
 
