@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-03-23 10:34+0100\n"
+"POT-Creation-Date: 2026-04-08 12:24+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1007,18 +1007,13 @@ msgid "case number"
 msgstr "sagsnummer"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
-msgid "resource age"
-msgstr "kildealder"
-
-#: reportapp/templates/components/report_table/report_table--sbsys.html
 #: reportapp/templates/components/report_table/report_table.html
 msgid "Sort table by"
 msgstr "Sortér tabel efter"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
-#: reportapp/templates/components/report_table/report_table.html
-msgid "Resource age"
-msgstr "Kildealder"
+msgid "resource age"
+msgstr "kildealder"
 
 #: reportapp/templates/components/report_table/report_table--sbsys.html
 msgid "status"
@@ -1116,6 +1111,10 @@ msgstr "Navn"
 #: reportapp/views/statistics_views.py
 msgid "Matches"
 msgstr "Matches"
+
+#: reportapp/templates/components/report_table/report_table.html
+msgid "Resource age"
+msgstr "Kildealder"
 
 #: reportapp/templates/components/report_table/report_table.html
 #: reportapp/templates/scannerjobs/scannerjob_list.html
