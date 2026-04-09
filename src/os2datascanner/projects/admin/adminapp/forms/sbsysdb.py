@@ -31,7 +31,7 @@ class SBSYSDBScannerForm(ScanScopeMixin, ScannerForm):
                 "grant",
                 (
                     _("Advanced SBSYS scan settings"),
-                    ["weblink"]
+                    ["weblink", "owner_field"]
                 ),
             ]
         ),

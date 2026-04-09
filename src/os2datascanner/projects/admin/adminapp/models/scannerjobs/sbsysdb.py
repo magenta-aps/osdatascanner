@@ -23,6 +23,13 @@ logger = structlog.get_logger("adminapp")
 
 
 class SBSYSDBScanner(Scanner):
+    SUPPORTED_ALIASES = [
+            (value, label)
+            for value, label in AliasType.choices
+            if value in (AliasType.USER_PRINCIPAL_NAME.value,
+                         AliasType.LOGON.value,
+                         AliasType.SID.value,)]
+
     _supports_account_annotations = True  # sort of :D
 
     @classmethod
@@ -69,6 +76,16 @@ class SBSYSDBScanner(Scanner):
             help_text=_(
                     "A service account with access to the SQL Server"
                     " instance."))
+
+    owner_field = models.CharField(
+            max_length=None,
+            blank=False,
+            choices=SUPPORTED_ALIASES,
+            default=AliasType.USER_PRINCIPAL_NAME.value,
+            verbose_name=_("Ownership field"),
+            help_text=_(
+                    "The user alias value to use to associate SBSYS cases"
+                    " with imported users."))
 
     def generate_sources(self):
         if not self.grant:
