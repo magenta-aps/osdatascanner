@@ -3,7 +3,7 @@
 The `os2datascanner.engine2.pipeline` module contains the `engine2` pipeline,
 also known as the _scanner engine_.
 
-![Image of the interactions of os2datascanner components](pipeline-architecture.svg)
+![Image of the interactions of OSdatascanner components](pipeline-architecture.svg)
 
 ## What components make up the pipeline?
 
@@ -23,7 +23,7 @@ The pipeline implementation consists of five stages:
 * the Exporter, which consumes *match*, *problem* and *metadata* messages and
   produces *result* messages suitable for the outside world.
 
-![Overview of the data carried by OS2datascanner messages](pipeline-messages.svg)
+![Overview of the data carried by OSdatascanner messages](pipeline-messages.svg)
 
 To improve cache efficiency, and to reduce the amount of potentially sensitive
 information transmitted over the underlying RabbitMQ message bus, the
@@ -111,7 +111,7 @@ jobs across the admin and report modules:
   database: their tasks should be precisely and exclusively specified by their
   input.
 
-## The big picture - communication between OS2datascanner components
+## The big picture - communication between OSdatascanner components
 
 As mentioned, the engine consists of five stages that work in tandem with the
 four collector processes and the admin and report module. There are a lot of complex,
@@ -121,7 +121,7 @@ To ease comprehension of the entire set of interactions at a fine level of detai
 an overview of interactions between all components (as well as the user) is illustrated by
 the UML Sequence Diagram below:
 
-![UML Sequence Diagram of engine component communication](./os2ds_sequence_overview.svg)
+![UML Sequence Diagram of engine component communication](./osds_sequence_overview.svg)
 
 _Note: Due to the distributed nature of the system, all of the messages should be
 considered asynchronous._
@@ -152,7 +152,7 @@ Should a conversion fail, a `ProblemMessage` is enqueued.
 Finally, no matter the outcome of the above, a `StatusMessage` describing
 the progression of the scanner job is enqueued and sent to the status collector.
 
-![UML Sequence Diagram of Explorer Stage](./os2ds_sequence_explorer.svg)
+![UML Sequence Diagram of Explorer Stage](./osds_sequence_explorer.svg)
 
 ### Worker
 
@@ -164,7 +164,7 @@ stage is a substage of the worker process, so not all messages actually go throu
 the message broker. As such, words like "enqueued" and "consumed" should be interpreted
 as maybe for all substages of the worker stage.
 
-![UML Sequence Diagram of Worker Stage](./os2ds_sequence_worker.svg)
+![UML Sequence Diagram of Worker Stage](./osds_sequence_worker.svg)
 
 #### Processor
 
@@ -234,7 +234,7 @@ forgotten and left behind.
 The job of the exporter is to compile `MetadataMessage`s, `MatchesMessage`s and `ProblemMessage`s
 into a uniform `ResultMessage`s, which are censored in case of matches involving sensitive information.
 
-![UML Sequence Diagram of Exporter Stage](./os2ds_sequence_exporter.svg)
+![UML Sequence Diagram of Exporter Stage](./osds_sequence_exporter.svg)
 
 ### Checkup Collector
 
@@ -251,7 +251,7 @@ The consumed `CheckupMessage` is then converted to a database object and stored 
 admin modules database. The next time that the scanner job is started, every relevant
 checkup message is enqueued in the pipeline along with the regular `ScanSpecMessage`s. 
 
-![UML Sequence Diagram of Checkup Collector](./os2ds_sequence_checkup_collector.svg)
+![UML Sequence Diagram of Checkup Collector](./osds_sequence_checkup_collector.svg)
 
 ### Status Collector
 
@@ -263,14 +263,14 @@ The responsibility of the status collector is to consume these messages from Rab
 and perform CRUD operations on a corresponding database object in the admin module. 
 This database object is then queried by the admin module and presented to the user.
 
-![UML Sequence Diagram of Status Collector](./os2ds_sequence_status_collector.svg)
+![UML Sequence Diagram of Status Collector](./osds_sequence_status_collector.svg)
 
 ### Event Collector
 
 This collector handles bulk CRUD operations on various objects in the report module
 database.
 
-![UML Sequence Diagram of Event Collector](./os2ds_sequence_event_collector.svg)
+![UML Sequence Diagram of Event Collector](./osds_sequence_event_collector.svg)
 
 ### Result Collector
 
@@ -280,7 +280,7 @@ for and consumes these messages with the purpose of performing CRUD operations o
 scanned content and contains relevant metadata and either matches or a problem description
 in case of an error.
 
-![UML Sequence Diagram of Result Collector](./os2ds_sequence_result_collector.svg)
+![UML Sequence Diagram of Result Collector](./osds_sequence_result_collector.svg)
 
 ## The basis of a pipeline stage instance
 
@@ -288,7 +288,7 @@ Since every pipeline stage must communicate with RabbitMQ using AMQP and must be
 concurrently on separate threads, all engine stages share some common abstractions
 depicted on the UML Class Diagram below:
 
-![UML Class Diagram of general pipeline stage abstractions](./os2ds_queues.svg)
+![UML Class Diagram of general pipeline stage abstractions](./osds_queues.svg)
 
 There are four classes in this class hierarchy, three of which that provide some general 
 interactions with RabbitMQ:
@@ -297,7 +297,7 @@ interactions with RabbitMQ:
 - `PikaPipelineRunner`
 - `PikaPipelineThread`
 
-The `GenericRunner` handles messages that are specific to the OS2datascanner engine.
+The `GenericRunner` handles messages that are specific to the OSdatascanner engine.
 
 _Note: all of the four collector processes have their own specialized runner based
 on `PikaPipelineThread` instead of using the `GenericRunner`._
@@ -344,6 +344,6 @@ scanner jobs in the first place.
 The interaction between the main thread, the background thread and RabbitMQ is captured by the UML
 Sequence Diagram below:
 
-![UML Sequence Diagram showing the interaction between threads in `PikaPipelineThread`](os2ds_ppt_threads.svg)
+![UML Sequence Diagram showing the interaction between threads in `PikaPipelineThread`](osds_ppt_threads.svg)
 
 

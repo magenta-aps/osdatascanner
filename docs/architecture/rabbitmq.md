@@ -1,4 +1,4 @@
-# RabbitMQ in OS2datascanner
+# RabbitMQ in OSdatascanner
 
 In order to obtain a distributed system, where the admin module, the report module
 and the engine components can run concurrently on separate machines that are

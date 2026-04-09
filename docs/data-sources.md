@@ -1,16 +1,16 @@
 # Data sources
 
-OS2datascanner supports many data sources, and only a thin API layer is needed
+OSdatascanner supports many data sources, and only a thin API layer is needed
 to connect more to the system. This document gives a brief overview of them.
 
 ## Dropbox
 
 ## Exchange Web Services
 
-OS2datascanner can connect to a Microsoft Exchange installation, either locally
+OSdatascanner can connect to a Microsoft Exchange installation, either locally
 or in the cloud, using the
 [Exchange Web Services](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/explore-the-ews-managed-api-ews-and-web-services-in-exchange)
-API. (OS2datascanner uses the [`exchangelib`](https://github.com/ecederstrand/exchangelib)
+API. (OSdatascanner uses the [`exchangelib`](https://github.com/ecederstrand/exchangelib)
 package as its implementation of the API.)
 
 ### Try it out
@@ -31,7 +31,7 @@ be used instead.
 
 EWS doesn't offer any way of discovering the users present in an Exchange
 installation, so you'll need to get that from Active Directory or from Azure
-AD. Choose the _Organisatoriske enheder_ field to use OS2datascanner's LDAP
+AD. Choose the _Organisatoriske enheder_ field to use OSdatascanner's LDAP
 support to automatically scan all of the users detected in your organisational
 hierarchy, or upload a UTF-8 text file with one account name on each line with
 _Upload fil_.
@@ -70,14 +70,14 @@ tenant.
 
 ## Google Workspace
 
-OS2datascanner has initial support for scanning organisational Gmail and Google
+OSdatascanner has initial support for scanning organisational Gmail and Google
 Drive accounts. Google Workspace does not support the OAuth2 client credentials
 flow used by the Microsoft Graph sources, so the use of these data sources
 requires a lot of manual configuration.
 
 ## HTTP
 
-OS2datascanner can scan web sites in two ways:
+OSdatascanner can scan web sites in two ways:
 
 * as a traditional crawler, that traverses all of the links and references
   found in a web site and scans these recursively; or
@@ -86,13 +86,13 @@ OS2datascanner can scan web sites in two ways:
   file](https://www.sitemaps.org/protocol.html) (either one present on the site
   or one uploaded to the administration system).
 
-As a policy decision, OS2datascanner does not honour the `robots.txt` file, so
+As a policy decision, OSdatascanner does not honour the `robots.txt` file, so
 you should normally only run it on sites under your control.
 
-Note that OS2datascanner's user agent advertises both its own version and that
+Note that OSdatascanner's user agent advertises both its own version and that
 of the underlying `python-requests` library:
 
-    OS2datascanner 3.17.7 (python-requests/2.28.1) (+https://os2datascanner.dk/agent)
+    OSdatascanner 3.17.7 (python-requests/2.28.1) (+https://osdatascanner.dk/agent)
 
 Be aware of this if you need to whitelist the user agent; in particular, make
 sure that a blacklist rule for `python-requests` doesn't take priority.
@@ -147,22 +147,22 @@ scanning `https://example.com/subtree/`, no link to
 
 ### Notes on sitemaps
 
-When using a sitemap, OS2datascanner will emit the specified root page and the
+When using a sitemap, OSdatascanner will emit the specified root page and the
 files enumerated in the sitemap, _and nothing else_. Crawling is disabled when
 using a sitemap, which can provide better performance.
 
-Starting with release 3.22.2, OS2datascanner also supports
+Starting with release 3.22.2, OSdatascanner also supports
 [Google's image extensions](https://developers.google.com/search/docs/crawling-indexing/sitemaps/image-sitemaps) to the sitemap schema. Earlier releases
 do not support the extensions: only those links present in a `<loc />` tag are
 emitted.
 
-OS2datascanner trusts the hints provided by a sitemap over the information
+OSdatascanner trusts the hints provided by a sitemap over the information
 provided by HTTP headers: if the `<lastmod />` element contains a last
 modification date for a URL, then its `Last-Modified` header value won't even
 be fetched. (This header is often overridden by a proxy server or web cache, so
 its value can be less reliable.)
 
-OS2datascanner also implements a sitemap extension, the `<hints />` element,
+OSdatascanner also implements a sitemap extension, the `<hints />` element,
 that can be used to give the same behaviour for the `Content-Type` header:
 
 ```xml
@@ -179,10 +179,10 @@ that can be used to give the same behaviour for the `Content-Type` header:
 ```
 
 Using these two elements properly can greatly reduce the number of HTTP
-requests OS2datascanner must make.
+requests OSdatascanner must make.
 
 Note that hints are only valid for the scan in which they were found: if
-OS2datascanner finds a match in a file whose MIME type was specified by the
+OSdatascanner finds a match in a file whose MIME type was specified by the
 sitemap, then subsequent checkups for that file _will_ retrieve the
 `Content-Type` header.
 
@@ -197,9 +197,9 @@ and without.
 
 ## Microsoft Graph
 
-OS2datascanner has support for scanning resources present in Microsoft Graph,
+OSdatascanner has support for scanning resources present in Microsoft Graph,
 and can participate in the normal OAuth2 client credentials flow to allow
-administrators to revocably delegate permissions to an OS2datascanner instance.
+administrators to revocably delegate permissions to an OSdatascanner instance.
 Microsoft Graph can also be used as a source of organisational information.
 
 Office 365 mails, OneDrive and SharePoint files, and calendar invitations are
@@ -212,13 +212,13 @@ so this feature remains under internal test.)
 Log in to your Microsoft Graph tenant as a global administrator. Under the
 _App registrations_ blade, choose _New registration_.
 
-Choose a name for the application (_OS2datascanner dev test_, for example),
+Choose a name for the application (_OSdatascanner dev test_, for example),
 specify that it's a single tenant app, and give
 `http://localhost:8040/grants/msgraph/receive/` as a redirect URL (of type
 _Web_).
 
 Under the resulting _Overview_ blade, copy the application ID and provide it to
-the OS2datascanner administration system as the setting `MSGRAPH_APP_ID`. Then
+the OSdatascanner administration system as the setting `MSGRAPH_APP_ID`. Then
 open the _Certificates & secrets_ blade and create a new client secret. Copy
 its value and provide it to the administration system as the setting
 `MSGRAPH_CLIENT_SECRET`.
@@ -232,15 +232,15 @@ _application permissions_:
 * `Mail.Read`
 * `Sites.Read.All`
 
-(Because OS2datascanner doesn't operate in the context of a specific user, but
+(Because OSdatascanner doesn't operate in the context of a specific user, but
 rather of the organisation as a whole, these must be application permissions
 rather than delegated ones.)
 
-Once you've done that, return to your OS2datascanner instance and choose one
+Once you've done that, return to your OSdatascanner instance and choose one
 of the _Office 365_ scanner types. The first time you set one of these up,
 you'll be redirected to Microsoft and asked to confirm that you want your
-OS2datascanner instance to have access to your tenant; after this has been done
-once, OS2datascanner will remember the delegation and reuse it for future
+OSdatascanner instance to have access to your tenant; after this has been done
+once, OSdatascanner will remember the delegation and reuse it for future
 scanner jobs.
 
 ## SMB

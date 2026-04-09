@@ -1,6 +1,6 @@
 # Conversions and rules
 
-This document is a short overview of OS2datascanner's capabilities for scanning
+This document is a short overview of OSdatascanner's capabilities for scanning
 data: how rules work, how combining rules works, and how objects discovered by
 the scanner engine are converted into searchable representations. (Collectively
 all of these capabilities are sometimes grouped together and referred to as the
@@ -9,7 +9,7 @@ _rule engine_.)
 ## What _is_ a rule, anyway?
 
 Fundamentally, a rule is a test: one or more properties that an object under
-scan (a file, or an email, or...) must have. In OS2datascanner, objects that
+scan (a file, or an email, or...) must have. In OSdatascanner, objects that
 pass the test of the user-specified rule associated with a scanner are
 considered to have _matches_, the problems displayed in the report module.
 
@@ -17,7 +17,7 @@ This description is very generic, because rules _are_ generic! Some of them
 map nicely onto search criteria: "find Danish civil registration numbers", or
 "find matches for the regular expression `[0-9]{16}`". Some of them are
 filters: "does the metadata indicate that this thing's been modified since last
-Thursday at 20:08:51 local time?", or "does OS2datascanner know of a way to
+Thursday at 20:08:51 local time?", or "does OSdatascanner know of a way to
 treat this thing as an image?". Yet others are logical operators, for combining
 other rules together.
 
@@ -28,7 +28,7 @@ unfortunate from an explanatory perspective, but let's see what we can do.
 
 ### `OutputType`
  
-OS2datascanner defines a simple list of types for representations in the
+OSdatascanner defines a simple list of types for representations in the
 `OutputType` enumeration (`os2datascanner.engine2.conversions.types.OutputType`).
 Each one of these types represents an item of data that a rule might want to
 look at. Here are a few examples:
@@ -97,7 +97,7 @@ def textify_pdf(r):
 
 #### When _not_ to contribute a conversion
 
-OS2datascanner doesn't actually have anything like that explicit conversion
+OSdatascanner doesn't actually have anything like that explicit conversion
 from PDF to text. It can scan PDF files, though, so how does that work?
 
 There's a special piece of fallback logic in the pipeline's `processor` stage,
@@ -109,7 +109,7 @@ actually look at its actual contents?)
 
 In general, structured documents like PDF files or office documents shouldn't
 have explicit conversions; instead, they should be defined as containers of
-simpler documents. For example, OS2datascanner considers a PDF file to be a
+simpler documents. For example, OSdatascanner considers a PDF file to be a
 container for zero or more pages, each of which is itself a container for a
 text file and zero or more embedded images. This has several advantages:
 
@@ -117,7 +117,7 @@ text file and zero or more embedded images. This has several advantages:
   to run external commands more often than necessary
 * decomposing file formats into simpler ones means that every document type can
   benefit from optimisations to the common conversion functions
-* treating file formats as OS2datascanner containers means that our references
+* treating file formats as OSdatascanner containers means that our references
   can be very precise (the system can report a match in `image on page 5 of
   document.pdf` instead of just `document.pdf`)
 
@@ -125,7 +125,7 @@ text file and zero or more embedded images. This has several advantages:
 
 ### `SimpleRule`s
 
-The main consumer of conversions in the OS2datascanner pipeline is the
+The main consumer of conversions in the OSdatascanner pipeline is the
 `matcher` stage, which is in charge of running one or more `SimpleRule`s before
 going back to the `processor` to ask for more conversions.
 
@@ -173,7 +173,7 @@ class CreditCardRule(SimpleRule):
 
 ### (Complicated) `Rule`s
 
-Quite a lot of OS2datascanner rules operate on several different types of
+Quite a lot of OSdatascanner rules operate on several different types of
 conversions and represent complex boolean expressions. That doesn't sit well
 with `SimpleRule`, so how do _those_ work?
 
@@ -191,7 +191,7 @@ That is, you can't call `match()` on a `Rule`, but you can ask it for something
 you _can_ call `match()` on -- and what you should do next with the result.
 This is enough to provide very efficient execution, using the technique known
 as [short-circuiting](https://en.wikipedia.org/wiki/Short-circuit_evaluation):
-the only representations that OS2datascanner needs to compute are the ones that
+the only representations that OSdatascanner needs to compute are the ones that
 are required to reduce a `Rule` to a conclusion.
 
 ```
@@ -275,7 +275,7 @@ ready:
 True
 ```
 
-(In the OS2datascanner pipeline, this is why the `processor` and `matcher`
+(In the OSdatascanner pipeline, this is why the `processor` and `matcher`
 stages send messages back and forth: `matcher` asks `processor` for the next
 representation rather than running the conversion itself.)
 
@@ -326,9 +326,9 @@ True
 (Strictly speaking, the `make` methods implement something stronger than
 short-circuiting, as the element that forces a specific conclusion can occur
 _anywhere_ in the list, not just at the beginning. In practice, though,
-OS2datascanner only ever consumes things from the beginning of the rule.)
+OSdatascanner only ever consumes things from the beginning of the rule.)
 
-There's also one other convenience function: `make_if`. OS2datascanner uses
+There's also one other convenience function: `make_if`. OSdatascanner uses
 this to express conditional rules: the most common use of this in the codebase
 is "if this file is an image, then its dimensions mustn't be too small or too
 big". The implementation of this is simple enough to repeat here:
@@ -351,7 +351,7 @@ then... oh well, keep going"?)
 
 ### Down but not up
 
-One important detail to remember when building an OS2datascanner `Rule` is that
+One important detail to remember when building an OSdatascanner `Rule` is that
 the `processor` stage is allowed to recurse down into an object to look for
 more conversions, _but is not allowed to go back up again_. This makes the
 pipeline much more efficient, but it does bring one small complication with it.
@@ -407,7 +407,7 @@ otherwise be useless.
 
 ## Executing a `Rule`
 
-Let's take a real, complex rule, one that OS2datascanner might generate in a
+Let's take a real, complex rule, one that OSdatascanner might generate in a
 production system, and see how the system evaluates it:
 
 ```

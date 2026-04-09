@@ -1,4 +1,4 @@
-## Release a new version of os2datascanner
+## Release a new version of OSdatascanner
 
 #### First make sure to update the version variable and our changelog:
 * `git checkout main`

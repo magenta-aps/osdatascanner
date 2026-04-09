@@ -1,6 +1,6 @@
 # Installation
 
-OS2datascanner is composed of many services. Each service is packaged in Docker
+OSdatascanner is composed of many services. Each service is packaged in Docker
 and can be run with any container orchestration system, such as
 `docker-compose`. For general information on using Docker and `docker-compose`,
 please refer to [the official Docker documentation](https://docs.docker.com/).
@@ -8,7 +8,7 @@ please refer to [the official Docker documentation](https://docs.docker.com/).
 
 ## Docker services overview
 
-As mentioned in the [system overview](./index.md), the OS2datascanner consists
+As mentioned in the [system overview](./index.md), the OSdatascanner consists
 of three components, or modules. These are each responsible for one or more
 services in the system:
 
@@ -43,7 +43,7 @@ which are optional):
 
 ## Docker images
 
-All images related to OS2datascanner can be found [on Magenta's Docker image
+All images related to OSdatascanner can be found [on Magenta's Docker image
 repository](https://hub.docker.com/u/magentaaps), but here follows the images
 names for the three modules, with links to the module repositories:
 
@@ -52,13 +52,13 @@ names for the three modules, with links to the module repositories:
 - **Report-module**: [magentaaps/os2datascanner-report](https://hub.docker.com/r/magentaaps/os2datascanner-report)
 
 Furthermore, we have made an adapted postgres image with dedicated users for
-the OS2datascanner system (to avoid giving root privileges to the
-OS2datascanner users in the postgres container):
+the OSdatascanner system (to avoid giving root privileges to the
+OSdatascanner users in the postgres container):
 
 - **Adapted postgres image**: [magentaaps/os2datascanner-db](https://hub.docker.com/r/magentaaps/os2datascanner-db)
 
 This last image is made available for anyone who wishes to run their
-OS2datascaner databases in a Docker container, rather than directly on the
+OSdatascaner databases in a Docker container, rather than directly on the
 host. The image allows for the two databases (one for the Admin-module, one for
 the Report-module) to be run from a single container or from a container each.
 It is configured through seven environment variables - the superuser and at
@@ -89,13 +89,13 @@ using Docker, these files need to be mounted correctly as described below.
 
 ## Running the system
 
-OS2datascanner is a multi-service system, and as such also a multi-container
-system. It may be advantageous to run it using `docker-compose`. A
+OSdatascanner is a multi-service system, and as such also a multi-container
+system. It may be docker-compose`. A
 [docker-compose file for
-development](https://github.com/os2datascanner/os2datascanner/blob/main/docker-compose.yml)
+development](https://github.com/magenta-aps/osdatascanner/blob/main/docker-compose.yml)
 is in the repository root.
 
-Each service for the OS2datascanner system can be started using docker.  Note
+Each service for the OSdatascanner system can be started using docker.  Note
 that some configurations can be adapted to the individual host - we give the
 options required to parallel the setup in the following `docker-compose.yml`
 file for easier reference in the rest of the documentation.
@@ -112,8 +112,8 @@ file for easier reference in the rest of the documentation.
 | exporter         | `docker run -d --mount type=bind,source="$(pwd)"/engine-user-settings.toml,target=/user-settings.toml,readonly magentaaps/os2datascanner-engine exporter`                                                                  |
 
     
-Furthermore, OS2datascanner depends PostgreSQL for the two databases (one each
+Furthermore, OSdatascanner depends PostgreSQL for the two databases (one each
 for the Admin- and Report modules), and a RabbitMQ service.  Both can be run
 directly on the host, or using docker images. Note that the [configuration of
-OS2datascanner](configuration.md) should match whichever set-up is chosen for
+OSdatascanner](configuration.md) should match whichever set-up is chosen for
 the databases and message queue.

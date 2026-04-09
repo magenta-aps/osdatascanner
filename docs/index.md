@@ -1,11 +1,11 @@
-# OS2datascanner
+# OSdatascanner
 
 Welcome to the **technical documentation** for the
-[OS2datascanner](https://os2datascanner.dk/) system.
+[OSdatascanner](https://osdatascanner.dk/) system.
 
 ## System overview
 
-An OS2datascanner installation consists of three components: the
+An OSdatascanner installation consists of three components: the
 *administration interface* (a Django app), the *scanner engine* (a set of
 system services), and the *report interface* (another Django app).
 

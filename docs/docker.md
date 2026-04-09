@@ -1,16 +1,16 @@
 # Docker
 
-The repository contains a `Dockerfile` for each of the OS2datascanner
+The repository contains a `Dockerfile` for each of the OSdatascanner
 modules:
 
 -   **Administration**: `docker/admin/Dockerfile`
 -   **Engine**: `docker/engine/Dockerfile`
 -   **Report**: `docker/report/Dockerfile`
 
-Using these is the recommended way to install OS2datascanner as a
+Using these is the recommended way to install OSdatascanner as a
 developer.
 
-To run OS2datascanner in Docker, you need a running Docker daemon. See
+To run OSdatascanner in Docker, you need a running Docker daemon. See
 `the official Docker documentation <https://docs.docker.com/install/>`
 for installation instructions.
 
@@ -30,7 +30,7 @@ passed to the container:
 
 -   `docker/postgres-initdb.d/10-test-for-valid-env-variables.sh`
 
-To run a fully functional OS2datascanner system, you will need to start
+To run a fully functional OSdatascanner system, you will need to start
 a number of services. The recommended way to set up an appropriate
 development environment is to use docker-compose.
 

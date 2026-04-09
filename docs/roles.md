@@ -1,6 +1,6 @@
 # Role, Special roles, and Alias
 
-There are different roles and alias types in the OS2datascanner system.
+There are different roles and alias types in the OSdatascanner system.
 Each role or alias has different permissions and responsibilities
 through both the Admin- and Report module.
 
@@ -10,11 +10,11 @@ the report module.
 
 These objects are usually created and updated by automatically importing them
 from external directory systems, but you can also create your own from within
-OS2datascanner -- or add some extras on top of an imported directory.
+OSdatascanner -- or add some extras on top of an imported directory.
 
 ## Roles
 
-OS2datascanner uses a simplified form of [Role-Based Access Control](https://en.wikipedia.org/wiki/Role-based_access_control) to determine what functions a user should have
+OSdatascanner uses a simplified form of [Role-Based Access Control](https://en.wikipedia.org/wiki/Role-based_access_control) to determine what functions a user should have
 access to.
 
 Roles are assigned through the `Position` object. Each `Position` specifies a
@@ -147,10 +147,10 @@ A typical SID could look like this:
 
 When creating a file in a shared network drive, the system needs a way
 to remember who created it. This is done by saving the SID of the creator
-of the file. OS2datascanner can then read this information and use it to assign
+of the file. OSdatascanner can then read this information and use it to assign
 the creator of a file the responsibility for resolving its matches.
 
-For OS2datascanner to make the right associations, an account must be given
+For OSdatascanner to make the right associations, an account must be given
 an alias with the SID type and a value matching the user's SID.
 
 This is relevant when using the file scanner.
@@ -246,7 +246,7 @@ Input the value found in the document report into the alias's `value` field.
 
 ## Special Roles
 
-OS2datascanner contains two modules: the admin module and the report module.
+OSdatascanner contains two modules: the admin module and the report module.
 
 Special roles are assigned to the `User` objects in the database.
 
