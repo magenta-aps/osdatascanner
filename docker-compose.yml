@@ -586,6 +586,19 @@ services:
     profiles:
       - metric
 
+  cadvisor:
+    container_name: "cadvisor"
+    image: "gcr.io/cadvisor/cadvisor:v0.54.1"
+    user: root  # required to read real system state from inside the container
+    volumes:
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    restart: unless-stopped
+    profiles:
+      - metric
+
   idp:
     image: magentaaps/simplesamlphp:master
     environment:
