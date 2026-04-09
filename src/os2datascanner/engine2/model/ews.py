@@ -318,8 +318,8 @@ class EWSMailResource(FileResource):
     def compute_type(self):
         return "message/rfc822"
 
-    def content_identifier(self):
-        return self.get_message_object().message_id
+    def compute_content_identifier(self):
+        return self.get_message_object().message_id.strip("<>")
 
 
 class EWSMailHandle(Handle):

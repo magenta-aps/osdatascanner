@@ -11,7 +11,7 @@ from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 
 from .models.apikey import APIKey
-from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat
+from .models.scannerjobs.scanner_helpers import CoveredAccount, MIMETypeProcessStat, DuplicationStat
 from .models.usererrorlog import UserErrorLog
 from .models.rules import Rule, RuleCategory
 from .models.scannerjobs.scanner import (ScanStatus,
@@ -141,6 +141,13 @@ class CoveredAccountAdmin(admin.ModelAdmin):
 class MIMETypeProcessStatsAdmin(admin.ModelAdmin):
     list_display = ('scan_status', 'mime_type', 'total_time', 'total_size', 'object_count',)
     list_filter = ('scan_status', 'scan_status__scanner',)
+
+
+@admin.register(DuplicationStat)
+class DuplicationStatAdmin(admin.ModelAdmin):
+    list_display = ('scan_status', 'content_identifier', 'file_size', 'occurrences', 'mime_type',
+                    'process_time')
+    list_filter = ('scan_status__scanner', 'scan_status',)
 
 
 @admin.register(ScheduledCheckup)

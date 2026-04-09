@@ -135,7 +135,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
             if settings.pipeline['worker']['CHECK_DUPLICATION']:
                 content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
-                        resource.content_identifier)
+                        resource.compute_content_identifier)
 
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in

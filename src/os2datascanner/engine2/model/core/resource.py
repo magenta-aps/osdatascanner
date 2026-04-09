@@ -98,7 +98,7 @@ class Resource(ABC):
                       "Falling back to default.")
         return 0
 
-    def content_identifier(self):
+    def compute_content_identifier(self):
         """Returns a unique identifier for this Resource's contents."""
         warnings.warn(f"No 'content_identifier' method implemented for {self.__class__.__name__}.")
         return None
@@ -195,7 +195,7 @@ class FileResource(TimestampedResource):
             # Otherwise, we prefer the computed type
             return computed
 
-    def content_identifier(self):
+    def compute_content_identifier(self):
         """Returns a unique identifier for the Resource's content.
         The default for FileResources will be the hexdigest of a file's hash."""
         hasher = hashlib.blake2b()
