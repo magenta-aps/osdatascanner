@@ -74,8 +74,16 @@ function drawCharts() {
   // Distribution of data types and resolution status
   drawPie(sourceTypes, "datasources", DATASOURCE_COLORS);
   drawPie(
-    // Change the order of the data structure
-    [3, 2, 1, 4, 0].map((i) => resolutionStatus[i]),
+    // Below we're overwriting the order of the resolution status options from numeric to this:
+      // • REMOVED = 3, _("Deleted")
+      // • MOVED = 2, _("Journalized and deleted")
+      // • EDITED = 1, _("Edited")
+      // • FALSE_POSITIVE = 4, _("False positive")
+      // • OTHER = 0, _("Other")
+      // • HANDLED = 6, _("Handled")
+    // (NOTE: IRRELEVANT = 5 is purposefully left out of this context.)
+
+    [3, 2, 1, 4, 6, 0].map((i) => resolutionStatus[i]),
     "resolution_status",
     RESOLUTION_STATUS_COLORS
   );

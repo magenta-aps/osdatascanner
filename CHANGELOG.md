@@ -16,6 +16,8 @@
 
 - Add card for unhandled SBSYS results to DPO page.
 
+- Added a new DocumentReport resolution option named "Handled".
+
 ### Bugfixes
 
 - The UserErrorLog view now again remembers filter parameters when changing page.
@@ -35,6 +37,8 @@
 
 - When assigning synchronised permissions to accounts in the admin module,
   permission names are now correctly translated.
+
+- SBSYS results will now get "Handled" as their resolution status instead of "Other".
 
 ## Version 3.31.2, 10th March 2026
 
