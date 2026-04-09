@@ -53,7 +53,9 @@
           <tr class="datatablex__row column-headings sticky">
             <th class="column--checkbox">
               <div class="ds-checkbox">
-                <input id="select-all" type="checkbox">
+                <input id="select-all"
+                       type="checkbox"
+                       {% if not allow_handle %}disabled{% endif %}>
                 <label for="select-all"
                        aria-label="{% trans 'Select all results' %}"
                        title="{% trans 'Select all results' %}"></label>
@@ -69,7 +71,21 @@
             </th>
  
             <th class="column--case-number">
-              <div class="th__flex-container">{% trans "case number"|capfirst %}</div>
+              <div class="th__flex-container">
+                <label class="th-label" for="case_number-caret">
+                  <span>{% trans "case number"|capfirst %}</span>
+                </label>
+ 
+                <button type="button"
+                        name="case_number"
+                        aria-label="{% trans "Sort table by" %} {% trans "case number" %}"
+                        title="{% trans "Sort table by" %} {% trans "case number" %}"
+                        id="case_number-caret"
+                        class="order-by button button--caret-button{% if order_by == "case_number" and order == "ascending" %} up{% endif %}"
+                        value="{% if order_by == "case_number" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                  <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                </button>
+              </div>
             </th>
  
             <th class="column--datasource_last_modified">
@@ -80,11 +96,11 @@
  
                 <button type="button"
                         name="datasource_last_modified"
-                        aria-label="{% trans 'Sort table by' %} {% trans 'Resource age'|lower %}"
-                        title="{% trans 'Sort table by' %} {% trans 'Resource age'|lower %}"
+                        aria-label="{% trans "Sort table by" %} {% trans "resource age" %}"
+                        title="{% trans "Sort table by" %} {% trans "resource age" %}"
                         id="datasource_last_modified-caret"
-                        class="order-by button button--caret-button{% if order_by == 'datasource_last_modified' and order == 'ascending' %} up{% endif %}"
-                        value="{% if order_by == 'datasource_last_modified' and order == 'ascending' %}descending{% else %}ascending{% endif %}">
+                        class="order-by button button--caret-button{% if order_by == "datasource_last_modified" and order == "ascending" %} up{% endif %}"
+                        value="{% if order_by == "datasource_last_modified" and order == "ascending" %}descending{% else %}ascending{% endif %}">
                   <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
                 </button>
               </div>

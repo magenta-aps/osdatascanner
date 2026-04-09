@@ -61,9 +61,6 @@
       <td class="column--deviations">
         <div class="td__flex-container">
           {% for deviation in document_report.deviations %}
-
-
-
             <div class="status tooltip">
               <div class="status__wrapper overflow-ellipsis"
                    data-status="{{ document_report.deviations }}">
@@ -79,7 +76,6 @@
         </div>
       </td>
 
- 
       <td class="column--case-number">
         <div class="matches_container">
           <div class="matches">
@@ -87,12 +83,11 @@
                     class="button button--transparent-button click-to-copy"
                     aria-label="{% trans "Click to copy the case number to the clipboard" %}"
                     title="{% trans "Click to copy to clipboard" %}">
-              <span class="datatable-numeral">{{ document_report.kle_number }}</span>
+              <span class="datatable-numeral">{{ document_report.case_number }}</span>
             </button>
           </div>
         </div>
       </td>
- 
  
       <td class="column--datasource_last_modified">
         {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}

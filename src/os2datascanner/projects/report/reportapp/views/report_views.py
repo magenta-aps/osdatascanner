@@ -14,7 +14,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Count, Q
+from django.db.models import Count, F, Q
 from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import View, ListView, DetailView
@@ -433,11 +433,27 @@ class SBSYSMixin:
     - Opt into source_type='sbsys-db' via filter_types/exclude_types on ReportView.
     - Attaches these onto each report in the page:
         - `deviations`
-        - `kle_number`
+        - `case_number`
     """
 
     filter_types = ["sbsys-db"]
     exclude_types = []
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        order_by = self.request.GET.get("order_by")
+        order = self.request.GET.get("order")
+
+        if order_by == "case_number" and order:
+            queryset = queryset.annotate(
+                case_number_sort=F("raw_matches__handle__path")
+            )
+            match order:
+                case "ascending":
+                    queryset = queryset.order_by("case_number_sort", "pk")
+                case "descending":
+                    queryset = queryset.order_by("-case_number_sort", "pk")
+        return queryset
 
     def get_context_data(self, **kwargs):
         from os2datascanner.engine2.model._staging import sbsysdb  # noqa
@@ -448,10 +464,10 @@ class SBSYSMixin:
 
             for h in report.matches.handle.walk_up():
                 if isinstance(h, sbsysdb.SBSYSDBHandles.Case):
-                    report.kle_number = h.relative_path
+                    report.case_number = h.relative_path
                     break
             else:
-                report.kle_number = None
+                report.case_number = None
         return context
 
     def dispatch(self, request, *args, **kwargs):

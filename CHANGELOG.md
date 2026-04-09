@@ -18,6 +18,8 @@
 
 - Added a new DocumentReport resolution option named "Handled".
 
+- SBSYS result datatables can now be sorted by case number.
+
 ### Bugfixes
 
 - The UserErrorLog view now again remembers filter parameters when changing page.
