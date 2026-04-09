@@ -57,7 +57,7 @@ class SourceManager:
         return self._opened.setdefault(
                 source, _SourceDescriptor(source=source, parent=self._top))
 
-    def _reparent(self, child_d, parent_d):
+    def _reparent(self, child_d, parent_d, *, evict=True):
         if (child_d.parent
                 and child_d in child_d.parent.children):
             child_d.parent.children.remove(child_d)
@@ -70,14 +70,14 @@ class SourceManager:
 
         # If the new parent can't have any more open Sources, then close the
         # least-recently-used one
-        if self._width and len(child_d.parent.children) > self._width:
+        if evict and self._width and len(child_d.parent.children) > self._width:
             self.close(child_d.parent.children[0].source)
 
         # Also perform a dummy reparent operation all the way up the hierarchy
         # to ensure that the rightmost child is always the most recently used
         # one
         if parent_d.parent:
-            self._reparent(parent_d, parent_d.parent)
+            self._reparent(parent_d, parent_d.parent, evict=evict)
 
     def _register_path(self, path):
         """Registers a path, a partial or complete reverse-ordered list of
@@ -90,8 +90,17 @@ class SourceManager:
         parent_d = self._top
         for child in path:
             child_d = self._make_descriptor(child)
-            self._reparent(child_d, parent_d)
+            self._reparent(child_d, parent_d, evict=False)
             parent_d = child_d
+
+        # Now the tree is in its final shape, enforce width at each level
+        parent_d = self._top
+        for child in path:
+            child_d = self._opened[child]
+            if self._width and len(parent_d.children) > self._width:
+                self.close(parent_d.children[0].source)
+            parent_d = child_d
+
         return parent_d
 
     def open(self, source):
