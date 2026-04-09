@@ -17,5 +17,8 @@ ttl = 25
 [pipeline]
 extra_modules = [".model._staging.sbsysdb"]
 
+[pipeline.worker]
+CHECK_DUPLICATION = true
+
 [model.sbsysdb]
 document_proxy = "http://document_proxy:5000/"

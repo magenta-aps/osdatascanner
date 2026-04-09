@@ -6,6 +6,8 @@
 
 - Under scanner settings, it is now possible to limit the size of scanned PDF files.
 
+- Added optional tracking of files scanned multiple times within the same scan.
+
 ### General improvements
 
 - Users with access to all clients in the admin module can now view more than ten clients
@@ -52,9 +54,9 @@
 
 - Two new Prometheus metrics have been added together with a `push_db_metrics` command
   that pushes these metrics to Pushgateway:
-  - osds_reports_total: Shows the total number of DocumentReports per resolution status 
+  - osds_reports_total: Shows the total number of DocumentReports per resolution status
     and whether or not the results are withheld.
-  - osds_users_total: Shows the total number of active users and their activity status 
+  - osds_users_total: Shows the total number of active users and their activity status
     over the past 30 days.
 
 ### General improvements

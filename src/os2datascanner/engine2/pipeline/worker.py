@@ -7,6 +7,7 @@ from collections.abc import Generator
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from os2datascanner.engine2 import settings
 
 from ..utilities.backoff import TimeoutRetrier
 from .utilities.stage import dispatch
@@ -111,6 +112,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
     message = messages.ConversionMessage.from_json_object(body)
 
+    content_identifier = None
+
     try:
         yield from dispatch(
                 process(source_manager, message),
@@ -129,6 +132,11 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                     resource.get_size)
             computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
                     resource.compute_type)
+
+            if settings.pipeline['worker']['CHECK_DUPLICATION']:
+                content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
+                        resource.compute_content_identifier)
+
         except TimeoutError:
             # FileResource.get_size has timed out. This method should (in
             # principle) be lightweight, so there may be something wrong with
@@ -147,7 +155,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 # anything, we just need it to be present(?)
                 object_type=computed_type,
                 process_time_worker=process_time_total,
-                matches_found=total_matches).to_json_object())
+                matches_found=total_matches,
+                content_identifier=content_identifier).to_json_object())
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()

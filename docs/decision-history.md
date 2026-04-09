@@ -258,6 +258,39 @@ We use `flake8` [8] for linting of Python. We have tried to use `ruff` [9] as an
 as it lacks parity with Pylint, it cannot fully substitute flake8. <br>
 Pylint rules which have been implemented: https://github.com/astral-sh/ruff/issues/970
 
+## Duplicate File Detection
+
+OSdatascanner can optionally detect duplicate files during a scan and record
+statistics about them for later analysis. This is intended as a tool
+to help identify how much scanning work is being spent on identical copies of the same
+file.
+
+Note that this feature does **not** affect which files are scanned. Every file
+is processed normally regardless of whether it has been seen before. Duplicate
+detection only collects statistics.
+
+When `CHECK_DUPLICATION` is enabled, the worker, by default, computes a BLAKE2b hash of the
+full contents of each file after processing it. This is done through the `content_identifier`
+property now present on `Resource`s which should be overwritten, whenever hashing is not desired
+such as on emails. BLAKE2b was chosen over alternatives such as SHA-256 for performance, while still
+providing strong collision resistance for non-adversarial use cases.
+
+Full-file hashing is used rather than partial hashing (e.g. hashing only the
+first and last N bytes) in order to ensure that only identical files are flagged as such. 
+If hashing times out or fails for any reason, the file is still scanned normally and the
+hash will not be stored.
+
+The admin application's status collector then maintains a `HashCache` table for all
+active scans. When a status message arrives with a file hash:
+
+1. The hash is inserted into `HashCache`. If this succeeds, the file is new for
+   this scan and nothing further happens.
+2. If the insert fails due to a uniqueness conflict, the hash has been seen
+   before. A `DuplicationStat` record is created or updated to track the number
+   of times this hash has been encountered.
+
+The `HashCache` is cleaned up automatically when a scan completes or is
+cancelled, to avoid accumulating stale rows.
 
 [1]: https://cpr.dk/media/12066/personnummeret-i-cpr.pdf "Method for performing a modulus-11 check."
 

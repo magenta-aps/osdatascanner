@@ -150,6 +150,13 @@ class GmailResource(FileResource):
     def compute_type(self):
         return "message/rfc822"
 
+    def compute_content_identifier(self):
+        headers = self.metadata.get("payload", {}).get("headers", [])
+        for header in headers:
+            if header.get("name", "").lower() == "message-id":
+                return header.get("value").strip("<>")
+        return None
+
 
 class GmailHandle(Handle):
     type_label = "gmail"

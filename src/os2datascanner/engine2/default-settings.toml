@@ -66,6 +66,10 @@ extra_modules = []
 # (must be at least 1)
 obj_limit = 10
 
+[pipeline.worker]
+# Should the worker hash files to check for duplicates?
+CHECK_DUPLICATION = false
+
 [conversions.cache]
 # The directory in which to store cached representations of objects, if
 # applicable

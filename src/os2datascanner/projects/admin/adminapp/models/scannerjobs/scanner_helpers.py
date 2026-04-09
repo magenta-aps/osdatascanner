@@ -562,6 +562,89 @@ class MIMETypeProcessStat(models.Model):
         ]
 
 
+class DuplicationStat(models.Model):
+    """Records how often a scan encounters content it has already processed.
+      The file_size and process_time fields reflect only the duplicate encounters,
+      not the original, making them a measure of redundant work done by the scanner."""
+
+    scan_status = models.ForeignKey(
+        ScanStatus,
+        on_delete=models.CASCADE,
+        related_name='duplication_stats'
+    )
+
+    content_identifier = models.CharField(
+        max_length=256,
+        verbose_name=_("Unique Content Identifier"),
+    )
+
+    file_size = models.PositiveBigIntegerField(
+        default=0,
+        verbose_name=_("File size in bytes")
+    )
+
+    occurrences = models.PositiveIntegerField(
+        default=2,  # A DuplicationStat only exists when a hash has been seen at least twice
+        verbose_name=_("Number of occurrences")
+    )
+
+    mime_type = models.CharField(
+        max_length=256,
+        verbose_name=_("MIME type"),
+    )
+
+    process_time = models.DurationField(
+        default=0,
+        verbose_name=_("Total process time")
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'content_identifier', 'mime_type', 'file_size'],
+                name='unique_object_hash'
+            )
+        ]
+
+
+class HashCache(models.Model):
+    """Tracks content identifiers seen during a single scan run to detect duplicates.
+    When a content identifier is encountered more than once, a DuplicationStat record
+    is created or updated to capture the redundant work."""
+
+    scan_status = models.ForeignKey(
+        'ScanStatus',
+        on_delete=models.CASCADE,
+        related_name='hash_cache'
+    )
+
+    content_identifier = models.CharField(
+        max_length=256,
+        verbose_name=_("Unique Content Identifier"),
+    )
+
+    file_size = models.PositiveBigIntegerField(
+        default=0,
+        verbose_name=_("File size in bytes")
+    )
+
+    mime_type = models.CharField(
+        max_length=256,
+        verbose_name=_("MIME type"),
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'content_identifier', 'mime_type', 'file_size'],
+                name='unique_object_hash_per_scan'
+            )
+        ]
+        indexes = [
+            models.Index(fields=['scan_status', 'content_identifier']),
+        ]
+
+
 def cancel_scan_tag_messages(tag: dict):
     """Requests that all running pipeline
     components blacklist and ignore messages from the scan tag."""

@@ -7,7 +7,7 @@ import math
 import structlog
 
 from django.conf import settings
-from django.db import transaction
+from django.db import transaction, IntegrityError
 from django.utils import timezone
 from django.db.models import F
 from django.db.utils import DataError
@@ -22,7 +22,7 @@ from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
-from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat
+from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat, DuplicationStat, HashCache
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
@@ -31,7 +31,7 @@ SUMMARY = Summary("os2datascanner_scan_status_collector_admin",
                   "Messages through ScanStatus collector")
 
 
-def status_message_received_raw(body):  # noqa: CCR001 complexity
+def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     """A status message for a scannerjob is created in Scanner.run().
     Therefore, this method can focus merely on updating the ScanStatus object."""
     message = messages.StatusMessage.from_json_object(body)
@@ -106,6 +106,39 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                     total_time=timedelta(seconds=message.process_time_worker)
                     )
 
+        if message.content_identifier:
+            try:
+                with transaction.atomic():
+                    # Try to store the hash in the cache.
+                    HashCache.objects.create(
+                        scan_status=scan_status,
+                        content_identifier=message.content_identifier,
+                        file_size=message.object_size,
+                        mime_type=message.object_type
+                    )
+            except IntegrityError:
+                try:
+                    with transaction.atomic():
+                        # If the hash was not created, it's a duplicate.
+                        DuplicationStat.objects.create(
+                            scan_status=scan_status,
+                            content_identifier=message.content_identifier,
+                            file_size=message.object_size,
+                            mime_type=message.object_type,
+                            occurrences=2,
+                            process_time=timedelta(seconds=message.process_time_worker)
+                        )
+                except IntegrityError:
+                    # The duplication was already recorded. Increment the occurrence count.
+                    DuplicationStat.objects.filter(
+                        scan_status=scan_status,
+                        content_identifier=message.content_identifier,
+                        file_size=message.object_size,
+                        mime_type=message.object_type
+                    ).update(occurrences=F('occurrences') + 1,
+                             process_time=F('process_time') + timedelta(
+                                 seconds=message.process_time_worker))
+
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()
         n_total = scan_status.total_objects
@@ -135,6 +168,8 @@ def status_message_received_raw(body):  # noqa: CCR001 complexity
                 FinishedScannerNotificationEmail(scanner, scan_status).notify()
                 scan_status.email_sent = True
                 scan_status.save()
+                # Clean up the hash cache for this scan
+                HashCache.objects.filter(scan_status=scan_status).delete()
             else:
                 logger.warning(
                     "BUG: received status message for a ScanStatus marked as complete!",

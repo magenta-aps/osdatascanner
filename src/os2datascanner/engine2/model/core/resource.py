@@ -9,6 +9,7 @@ from typing import Any, Generator, override
 import magic
 import inspect
 import warnings
+import hashlib
 from traceback import print_exc
 from contextlib import contextmanager
 
@@ -96,6 +97,11 @@ class Resource(ABC):
         warnings.warn(f"No 'get_size' method implemented for class {self.__class__.__name__}. "
                       "Falling back to default.")
         return 0
+
+    def compute_content_identifier(self):
+        """Returns a unique identifier for this Resource's contents."""
+        warnings.warn(f"No 'content_identifier' method implemented for {self.__class__.__name__}.")
+        return None
 
 
 class TimestampedResource(Resource):
@@ -188,6 +194,15 @@ class FileResource(TimestampedResource):
         else:
             # Otherwise, we prefer the computed type
             return computed
+
+    def compute_content_identifier(self):
+        """Returns a unique identifier for the Resource's content.
+        The default for FileResources will be the hexdigest of a file's hash."""
+        hasher = hashlib.blake2b()
+        with self.make_stream() as stream:
+            while chunk := stream.read(8192):
+                hasher.update(chunk)
+        return hasher.hexdigest()
 
     @classmethod
     def __init_subclass__(subclass, **kwargs):

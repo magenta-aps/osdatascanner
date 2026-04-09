@@ -296,7 +296,8 @@ class MSGraphMailMessageResource(FileResource):
         if not self._message:
             self._message = self._get_cookie().get(
                     self.make_object_path() + "?$select=lastModifiedDateTime,"
-                                              "sentDateTime,isDraft,categories").json()
+                                              "sentDateTime,isDraft,categories,"
+                                              "internetMessageId").json()
         return self._message
 
     @contextmanager
@@ -326,6 +327,9 @@ class MSGraphMailMessageResource(FileResource):
 
     def compute_type(self):
         return "message/rfc822"
+
+    def compute_content_identifier(self):
+        return self.get_message_metadata().get("internetMessageId").strip("<>")
 
 
 class MSGraphMailMessageHandle(Handle):
