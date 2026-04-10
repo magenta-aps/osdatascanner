@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-26 08:42+0000\n"
+"POT-Creation-Date: 2026-04-10 11:21+0000\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -79,10 +79,6 @@ msgstr " er sandt"
 #, python-brace-format
 msgid " is {value}"
 msgstr " er {value}"
-
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
-msgid "\"see case number\""
-msgstr "se sagsnummer"
 
 #: src/os2datascanner/engine2/locale/../model/msgraph/files.py
 #, python-brace-format
@@ -201,6 +197,10 @@ msgstr "ukendt objekt i {file}"
 #, python-brace-format
 msgid "unknown object on {page} of {file}"
 msgstr "ukendt objekt på {page} af {file}"
+
+#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+msgid "untitled case"
+msgstr "unavngiven sag"
 
 #: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
 #, python-brace-format

@@ -44,6 +44,8 @@
 
 - SBSYS results will now get "Handled" as their resolution status instead of "Other".
 
+- Added more fitting UI representation for SBSYS cases with empty title fields.
+
 ## Version 3.31.2, 10th March 2026
 
 "Still Quite Cold"

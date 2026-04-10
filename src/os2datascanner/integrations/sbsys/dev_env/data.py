@@ -544,6 +544,24 @@ SbSysNetDrift["Sag"] = [
         "ErBeskyttet": 0,       # Not Protected
         "SecuritySetID": 1,  # security group
     },
+    _SAG_BASE | {
+        "ID": 6,
+        "SagIdentity": "B1C2D3E4-F5A6-7890-BCDE-F12345678901",
+        "Nummer": "08.13.01-K02-3-13",
+        "Titel": "",
+        "BehandlerID": 1,       # Reference to the "Bruger" table
+        "Kommentar": "Sag med tomt titel felt",
+        "SagsStatusID": 8,
+        "CreatedByID": 1,
+        "Created": datetime(2013, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2022, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+
+        "ErBeskyttet": 1,       # Protected
+        "SecuritySetID": 1,     # Security group "Alle brugere"
+    },
 ]
 
 SbSysNetDrift["Person"] = [
