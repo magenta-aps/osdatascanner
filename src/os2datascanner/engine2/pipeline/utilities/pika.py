@@ -379,6 +379,33 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         # ... and then sleep for a moment to avoid overburdening the system
         time.sleep(0.1)
 
+    # Exception types that indicate the broker closed the channel. Grouped
+    # here so the recovery logic in run() doesn't repeat the tuple everywhere.
+    _CHANNEL_ERRORS = (
+        pika.exceptions.ChannelClosed,
+        pika.exceptions.ChannelClosedByBroker,
+        pika.exceptions.ChannelWrongStateError,
+        pika.exceptions.ConsumerCancelled,
+    )
+
+    def _recover_channel(self):
+        """(Background thread.) Reopens the channel and re-subscribes to all
+        queues after a broker-initiated channel closure.
+
+        This typically happens when a per-scan queue is deleted while the
+        worker has an unacked message from it: the broker invalidates the
+        delivery tag and closes the channel when we try to ack it."""
+        try:
+            self.clear()
+            consumer_tags = self._basic_consume()
+            logger.info(
+                    "Channel recovered after broker closure,"
+                    " re-subscribed to queues")
+            return consumer_tags
+        except Exception as e:
+            raise RuntimeError(
+                    "Channel recovery failed after broker closure") from e
+
     def run(self):  # noqa: CCR001, too high cognitive complexity
         """(Background thread.) Runs a loop that processes enqueued actions
         from, and collects new messages for, the main thread.
@@ -392,7 +419,13 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         consumer_tags = self._basic_consume(exclusive=self._exclusive)
         try:
             running = True
+            needs_recovery = False
             while running:
+                if needs_recovery:
+                    # We're about to recover, so set this False
+                    needs_recovery = False
+                    consumer_tags = self._recover_channel()
+
                 with self._condition:
                     # Process all of the enqueued actions
                     while self._outgoing:
@@ -400,27 +433,44 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                         logger.trace("PikaPipelineThread - Thread TID:"
                                      f" {self.native_id} got the conditional."
                                      " Processing outgoing message.")
-                        match head:
-                            case ("msg", routing_key, body, exchange, props):
-                                self.channel.basic_publish(
-                                        exchange=exchange,
-                                        routing_key=routing_key,
-                                        properties=pika.BasicProperties(**props),
-                                        body=body)
-                            case ("ack", delivery_tag):
-                                self.channel.basic_ack(delivery_tag)
-                            case ("rej", delivery_tag, requeue):
-                                self.channel.basic_reject(
-                                        delivery_tag, requeue=requeue)
-                            case ("fin",):
-                                running = False
-                                break
-                            case ("syn", ev):
-                                ev.set()
-                            case ("zzz", duration):
-                                time.sleep(duration)
+                        try:
+                            match head:
+                                case ("msg", routing_key, body, exchange, props):
+                                    self.channel.basic_publish(
+                                            exchange=exchange,
+                                            routing_key=routing_key,
+                                            properties=pika.BasicProperties(**props),
+                                            body=body)
+                                case ("ack", delivery_tag):
+                                    self.channel.basic_ack(delivery_tag)
+                                case ("rej", delivery_tag, requeue):
+                                    self.channel.basic_reject(
+                                            delivery_tag, requeue=requeue)
+                                case ("fin",):
+                                    running = False
+                                    break
+                                case ("syn", ev):
+                                    ev.set()
+                                case ("zzz", duration):
+                                    time.sleep(duration)
+                        except self._CHANNEL_ERRORS as e:
+                            logger.warning(
+                                    "Channel closed by broker during outgoing"
+                                    " operation; will recover",
+                                    operation=head[0],
+                                    exc=str(e))
+                            self._outgoing.clear()
+                            needs_recovery = True
+                            break
 
-                self._processing_complete(self._tick)
+                try:
+                    self._processing_complete(self._tick)
+                except self._CHANNEL_ERRORS as e:
+                    logger.warning(
+                            "Channel closed by broker during processing;"
+                            " will recover",
+                            exc=str(e))
+                    needs_recovery = True
                 self._tick += 1
         except BaseException as ex:
             if isinstance(ex, (
