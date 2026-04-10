@@ -8,6 +8,9 @@
 
 - Added optional tracking of files scanned multiple times within the same scan.
 
+- Traditional Windows logon names can now be imported from Microsoft Entra and
+  used to assign certain matches.
+
 ### General improvements
 
 - Users with access to all clients in the admin module can now view more than ten clients

@@ -18,6 +18,7 @@ logger = structlog.get_logger("admin_organizations")
 EMAIL_ALIAS_IMPORTED_ID_SUFFIX = "/email"
 SID_ALIAS_IMPORTED_ID_SUFFIX = "/sid"
 UPN_ALIAS_IMPORTED_ID_SUFFIX = "/upn"
+LOGON_ALIAS_IMPORTED_ID_SUFFIX = "/logon"
 
 
 @suppress_django_signals
@@ -124,7 +125,9 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             logger.info(f'Object not of type user or empty UPN for user: {member}')
             return None, None
 
-    def evaluate_aliases(account: Account, email: str, sid: str, upn: str):  # noqa: CCR001
+    def evaluate_aliases(  # noqa: CCR001
+            account: Account, email: str,
+            sid: str, upn: str, sam: str):
         def get_or_update_alias(imported_id_suffix, alias_type, value):
             imported_id = f"{account.imported_id}{imported_id_suffix}"
             alias = aliases.get(imported_id)
@@ -169,6 +172,18 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             # the username for Microsoft Graph accounts
             logger.warning("no UPN given for account(?)", account=account)
 
+        # "sam" is a shortened form of Security Account Manager, which is the
+        # name of the old Windows login framework that these account names were
+        # originally built for
+        if sam:
+            get_or_update_alias(
+                    LOGON_ALIAS_IMPORTED_ID_SUFFIX,
+                    AliasType.LOGON.value, sam)
+        else:
+            logger.info(
+                    "no samAccountName found for user",
+                    user=account.username)
+
     manager_relations = {}
     for group in data:
         unit = evaluate_org_unit(group)
@@ -181,7 +196,8 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                 evaluate_aliases(account=acc,
                                  email=member.get("email"),
                                  sid=member.get("sid"),
-                                 upn=member.get("userPrincipalName"))
+                                 upn=member.get("userPrincipalName"),
+                                 sam=member.get("onPremisesSamAccountName"))
 
                 try:
                     Position.employees.get(account=acc, unit=unit, imported=True)
