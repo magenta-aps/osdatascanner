@@ -22,6 +22,7 @@ def tesseract_pymupdf(image_bytes, filetype=None):
     It automatically downscales large images to improve performance.
     """
     try:
+        logger.info("Running tesseract with pymupdf")
         # Create a Pixmap object from the image bytes
         pix = pymupdf.Pixmap(image_bytes)
 
@@ -60,6 +61,7 @@ def tesseract_cli(path, dest="stdout", *args):
     Wrapper for the tesseract command-line tool for specialized conversions.
     (Currently used for MRZ only)
     """
+    logger.info("Running tesseract command-line tool")
     result = run_custom(
             [
                 "tesseract",

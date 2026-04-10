@@ -6,6 +6,7 @@
 import io
 import mimetypes
 import string
+import structlog
 from tempfile import TemporaryDirectory
 import pymupdf
 from ... import settings as engine2_settings
@@ -15,6 +16,8 @@ from .derived import DerivedSource
 from .utilities.extraction import (should_skip_images,
                                    MD5DeduplicationFilter,
                                    TinyImageFilter)
+
+logger = structlog.get_logger("engine2")
 
 PAGE_TYPE = "application/x.os2datascanner.pdf-page"
 # Pymupdf replaces nullbytes with "\udcc0\udc80"
@@ -39,10 +42,13 @@ class PDFSource(DerivedSource):
             # Explicitly download the file here for the sake of PDFPageSource,
             if engine2_settings.pdf["PREPROCESS_PDF"]:
                 with TemporaryDirectory() as outputdir:
+                    logger.info("Starting preprocessing PDF!", path=path, outputdir=outputdir)
                     converted_path = "{0}/ez_save.pdf".format(outputdir)
                     pdf = pymupdf.open(path)
                     pdf.ez_save(converted_path, clean=True)
                     pdf.close()
+                    logger.info("Finished preprocessing PDF!",
+                                converted_path=converted_path)
                     yield converted_path
             else:
                 yield path

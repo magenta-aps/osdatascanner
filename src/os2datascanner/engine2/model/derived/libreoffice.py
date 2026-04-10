@@ -160,6 +160,7 @@ class LibreOfficeSource(DerivedSource):
                         str(self.handle), best_mime_guess)
 
             with TemporaryDirectory() as outputdir:
+                logger.info("Invoking LibreOffice to convert to HTML",)
                 libreoffice(
                         "--infilter={0}".format(filter_name),
                         "--convert-to", "html",
