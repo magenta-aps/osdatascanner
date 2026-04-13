@@ -7,6 +7,7 @@ import datetime
 import pytest
 from copy import deepcopy
 from os2datascanner.projects.admin.import_services.models import MSGraphConfiguration
+from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import msgraph_import_actions
 
@@ -37,6 +38,7 @@ class TestMSGraphImport:
                         "givenName": "Charles",
                         "surname": "Darwin",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
+                        "onPremisesSamAccountName": None,
                         "email": "Charles@darwindomain.onmicrosoft.com"
                     }
                 ]
@@ -50,6 +52,7 @@ class TestMSGraphImport:
                         "uuid": "3382c90d-9646-4562-9f47-3994957030a6",
                         "givenName": "Albert",
                         "surname": "Twostones",
+                        "onPremisesSamAccountName": "DOUBLEROCK",
                         "userPrincipalName": "albert@darwindomain.onmicrosoft.com",
                         "sid": "S-1-5-21-1004336348-1177238915-682003330-512"
                     },
@@ -58,6 +61,7 @@ class TestMSGraphImport:
                         "uuid": "118e5d18-90ba-4150-a11c-9162c24bb5ce",
                         "givenName": "Charles",
                         "surname": "Darwin",
+                        "onPremisesSamAccountName": "MONKEYBOY",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
                         "email": "Charles@darwindomain.onmicrosoft.com",
                     },
@@ -118,6 +122,15 @@ class TestMSGraphImport:
         msgraph_import_actions.perform_msgraph_import(
             TEST_CORP, test_org
         )
+
+    def test_account_name_handling(self, TEST_CORP):
+        logon_qs = Alias.objects.filter(_alias_type=AliasType.LOGON)
+        value_qs = logon_qs.values_list("account__username", "_value")
+        assert (list(value_qs.order_by("_value")) ==
+                [
+                    ("albert@darwindomain.onmicrosoft.com", "DOUBLEROCK"),
+                    ("Charles@darwindomain.onmicrosoft.com", "MONKEYBOY"),
+                ]), "imported logon set did not match"
 
     def test_ou_import(self, TEST_CORP):
         """ Importing should create corresponding OU's from JSON"""
