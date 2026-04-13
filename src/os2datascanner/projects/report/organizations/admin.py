@@ -31,7 +31,7 @@ class ReadOnlyAdminMixin:
 
 @admin.register(Alias)
 class AliasAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
-    list_filter = ["_alias_type"]
+    list_filter = ["_alias_type", "account__organization"]
     list_display = ('user', 'account', '_alias_type', '_value', 'shared')
     readonly_fields = ('user', 'account', '_alias_type', '_value', 'shared')
 

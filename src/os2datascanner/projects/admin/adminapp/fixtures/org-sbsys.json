@@ -164,11 +164,39 @@
   },
   {
     "model": "organizations.alias",
+    "pk": "c588cbd2-4d10-4eba-a95b-da23d5404a87",
+    "fields": {
+      "account": "899a0bf6-ac3f-44b2-990e-ed68123338bb",
+      "_alias_type": "logon",
+      "_value": "KWLSKJ",
+      "shared": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  },
+  {
+    "model": "organizations.alias",
     "pk": "6cebd8ca-caa0-439b-b8aa-08e484e3bacd",
     "fields": {
       "account": "1f318d6c-c30e-4eab-b679-108bbb416781",
       "_alias_type": "upn",
       "_value": "bruce@kungfu.org",
+      "shared": false,
+      "imported": false,
+      "imported_id": null,
+      "last_import_requested": null,
+      "last_import": null
+    }
+  },
+  {
+    "model": "organizations.alias",
+    "pk": "0c9d70f2-8266-47d5-b429-f8daeadcf31c",
+    "fields": {
+      "account": "1f318d6c-c30e-4eab-b679-108bbb416781",
+      "_alias_type": "SID",
+      "_value": "S-1-5-21-7765476978-8465208469-83848333-10000",
       "shared": false,
       "imported": false,
       "imported_id": null,
@@ -198,4 +226,3 @@
   }
 
 ]
-

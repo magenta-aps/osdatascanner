@@ -277,25 +277,26 @@ _BRUGER_BASE = {
 SbSysNetDrift["Bruger"] = [
     _BRUGER_BASE | {
         "ID": 1,
-        "LogonID": 1,
+        "LogonID": "",  # can't be null, but can be blank
         "Navn": "Bruce Lee",
         "FagomraadeID": 1,
         "AdresseID": 2,
         "AnsaettelsesstedID": 1,
         "Status": 1,
-        "ObjectSid": "S-DIG",
+        #                       M A G E N  T A   T E  S T S !
+        "ObjectSid": "S-1-5-21-7765476978-8465208469-83848333-10000",
         "UserPrincipalName": "bruce@kungfu.org",
         "BrugerIdentity": "5F079C97-1E85-4205-8489-EC64FA99F81D",
     },
     _BRUGER_BASE | {
         "ID": 2,
-        "LogonID": 2,
+        "LogonID": "KWLSKJ",
         "Navn": "Jan Kowalski",
         "FagomraadeID": 1,
         "AdresseID": 1,
         "AnsaettelsesstedID": 1,
         "Status": 1,
-        "ObjectSID": "S-CYF",
+        "ObjectSid": None,
         "UserPrincipalName": "jkowalski@vstkom.internal",
         "BrugerIdentity": "69131057-FA37-4EE0-A79F-D8A5EF879CB6",
     },
