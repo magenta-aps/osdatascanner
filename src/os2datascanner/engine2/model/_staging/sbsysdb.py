@@ -231,6 +231,10 @@ class SBSYSDBHandles:
 
                 if upn := row.get("Behandler.UserPrincipalName"):
                     yield ("user-principal-name", upn)
+                if sid := row.get("Behandler.ObjectSid"):
+                    yield ("sbsys-caseworker-sid", sid)
+                if logon := row.get("Behandler.LogonID"):
+                    yield ("windows-domain-user", logon)
 
             def compute_type(self):
                 return SBSYSDBHandles.Case._DUMMY_MIME
