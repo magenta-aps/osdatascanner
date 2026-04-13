@@ -112,9 +112,10 @@ def checkup_message_received_raw(body):
         cancel_scan_tag_messages(scan_tag.to_json_object())
         return
     except ScanStatus.DoesNotExist:
-        # This means that there is no corresponding ScanStatus object.
-        # Likely, this means that the scan has been cancelled. Tell processes to throwaway messages.
-        cancel_scan_tag_messages(scan_tag.to_json_object())
+        # No ScanStatus means the scan was cancelled or deleted. The abort
+        # broadcast was already sent at cancellation time; re-broadcasting it
+        # here for every residual checkup message would flood the pipeline.
+        # Just drop this message.
         return
 
     if not handle:
