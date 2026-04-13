@@ -23,6 +23,12 @@ def validate_aliastype_value(kind, value):
             validate_regex_SID(value)
         case AliasType.EMAIL | AliasType.USER_PRINCIPAL_NAME:
             validate_mail(value)
+        case AliasType.LOGON:
+            if not value:
+                raise ValidationError("Logon name must not be empty")
+            elif any(ch in value for ch in r'"/\[]:;|=,+*?<>'):
+                # https://learn.microsoft.com/en-us/windows/win32/adschema/a-samaccountname
+                raise ValidationError("Forbidden character in logon name")
         case AliasType.REMEDIATOR:
             if not isinstance(value, int):
                 raise ValidationError("Value must be an integer!")
@@ -56,6 +62,13 @@ class AliasType(models.TextChoices):
     # unfortunate naming)
     # for example, magenta.dk
     GENERIC = 'generic', _('generic')
+
+    # A traditional Windows domain logon name /without/ the domain component.
+    # Case-preserving but not case-sensitive -- "jens4", "Jens4" and "JENS4"
+    # should all be considered to be the same value
+    # for example, FaithfullMAJ
+    #           or AJFM9
+    LOGON = 'logon', _('Windows logon name')
 
 
 class Alias(models.Model):

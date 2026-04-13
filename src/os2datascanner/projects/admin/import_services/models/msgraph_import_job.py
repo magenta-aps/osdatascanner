@@ -66,7 +66,7 @@ class MSGraphImportJob(BackgroundJob):
         # specification of the fields we're interested in.
         graph_select = "?$select="
         graph_select_params = ("id,displayName,givenName,surname,mail,userPrincipalName,"
-                               "onPremisesSecurityIdentifier,userType")
+                               "onPremisesSecurityIdentifier,userType,onPremisesSamAccountName")
 
         hierarchy = list()
         group_info = dict()
@@ -117,6 +117,7 @@ class MSGraphImportJob(BackgroundJob):
                                 "surname": member.get("surname"),
                                 "email": member.get("mail"),
                                 "sid": member.get("onPremisesSecurityIdentifier"),
+                                "samAccountName": member.get("onPremisesSamAccountName"),
                                 "userPrincipalName": member.get(
                                         "userPrincipalName"),
                                 "manager": userinfo.get("manager"),
