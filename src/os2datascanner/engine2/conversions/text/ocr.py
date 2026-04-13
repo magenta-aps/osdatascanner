@@ -10,6 +10,7 @@ import pymupdf
 
 from ... import settings as engine2_settings
 from ....utils.system_utilities import run_custom
+from ..abort import current_abort_check
 from ..types import OutputType
 from ..registry import conversion
 
@@ -20,7 +21,18 @@ def tesseract_pymupdf(image_bytes, filetype=None):
     """
     Performs OCR on in-memory image bytes using pymupdf's Tesseract bindings.
     It automatically downscales large images to improve performance.
+
+    Checks current_abort_check before and during pixmap preparation. Note that
+    once pdfocr_tobytes() is called, it cannot be interrupted, the abort check
+    prevents starting OCR on an already-cancelled scan but does not kill
+    in-progress OCR.
     """
+
+    # Check if the scan has been cancelled before we start processing the image
+    should_abort = current_abort_check.get()
+    if should_abort and should_abort():
+        return None
+
     try:
         logger.info("Running tesseract with pymupdf")
         # Create a Pixmap object from the image bytes
@@ -37,6 +49,10 @@ def tesseract_pymupdf(image_bytes, filetype=None):
         # Tesseract also can't handle an alpha channel - remove if needed.
         if pix.alpha:
             pix = pymupdf.Pixmap(pix, 0)
+
+        # Check if the scan has been cancelled again - just before we hand it off to Tesseract.
+        if should_abort and should_abort():
+            return None
 
         # Create a 1-page PDF in memory with an OCR text layer
         ocr_pdf_bytes = pix.pdfocr_tobytes(
@@ -90,6 +106,9 @@ def image_processor(r):
     Uses pymupdf's tesseract bindings to extract text from common image types using in-memory OCR.
     Downscales large images to prevent timeouts and improve performance.
     """
+    should_abort = current_abort_check.get()
+    if should_abort and should_abort():
+        return None
     with r.make_stream() as stream:
         image_bytes = stream.read()
     # Get the file extension from the resource's handle name
