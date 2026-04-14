@@ -1,4 +1,4 @@
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 from ..conversions.types import OutputType
 from .utilities.properties import RuleProperties, RulePrecedence
 
@@ -39,10 +39,7 @@ class PresentationRule(SimpleRule):
         return {self} | self._rule.flatten()
 
     @classmethod
-    def from_json_object(cls, obj):
-        return cls(
-            rule=Rule.from_json_object(obj["rule"]),
-
-            sensitivity=Sensitivity.make_from_dict(obj),
-            name=obj["name"] if "name" in obj else None,
-        )
+    def _get_constructor_kwargs(cls, obj):
+        return super()._get_constructor_kwargs(obj) | {
+            "rule": Rule.from_json_object(obj["rule"]),
+        }

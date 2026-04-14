@@ -38,6 +38,8 @@ from os2datascanner.engine2.rules.dimensions import DimensionsRule
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.conversions.types import OutputType
+from os2datascanner.engine2.rules.presentation import PresentationRule
+from os2datascanner.engine2.rules.regex import RegexRule
 
 
 example_handles = [
@@ -242,6 +244,7 @@ example_rules = [
     DimensionsRule(width_range=range(0, 1024), height_range=range(0, 1024)),
     DimensionsRule(min_dim=1024),
     LastModifiedRule(datetime(2022, 1, 1, tzinfo=timezone.utc)),
+    PresentationRule(rule=RegexRule("(?i)privat"), synthetic=True),
 ]
 
 example_rules_synthetic_false = [
