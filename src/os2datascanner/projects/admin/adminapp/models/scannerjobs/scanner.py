@@ -336,6 +336,12 @@ class Scanner(models.Model):
         rule = OrRule.make(*self.local_or_rules(), rule)
         rule = AndRule.make(*self.local_and_rules(), rule)
 
+        # Explicitly insert at index 0 to evaluate early to avoid compatibility issues
+        # with other rules that require early execution.
+        if self.max_pdf_size:
+            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
+            prerules.insert(0, sr)
+
         if self.do_ocr and any(
                 r.operates_on == OutputType.Text
                 for r in rule.flatten()):
@@ -349,10 +355,6 @@ class Scanner(models.Model):
                             min_dim=128),
                     True)
             prerules.append(cr)
-
-        if self.max_pdf_size:
-            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
-            prerules.append(sr)
 
         # prerules includes: do_ocr, LastModifiedRule
         return AndRule.make(*prerules, rule)
