@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.3?.?, 2?th March 2026
+## Version 3.31.3, 14th April 2026
+
+"The Future's Bright"
 
 ### New in this release
 
