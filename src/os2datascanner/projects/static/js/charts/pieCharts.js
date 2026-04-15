@@ -1,7 +1,7 @@
 /* exported drawPie */
 
 function makePieChart(labels, data, colors, chartElement) {
-  const isEmptyChart = data.length === 1 && labels[0] === "No Data";
+  const isEmptyChart = data.length === 1 && labels[0] === "No data";
   const isSingleValue = data.filter((val) => val > 0).length === 1;
 
   const pieChart = new Chart(chartElement, {
@@ -97,7 +97,7 @@ function drawPie(data, ctxName, colors) {
     ? filteredData.map(
         (obj) => obj.label.charAt(0).toUpperCase() + obj.label.slice(1)
       )
-    : [gettext("No Data")];
+    : [gettext("No data")];
   const values = totalValue ? filteredData.map((obj) => obj.count) : [1];
 
   const colorPredicate = (color, index) => {

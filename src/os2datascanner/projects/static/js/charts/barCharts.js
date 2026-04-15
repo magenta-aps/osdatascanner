@@ -1,35 +1,7 @@
 /* exported drawBar */
 
 function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, stacked = false) {
-	const chartAreaBorderPlugin = {
-		id: "chartAreaBorder",
-		beforeDraw(chart, args, options) {
-			const {ctx, chartArea: {left, top, width, height}} = chart;
-			ctx.save();
-			ctx.strokeStyle = options.borderColor;
-			ctx.lineWidth = options.borderWidth;
-			ctx.setLineDash(options.borderDash || []);
-			ctx.lineDashOffset = options.borderDashOffset;
-			ctx.strokeRect(left, top, width, height);
-			ctx.restore();
-		}
-	};
 
-	const plugins = [chartAreaBorderPlugin];
-	if (chartDatasets.length === 0) {
-		plugins.push({
-			id: "noData",
-			afterDatasetsDraw(chart) {
-				const {ctx, chartArea: {left, top, width, height}} = chart;
-				ctx.save();
-				ctx.font = "bold 20px sans-serif";
-				ctx.textAlign = "center";
-				ctx.fillText(gettext("No data available"), left + width / 2, top + height / 2);
-				ctx.restore();
-			}
-		});
-	}
-	
 	const barChart = new Chart(chartElement, {
 		type: "bar",
 		data: {
@@ -78,7 +50,7 @@ function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, 
 			scales: {
 				x: {
 					min: 0,
-					stacked: !swapXY && stacked, 
+					stacked: !swapXY && stacked,
 					grid: {
 						display: swapXY,
 					},
@@ -95,17 +67,17 @@ function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, 
 					grid: {
 						display: !swapXY,
 					},
-                    ticks: {
+					ticks: {
 						font: {
 							size: 16
 						}
-                    },
+					},
 					beginAtZero: true,
 					grace: swapXY ? 0 : 1
 				}
 			},
 		},
-		plugins: plugins,
+		plugins: [chartAreaBorderPlugin, makeNoDataPlugin(chartDatasets.length === 0)],
     });
 
     return barChart;

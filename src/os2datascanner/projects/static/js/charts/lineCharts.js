@@ -1,36 +1,6 @@
 /* exported drawLine */
 
 function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, yLabel = "") {
-
-	const chartAreaBorderPlugin = {
-		id: "chartAreaBorder",
-		beforeDraw(chart, args, options) {
-			const {ctx, chartArea: {left, top, width, height}} = chart;
-			ctx.save();
-			ctx.strokeStyle = options.borderColor;
-			ctx.lineWidth = options.borderWidth;
-			ctx.setLineDash(options.borderDash || []);
-			ctx.lineDashOffset = options.borderDashOffset;
-			ctx.strokeRect(left, top, width, height);
-			ctx.restore();
-		}
-	};
-
-	const plugins = [chartAreaBorderPlugin];
-	if (ydata.length === 0) {
-		plugins.push({
-			id: "noData",
-			afterDatasetsDraw(chart) {
-				const {ctx, chartArea: {left, top, width, height}} = chart;
-				ctx.save();
-				ctx.font = "bold 20px sans-serif";
-				ctx.textAlign = "center";
-				ctx.fillText(gettext("No data available"), left + width / 2, top + height / 2);
-				ctx.restore();
-			}
-		});
-	}
-
 	const lineChart = new Chart(chartElement, {
 		type: "line",
 		data: {
@@ -71,10 +41,6 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 				legend: {
 					display: false
 				},
-				chartAreaBorder: {
-					borderColor: "lightgray",
-					borderWidth: 1,
-				},
 				zoom: {
 					limits: {
 						x: {min: "original"}
@@ -106,7 +72,6 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 						},
 					},
 					grid: {
-						offset: true,
 						display: true,
 						lineWidth: 1,
 					},
@@ -115,7 +80,6 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 							size: 14,
 						},
 					},
-	
 				},
 				y: {
 					beginAtZero: true,
@@ -127,7 +91,12 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 						},
 					},
 					grid: {
-						display: false
+						display: true,
+						color: function(context) {
+							const ticks = context.scale.ticks;
+							const isFirstOrLast = context.index === 0 || context.index === ticks.length - 1;
+							return isFirstOrLast ? Chart.defaults.borderColor : "transparent";
+						},
 					},
 					ticks: {
 						font: {
@@ -138,7 +107,7 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 				}
 			},
 		},
-		plugins: plugins,
+		plugins: [makeNoDataPlugin(ydata.length === 0)],
 	});
 
 	return lineChart;
@@ -160,14 +129,3 @@ function drawLine(data, ctxName) {
 
 	charts.push(makeLineChart(lineChartLabels, lineChartValues, lineChartCtx));
 }
-
-// Step size function
-// Array = values
-// steps = how many steps on y-axis ( 0 doesn't count)
-var stepSizeFunction = function (array, steps) {
-	"use strict";
-	if (array.length === 0) {
-		return 0.1;
-	}
-	return (Math.ceil(Math.max.apply(null, array) / 100) * 100) / steps;
-};

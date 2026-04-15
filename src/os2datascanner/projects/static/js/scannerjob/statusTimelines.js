@@ -56,7 +56,7 @@ function drawTimelines(snapshotData, pk) {
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: { enabled: false},
+          tooltip: { enabled: false },
         },
         scales: {
           x: {
@@ -85,6 +85,7 @@ function drawTimelines(snapshotData, pk) {
           },
         },
       },
+      plugins: [makeNoDataPlugin(snapshotData.length === 0)],
     });
   }
 }
