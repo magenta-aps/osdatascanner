@@ -671,7 +671,8 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
                            f"of account belonging to user {self.request.user}:", e)
 
         # Make sure all reports belong to the account -- otherwise raise 404 error
-        account_reports = self.account.get_report(Account.ReportType.RAW)
+        account_reports = (self.account.get_report(Account.ReportType.RAW) |
+                           self.account.get_report(Account.ReportType.RAW, archived=True))
 
         # Exclude all reports we already know "belongs" to the account
         if reports.exclude(pk__in=account_reports.values("pk")):
