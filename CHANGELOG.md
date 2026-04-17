@@ -1,5 +1,14 @@
 # Changelog
 
+## Version 3.3x.x, xx May 2026
+
+""
+
+### General improvements
+
+- Upgrade rabbitMQ version to 3.13
+
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"

@@ -109,7 +109,7 @@ services:
     # Normally, we expect the `rabbitmq` image. The -management images come
     # with a set of management plugins installed and enabled by default. They
     # can be accessed through a web interface. The credentials are os2ds/os2ds.
-    image: rabbitmq:3.12.14-management-alpine
+    image: rabbitmq:3.13-management-alpine
     hostname: os2datascanner_msg_broker
     environment:
       - RABBITMQ_CONFIG_FILE=/etc/rabbitmq/rabbitmq.conf

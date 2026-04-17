@@ -28,16 +28,5 @@
       "read": ".*"
     }
   ],
-  "policies": [
-    {
-      "vhost": "/",
-      "name": "lazy_conversions",
-      "pattern": "os2ds_conversions",
-      "apply-to": "queues",
-      "definition": {
-        "queue-mode": "lazy"
-      },
-      "priority": 0
-    }
-  ]
+  "policies": []
 }
