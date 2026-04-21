@@ -68,7 +68,7 @@ def create_usererrorlog(
 
 
 def checkup_message_received_raw(body):
-    logger.info(
+    logger.debug(
             "raw checkup message received", body=body)
 
     if "coverages" in body:  # CoverageMessage
@@ -161,30 +161,32 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                     # This object hasn't changed since the last scan.
                     # Update the checkup timestamp so we remember to check
                     # it again next time
-                    logger.debug(
+                    logger.info(
                             "LM/no change, updating timestamp",
-                            handle=handle.presentation)
+                            handle=str(handle))
                     locked_qs.update(
                             interested_after=scan_time)
                 else:
                     # This object has been changed and no longer has any
                     # matches. Hooray! Forget about it
-                    logger.debug(
-                            "Changed, no matches, deleting",
-                            handle=handle.presentation)
+                    logger.info(
+                            "Object changed, no matches, deleting",
+                            handle=str(handle))
                     locked_qs.delete()
             else:
                 # This object has changed, but still has matches. Update
                 # the checkup timestamp
-                logger.debug(
-                        "Changed, new matches, updating timestamp",
-                        handle=handle.presentation)
+                logger.info(
+                        "Object changed, new matches, updating timestamp",
+                        handle=str(handle))
                 locked_qs.update(
                         interested_after=scan_time)
         elif isinstance(message, messages.ContentMissingMessage):
-            logger.debug(
-                    "Problem, deleted, deleting",
-                    handle=handle.presentation)
+            # This object no longer exists, so the checkup is no longer
+            # interesting
+            logger.info(
+                    "Object deleted, deleting checkup",
+                    handle=str(handle))
             locked_qs.delete()
         elif isinstance(message, messages.ProblemMessage):
             # Transient error -- do nothing. In particular, don't update the
@@ -192,34 +194,42 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
             # the last match and this error
             logger.debug(
                     "Problem, transient, doing nothing",
-                    handle=handle.presentation)
+                    handle=str(handle))
 
-    elif ((isinstance(message, messages.MatchesMessage) and message.matched)
-          or isinstance(message, messages.ProblemMessage)):
-        logger.debug(
-                "Interesting, creating", handle=str(handle))
-        # An object with a transient problem or with real matches is an
-        # object we'll want to check up on again later
+    elif isinstance(message, messages.ProblemMessage):
+        # An object with a transient problem is an object that we need to
+        # revisit
+        logger.info(
+                "Problem, transient, creating checkup",
+                handle=str(handle))
         ScheduledCheckup.objects.update_or_create(
                 path=handle.crunch(hash=True),
                 scanner=scanner,
-                # XXX: ideally we'd detect if a LastModifiedRule is the
-                # victim of a transient failure so that we can preserve
-                # the date to scan the object properly next time, but
-                # we don't (yet) get enough information out of the
-                # pipeline for that
+                defaults={
+                    "handle_representation": handle.to_json_object(),
+                    # We haven't actually scanned this object yet, so it
+                    # doesn't make sense to put a cutoff timestamp here
+                    "interested_after": None,
+                })
+        create_usererrorlog(message, ss)
+
+    elif isinstance(message, messages.MatchesMessage) and message.matched:
+        logger.info(
+                "Matches, creating checkup",
+                handle=str(handle))
+        # An object with real matches is an object we'll want to check up on
+        # when it changes
+        ScheduledCheckup.objects.update_or_create(
+                path=handle.crunch(hash=True),
+                scanner=scanner,
                 defaults={
                     "handle_representation": handle.to_json_object(),
                     "interested_after": scan_time
                 })
-        if isinstance(message, messages.ProblemMessage):
-            # For problems, we also create a UserErrorLog object to alert
-            # the user that something did not go as expected.
-            create_usererrorlog(message, ss)
     else:
         logger.debug(
-                "Not interesting, doing nothing",
-                handle=handle.presentation)
+                "Message not interesting, doing nothing",
+                handle=str(handle))
 
 
 def recreate_account_coverage(coverages: list[dict[str, str]]):

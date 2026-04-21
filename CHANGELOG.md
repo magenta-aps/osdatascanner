@@ -25,6 +25,9 @@
   subsequent scan no longer puts multiple `LastModifiedRule`s into that
   object's rule.
 
+- The administration module now distinguishes correctly between objects
+  being deleted and scan errors when updating `ScheduledCheckup` objects.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
