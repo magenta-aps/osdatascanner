@@ -5,6 +5,7 @@
 
 from collections.abc import Generator
 from typing import Any
+import random
 import structlog
 from urllib.error import HTTPError
 
@@ -77,6 +78,13 @@ def message_received(
 
         if conversion.handle not in conversion.scan_spec.source:
             return  # handle points outside original scan_spec source, do nothing.
+
+        fail_percent = settings.pipeline["processor"]["fail_percentage"]
+        if (fail_percent and settings.DEBUG
+                and (rand := random.randint(0, 100)) <= fail_percent):
+            raise ArithmeticError(
+                    "conversion failed due to inauspicious numbers:"
+                    f" {rand} ≤ {fail_percent}")
 
         resource = conversion.handle.follow(sm)
         representation = do_conversion(resource, conversion, tr, sm)
