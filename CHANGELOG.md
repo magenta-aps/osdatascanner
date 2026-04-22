@@ -14,6 +14,9 @@
 
 - Fix broken ownership check when mass-handling archived results.
 
+- Only show error message count on scanstatus overview, if the user has permission/access to the
+  error log tab.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
