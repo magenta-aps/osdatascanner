@@ -8,6 +8,9 @@
 
 - Upgrade rabbitMQ version to 3.13
 
+### Bugfixes
+
+- Fix broken ownership check when mass-handling archived results.
 
 ## Version 3.31.3, 14th April 2026
 
