@@ -83,7 +83,7 @@
         </li>
       {% endif %}
  
-      {% if status.usererrorlog_set.exists %}
+      {% if perms.os2datascanner.view_usererrorlog and status.usererrorlog_set.exists %}
         <li title="{% trans "To see more details, go to the error messages tab." %}">
           <i class="material-symbols" id="chat_error">chat_error</i>
 
