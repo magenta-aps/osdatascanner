@@ -8,6 +8,8 @@
 
 - Upgrade rabbitMQ version to 3.13
 
+- The development environment now uses keycloak 26.6.0, which allows for realm renaming.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.
