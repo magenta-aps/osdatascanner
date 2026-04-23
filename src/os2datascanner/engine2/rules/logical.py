@@ -31,6 +31,8 @@ def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> 
 
 
 class CompoundRule(Rule):
+    __match_args__ = ("components",)
+
     def __init__(self, *components, **super_kwargs):
         super().__init__(**super_kwargs)
         if len(components) == 0:
