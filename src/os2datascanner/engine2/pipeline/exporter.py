@@ -15,26 +15,26 @@ PREFETCH_COUNT = 8
 def censor_outgoing_message(message):
     """Censors a message before sending it to the outside world."""
     if isinstance(message, messages.MetadataMessage):
-        return message._replace(handle=message.handle.censor())
+        return messages.replace(message, handle=message.handle.censor())
     elif isinstance(message, messages.MatchesMessage):
-        return message._replace(
-                handle=message.handle.censor(),
-                scan_spec=censor_outgoing_message(message.scan_spec))
+        return messages.replace(message,
+                                handle=message.handle.censor(),
+                                scan_spec=censor_outgoing_message(message.scan_spec))
     elif isinstance(message, messages.ProblemMessage):
-        return message._replace(
-                handle=message.handle.censor() if message.handle else None,
-                source=message.source.censor() if message.source else None)
+        return messages.replace(message,
+                                handle=message.handle.censor() if message.handle else None,
+                                source=message.source.censor() if message.source else None)
 
     # Not exported from the pipeline, but included here for completeness
     elif isinstance(message, messages.ScanSpecMessage):
-        return message._replace(source=message.source.censor())
+        return messages.replace(message, source=message.source.censor())
     elif isinstance(message, (
             messages.ConversionMessage, messages.RepresentationMessage)):
-        return message._replace(
-                handle=message.handle.censor(),
-                scan_spec=censor_outgoing_message(message.scan_spec))
+        return messages.replace(message,
+                                handle=message.handle.censor(),
+                                scan_spec=censor_outgoing_message(message.scan_spec))
     elif isinstance(message, messages.HandleMessage):
-        return message._replace(handle=message.handle.censor())
+        return messages.replace(message, handle=message.handle.censor())
     else:
         return message
 

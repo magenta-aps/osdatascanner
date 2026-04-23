@@ -246,6 +246,16 @@ images, run
 
     docker compose {exec|run} <container name> bash
 
+### Simulating errors
+
+To simulate an unreliable network, the pipeline has a setting
+(`pipeline.processor.fail_percentage`) that can be used to cause a certain
+fraction of conversion tasks to fail randomly. Setting this value to 100 causes
+all conversions to fail; this may be a useful tool for simulating, for example,
+the expiry of an API key or client secret mid-scan.
+
+(This is obviously not suitable for use in production, so the system only pays
+attention to it if the `DEBUG` variable is also set.)
 
 ### Printing Stacktraces
 

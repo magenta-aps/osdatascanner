@@ -58,7 +58,7 @@ def message_received(  # noqa: CCR001
         # the ScanSpecMessage; we'll attach it to the ConversionMessages we
         # produce
         progress = message.progress
-        message = message._replace(progress=None)
+        message = messages.replace(message, progress=None)
     else:
         # This is a fresh Source with no rule execution done so far. Make a
         # blank ProgressFragment to attach to the ConversionMessages we produce
@@ -91,13 +91,16 @@ def message_received(  # noqa: CCR001
                 # This Handle is just a normal reference to a scannable object.
                 # Send it on to be processed
 
-                yield messages.ConversionMessage(message, handle, progress)
+                yield messages.ConversionMessage(
+                        scan_spec=message,
+                        handle=handle,
+                        progress=progress)
                 handle_count += 1
             else:
                 # This Handle is a thin wrapper around an independent Source.
                 # Construct that Source and enqueue it for further exploration
                 new_source = Source.from_handle(handle)
-                yield message._replace(source=new_source)
+                yield messages.replace(message, source=new_source)
                 source_count = (source_count or 0) + 1
 
         # Exploration is complete

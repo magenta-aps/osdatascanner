@@ -9,8 +9,13 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers i
         ScheduledCheckup)
 
 
+from os2datascanner.engine2.rules.regex import RegexRule
+from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.model import http
 from os2datascanner.engine2.pipeline import messages
+
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
+from os2datascanner.engine2.rules.logical import AndRule
 
 
 @pytest.mark.django_db
@@ -32,9 +37,29 @@ class TestScanStartup:
             case c:
                 pytest.fail(f"expected a list of one scan spec, but got {c}")
 
-    def test_webscan_checkups(
+    def test_webscan_checkup_rule(
             self, *,
             web_scanner,
+            web_scanner_execution,
+            ws_page_1):
+        template = web_scanner._construct_scan_spec_template(None, False)
+
+        checkup, = web_scanner._yield_checkups(template, False, False)
+        assert isinstance(checkup, messages.ConversionMessage)
+        assert checkup.handle == ws_page_1.handle
+
+        match checkup.progress.rule:
+            case AndRule([LastModifiedRule(after=ws_page_1.interested_after),
+                          RegexRule()]):
+                pass
+            case c:
+                pytest.fail(
+                        "expected one LastModifiedRule and a dummy,"
+                        f" but got {c}")
+
+    def test_webscan_checkups(
+            self, *,
+            web_scanner: WebScanner,
             ws_page_1, ws_page_2, ws_page_3):
         template = web_scanner._construct_scan_spec_template(None, True)
 
@@ -55,8 +80,7 @@ class TestScanStartup:
 
         match list(web_scanner._yield_checkups(template, True, False)):
             case [messages.ConversionMessage(handle=ws_page_1.handle),
-                  messages.ProblemMessage(handle=ws_irrelevant_page.handle,
-                                          irrelevant=True)]:
+                  messages.ContentIrrelevantMessage(handle=ws_irrelevant_page.handle)]:
                 pass
             case c:
                 pytest.fail(

@@ -20,10 +20,11 @@ from os2datascanner.engine2.model.file import (
 from os2datascanner.engine2.model.http import (
     WebHandle, WebSource)
 from os2datascanner.engine2.pipeline.messages import (
-    StatusMessage, ScanTagFragment,
+    OrganisationFragment, StatusMessage, ScannerFragment, ScanTagFragment,
     MatchesMessage, MatchFragment, ScanSpecMessage,
     ProblemMessage)
 from os2datascanner.engine2.rules.regex import RegexRule
+from os2datascanner.engine2.utilities.datetime import parse_datetime
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.adminapp.models.rules import Rule, Sensitivity
@@ -174,6 +175,30 @@ def web_scanner(test_org, basic_rule):
 
 
 @pytest.fixture
+def web_scanner_execution(web_scanner):
+    return ScanStatus.objects.create(
+        scan_tag=ScanTagFragment(
+                time=parse_datetime("2025-05-22T00:00:00+00:00"),
+                user=None,
+                scanner=ScannerFragment(
+                        pk=web_scanner.pk,
+                        name=web_scanner.name),
+                organisation=OrganisationFragment(
+                    uuid=web_scanner.organization.pk,
+                    name=web_scanner.organization.name)).to_json_object(),
+        scanner=web_scanner,
+
+        last_modified="2025-05-22T19:04:00+00:00",
+        total_sources=1,
+        explored_sources=1,
+        total_objects=4294,
+        scanned_objects=4294,
+        scanned_size=2 ** 29,
+        matches_found=8,
+    )
+
+
+@pytest.fixture
 def web_scanner_only_dl(test_org, links_rule):
     return WebScanner.objects.create(
         name=f"DeadLinksScanner-{test_org.name}",
@@ -188,7 +213,7 @@ def ws_page_1(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "IIS/Page1.aspx")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_after=time_now() - timedelta(days=-100),
+        interested_after=parse_datetime("2025-05-22T12:34:56+00:00"),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -200,7 +225,7 @@ def ws_page_2(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "cgi-bin/page2.pl")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_after=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -212,7 +237,7 @@ def ws_page_3(web_scanner):
     wh = WebHandle(WebSource("http://www.example.com"), "ph-admin/page3.php")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_after=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)
@@ -226,7 +251,7 @@ def ws_irrelevant_page(web_scanner):
     wh = WebHandle(WebSource("http://www.example.net"), "COB-BIN/HPAGE.CBL")
     return ScheduledCheckup.objects.create(
         handle_representation=wh.to_json_object(),
-        interested_after=time_now() - timedelta(days=-100),
+        interested_after=time_now() - timedelta(days=100),
         scanner_id=web_scanner.pk,
 
         path=wh.censor().crunch(hash=True)

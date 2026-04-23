@@ -5,6 +5,7 @@
 
 from collections.abc import Generator
 from typing import Any
+import random
 import structlog
 from urllib.error import HTTPError
 
@@ -69,17 +70,21 @@ def message_received(
 
     try:
         if _check and not tr.run(check, sm, conversion.handle):
-            yield messages.ProblemMessage(
+            yield messages.ContentMissingMessage(
                     scan_tag=conversion.scan_spec.scan_tag,
-                    source=None,
-                    handle=conversion.handle,
-                    missing=True,
-                    message="Resource check failed")
+                    handle=conversion.handle)
             # stop the generator immediately
             return
 
         if conversion.handle not in conversion.scan_spec.source:
             return  # handle points outside original scan_spec source, do nothing.
+
+        fail_percent = settings.pipeline["processor"]["fail_percentage"]
+        if (fail_percent and settings.DEBUG
+                and (rand := random.randint(0, 100)) <= fail_percent):
+            raise ArithmeticError(
+                    "conversion failed due to inauspicious numbers:"
+                    f" {rand} ≤ {fail_percent}")
 
         resource = conversion.handle.follow(sm)
         representation = do_conversion(resource, conversion, tr, sm)
@@ -98,6 +103,8 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
                     messages.ConversionMessage.from_json_object(body),
                     source_manager, _check=_check),
             (messages.ProblemMessage, ["os2ds_problems", "os2ds_checkups"]),
+            (messages.ContentMissingMessage, ["os2ds_checkups", "os2ds_problems"]),
+            # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
             (messages.RepresentationMessage, ["os2ds_representations"]),
             (messages.ScanSpecMessage, ["os2ds_scan_specs"]))
 
@@ -159,10 +166,10 @@ def emit_representation(
 
     logger.info(f"Required representation for {conversion.handle} is {required}")
     yield messages.RepresentationMessage(
-            conversion.scan_spec,
-            conversion.handle,
-            conversion.progress,
-            encode_dict(dv))
+            scan_spec=conversion.scan_spec,
+            handle=conversion.handle,
+            progress=conversion.progress,
+            representations=encode_dict(dv))
 
 
 def handle_conversion_key_error(
@@ -170,18 +177,18 @@ def handle_conversion_key_error(
     try:
         derived_source = Source.from_handle(conversion.handle, source_manager)
         if derived_source:
-            yield conversion.scan_spec._replace(
-                    source=derived_source,
-                    progress=conversion.progress)
+            yield messages.replace(conversion.scan_spec,
+                                   source=derived_source,
+                                   progress=conversion.progress)
         else:
             # If we can't recurse any deeper, then produce an empty conversion
             # so that the matcher stage has something to work with
             # (XXX: is this always the right approach?)
             yield messages.RepresentationMessage(
-                    conversion.scan_spec,
-                    conversion.handle,
-                    conversion.progress,
-                    {conversion.progress.rule.split()[0].operates_on.value: None})
+                    scan_spec=conversion.scan_spec,
+                    handle=conversion.handle,
+                    progress=conversion.progress,
+                    representations={conversion.progress.rule.split()[0].operates_on.value: None})
     except Exception as e:
         yield from handle_conversion_exception(conversion, e)
 

@@ -3,16 +3,17 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from typing import NamedTuple
 import datetime
+from dataclasses import dataclass
 
 from os2datascanner.engine2.pipeline import messages
 
 
-class SampleTuple(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class SampleTuple:
     field1: str
     field2: int
-    field3: bool
+    field3: bool | str | None
     field4: object = None
 
 
@@ -80,3 +81,49 @@ class TestMessage:
         })
         assert stf.organisation == messages.OrganisationFragment(
             name="Vejstrand Kommune", uuid=None)
+
+    def test_problem_missing_compat(self):
+        """Old-fashioned ContentMissingMessages (based on ProblemMessage) can
+        be parsed."""
+        # Arrange
+        jf = {
+            "scan_tag": messages.ScanTagFragment.make_dummy().to_json_object(),
+            "handle": {
+                "type": "file",
+                "source": {
+                    "type": "file",
+                    "path": "/home/af",
+                },
+                "path": "path/to/document.txt",
+            },
+            "missing": True,
+            "message": "It's gone, boss"
+        }
+        # Act
+        mo = messages.ProblemMessage.from_json_object(jf)
+        # Assert
+        assert isinstance(mo, messages.ContentMissingMessage)
+        assert mo.handle.relative_path == "path/to/document.txt"
+
+    def test_problem_irrelevant_compat(self):
+        """Old-fashioned ContentIrrelevantMessages (based on ProblemMessage)
+        can be parsed."""
+        # Arrange
+        jf = {
+            "scan_tag": messages.ScanTagFragment.make_dummy().to_json_object(),
+            "handle": {
+                "type": "file",
+                "source": {
+                    "type": "file",
+                    "path": "/home/af",
+                },
+                "path": "path/to/second-document.txt",
+            },
+            "irrelevant": True,
+            "message": "Not part of the scan no more"
+        }
+        # Act
+        mo = messages.ProblemMessage.from_json_object(jf)
+        # Assert
+        assert isinstance(mo, messages.ContentIrrelevantMessage)
+        assert mo.handle.relative_path == "path/to/second-document.txt"

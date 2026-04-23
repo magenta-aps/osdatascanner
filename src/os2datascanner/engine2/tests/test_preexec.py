@@ -81,7 +81,8 @@ class TestPreExec:
             with open(joinpath(td, "test_three.txt"), "wt") as fp:
                 fp.write("... and this is the FINAL TEST FILE.")
 
-            message = self.make_message_base(td)._replace(
+            message = messages.replace(
+                    self.make_message_base(td),
                     rule=LastModifiedRule(after=after_first_two))
 
             # Act

@@ -370,8 +370,9 @@ class Scanner(models.Model):
     def _construct_scan_spec_template(self, user, force: bool) -> (
             messages.ScanSpecMessage):
         """Builds a scan specification template for this scanner. This template
-        has no associated Source, so make sure you put one in with _replace or
-        messages.deep_replace before trying to scan with it."""
+        has no associated Source, so make sure you put one in with
+        dataclasses.replace or messages.deep_replace before trying to scan with
+        it."""
 
         # Determine if we're running full or delta scan & set explorer and conversion queue
         # accordingly
@@ -428,14 +429,14 @@ class Scanner(models.Model):
                             f"{self}: account {account} not previously"
                             " scanned")
                 Counter.try_incr(source_counter)
-                yield spec_template._replace(source=source, rule=rule)
+                yield messages.replace(spec_template, source=source, rule=rule)
         else:
             # The scanner isn't CoveredAccount-aware, or we're running without
             # the Last-Modified check. In either case, we just put Sources into
             # the queue without fiddling around with the rule
             for source in self.generate_sources():
                 Counter.try_incr(source_counter)
-                yield spec_template._replace(source=source)
+                yield messages.replace(spec_template, source=source)
 
     @classmethod
     def _make_remap_dict(cls, source_iterator):
@@ -480,6 +481,10 @@ class Scanner(models.Model):
         longer covered by one of this scanner's Sources, unless the dry_run
         flag is set)."""
 
+        # We need to know that our LastModifiedRule will be the only one used
+        # here, so reconstruct the scanner rule without one
+        base_rule = self._construct_rule(force=True)
+
         uncensor_map = self._make_remap_dict(self.generate_sources())
 
         conv_template = messages.ConversionMessage(
@@ -495,22 +500,18 @@ class Scanner(models.Model):
                 # (for example, an account that's been removed from the scan).
                 # Let the report module know about it...
                 Counter.try_incr(problem_counter)
-                yield messages.ProblemMessage(
+                yield messages.ContentIrrelevantMessage(
                        scan_tag=spec_template.scan_tag,
-                       handle=rh,
-                       source=rh.source,
-                       irrelevant=True,
-                       message="No longer relevant")
+                       handle=rh)
                 # ... and then delete the checkup
                 if not dry_run:
                     reminder.delete()
                 continue
 
-            # XXX: we could be adding LastModifiedRule twice
             cutoff = reminder.interested_after
             rule_here = AndRule.make(
                     LastModifiedRule(cutoff) if cutoff and not force else True,
-                    spec_template.rule)
+                    base_rule)
             Counter.try_incr(checkup_counter)
             yield messages.deep_replace(
                     conv_template,
@@ -599,7 +600,8 @@ class Scanner(models.Model):
                         queue = spec_template.explorer_queue
                     case messages.ConversionMessage():
                         queue = spec_template.conversion_queue
-                    case messages.ProblemMessage():
+                    case (messages.ProblemMessage()
+                          | messages.ContentIrrelevantMessage()):
                         queue = "os2ds_problems"
                     case _:
                         queue = None

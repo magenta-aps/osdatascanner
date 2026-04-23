@@ -25,6 +25,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.sbsysdb import (
     SBSYSDBScanner)
+from os2datascanner.engine2.pipeline import messages
 from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
 
 
@@ -230,7 +231,7 @@ class TestScanners:
         assert int(checkup_counter) == 0
         assert len(outbox) == 1
         problem_msg = outbox[0]
-        assert problem_msg.irrelevant is True
+        assert isinstance(problem_msg, messages.ContentIrrelevantMessage)
         assert not msgraph_mailscanner.checkups.exists()
 
     @skip("Accounts are now required, but this test doesn't create one")

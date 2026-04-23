@@ -101,7 +101,7 @@ def common_scan_spec_corrupt(common_handle_corrupt, common_rule):
 @pytest.fixture
 def positive_match_keep_fp(common_scan_spec, scan_tag3, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag3),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag3),
         handle=common_handle,
         matched=True,
         matches=[
@@ -114,7 +114,7 @@ def positive_match_keep_fp(common_scan_spec, scan_tag3, common_handle, common_ru
 @pytest.fixture
 def positive_match_dont_keep_fp(common_scan_spec, scan_tag4, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag4),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag4),
         handle=common_handle,
         matched=True,
         matches=[
@@ -127,7 +127,7 @@ def positive_match_dont_keep_fp(common_scan_spec, scan_tag4, common_handle, comm
 @pytest.fixture
 def positive_match_corrupt(common_scan_spec_corrupt, scan_tag0, common_handle_corrupt, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec_corrupt._replace(scan_tag=scan_tag0),
+        scan_spec=messages.replace(common_scan_spec_corrupt, scan_tag=scan_tag0),
         handle=common_handle_corrupt,
         matched=True,
         matches=[
@@ -141,7 +141,7 @@ def positive_match_corrupt(common_scan_spec_corrupt, scan_tag0, common_handle_co
 def positive_match_with_dimension_rule_probability_and_sensitivity(
         common_scan_spec, scan_tag0, common_handle, common_rule, dimension_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
         handle=common_handle,
         matched=True,
         matches=[
@@ -162,7 +162,7 @@ def positive_match_with_dimension_rule_probability_and_sensitivity(
 @pytest.fixture
 def positive_match_only_notify_superadmin(common_scan_spec, scan_tag5, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag5),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag5),
         handle=common_handle,
         matched=True,
         matches=[
@@ -176,7 +176,7 @@ def positive_match_only_notify_superadmin(common_scan_spec, scan_tag5, common_ha
 def positive_match_only_notify_superadmin_later(
         common_scan_spec, scan_tag6, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag6),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag6),
         handle=common_handle,
         matched=True,
         matches=[
@@ -189,8 +189,8 @@ def positive_match_only_notify_superadmin_later(
 @pytest.fixture
 def negative_match(common_scan_spec, scan_tag1, common_handle, common_rule):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(
-            scan_tag=scan_tag1),
+        scan_spec=messages.replace(common_scan_spec,
+                                   scan_tag=scan_tag1),
         handle=common_handle,
         matched=False,
         matches=[messages.MatchFragment(
@@ -201,22 +201,16 @@ def negative_match(common_scan_spec, scan_tag1, common_handle, common_rule):
 
 @pytest.fixture
 def deletion(scan_tag1, common_handle):
-    return messages.ProblemMessage(
-        scan_tag=scan_tag1,
-        source=None,
-        handle=common_handle,
-        message="There was a file here. It's gone now.",
-        missing=True)
+    return messages.ContentMissingMessage(
+            scan_tag=scan_tag1,
+            handle=common_handle)
 
 
 @pytest.fixture
 def irrelevance(scan_tag1, common_handle):
-    return messages.ProblemMessage(
+    return messages.ContentIrrelevantMessage(
         scan_tag=scan_tag1,
-        source=None,
-        handle=common_handle,
-        message="Nå ja, Jens, han arbejder her ikke længere, hva'",
-        irrelevant=True)
+        handle=common_handle)
 
 
 @pytest.fixture
@@ -245,11 +239,11 @@ def late_rule(time2):
 @pytest.fixture
 def late_negative_match(common_scan_spec, scan_tag2, late_rule, common_rule, common_handle):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(
-                scan_tag=scan_tag2,
-                rule=AndRule(
-                        late_rule,
-                        common_rule)),
+        scan_spec=messages.replace(common_scan_spec,
+                                   scan_tag=scan_tag2,
+                                   rule=AndRule(
+                                       late_rule,
+                                       common_rule)),
         handle=common_handle,
         matched=False,
         matches=[messages.MatchFragment(
@@ -290,7 +284,7 @@ def smb_handle_3(smb_source_3):
 @pytest.fixture
 def smb_match_1(common_scan_spec, scan_tag0, common_rule, smb_handle_1):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
         handle=smb_handle_1,
         matched=True,
         matches=[
@@ -304,7 +298,7 @@ def smb_match_1(common_scan_spec, scan_tag0, common_rule, smb_handle_1):
 @pytest.fixture
 def smb_match_2(common_scan_spec, scan_tag1, common_rule, smb_handle_2):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag1),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag1),
         handle=smb_handle_2,
         matched=True,
         matches=[
@@ -318,7 +312,7 @@ def smb_match_2(common_scan_spec, scan_tag1, common_rule, smb_handle_2):
 @pytest.fixture
 def smb_match_3(common_scan_spec, scan_tag2, common_rule, smb_handle_3):
     return messages.MatchesMessage(
-        scan_spec=common_scan_spec._replace(scan_tag=scan_tag2),
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag2),
         handle=smb_handle_3,
         matched=True,
         matches=[
@@ -362,10 +356,10 @@ def smb_metadata_3a(scan_tag2, smb_handle_3):
 
 @pytest.fixture
 def smb_metadata_3b(smb_metadata_3a):
-    return smb_metadata_3a._replace(
-            metadata={
-                "user-principal-name": "jens@example.invalid"
-            })
+    return messages.replace(smb_metadata_3a,
+                            metadata={
+                                "user-principal-name": "jens@example.invalid"
+                                })
 
 
 @pytest.mark.django_db
@@ -520,7 +514,7 @@ class TestPipelineCollector:
             dimension_rule,
             positive_match_with_dimension_rule_probability_and_sensitivity):
         match_to_match = messages.MatchesMessage(
-            scan_spec=common_scan_spec._replace(scan_tag=scan_tag0),
+            scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
             handle=common_handle,
             matched=True,
             matches=[
@@ -588,16 +582,16 @@ class TestPipelineCollector:
         _driveletter differs, updates the existing report, instead of creating
         a new one."""
 
-        smb_dr_1 = record_match(smb_match_1._replace(handle=smb_match_1.handle.censor()))
+        smb_dr_1 = record_match(messages.replace(smb_match_1, handle=smb_match_1.handle.censor()))
 
         assert DocumentReport.objects.count() == 1
 
-        smb_dr_2 = record_match(smb_match_2._replace(handle=smb_match_2.handle.censor()))
+        smb_dr_2 = record_match(messages.replace(smb_match_2, handle=smb_match_2.handle.censor()))
 
         assert DocumentReport.objects.count() == 1
         assert smb_dr_1 == smb_dr_2
 
-        smb_dr_3 = record_match(smb_match_3._replace(handle=smb_match_3.handle.censor()))
+        smb_dr_3 = record_match(messages.replace(smb_match_3, handle=smb_match_3.handle.censor()))
 
         assert DocumentReport.objects.count() == 1
         assert smb_dr_1.path == smb_dr_3.path

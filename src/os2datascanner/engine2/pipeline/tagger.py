@@ -23,7 +23,9 @@ def message_received(
         resource = message.handle.follow(sm)
         metadata = tr.run(resource.get_metadata)
         yield messages.MetadataMessage(
-                message.scan_tag, message.handle, metadata)
+                scan_tag=message.scan_tag,
+                handle=message.handle,
+                metadata=metadata)
     except Exception as e:
         exception_message = (
             "Metadata extraction error. {0}: ".format(type(e).__name__))

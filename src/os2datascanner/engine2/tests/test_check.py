@@ -92,16 +92,13 @@ class CheckTests(unittest.TestCase):
                         template,
                         handle=model.DummyHandle(
                                 dummy, 0, hints={"exists": False}))
-                match list(
-                        processor.message_received_raw(
-                                message.to_json_object(),
-                                "os2ds_conversions", sm)):
-                    case [("os2ds_problems", {"missing": True}), *_]:
+                match list(processor.message_received(message, sm)):
+                    case [messages.ContentMissingMessage(), *_]:
                         pass
                     case k:
                         self.fail(
-                                'expected an "os2ds_problems" message with'
-                                ' {"missing": True}, but got' f" {k}")
+                                "expected a ContentMissingMessage,"
+                                f" but got '{k}'")
 
             with self.subTest(
                     "Transiently unavailable files are not treated"
@@ -110,16 +107,13 @@ class CheckTests(unittest.TestCase):
                         template,
                         handle=model.DummyHandle(
                                 dummy, 0, hints={"exists": None}))
-                match list(
-                        processor.message_received_raw(
-                                message.to_json_object(),
-                                "os2ds_conversions", sm)):
-                    case [("os2ds_problems", {"missing": False}), *_]:
+                match list(processor.message_received(message, sm)):
+                    case [messages.ProblemMessage(), *_]:
                         pass
                     case k:
                         self.fail(
-                                'expected an "os2ds_problems" message with'
-                                ' {"missing": False}, but got' f" {k}")
+                                "expected a ProblemMessage,"
+                                f" but got '{k}'")
 
     def test_ews_mailbox_gone(self):
         """Check that a mail in a deleted EWS mailbox is itself correctly

@@ -62,8 +62,7 @@ class TestPipelineCollector:
             with transaction.atomic():
                 checkup_collector.update_scheduled_checkup(
                         handle=positive_corrupt_match_message.handle,
-                        matches=positive_corrupt_match_message,
-                        problem=None,
+                        message=positive_corrupt_match_message,
                         scan_time=positive_corrupt_match_message.scan_spec.scan_tag.time,
                         scanner=None,
                         ss=None)

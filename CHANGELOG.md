@@ -10,12 +10,23 @@
 
 - The development environment now uses keycloak 26.6.0, which allows for realm renaming.
 
+- The pipeline's `ProblemMessage` class has been drastically simplified, and
+  new message classes have been introduced to represent missing and
+  irrelevant objects.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.
 
 - Only show error message count on scanstatus overview, if the user has permission/access to the
   error log tab.
+
+- Submitting a `ScheduledCheckup` object to the pipeline as part of a
+  subsequent scan no longer puts multiple `LastModifiedRule`s into that
+  object's rule.
+
+- The administration module now distinguishes correctly between objects
+  being deleted and scan errors when updating `ScheduledCheckup` objects.
 
 ## Version 3.31.3, 14th April 2026
 

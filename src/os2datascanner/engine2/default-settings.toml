@@ -61,6 +61,11 @@ op_tries = 2
 # _staging data sources, for example)
 extra_modules = []
 
+[pipeline.processor]
+# The chance (from 0 to 100) that any given conversion will fail with a fake
+# transient error (requires DEBUG)
+fail_percentage = 0
+
 [pipeline.matcher]
 # The maximum number of match objects to return for each rule that matches
 # (must be at least 1)

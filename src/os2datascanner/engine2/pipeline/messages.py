@@ -8,10 +8,12 @@ from __future__ import annotations
 import uuid
 from uuid import UUID
 import random
-from typing import Any, Optional, Self, Sequence, NamedTuple, Protocol, TypeVar
+from typing import Any, ClassVar, Optional, Self, Sequence, Protocol, TypeVar
 from datetime import datetime
 from dateutil import tz
 import warnings
+import structlog
+from dataclasses import Field, replace, dataclass
 
 from ..utilities.datetime import parse_datetime
 from ..model.core import Handle, Source
@@ -19,7 +21,14 @@ from ..model.core.errors import DeserialisationError
 from ..rules.rule import Rule, SimpleRule, Sensitivity
 
 
-class SerialisableMessage(Protocol):
+logger = structlog.get_logger("engine2")
+
+
+class ProbablyDataclass(Protocol):
+    __dataclass_fields__: ClassVar[dict[str, Field[Any]]]
+
+
+class SerialisableMessage(ProbablyDataclass, Protocol):
     def to_json_object(self) -> dict:
         ...
 
@@ -35,28 +44,29 @@ def require_fields(
             raise DeserialisationError(cls.__name__, f)
 
 
-N = TypeVar("N", bound=NamedTuple)
+N = TypeVar("N", bound=ProbablyDataclass)
 
 
 def deep_replace(p: N, **kwargs) -> N:
-    """As NamedTuple._replace, but supports deeply nested field replacement
+    """As dataclasses.replace, but supports deeply nested field replacement
     using Django-like syntax ("tuple1__subtuple__field")."""
     for name, value in kwargs.items():
         name = name.split("__")
         if len(name) > 1:
             head, tail = name[0], name[1:]
             fragment = getattr(p, head)
-            p = p._replace(**{
+            p = replace(p, **{
                 head: deep_replace(fragment, **{
                     "__".join(tail): value
                 })
             })
         else:
-            p = p._replace(**{name[0]: value})
+            p = replace(p, **{name[0]: value})
     return p
 
 
-class MatchFragment(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MatchFragment:
     """A MatchFragment represents the result of executing a single SimpleRule;
     it is a pair of the rule and the matches that it produced."""
     rule: SimpleRule
@@ -76,17 +86,18 @@ class MatchFragment(NamedTuple):
                 matches=obj["matches"])
 
 
-class ProgressFragment(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ProgressFragment:
     """A ProcessFragment represents the progress made in a scan, containing
     both the matches made so far and the remainder of the Rule to be
     evaluated."""
     rule: Rule
-    matches: Sequence[MatchFragment]
+    matches: list[MatchFragment]
 
     def to_json_object(self):
         return {
             "rule": self.rule.to_json_object(),
-            "matches": list([m.to_json_object() for m in self.matches])
+            "matches": [m.to_json_object() for m in self.matches]
         }
 
     @classmethod
@@ -98,7 +109,8 @@ class ProgressFragment(NamedTuple):
                          for mf in obj["matches"]])
 
 
-class ScannerFragment(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ScannerFragment:
     """A ScannerFragment is a reference to a scanner job in the OSdatascanner
     admin module. (It also carries some settings that are relevant to the
     report module.)"""
@@ -124,7 +136,8 @@ class ScannerFragment(NamedTuple):
             keep_fp=obj.get("keep_fp", False))
 
 
-class OrganisationFragment(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class OrganisationFragment:
     """An OrganisationFragment is a reference to an organisation (i.e., an
     Organization object) in the OSdatascanner admin and report modules."""
     name: str
@@ -151,7 +164,8 @@ class OrganisationFragment(NamedTuple):
             raise TypeError
 
 
-class ScanTagFragment(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ScanTagFragment:
     """A ScanTagFragment identifies a particular execution of a scanner."""
 
     time: Optional[datetime]
@@ -234,7 +248,8 @@ class ScanTagFragment(NamedTuple):
                             organisation) if organisation else None)
 
 
-class ScanSpecMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ScanSpecMessage:
     """A ScanSpecMessage is a complete scan task for the scanner engine."""
 
     scan_tag: ScanTagFragment
@@ -330,7 +345,8 @@ class ScanSpecMessage(NamedTuple):
         )
 
 
-class ConversionMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ConversionMessage:
     """A ConversionMessage is a partial scan task for the scanner engine: it
     represents an object and the rule remaining to be evaluated against it.
 
@@ -367,7 +383,8 @@ class ConversionMessage(NamedTuple):
                 progress=ProgressFragment.from_json_object(obj["progress"]))
 
 
-class RepresentationMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class RepresentationMessage:
     """A RepresentationMessage contains zero or more specific converted forms
     of an object against which a rule can be evaluated.
 
@@ -406,16 +423,22 @@ class RepresentationMessage(NamedTuple):
                 representations=obj["representations"])
 
 
-class HandleMessage(NamedTuple):
-    """A HandleMessage indicates that matches were found for the given object,
-    and that metadata should be extracted from it. The pipeline's matcher stage
-    generates these and sends them to the tagger stage."""
+@dataclass(frozen=True, slots=True, kw_only=True)
+class _PointsAtHandle:
+    """Convenience mixin for message dataclasses that carry a ScanTagFragment
+    and a Handle."""
 
     scan_tag: ScanTagFragment
     """The complete scan task of which this handle is a part."""
 
     handle: Handle
-    """A reference to the object from which metadata should be extracted."""
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class HandleMessage(_PointsAtHandle):
+    """A HandleMessage indicates that matches were found for the given object,
+    and that metadata should be extracted from it. The pipeline's matcher stage
+    generates these and sends them to the tagger stage."""
 
     def to_json_object(self):
         return {
@@ -431,16 +454,11 @@ class HandleMessage(NamedTuple):
                 handle=Handle.from_json_object(obj["handle"]))
 
 
-class MetadataMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MetadataMessage(_PointsAtHandle):
     """A MetadataMessage contains all of the metadata extracted from a given
     object. The pipeline's tagger stage generates these and sends them to the
     exporter stage."""
-
-    scan_tag: ScanTagFragment
-    """The complete scan task of which this handle is a part."""
-
-    handle: Handle
-    """A reference to the object from which metadata has been extracted."""
 
     metadata: dict[str, Any]
     """Zero or more string-value pairs of metadata items extracted from the
@@ -463,7 +481,8 @@ class MetadataMessage(NamedTuple):
                 metadata=obj["metadata"])
 
 
-class MatchesMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class MatchesMessage:
     """A MatchesMessage represents the conclusion of rule evaluation for a
     given object. The pipeline's matcher stage will produce one of these for
     every input object in the end."""
@@ -566,7 +585,8 @@ class MatchesMessage(NamedTuple):
                          for mf in obj["matches"]])
 
 
-class ProblemMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ProblemMessage:
     """A ProblemMessage represents an error encountered by the scanner engine
     during a scan."""
 
@@ -587,38 +607,46 @@ class ProblemMessage(NamedTuple):
     message: str
     """A short description of the error."""
 
-    missing: bool = False
-    """Whether or not the object has been deleted."""
-
-    irrelevant: bool = False
-    """Whether or not the object is still relevant to the scan. (Set by the
-    admin module if a user is removed from the set of covered accounts.)"""
-
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
             "source": self.source.to_json_object() if self.source else None,
             "handle": self.handle.to_json_object() if self.handle else None,
             "message": self.message,
-            "missing": self.missing,
-            "irrelevant": self.irrelevant
         }
 
     @classmethod
-    def from_json_object(cls, obj: dict) -> ProblemMessage:
+    def from_json_object(
+            cls, obj: dict) -> ProblemMessage | ContentMissingMessage | ContentIrrelevantMessage:
         require_fields(cls, obj, "scan_tag", "message")
+        scan_tag = ScanTagFragment.from_json_object(obj["scan_tag"])
         source = obj.get("source")
         handle = obj.get("handle")
-        return ProblemMessage(
-                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
-                source=Source.from_json_object(source) if source else None,
-                handle=Handle.from_json_object(handle) if handle else None,
-                message=obj["message"],
-                missing=obj.get("missing", False),
-                irrelevant=obj.get("irrelevant", False))
+        if obj.get("missing") is True:
+            logger.warning(
+                    "converting deprecated ProblemMessage(missing=True) to"
+                    " modern ContentMissingMessage",
+                    scan_tag=scan_tag)
+            return ContentMissingMessage(
+                    scan_tag=scan_tag,
+                    handle=Handle.from_json_object(handle))
+        elif obj.get("irrelevant") is True:
+            logger.warning(
+                    "converting deprecated ProblemMessage(irrelevant=True) to"
+                    " modern ContentIrrelevantMessage")
+            return ContentIrrelevantMessage(
+                    scan_tag=scan_tag,
+                    handle=Handle.from_json_object(handle))
+        else:
+            return ProblemMessage(
+                    scan_tag=scan_tag,
+                    source=Source.from_json_object(source) if source else None,
+                    handle=Handle.from_json_object(handle) if handle else None,
+                    message=obj["message"])
 
 
-class StatusMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class StatusMessage:
     """A StatusMessage is an informational message sent by the pipeline's
     explorer and worker stages to the admin module describing the work that has
     been performed. The admin module uses these updates to give the user
@@ -706,12 +734,98 @@ def check_metadata_dict(cls_metadata, obj_metadata):
     for key, expected_value in cls_metadata.items():
         obj_value = obj_metadata.get(key)
         if obj_value != expected_value:
-            raise ValueError(
+            raise DeserialisationError(
                     f"metadata field {key!r}:"
                     f" expected {expected_value!r}, but got {obj_value!r}")
 
 
-class ContentSkippedMessage(NamedTuple):
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ContentIrrelevantMessage(_PointsAtHandle):
+    """A ContentIrrelevantMessage is emitted by the admin system when a
+    ScheduledCheckup is no longer relevant to a scan, for example because a
+    user has been removed from the set of covered accounts.
+
+    This information was once represented by a ProblemMessage(irrelevant=True)
+    object; this is now deprecated, and the ProblemMessage.from_json_object()
+    function will automatically convert such messages to instances of this
+    class.
+
+    Normally messages that are not emitted by the pipeline should not appear in
+    this file. See, for example, os2datascanner.projects.admin.adminapp.utils,
+    which defines a number of cleanup messages transmitted directly from the
+    admin module to the report module. This class exists to preserve backwards
+    compatibility with the ProblemMessage representation."""
+
+    METADATA = dict(domain="os2datascanner.engine2.pipeline.messages",
+                    type="ContentIrrelevantMessage")
+
+    def to_json_object(self):
+        return {
+            "scan_tag": self.scan_tag.to_json_object(),
+            "handle": self.handle.to_json_object(),
+
+            "__metadata": self.METADATA,
+        }
+
+    @classmethod
+    def test(cls, obj) -> bool:
+        try:
+            check_metadata_dict(cls.METADATA, obj.get("__metadata", {}))
+            return True
+        except DeserialisationError:
+            return False
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ContentIrrelevantMessage:
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
+        return ContentIrrelevantMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                handle=Handle.from_json_object(obj["handle"]))
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ContentMissingMessage(_PointsAtHandle):
+    """A ContentMissingMessage is emitted by the pipeline's processor stage (to
+    both the admin and report modules) if an object with an associated
+    conversion task could not be found.
+
+    This situation was once represented by a ProblemMessage(missing=True)
+    object; this is now deprecated, and the ProblemMessage.from_json_object()
+    function will automatically convert such messages to instances of this
+    class."""
+
+    METADATA = {
+        "domain": "os2datascanner.engine2.pipeline.messages",
+        "type": "ContentMissingMesage"
+    }
+
+    def to_json_object(self):
+        return {
+            "scan_tag": self.scan_tag.to_json_object(),
+            "handle": self.handle.to_json_object(),
+
+            "__metadata": self.METADATA
+        }
+
+    @staticmethod
+    def test(obj) -> bool:
+        try:
+            check_metadata_dict(
+                    ContentMissingMessage.METADATA, obj.get("__metadata", {}))
+            return True
+        except DeserialisationError:
+            return False
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ContentMissingMessage:
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
+        return ContentMissingMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                handle=Handle.from_json_object(obj["handle"]))
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ContentSkippedMessage(_PointsAtHandle):
     """A ContentSkippedMessage is emitted by the pipeline's processor stage if
     the configuration of a scanner job has prohibited the content of an object
     from being scanned."""
@@ -720,12 +834,6 @@ class ContentSkippedMessage(NamedTuple):
         "domain": "os2datascanner.engine2.pipeline.messages",
         "type": "ContentSkippedMessage"
     }
-
-    scan_tag: ScanTagFragment
-    """The identifier of this scan."""
-
-    handle: Handle
-    """A reference to the object that didn't get scanned."""
 
     def to_json_object(self):
         return {
@@ -741,18 +849,24 @@ class ContentSkippedMessage(NamedTuple):
             check_metadata_dict(
                     ContentSkippedMessage.METADATA, obj.get("__metadata", {}))
             return True
-        except ValueError:
+        except DeserialisationError:
             return False
 
     @classmethod
     def from_json_object(cls, obj: dict) -> ContentSkippedMessage:
-        check_metadata_dict(ContentSkippedMessage.METADATA, obj["__metadata"])
+        check_metadata_dict(cls.METADATA, obj["__metadata"])
         return ContentSkippedMessage(
                 scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
                 handle=Handle.from_json_object(obj["handle"]))
 
 
-class CommandMessage(NamedTuple):
+Issue = (ProblemMessage | ContentIrrelevantMessage
+         | ContentMissingMessage | ContentSkippedMessage)
+"""Convenience union of all types that represent issues or problems."""
+
+
+@dataclass(frozen=True, slots=True, kw_only=True)
+class CommandMessage:
     """A CommandMessage is an order from the admin module. As they may modify
     the treatment of other messages, they should be processed as soon as
     possible, and so should be sent on a high-priority queue."""
@@ -793,3 +907,22 @@ class CommandMessage(NamedTuple):
                 if abort else None,
                 log_level=obj.get("log_level"),
                 profiling=obj.get("profiling"))
+
+
+__all__ = (
+    # Re-exported utility functions
+    "replace",
+
+    # Utility classes and functions
+    "SerialisableMessage", "deep_replace",
+
+    # Message fragments
+    "MatchFragment", "ProgressFragment", "ScannerFragment",
+    "OrganisationFragment", "ScanTagFragment",
+
+    # Message types
+    "ScanSpecMessage", "ConversionMessage", "RepresentationMessage",
+    "HandleMessage", "MetadataMessage", "MatchesMessage", "ProblemMessage",
+    "StatusMessage", "ContentIrrelevantMessage", "ContentSkippedMessage",
+    "CommandMessage",
+)
