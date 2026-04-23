@@ -907,3 +907,22 @@ class CommandMessage:
                 if abort else None,
                 log_level=obj.get("log_level"),
                 profiling=obj.get("profiling"))
+
+
+__all__ = (
+    # Re-exported utility functions
+    "replace",
+
+    # Utility classes and functions
+    "SerialisableMessage", "deep_replace",
+
+    # Message fragments
+    "MatchFragment", "ProgressFragment", "ScannerFragment",
+    "OrganisationFragment", "ScanTagFragment",
+
+    # Message types
+    "ScanSpecMessage", "ConversionMessage", "RepresentationMessage",
+    "HandleMessage", "MetadataMessage", "MatchesMessage", "ProblemMessage",
+    "StatusMessage", "ContentIrrelevantMessage", "ContentSkippedMessage",
+    "CommandMessage",
+)
