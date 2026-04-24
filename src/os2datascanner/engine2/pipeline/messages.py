@@ -118,13 +118,15 @@ class ScannerFragment:
     name: str
     test: bool = False
     keep_fp: bool = False
+    only_notify_remediators: bool = False
 
     def to_json_object(self):
         return {
             "pk": self.pk,
             "name": self.name,
             "test": self.test,
-            "keep_fp": self.keep_fp
+            "keep_fp": self.keep_fp,
+            "only_notify_remediators": self.only_notify_remediators,
         }
 
     @classmethod
@@ -133,7 +135,8 @@ class ScannerFragment:
         return ScannerFragment(
             pk=obj["pk"], name=obj["name"],
             test=obj.get("test", False),
-            keep_fp=obj.get("keep_fp", False))
+            keep_fp=obj.get("keep_fp", False),
+            only_notify_remediators=obj.get("only_notify_remediators", False))
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
