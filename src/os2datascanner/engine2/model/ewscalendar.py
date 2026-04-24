@@ -15,7 +15,10 @@ from exchangelib.attachments import FileAttachment, ItemAttachment, Attachment
 from exchangelib.items.calendar_item import OCCURRENCE, EXCEPTION
 from exchangelib.items import MeetingRequest, Message
 from exchangelib.errors import (
-        ErrorServerBusy, ErrorItemNotFound, ErrorNonExistentMailbox)
+    ErrorServerBusy,
+    ErrorItemNotFound,
+    ErrorNonExistentMailbox,
+)
 
 from ..utilities.backoff import DefaultRetrier
 from .core import Source, Handle, FileResource, Resource
@@ -58,32 +61,51 @@ class EWSCalendarSource(EWSAccountSource):
     eq_properties = EWSAccountSource.eq_properties + ("_scan_attachments",)
 
     def __init__(
-            self, domain, server, admin_user, admin_password, user,
-            client_id=None, tenant_id=None, client_secret=None,
-            scan_attachments: bool = True):
+        self,
+        domain,
+        server,
+        admin_user,
+        admin_password,
+        user,
+        client_id=None,
+        tenant_id=None,
+        client_secret=None,
+        scan_attachments: bool = True,
+    ):
         super().__init__(
-                domain, server, admin_user, admin_password, user,
-                client_id=client_id, tenant_id=tenant_id,
-                client_secret=client_secret)
+            domain,
+            server,
+            admin_user,
+            admin_password,
+            user,
+            client_id=client_id,
+            tenant_id=tenant_id,
+            client_secret=client_secret,
+        )
         self._scan_attachments = scan_attachments
 
     @staticmethod
     def _relevant_folders(account: Account) -> Iterator[Folder]:
         for container in account.msg_folder_root.walk():
-            if (container.folder_class != "IPF.Appointment"
-                    or container.total_count == 0):
+            if (
+                container.folder_class != "IPF.Appointment"
+                or container.total_count == 0
+            ):
                 continue
             yield container
 
     # web_client_read_form_query_string what a field name.
     _ITEM_FIELDS = (
-        "subject", "start", "end", "type",
-        "last_modified_time", "web_client_read_form_query_string",
+        "subject",
+        "start",
+        "end",
+        "type",
+        "last_modified_time",
+        "web_client_read_form_query_string",
     )
 
     @staticmethod
-    def _non_occurrence_items(
-            folder: Folder, cutoff=None) -> Iterator[CalendarItem]:
+    def _non_occurrence_items(folder: Folder, cutoff=None) -> Iterator[CalendarItem]:
         """Yield all single items and recurring masters from a folder.
 
         A regular queryset returns both of these types without a date range
@@ -95,14 +117,16 @@ class EWSCalendarSource(EWSAccountSource):
         if cutoff:
             queryset = queryset.filter(last_modified_time__gte=cutoff)
         yield from (
-            item for item in queryset
+            item
+            for item in queryset
             if isinstance(item, CalendarItem)
             and item.type not in (OCCURRENCE, EXCEPTION)
         )
 
     @staticmethod
     def _exception_items(
-            folder: Folder, start, end, cutoff=None) -> Iterator[CalendarItem]:
+        folder: Folder, start, end, cutoff=None
+    ) -> Iterator[CalendarItem]:
         """Yield only exceptions (modified occurrences) via a CalendarView.
 
         Exceptions are the only item type not reachable via folder.all().
@@ -117,20 +141,25 @@ class EWSCalendarSource(EWSAccountSource):
         chunk_start = start
         while chunk_start < end:
             chunk_end = min(chunk_start + _TWO_YEARS, end)
-            view = (folder.view(start=chunk_start, end=chunk_end)
-                    .only("id", *EWSCalendarSource._ITEM_FIELDS))
+            view = folder.view(start=chunk_start, end=chunk_end).only(
+                "id", *EWSCalendarSource._ITEM_FIELDS
+            )
             yield from (
-                item for item in view
+                item
+                for item in view
                 if isinstance(item, CalendarItem)
                 and item.type == EXCEPTION
                 and (not cutoff or item.last_modified_time >= cutoff)
             )
             chunk_start = chunk_end
 
-    def handles(self, sm, *, rule: Rule | None = None, **kwargs) -> Iterator['EWSCalendarHandle']:  # noqa CCR001 Cognitive complexity
+    def handles(
+        self, sm, *, rule: Rule | None = None, **kwargs
+    ) -> Iterator["EWSCalendarHandle"]:  # noqa CCR001 Cognitive complexity
         account = sm.open(self)
         utc = EWSTimeZone.from_timezone(timezone.utc)
         now = EWSDateTime.now(tz=utc)
+
         # Exceptions (modified occurrences) require a CalendarView with an explicit
         # date range. Scan from the Unix epoch to 2 years forward to cover the full
         # calendar history. The 2-year forward horizon may need to become configurable.
@@ -141,57 +170,56 @@ class EWSCalendarSource(EWSAccountSource):
         for essential_rule in compute_mss(rule):
             if essential_rule.type_label == "last-modified":
                 after = EWSDateTime.from_datetime(
-                    essential_rule.after.astimezone(timezone.utc))
+                    essential_rule.after.astimezone(timezone.utc)
+                )
                 cutoff = after if not cutoff else max(cutoff, after)
 
+        def _make_handle(item, folder):
+            return EWSCalendarHandle(
+                self,
+                "{0}.{1}".format(folder.id, item.id),
+                item.subject or "(no subject)",
+                folder.name,
+                item.start,
+                item.end,
+                item.type,
+                _web_link(item),
+            )
+
         for folder in self._relevant_folders(account):
-            # Single items and recurring masters.
-            # Catch broadly: exchangelib can raise many different error types
-            # mid-iteration (throttling, transient server errors, malformed
-            # responses). We log and move on so the remaining folders are
-            # still scanned.
-            try:
-                for item in self._non_occurrence_items(folder, cutoff):
-                    yield EWSCalendarHandle(
-                        self,
-                        "{0}.{1}".format(folder.id, item.id),
-                        item.subject or "(no subject)",
-                        folder.name,
-                        item.start,
-                        item.end,
-                        item.type,
-                        _web_link(item),
-                    )
-            except Exception:
-                logger.exception(
-                    "Failed during non-occurrence iteration for folder",
-                    folder=folder.name)
+            # Collect each folder's items into a list inside the retried
+            # function so the entire iteration restarts cleanly on failure,
+            # rather than resuming a partially-consumed generator.
+            yield from DefaultRetrier(ErrorServerBusy).run(
+                lambda folder=folder: [
+                    _make_handle(item, folder)
+                    for item in self._non_occurrence_items(folder, cutoff)
+                ]
+            )
 
             # Exceptions (modified occurrences) are invisible to folder.all()
             # and require a CalendarView, paged in 2-year chunks.
-            try:
-                for item in self._exception_items(
-                        folder, window_start, window_end, cutoff):
-                    yield EWSCalendarHandle(
-                        self,
-                        "{0}.{1}".format(folder.id, item.id),
-                        item.subject or "(no subject)",
-                        folder.name,
-                        item.start,
-                        item.end,
-                        item.type,
-                        _web_link(item),
+            yield from DefaultRetrier(ErrorServerBusy).run(
+                lambda folder=folder: [
+                    _make_handle(item, folder)
+                    for item in self._exception_items(
+                        folder, window_start, window_end, cutoff
                     )
-            except Exception:
-                logger.exception(
-                    "Failed during exception iteration for folder",
-                    folder=folder.name)
+                ]
+            )
 
     def censor(self):
         return EWSCalendarSource(
-                self._domain, self._server, None, None, self._user,
-                None, self._tenant_id, None,
-                self._scan_attachments)
+            self._domain,
+            self._server,
+            None,
+            None,
+            self._user,
+            None,
+            self._tenant_id,
+            None,
+            self._scan_attachments,
+        )
 
     def to_json_object(self):
         return super().to_json_object() | {
@@ -202,12 +230,16 @@ class EWSCalendarSource(EWSAccountSource):
     @Source.json_handler(type_label)
     def from_json_object(obj):
         return EWSCalendarSource(
-                obj["domain"], obj["server"], obj["admin_user"],
-                obj["admin_password"], obj["user"],
-                client_id=obj.get("client_id"),
-                tenant_id=obj.get("tenant_id"),
-                client_secret=obj.get("client_secret"),
-                scan_attachments=obj.get("scan_attachments", True))
+            obj["domain"],
+            obj["server"],
+            obj["admin_user"],
+            obj["admin_password"],
+            obj["user"],
+            client_id=obj.get("client_id"),
+            tenant_id=obj.get("tenant_id"),
+            client_secret=obj.get("client_secret"),
+            scan_attachments=obj.get("scan_attachments", True),
+        )
 
 
 class EWSCalendarResource(Resource):
@@ -238,8 +270,7 @@ class EWSCalendarResource(Resource):
     def check(self) -> bool:
         try:
             item = self._get_item()
-            return not isinstance(
-                    item, (ErrorItemNotFound, ErrorNonExistentMailbox))
+            return not isinstance(item, (ErrorItemNotFound, ErrorNonExistentMailbox))
         except (ErrorItemNotFound, ErrorNonExistentMailbox):
             return False
 
@@ -252,8 +283,8 @@ class EWSCalendarResource(Resource):
 
 
 class EWSCalendarHandle(Handle):
-    """A Handle identifying a single calendar item within an Exchange mailbox.
-    """
+    """A Handle identifying a single calendar item within an Exchange mailbox."""
+
     type_label = "ews-calendar"
     resource_type = EWSCalendarResource
 
@@ -345,6 +376,7 @@ class EWSCalendarItemSource(DerivedSource):
     scan_attachments=True, also yields EWSCalendarFileAttachmentHandle and
     EWSCalendarItemAttachmentHandle for any attachments on the item.
     """
+
     type_label = "ews-calendar-item"
 
     def _generate_state(self, sm):
@@ -404,21 +436,20 @@ class EWSCalendarContentResource(FileResource):
     def _get_item(self) -> CalendarItem:
         if self._item is None:
             account = self._get_cookie()
-            folder_id, item_id = (
-                    self.handle.source.handle.relative_path.split(".", maxsplit=1))
+            folder_id, item_id = self.handle.source.handle.relative_path.split(
+                ".", maxsplit=1
+            )
 
             def _fetch():
                 folder = _retrieve_folder(account, folder_id)
                 return folder.all().only(*self._FETCH_FIELDS).get(id=item_id)
 
-            self._item = DefaultRetrier(
-                    ErrorServerBusy, fuzz=0.25).run(_fetch)
+            self._item = DefaultRetrier(ErrorServerBusy, fuzz=0.25).run(_fetch)
         return self._item
 
     def check(self) -> bool:
         # Delegate to the parent container handle's resource
-        return self.handle.source.handle.follow(
-                self._sm).check()
+        return self.handle.source.handle.follow(self._sm).check()
 
     def _build_content(self) -> bytes:
         item = self._get_item()
@@ -445,9 +476,7 @@ class EWSCalendarContentResource(FileResource):
     def compute_type(self):
         body = self._get_item().body
         return (
-            "text/html"
-            if getattr(body, "body_type", None) == "HTML"
-            else "text/plain"
+            "text/html" if getattr(body, "body_type", None) == "HTML" else "text/plain"
         )
 
 
@@ -459,6 +488,7 @@ class EWSCalendarContentHandle(Handle):
     content stream per calendar item. The source is the EWSCalendarItemSource
     that produced it.
     """
+
     type_label = "ews-calendar-content"
     resource_type = EWSCalendarContentResource
 
@@ -484,13 +514,15 @@ class EWSCalendarContentHandle(Handle):
 
 class _EWSCalendarAttachmentResource:
     """Mixin with common attachment-handling logic."""
+
     _attachment: Optional[Attachment] = None
 
     def _get_attachment(self) -> Attachment:
         if self._attachment is None:
             account = self._get_cookie()
-            folder_id, item_id = (
-                self.handle.source.handle.relative_path.split(".", maxsplit=1))
+            folder_id, item_id = self.handle.source.handle.relative_path.split(
+                ".", maxsplit=1
+            )
             idx = int(self.handle.relative_path)
 
             def _fetch():
@@ -498,8 +530,7 @@ class _EWSCalendarAttachmentResource:
                 item = folder.all().only("id", "attachments").get(id=item_id)
                 return item.attachments[idx]
 
-            self._attachment = DefaultRetrier(
-                ErrorServerBusy, fuzz=0.25).run(_fetch)
+            self._attachment = DefaultRetrier(ErrorServerBusy, fuzz=0.25).run(_fetch)
         return self._attachment
 
 
@@ -529,16 +560,15 @@ class EWSCalendarFileAttachmentResource(_EWSCalendarAttachmentResource, FileReso
         return self._get_attachment().size
 
     def get_last_modified(self):
-        return self.handle.source.handle.follow(
-                self._sm).get_last_modified()
+        return self.handle.source.handle.follow(self._sm).get_last_modified()
 
     def compute_type(self):
         return self.handle._content_type or "application/octet-stream"
 
 
 class EWSCalendarFileAttachmentHandle(Handle):
-    """A Handle identifying a file attachment on a calendar item.
-    """
+    """A Handle identifying a file attachment on a calendar item."""
+
     type_label = "ews-calendar-file-attachment"
     resource_type = EWSCalendarFileAttachmentResource
 
@@ -562,7 +592,9 @@ class EWSCalendarFileAttachmentHandle(Handle):
     @property
     def presentation_place(self):
         parent = self.source.handle
-        return f"attachment of {parent.presentation_name} in {parent.presentation_place}"
+        return (
+            f"attachment of {parent.presentation_name} in {parent.presentation_place}"
+        )
 
     @property
     def presentation_url(self):
@@ -622,8 +654,7 @@ class EWSCalendarItemAttachmentResource(_EWSCalendarAttachmentResource, FileReso
         return self._get_attachment().item.size
 
     def get_last_modified(self):
-        return self.handle.source.handle.follow(
-                self._sm).get_last_modified()
+        return self.handle.source.handle.follow(self._sm).get_last_modified()
 
     def compute_type(self):
         embedded = self._get_attachment().item
@@ -638,6 +669,7 @@ class EWSCalendarItemAttachmentHandle(Handle):
     """A Handle identifying an ItemAttachment (embedded Exchange item) on a
     calendar item.
     """
+
     type_label = "ews-calendar-item-attachment"
     resource_type = EWSCalendarItemAttachmentResource
 

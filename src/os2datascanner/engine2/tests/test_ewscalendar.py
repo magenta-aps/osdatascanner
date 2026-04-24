@@ -11,7 +11,7 @@ from exchangelib import EWSDateTime, EWSTimeZone, CalendarItem
 from exchangelib.items.calendar_item import SINGLE, RECURRING_MASTER, EXCEPTION
 from exchangelib.attachments import FileAttachment, ItemAttachment
 from exchangelib.items import Message
-from exchangelib.errors import ErrorItemNotFound
+from exchangelib.errors import ErrorItemNotFound, ErrorServerBusy
 
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.ewscalendar import (
@@ -95,23 +95,30 @@ class TestEWSCalendarSource:
         assert restored == source
 
     def test_json_roundtrip_with_attachments(self, source):
-        restored = EWSCalendarSource.from_json_object(
-            source.to_json_object())
+        restored = EWSCalendarSource.from_json_object(source.to_json_object())
         assert restored == source
 
     def test_equality_ignores_server_and_tenant(self):
         """Two sources for the same mailbox should be equal after censoring
         regardless of whether they use a service account or OAuth."""
-        svc = EWSCalendarSource(
-            DOMAIN, SERVER, "svc", "pw", USER)
+        svc = EWSCalendarSource(DOMAIN, SERVER, "svc", "pw", USER)
         oauth = EWSCalendarSource(
-            DOMAIN, None, None, None, USER,
-            client_id="cid", tenant_id="tid", client_secret="cs")
+            DOMAIN,
+            None,
+            None,
+            None,
+            USER,
+            client_id="cid",
+            tenant_id="tid",
+            client_secret="cs",
+        )
         assert svc != oauth
         assert svc.censor() == oauth.censor()
 
     def test_scan_attachments_affects_equality(self):
-        without = EWSCalendarSource(DOMAIN, SERVER, "s", "p", USER, scan_attachments=False)
+        without = EWSCalendarSource(
+            DOMAIN, SERVER, "s", "p", USER, scan_attachments=False
+        )
         with_ = EWSCalendarSource(DOMAIN, SERVER, "s", "p", USER, scan_attachments=True)
         assert without != with_
 
@@ -127,8 +134,7 @@ class TestEWSCalendarHandle:
         assert handle.presentation_name == "[09:00 15/3/24] Weekly Sync"
 
     def test_presentation_name_no_start(self, source):
-        h = EWSCalendarHandle(source, PATH, "No Date", "Calendar",
-                              None, None, None)
+        h = EWSCalendarHandle(source, PATH, "No Date", "Calendar", None, None, None)
         assert h.presentation_name == "No Date"
 
     def test_presentation_name_excludes_item_type(self, handle):
@@ -147,9 +153,16 @@ class TestEWSCalendarHandle:
         assert handle.presentation_url is None
 
     def test_presentation_url_returns_web_link(self, source):
-        h = EWSCalendarHandle(source, PATH, "Meeting", "Calendar",
-                              START, END, SINGLE,
-                              web_link="https://outlook.office.com/calendar/item/xyz")
+        h = EWSCalendarHandle(
+            source,
+            PATH,
+            "Meeting",
+            "Calendar",
+            START,
+            END,
+            SINGLE,
+            web_link="https://outlook.office.com/calendar/item/xyz",
+        )
         assert h.presentation_url == "https://outlook.office.com/calendar/item/xyz"
 
     def test_guess_type_is_dummy_mime(self, handle):
@@ -162,10 +175,10 @@ class TestEWSCalendarHandle:
         assert "Weekly Sync" in key
 
     def test_sort_key_orders_by_start(self, source):
-        earlier = EWSCalendarHandle(source, PATH, "A", "Calendar",
-                                    START, END, SINGLE)
-        later = EWSCalendarHandle(source, PATH, "B", "Calendar",
-                                  START + timedelta(days=1), END, None, SINGLE)
+        earlier = EWSCalendarHandle(source, PATH, "A", "Calendar", START, END, SINGLE)
+        later = EWSCalendarHandle(
+            source, PATH, "B", "Calendar", START + timedelta(days=1), END, None, SINGLE
+        )
         assert earlier.sort_key < later.sort_key
 
     def test_json_roundtrip(self, handle):
@@ -180,15 +193,21 @@ class TestEWSCalendarHandle:
         assert restored._web_link == handle._web_link
 
     def test_json_roundtrip_with_web_link(self, source):
-        h = EWSCalendarHandle(source, PATH, "Meeting", "Calendar",
-                              START, END, SINGLE,
-                              web_link="https://outlook.office.com/calendar/item/xyz")
+        h = EWSCalendarHandle(
+            source,
+            PATH,
+            "Meeting",
+            "Calendar",
+            START,
+            END,
+            SINGLE,
+            web_link="https://outlook.office.com/calendar/item/xyz",
+        )
         restored = Handle.from_json_object(h.to_json_object())
         assert restored._web_link == "https://outlook.office.com/calendar/item/xyz"
 
     def test_json_roundtrip_none_dates(self, source):
-        h = EWSCalendarHandle(source, PATH, "No dates", "Calendar",
-                              None, None, SINGLE)
+        h = EWSCalendarHandle(source, PATH, "No dates", "Calendar", None, None, SINGLE)
         restored = Handle.from_json_object(h.to_json_object())
         assert restored._start is None
         assert restored._end is None
@@ -205,30 +224,32 @@ class TestEWSCalendarItemSource:
         handles = list(item_source.handles(mock_sm))
 
         content_handles = [
-            h for h in handles
-            if isinstance(h, type(handles[0]))
-            and h.relative_path == "content"
+            h
+            for h in handles
+            if isinstance(h, type(handles[0])) and h.relative_path == "content"
         ]
         assert len(content_handles) == 1
 
-    def test_no_attachments_when_flag_false(self, item_source):
-        mock_sm = MagicMock()
-        mock_sm.open.return_value = MagicMock()
+    def test_no_attachments_when_flag_false(self, source):
+        source_no_att = EWSCalendarSource(
+            DOMAIN, SERVER, "svc@example.invalid", "p4ssw0rd", USER,
+            scan_attachments=False)
+        handle = EWSCalendarHandle(
+            source_no_att, PATH, "Meeting", "Calendar", START, END, SINGLE)
+        item_source = EWSCalendarItemSource(handle)
 
-        handles = list(item_source.handles(mock_sm))
+        handles = list(item_source.handles(MagicMock()))
         attachment_handles = [
             h for h in handles
             if isinstance(h, (
-                EWSCalendarFileAttachmentHandle,
-                EWSCalendarItemAttachmentHandle))
+                EWSCalendarFileAttachmentHandle, EWSCalendarItemAttachmentHandle))
         ]
         assert attachment_handles == []
 
-    def test_yields_attachment_handles_when_flag_true(
-            self, source):
+    def test_yields_attachment_handles_when_flag_true(self, source):
         handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar",
-            START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_source = EWSCalendarItemSource(handle)
 
         mock_item = MagicMock()
@@ -253,10 +274,12 @@ class TestEWSCalendarItemSource:
         ):
             handles = list(item_source.handles(mock_sm))
 
-        file_handles = [h for h in handles
-                        if isinstance(h, EWSCalendarFileAttachmentHandle)]
-        item_handles = [h for h in handles
-                        if isinstance(h, EWSCalendarItemAttachmentHandle)]
+        file_handles = [
+            h for h in handles if isinstance(h, EWSCalendarFileAttachmentHandle)
+        ]
+        item_handles = [
+            h for h in handles if isinstance(h, EWSCalendarItemAttachmentHandle)
+        ]
 
         assert len(file_handles) == 1
         assert file_handles[0]._name == "report.pdf"
@@ -264,6 +287,52 @@ class TestEWSCalendarItemSource:
 
         assert len(item_handles) == 1
         assert item_handles[0]._name == "invite.eml"
+
+
+class TestHandlesRetry:
+    def _make_mock_item(self):
+        item = MagicMock(spec=CalendarItem)
+        item.subject = "Test Meeting"
+        item.id = ITEM_ID
+        item.start = START
+        item.end = END
+        item.type = SINGLE
+        item.web_client_read_form_query_string = None
+        return item
+
+    def test_handles_retries_on_error_server_busy(self, source):
+        calls = []
+
+        def flaky_items(folder, cutoff=None):
+            calls.append(1)
+            if len(calls) == 1:
+                raise ErrorServerBusy("busy")
+            return [self._make_mock_item()]
+
+        mock_folder = MagicMock()
+        mock_folder.folder_class = "IPF.Appointment"
+        mock_folder.total_count = 1
+        mock_folder.name = "Calendar"
+        mock_folder.id = FOLDER_ID
+
+        mock_account = MagicMock()
+        mock_account.msg_folder_root.walk.return_value = [mock_folder]
+
+        mock_sm = MagicMock()
+        mock_sm.open.return_value = mock_account
+
+        with (
+            patch.object(
+                EWSCalendarSource, "_non_occurrence_items", side_effect=flaky_items
+            ),
+            patch.object(EWSCalendarSource, "_exception_items", return_value=[]),
+            patch("os2datascanner.engine2.utilities.backoff.sleep"),
+        ):
+            handles = list(source.handles(mock_sm))
+
+        assert len(calls) == 2
+        assert len(handles) == 1
+        assert handles[0]._subject == "Test Meeting"
 
 
 class TestFolderHelpers:
@@ -299,7 +368,8 @@ class TestFolderHelpers:
         list(EWSCalendarSource._non_occurrence_items(mock_folder, cutoff))
 
         mock_folder.all.return_value.only.return_value.filter.assert_called_once_with(
-            last_modified_time__gte=cutoff)
+            last_modified_time__gte=cutoff
+        )
 
     def test_exception_items_pages_in_two_year_chunks(self):
         """A window longer than 2 years should result in multiple CalendarView calls."""
@@ -331,8 +401,11 @@ class TestFolderHelpers:
         mock_folder = MagicMock()
         mock_folder.view.return_value.only.return_value = [exc, single]
 
-        results = list(EWSCalendarSource._exception_items(
-            mock_folder, START, START + timedelta(days=365)))
+        results = list(
+            EWSCalendarSource._exception_items(
+                mock_folder, START, START + timedelta(days=365)
+            )
+        )
 
         subjects = [r.subject for r in results]
         assert "exc" in subjects
@@ -347,8 +420,11 @@ class TestFolderHelpers:
         mock_folder = MagicMock()
         mock_folder.view.return_value.only.return_value = [recent, old]
 
-        results = list(EWSCalendarSource._exception_items(
-            mock_folder, START, START + timedelta(days=365), cutoff))
+        results = list(
+            EWSCalendarSource._exception_items(
+                mock_folder, START, START + timedelta(days=365), cutoff
+            )
+        )
 
         subjects = [r.subject for r in results]
         assert "recent" in subjects
@@ -358,9 +434,13 @@ class TestFolderHelpers:
 class TestEWSCalendarContentResource:
     def _make_resource(self, source):
         from os2datascanner.engine2.model.ewscalendar import (
-            EWSCalendarContentHandle, EWSCalendarItemSource)
+            EWSCalendarContentHandle,
+            EWSCalendarItemSource,
+        )
+
         handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_src = EWSCalendarItemSource(handle)
         content_handle = EWSCalendarContentHandle(item_src, "content")
         mock_sm = MagicMock()
@@ -470,7 +550,8 @@ class TestEWSCalendarContentResource:
 class TestEWSCalendarResource:
     def _make_resource(self, source):
         handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         mock_sm = MagicMock()
         mock_sm.open.return_value = MagicMock()
         return EWSCalendarResource(handle, mock_sm)
@@ -487,15 +568,19 @@ class TestEWSCalendarResource:
         resource = self._make_resource(source)
         mock_folder = self._mock_folder_with_item(MagicMock(spec=CalendarItem))
 
-        with patch("os2datascanner.engine2.model.ewscalendar._retrieve_folder",
-                   return_value=mock_folder):
+        with patch(
+            "os2datascanner.engine2.model.ewscalendar._retrieve_folder",
+            return_value=mock_folder,
+        ):
             assert resource.check() is True
 
     def test_check_returns_false_for_missing_item(self, source):
         resource = self._make_resource(source)
 
-        with patch("os2datascanner.engine2.model.ewscalendar._retrieve_folder",
-                   side_effect=ErrorItemNotFound("not found")):
+        with patch(
+            "os2datascanner.engine2.model.ewscalendar._retrieve_folder",
+            side_effect=ErrorItemNotFound("not found"),
+        ):
             assert resource.check() is False
 
     def test_get_last_modified_prefers_last_modified_time(self, source):
@@ -504,8 +589,10 @@ class TestEWSCalendarResource:
         mock_item.last_modified_time = START
         mock_item.datetime_created = END
 
-        with patch("os2datascanner.engine2.model.ewscalendar._retrieve_folder",
-                   return_value=self._mock_folder_with_item(mock_item)):
+        with patch(
+            "os2datascanner.engine2.model.ewscalendar._retrieve_folder",
+            return_value=self._mock_folder_with_item(mock_item),
+        ):
             assert resource.get_last_modified() == START
 
     def test_get_last_modified_falls_back_to_created(self, source):
@@ -514,16 +601,20 @@ class TestEWSCalendarResource:
         mock_item.last_modified_time = None
         mock_item.datetime_created = END
 
-        with patch("os2datascanner.engine2.model.ewscalendar._retrieve_folder",
-                   return_value=self._mock_folder_with_item(mock_item)):
+        with patch(
+            "os2datascanner.engine2.model.ewscalendar._retrieve_folder",
+            return_value=self._mock_folder_with_item(mock_item),
+        ):
             assert resource.get_last_modified() == END
 
     def test_item_is_fetched_only_once(self, source):
         resource = self._make_resource(source)
         mock_folder = self._mock_folder_with_item(MagicMock(spec=CalendarItem))
 
-        with patch("os2datascanner.engine2.model.ewscalendar._retrieve_folder",
-                   return_value=mock_folder) as mock_retrieve:
+        with patch(
+            "os2datascanner.engine2.model.ewscalendar._retrieve_folder",
+            return_value=mock_folder,
+        ) as mock_retrieve:
             resource.check()
             resource.get_last_modified()
 
@@ -531,13 +622,16 @@ class TestEWSCalendarResource:
 
 
 class TestEWSCalendarFileAttachmentResource:
-    def _make_resource(self, source, name="doc.pdf",
-                       content_type="application/pdf", size=1024):
+    def _make_resource(
+        self, source, name="doc.pdf", content_type="application/pdf", size=1024
+    ):
         calendar_handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_src = EWSCalendarItemSource(calendar_handle)
         att_handle = EWSCalendarFileAttachmentHandle(
-            item_src, "0", name, content_type, size)
+            item_src, "0", name, content_type, size
+        )
         mock_sm = MagicMock()
         mock_sm.open.return_value = MagicMock()
         return EWSCalendarFileAttachmentResource(att_handle, mock_sm)
@@ -558,8 +652,9 @@ class TestEWSCalendarFileAttachmentResource:
 
     def test_check_true_for_file_attachment(self, source):
         resource = self._make_resource(source)
-        with patch.object(resource, "_get_attachment",
-                          return_value=self._make_file_attachment()):
+        with patch.object(
+            resource, "_get_attachment", return_value=self._make_file_attachment()
+        ):
             assert resource.check() is True
 
     def test_check_false_for_item_attachment(self, source):
@@ -571,22 +666,27 @@ class TestEWSCalendarFileAttachmentResource:
 
     def test_make_stream(self, source):
         resource = self._make_resource(source)
-        with patch.object(resource, "_get_attachment",
-                          return_value=self._make_file_attachment(b"hello")):
+        with patch.object(
+            resource,
+            "_get_attachment",
+            return_value=self._make_file_attachment(b"hello"),
+        ):
             with resource.make_stream() as stream:
                 assert stream.read() == b"hello"
 
     def test_get_size(self, source):
         resource = self._make_resource(source)
-        with patch.object(resource, "_get_attachment",
-                          return_value=self._make_file_attachment(b"abc")):
+        with patch.object(
+            resource, "_get_attachment", return_value=self._make_file_attachment(b"abc")
+        ):
             assert resource.get_size() == 3
 
 
 class TestEWSCalendarItemAttachmentResource:
     def _make_resource(self, source, name="invite.eml"):
         calendar_handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_src = EWSCalendarItemSource(calendar_handle)
         att_handle = EWSCalendarItemAttachmentHandle(item_src, "0", name)
         mock_sm = MagicMock()
@@ -634,13 +734,14 @@ class TestEWSCalendarItemAttachmentResource:
 
 
 class TestEWSCalendarFileAttachmentHandle:
-    def _make_handle(self, source, name="doc.pdf",
-                     content_type="application/pdf", size=2048):
+    def _make_handle(
+        self, source, name="doc.pdf", content_type="application/pdf", size=2048
+    ):
         calendar_handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_src = EWSCalendarItemSource(calendar_handle)
-        return EWSCalendarFileAttachmentHandle(
-            item_src, "0", name, content_type, size)
+        return EWSCalendarFileAttachmentHandle(item_src, "0", name, content_type, size)
 
     def test_guess_type_uses_content_type(self, source):
         h = self._make_handle(source, content_type="application/pdf")
@@ -674,7 +775,8 @@ class TestEWSCalendarFileAttachmentHandle:
 class TestEWSCalendarItemAttachmentHandle:
     def _make_handle(self, source, name="invite.eml"):
         calendar_handle = EWSCalendarHandle(
-            source, PATH, "Meeting", "Calendar", START, END, SINGLE)
+            source, PATH, "Meeting", "Calendar", START, END, SINGLE
+        )
         item_src = EWSCalendarItemSource(calendar_handle)
         return EWSCalendarItemAttachmentHandle(item_src, "0", name)
 

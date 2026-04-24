@@ -398,12 +398,12 @@ msgstr "Scan vedhæftninger"
 #: adminapp/models/scannerjobs/exchangecalendarscanner.py
 msgctxt "unit of scan"
 msgid "calendar event"
-msgstr "Kalender begivenhed"
+msgstr "kalender begivenhed"
 
 #: adminapp/models/scannerjobs/exchangecalendarscanner.py
 msgctxt "unit of scan"
 msgid "calendar events"
-msgstr "Kalender begivenheder"
+msgstr "kalender begivenheder"
 
 #: adminapp/models/scannerjobs/exchangecalendarscanner.py
 msgid "Exchange Calendar scanner"
