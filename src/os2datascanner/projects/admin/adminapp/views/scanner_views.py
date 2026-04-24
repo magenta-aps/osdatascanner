@@ -217,6 +217,7 @@ class ScannerBase(object):
         'keep_false_positives',
         'max_pdf_size',
         'only_notify_superadmin',
+        'only_notify_remediators',
         'rule',
         'exclusion_rule',
         'organization',
