@@ -1,5 +1,10 @@
 {% extends "scannerjobs.html" %}
-{% load i18n humanize utility_tags %}
+{% load i18n humanize utility_tags static %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/tables/tableBehavior.js' %}"></script>
+{% endblock scripts %}
 
 {% block aside_extra %}
   {% if perms.os2datascanner.add_scanner %}
@@ -222,9 +227,9 @@
                     {% endif %}
 
                     {% if settings.ENABLE_SCANNERJOB_INFO_ROW %}
-                      <button class="scanner-settings-expand button button--caret-button"
-                              aria-label="{% trans "Show more info about this scannerjob" %}"
-                              title="{% trans "Show more info about this scannerjob" %}"
+                      <button class="scanner-settings-expand toggleInfoRow button button--caret-button"
+                              aria-label="{% trans "Show more information about this scannerjob." %}"
+                              title="{% trans "Show more information about this scannerjob." %}"
                               type="button">
                         <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                       </button>
@@ -234,23 +239,8 @@
               </tr>
 
               {% if settings.ENABLE_SCANNERJOB_INFO_ROW %}
-                <tr class="statistic_row" hidden>
-                  <td colspan="5"
-                      hx-get=""
-                      hx-trigger="intersect"
-                      hx-swap="outerHTML"
-                      hx-target="this"
-                      hx-push-url="false"
-                      hx-vals='{"updated": "true"}'>
-                    <div class="loading">
-                      <svg class="relative page-indicator"
-                           id="report-page-indicator"
-                           viewbox="0 0 100 100">
-                        <circle id="circle" cx="50" cy="50" r="45"></circle>
-                      </svg>
-                    </div>
-                  </td>
-                </tr>
+                <tr class="datatablex__row datatablex__row--expanded expandableInfoRow"
+                    hidden>{% include "components/scannerjobs/scannerjobs--info_row.html" %}</tr>
               {% endif %}
             {% endfor %}
           </tbody>

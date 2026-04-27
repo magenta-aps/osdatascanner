@@ -31,7 +31,7 @@ EXCLUSION_RULES = false
 ANALYSIS_PAGE = false
 AUTOMATIC_IMPORT_CLEANUP = false
 MANUAL_PAGE = false
-ENABLE_SCANNERJOB_INFO_ROW = true
+ENABLE_SCANNERJOB_INFO_ROW = false
 
 # [site]
 # The URL of this site, used in links in emails and in the redirect URL for
