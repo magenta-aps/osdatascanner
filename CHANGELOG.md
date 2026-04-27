@@ -28,6 +28,9 @@
 - The administration module now distinguishes correctly between objects
   being deleted and scan errors when updating `ScheduledCheckup` objects.
 
+- Corrected traditional Windows logon names imported from Microsoft Entra not being converted
+ to OSdatascanner Alias.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
