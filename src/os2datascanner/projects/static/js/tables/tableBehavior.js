@@ -48,12 +48,9 @@ document.addEventListener("click", function (e) {
     setStorage("os2ds-prefers-expanded-results", preferenceExpand);
   }
 
-  if (hasClass(targ, "toggle-next-row")) {
-    // toggle the matches of a single row
+  if (hasClass(targ, "toggleInfoRow")) {
     row = closestElement(targ, "tr");
-    if (row) {
-      toggleMatchesList([row], targ);
-    }
+    if (row) { toggleInfoRow(row, targ); }
   }
 
   if (hasClass(targ, "probability-toggle")) {
@@ -121,6 +118,16 @@ function closestElement(elm, selector) {
     parent = parent.parentElement;
   }
   return parent;
+}
+
+function toggleInfoRow(row, toggleButton) {
+  let nextRow = row.nextElementSibling;
+  while (nextRow && !hasClass(nextRow, "expandableInfoRow")) {
+    nextRow = nextRow.nextElementSibling;
+  }
+  if (!nextRow) { return; }
+  toggleClass(toggleButton, "up");
+  nextRow.hidden = !hasClass(toggleButton, "up");
 }
 
 function toggleMatchesList(objectRows, toggleButton) {

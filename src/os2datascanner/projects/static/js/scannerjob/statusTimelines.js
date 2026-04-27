@@ -98,38 +98,10 @@ function drawPieCharts(bytesData, timeData, pk) {
   drawPie(timeData, "seconds_status__" + String(pk), timeColors);
 }
 
-function getNextStatisticRow(row) {
-  var sibling = row.nextElementSibling;
-  if (sibling.matches(".statistic_row")) {
-    return sibling;
-  } else {
-    return getNextStatisticRow(sibling);
-  }
-}
-
-function showTimeline(row, toggleButton) {
-  let timelinesRow = getNextStatisticRow(row);
-  toggleClass(toggleButton, "up");
-  let buttonOpen = hasClass(toggleButton, "up");
-
-  timelinesRow.hidden = !buttonOpen;
-}
-
 document.addEventListener("DOMContentLoaded", () => {
   window.charts = [];
   htmx.onLoad(function (content) {
-    if (hasClass(content, 'page') || hasClass(content, 'content')) {
-
-      const expandButtons = document.querySelectorAll(".timelines-expand");
-
-      expandButtons.forEach(element => {
-        element.addEventListener("click", function (e) {
-          targ = e.target;
-          let row = closestElement(targ, "tr");
-          showTimeline(row, targ);
-        });
-      });
-    } else if (hasClass(content, 'timeline')) {
+    if (hasClass(content, 'timeline')) {
       let snapshotData = JSON.parse(content.querySelector('#snapshot_data').textContent);
       let bytesData = JSON.parse(content.querySelector('#bytes_data').textContent);
       let timeData = JSON.parse(content.querySelector('#time_data').textContent);
