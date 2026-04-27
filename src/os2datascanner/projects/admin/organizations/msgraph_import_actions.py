@@ -197,7 +197,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                                  email=member.get("email"),
                                  sid=member.get("sid"),
                                  upn=member.get("userPrincipalName"),
-                                 sam=member.get("onPremisesSamAccountName"))
+                                 sam=member.get("samAccountName"))
 
                 try:
                     Position.employees.get(account=acc, unit=unit, imported=True)
