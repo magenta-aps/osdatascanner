@@ -118,6 +118,7 @@ services:
       - "8030:15672"  # management port
       - "8072:5672"  # For local attachment during IDE debugging
     volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
       - ./docker/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - ./docker/rabbitmq/advanced.config:/etc/rabbitmq/advanced.config:ro
       - ./docker/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
@@ -824,3 +825,4 @@ volumes:
   ldap_data:
   ldap_config:
   open_ldap:
+  rabbitmq_data:
