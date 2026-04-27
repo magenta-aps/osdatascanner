@@ -38,7 +38,7 @@ class TestMSGraphImport:
                         "givenName": "Charles",
                         "surname": "Darwin",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
-                        "onPremisesSamAccountName": None,
+                        "samAccountName": None,
                         "email": "Charles@darwindomain.onmicrosoft.com"
                     }
                 ]
@@ -52,7 +52,7 @@ class TestMSGraphImport:
                         "uuid": "3382c90d-9646-4562-9f47-3994957030a6",
                         "givenName": "Albert",
                         "surname": "Twostones",
-                        "onPremisesSamAccountName": "DOUBLEROCK",
+                        "samAccountName": "DOUBLEROCK",
                         "userPrincipalName": "albert@darwindomain.onmicrosoft.com",
                         "sid": "S-1-5-21-1004336348-1177238915-682003330-512"
                     },
@@ -61,7 +61,7 @@ class TestMSGraphImport:
                         "uuid": "118e5d18-90ba-4150-a11c-9162c24bb5ce",
                         "givenName": "Charles",
                         "surname": "Darwin",
-                        "onPremisesSamAccountName": "MONKEYBOY",
+                        "samAccountName": "MONKEYBOY",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
                         "email": "Charles@darwindomain.onmicrosoft.com",
                     },
