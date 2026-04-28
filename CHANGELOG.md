@@ -4,6 +4,10 @@
 
 ""
 
+## New in this release
+
+- Added scanner for Exchange Calendars.
+
 ### General improvements
 
 - Upgrade rabbitMQ version to 3.13

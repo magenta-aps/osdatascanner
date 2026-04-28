@@ -379,14 +379,35 @@ msgstr "filer"
 msgid "Dropbox scanner"
 msgstr "Dropboxscanner"
 
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
 #: adminapp/models/scannerjobs/exchangescanner.py
 #: adminapp/models/scannerjobs/msgraph.py
 msgid "Graph grant"
 msgstr "Graph bevilling"
 
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
 #: adminapp/models/scannerjobs/exchangescanner.py
 msgid "EWS grant"
 msgstr "EWS bevilling"
+
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
+#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
+msgid "Scan attachments"
+msgstr "Scan vedhæftninger"
+
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
+msgctxt "unit of scan"
+msgid "calendar event"
+msgstr "kalender begivenhed"
+
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
+msgctxt "unit of scan"
+msgid "calendar events"
+msgstr "kalender begivenheder"
+
+#: adminapp/models/scannerjobs/exchangecalendarscanner.py
+msgid "Exchange Calendar scanner"
+msgstr "Exchange-Kalenderscanner"
 
 #: adminapp/models/scannerjobs/exchangescanner.py
 #: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
@@ -454,10 +475,6 @@ msgstr "UNC skal følge UNC-format"
 #: adminapp/models/scannerjobs/filescanner.py
 msgid "File scanner"
 msgstr "Filscanner"
-
-#: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
-msgid "Scan attachments"
-msgstr "Scan vedhæftninger"
 
 #: adminapp/models/scannerjobs/gmail.py adminapp/models/scannerjobs/msgraph.py
 msgid "Scan attached files"

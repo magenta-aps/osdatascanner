@@ -63,6 +63,18 @@ def _dictify_headers(headers):
         return None
 
 
+def _retrieve_folder(account, folder_id):
+    # exchangelib>=4.0.0 requires that you pass a Folder object to
+    # the function that... returns a Folder object?... okay, fine,
+    # let's do that...
+    folder_object = Folder(id=folder_id)
+    folder = account.root.get_folder(folder_object)
+    if folder:
+        return folder
+    else:
+        raise ErrorItemNotFound("Folder not found")
+
+
 class InsensitiveDict(dict):
     def __getitem__(self, key):
         return super().__getitem__(key.lower())
@@ -256,18 +268,6 @@ class EWSMailResource(FileResource):
         yield "email-account", self.handle.source.address
         yield from super()._generate_metadata()
 
-    @staticmethod
-    def _retrieve_folder(account, folder_id):
-        # exchangelib>=4.0.0 requires that you pass a Folder object to
-        # the function that... returns a Folder object?... okay, fine,
-        # let's do that...
-        folder_object = Folder(id=folder_id)
-        folder = account.root.get_folder(folder_object)
-        if folder:
-            return folder
-        else:
-            raise ErrorItemNotFound("Folder not found")
-
     def check(self) -> bool:
         folder_id, mail_id = self._ids
 
@@ -275,7 +275,7 @@ class EWSMailResource(FileResource):
             account = self._get_cookie()
 
             def _retrieve_message():
-                folder = self._retrieve_folder(account, folder_id)
+                folder = _retrieve_folder(account, folder_id)
                 return folder.all().only("message_id").get(id=mail_id)
 
             m = DefaultRetrier(ErrorServerBusy).run(_retrieve_message)
@@ -292,7 +292,7 @@ class EWSMailResource(FileResource):
             account = self._get_cookie()
 
             def _retrieve_message():
-                folder = self._retrieve_folder(account, folder_id)
+                folder = _retrieve_folder(account, folder_id)
                 return folder.get(id=mail_id)
             self._message = DefaultRetrier(
                     ErrorServerBusy, fuzz=0.25).run(_retrieve_message)

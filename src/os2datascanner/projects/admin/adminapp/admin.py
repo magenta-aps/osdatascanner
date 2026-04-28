@@ -25,6 +25,7 @@ from .models.scannerjobs.msgraph import (MSGraphMailScanner,
 from .models.scannerjobs.webscanner import WebScanner
 from .models.scannerjobs.filescanner import FileScanner
 from .models.scannerjobs.exchangescanner import ExchangeScanner
+from .models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
 from .models.scannerjobs.dropboxscanner import DropboxScanner
 from .models.scannerjobs.googledrivescanner import GoogleDriveScanner
 from .models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
@@ -90,6 +91,7 @@ class RuleCategoryAdmin(admin.ModelAdmin):
 @admin.register(FileScanner)
 @admin.register(DropboxScanner)
 @admin.register(ExchangeScanner)
+@admin.register(ExchangeCalendarScanner)
 @admin.register(MSGraphMailScanner)
 @admin.register(MSGraphFileScanner)
 @admin.register(MSGraphCalendarScanner)
@@ -104,6 +106,7 @@ class ScannerAdmin(admin.ModelAdmin):
 
     # For excluding orgunits.
     include_orgunit_scanners = [ExchangeScanner,
+                                ExchangeCalendarScanner,
                                 MSGraphMailScanner,
                                 MSGraphFileScanner,
                                 MSGraphCalendarScanner,
