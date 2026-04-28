@@ -318,7 +318,7 @@ class LDAPConfig(Exported, ImportService):
             "name": "ldap",
             "providerId": "ldap",
             "providerType": "org.keycloak.storage.UserStorageProvider",
-            "parentId": self.realm.pk,
+            "parentId": self.realm.realm_id,
             "id": str(self.pk),
             "config": {
                 "enabled": ["true"],

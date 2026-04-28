@@ -148,7 +148,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
             defaults={'last_modified': now()},
         )
         if created:
-            create_realm(realm.pk)
+            create_realm(realm.realm_id)
 
         self.kwargs['realm'] = realm
         return super().dispatch(request, *args, **kwargs)
