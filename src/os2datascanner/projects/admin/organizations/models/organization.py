@@ -16,19 +16,19 @@ from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
 from os2datascanner.core_organizational_structure.models import Organization as Core_Organization
 
-# Codes sourced from https://www.thesauruslex.com/typo/eng/enghtml.htm
+
 char_dict = {
-        "Æ": "&AElig;",
-        "Ø": "&Oslash;",
-        "Å": "&Aring;",
-        "æ": "&aelig;",
-        "ø": "&oslash;",
-        "å": "&aring;",
-        }
+    "Æ": "Ae",
+    "Ø": "Oe",
+    "Å": "Aa",
+    "æ": "ae",
+    "ø": "oe",
+    "å": "aa",
+}
 
 
 def replace_nordics(name: str):
-    """ Replaces 'æ', 'ø' and 'å' with '&aelig', '&oslash' and '&aring.'"""
+    """ Replaces 'æ', 'ø' and 'å' with 'ae', 'oe' and 'aa'."""
     global char_dict
     for char in char_dict:
         name = name.replace(char, char_dict[char])
