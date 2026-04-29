@@ -23,6 +23,8 @@
 - Renamed and restructured scannerjob list templates to follow the same naming convention as for
   scanstatus.
 
+- When creating slugs for organizations, aa, ae, and oe are now used for Danish letters.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.
