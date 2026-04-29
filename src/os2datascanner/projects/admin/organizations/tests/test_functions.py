@@ -17,13 +17,13 @@ from ..utils import prepare_and_publish, user_allowed
 @pytest.mark.django_db
 class TestReplaceSpecialCharacters:
     @pytest.mark.parametrize("input_str,expected", [
-        ("tæstcåsø", "t&aelig;stc&aring;s&oslash;"),
-        ("Næstved", "N&aelig;stved"),
+        ("tæstcåsø", "taestcaasoe"),
+        ("Næstved", "Naestved"),
         ("Torben", "Torben"),
         ("bLaNdInG", "bLaNdInG"),
-        ("BlÆnDiNg", "Bl&AElig;nDiNg"),
-        ("HÅR", "H&Aring;R"),
-        ("SØVAND", "S&Oslash;VAND")
+        ("BlÆnDiNg", "BlAenDiNg"),
+        ("HÅR", "HAaR"),
+        ("SØVAND", "SOeVAND")
     ])
     def test_nordics_are_replaced(self, input_str, expected):
         replaced_string = replace_nordics(input_str)
