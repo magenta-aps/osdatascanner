@@ -1,8 +1,5 @@
 {% extends "components/common/base.html" %}
-{% load static %}
-{% load i18n %}
-
-
+{% load static i18n %}
 
 {% block scripts %}
   <script src="{% static '3rdparty/jquery.modal.js' %} "></script>
@@ -51,7 +48,6 @@
 {% endblock %}
 
 {% block modal %}
-
   <div class="modal"
        id="run-scanner-modal"
        tabindex="-1"

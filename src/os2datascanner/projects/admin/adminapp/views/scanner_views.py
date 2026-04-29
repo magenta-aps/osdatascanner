@@ -62,7 +62,7 @@ class ScannerList(RestrictedListView):
 
     scanner_view_type = ScannerViewType.LIST
 
-    template_name = 'scanners.html'
+    template_name = 'components/scannerjobs/scannerjobs--active.html'
     context_object_name = 'scanner_list'
 
     def get_queryset(self):
@@ -513,7 +513,7 @@ class ScannerAskRun(RestrictedDetailView):
     """Base class for prompt before starting scan, validate first."""
     fields = []
     context_object_name = "scanner"
-    template_name = 'components/scanner/scanner_ask_run.html'
+    template_name = 'components/scannerjobs/modal--run.html'
     run_url_name = ""
 
     def get_context_data(self, **kwargs):
@@ -553,7 +553,7 @@ class ScannerRun(RestrictedDetailView):
     """Base class for view that handles starting of a scanner run."""
 
     fields = []
-    template_name = 'components/scanner/scanner_run.html'
+    template_name = 'components/scannerjobs/modal--run_response.html'
     model = Scanner
 
     def get_context_data(self, **kwargs):
@@ -582,7 +582,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
     scanner_view_type = ScannerViewType.CLEANUP
 
     fields = []
-    template_name = 'components/scanner/scanner_cleanup_stale_accounts.html'
+    template_name = 'components/scannerjobs/modal--cleanup.html'
     model = Scanner
     context_object_name = 'scanner'
 
@@ -627,7 +627,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
 
             return render(
                 request,
-                "components/scanner/scanner_cleanup_response.html",
+                "components/scannerjobs/modal--cleanup_response.html",
                 context=self.get_context_data())
 
     def get_context_data(self, **kwargs):
@@ -638,7 +638,7 @@ class ScannerCleanupStaleAccounts(RestrictedDetailView):
 
 class RemovedScannersView(PermissionRequiredMixin, ScannerList):
     """View for listing all removed scanners."""
-    template_name = "removed_scanners.html"
+    template_name = "components/scannerjobs/scannerjobs--removed.html"
     model = Scanner
     queryset = Scanner.objects.unfiltered().filter(hidden=True)
     permission_required = "os2datascanner.view_hidden_scanner"

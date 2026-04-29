@@ -18,6 +18,9 @@
   new message classes have been introduced to represent missing and
   irrelevant objects.
 
+- Renamed and restructured scannerjob list templates to follow the same naming convention as for
+  scanstatus.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.
