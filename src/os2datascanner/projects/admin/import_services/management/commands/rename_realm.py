@@ -14,8 +14,8 @@ from os2datascanner.projects.admin.import_services.models import Realm
 class Command(BaseCommand):
     help = (
         'Renames the Realm of an Organization. '
-        'IMPORTANT: You also need to update realm id in the OIDC endpoints, in the report settings.'
-    )
+        'IMPORTANT: You also need to update realm id in the OIDC endpoints, in the report settings,'
+        ' and to reconfigure the identity provider.')
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -104,7 +104,9 @@ class Command(BaseCommand):
                 ))
 
         self.stdout.write(self.style.WARNING(
-            "Remember to update OIDC endpoints in report settings!"))
+            "Remember to update OIDC endpoints in report settings,"
+            " and to reconfigure the identity provider!"
+        ))
 
     def get_client(self, name):
         if name:

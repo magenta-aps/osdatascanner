@@ -8,6 +8,8 @@
 
 - Added scanner for Exchange Calendars.
 
+- Added a new management command for changing the realm id of an organization.
+
 ### General improvements
 
 - Upgrade rabbitMQ version to 3.13
