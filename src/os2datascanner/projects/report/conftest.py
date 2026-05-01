@@ -4,7 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import pytest
-
+from django.utils import translation
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 
 from os2datascanner.projects.report.organizations.models.account import Account
@@ -473,3 +473,16 @@ def os2datascanner_org():
 @pytest.fixture
 def osdatascanner_org():
     return Organization.objects.create(name="OSdatascanner")
+
+
+# Translation
+
+
+@pytest.fixture
+def danish_translation():
+    translation.activate("da")
+
+
+@pytest.fixture
+def english_translation():
+    translation.activate("en")

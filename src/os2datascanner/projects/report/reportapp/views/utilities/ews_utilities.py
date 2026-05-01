@@ -6,7 +6,7 @@
 import structlog
 from exchangelib import Message
 from exchangelib.errors import ErrorItemNotFound
-
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.utils.system_utilities import time_now
 
 from os2datascanner.engine2.model.core import Handle
@@ -36,7 +36,7 @@ def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR
 
             if getattr(candidate, credential_attr):
                 if grant:
-                    return (False, "too many credentials available")
+                    return (False, _("Too many credentials available"))
                 else:
                     grant = candidate
             else:
@@ -63,15 +63,14 @@ def find_exchange_grant(org) -> (bool, EWSGrant | GraphGrant | str):  # noqa CCR
     if grant:
         return (True, grant)
     else:
-        return (False, "no credentials available")
+        return (False,  _("No credentials available"))
 
 
 def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR001 too complex
     user = request.user
-
     if not user.account.organization.has_exchange_email_delete_permission():
         logger.warning("EWS deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
 
     try:
         validate_delete_request(user, pks)
@@ -122,7 +121,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
             rsrc = get_ews_resource(grant, handle)
 
             # We need the message_id and an exchangelib Account
-            _, message_id = rsrc._ids
+            folder_id, message_id = rsrc._ids
             ews_account = rsrc._get_cookie()
 
             logger.info(

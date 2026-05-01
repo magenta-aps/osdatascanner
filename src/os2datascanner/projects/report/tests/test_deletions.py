@@ -21,12 +21,12 @@ class TestValidateDeleteRequest:
             alias_relations__in=egon_account.aliases.all()
         ).values_list("pk", flat=True))
 
-        validate_delete_request(egon_account.user, pks, "test")
+        validate_delete_request(egon_account.user, pks)
 
     def test_raises_when_reports_not_found(self, *, egon_account):
         """Raises when no DocumentReports exist for the given PKs."""
         with pytest.raises(DeleteRequestError):
-            validate_delete_request(egon_account.user, [999999], "test")
+            validate_delete_request(egon_account.user, [999999])
 
     def test_raises_when_no_alias_association(
             self, *, egon_account, benny_account, benny_email_alias):
@@ -37,7 +37,7 @@ class TestValidateDeleteRequest:
         ).values_list("pk", flat=True))
 
         with pytest.raises(DeleteRequestError):
-            validate_delete_request(egon_account.user, pks, "test")
+            validate_delete_request(egon_account.user, pks)
 
     def test_raises_when_report_has_no_matches(self, *, egon_account, egon_email_alias):
         """Raises when a report carries no matches (e.g. it is a problem/error report)."""
@@ -47,4 +47,4 @@ class TestValidateDeleteRequest:
         ).values_list("pk", flat=True))
 
         with pytest.raises(DeleteRequestError):
-            validate_delete_request(egon_account.user, pks, "test")
+            validate_delete_request(egon_account.user, pks)

@@ -5,6 +5,7 @@
 
 import smbc
 import structlog
+from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -25,7 +26,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 
     if not user.account.organization.has_smb_file_delete_permission():
         logger.warning("SMB deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
 
     try:
         validate_delete_request(user, pks)
@@ -37,9 +38,9 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         grant: SMBGrant = SMBGrant.objects.get(
                 organization__uuid=user.account.organization.uuid)
     except SMBGrant.DoesNotExist:
-        return (False, "no credentials available")
+        return (False, _("No credentials available"))
     except SMBGrant.MultipleObjectsReturned:
-        return (False, "too many credentials available")
+        return (False, _("Too many credentials available"))
 
     def __magic_auth_handler(*args):
         # The positional args to this function are used by pysmbc to specify
@@ -59,7 +60,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
             logger.warning(
                     "SMB deletion request for non-SMB resource!",
                     user=user, handle=str(report.matches.handle))
-            return (False, "target file is not on a Windows network drive")
+            return (False, _("Target file is not on a Windows network drive"))
 
         # Get a smb:// URL to the file we've discovered (without authentication
         # details)...

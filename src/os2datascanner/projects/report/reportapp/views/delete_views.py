@@ -62,7 +62,7 @@ class BaseMassDeleteView(HTMXEndpointView, BaseMassView):
             messages.add_message(
                 request,
                 messages.WARNING,
-                _("Failed to delete some reports: {e}").format(e=problem),
+                _("Failed to delete some resources: {e}").format(e=problem),
                 extra_tags="manual_close")
         return response
 

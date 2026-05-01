@@ -101,18 +101,20 @@ class TestMatchDeletion:
             # Fixtures
             olsenbanden_organization,
             ews_grant_without_password,
-            graph_grant_without_secret):
+            graph_grant_without_secret,
+            english_translation):
         """Given an EWSGrant without a password and a GraphGrant with no client
         secret, we should give up in despair."""
         assert (find_exchange_grant(olsenbanden_organization) ==
-                (False, "no credentials available"))
+                (False, "No credentials available"))
 
     def test_ews_grant_selection3(
             self, *,
             # Fixtures
             olsenbanden_organization,
             ews_grant_without_password,
-            graph_grant_with_secret):
+            graph_grant_with_secret,
+            english_translation):
         """Given an EWSGrant without a password and a GraphGrant with a client
         secret, we should pick the GraphGrant."""
         assert (find_exchange_grant(olsenbanden_organization) ==
@@ -132,21 +134,23 @@ class TestMatchDeletion:
             self, *,
             olsenbanden_organization,
             graph_grant_with_secret,
-            another_graph_grant_with_secret):
+            another_graph_grant_with_secret,
+            english_translation):
         """Given two GraphGrants with client secrets, we should give up in
         paralysed indecision."""
         assert (find_exchange_grant(olsenbanden_organization) ==
-                (False, "too many credentials available"))
+                (False, "Too many credentials available"))
 
     def test_ews_grant_selection6(
             self, *,
             olsenbanden_organization,
             ews_grant_with_password,
-            another_ews_grant_with_password):
+            another_ews_grant_with_password,
+            english_translation):
         """Given two EWSGrants with passwords, we should give up in
         paralysed indecision."""
         assert (find_exchange_grant(olsenbanden_organization) ==
-                (False, "too many credentials available"))
+                (False, "Too many credentials available"))
 
     def test_ews_grant_selection7(
             self, *,

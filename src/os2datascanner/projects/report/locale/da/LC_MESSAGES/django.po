@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-01 11:54+0200\n"
+"POT-Creation-Date: 2026-05-21 11:47+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1349,6 +1349,7 @@ msgid "organizational unit"
 msgstr "Organisatorisk enhed"
 
 #: reportapp/templates/dpo_statistics_template.html
+#: reportapp/templates/leader_statistics_template.html
 msgid "all"
 msgstr "Alle"
 
@@ -2238,7 +2239,7 @@ msgstr "Exchange mail"
 
 #: reportapp/templatetags/handle_extras.py
 msgid "Exchange Calendar"
-msgstr "Exchange mail"
+msgstr "Exchange Kalender"
 
 #: reportapp/templatetags/handle_extras.py
 msgid "Gmail"
@@ -2294,6 +2295,16 @@ msgstr ""
 "Der blev ikke fundet en konto, hvis brugernavn passede sammen med dette "
 "sendte af din organisations identity provider."
 
+#: reportapp/views/delete_views.py
+#, python-brace-format
+msgid "Failed to delete {pn}: {e}"
+msgstr "Kunne ikke slette {pn}: {e}"
+
+#: reportapp/views/delete_views.py
+#, python-brace-format
+msgid "Failed to delete some resources: {e}"
+msgstr "Kunne ikke slette visse ressourcer: {e}"
+
 #: reportapp/views/report_views.py
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
@@ -2331,16 +2342,6 @@ msgid ""
 msgstr ""
 "Uventet fejl: Systemet er ikke i stand til at bekræfte din SBSYS-faneadgang "
 "på nuværende tidspunkt."
-
-#: reportapp/views/report_views.py
-#, python-brace-format
-msgid "Failed to delete {pn}: {e}"
-msgstr "Kunne ikke slette {pn}: {e}"
-
-#: reportapp/views/report_views.py
-#, python-brace-format
-msgid "Failed to delete some reports: {e}"
-msgstr "Kunne ikke slette visse rapporter: {e}"
 
 #: reportapp/views/statistics_views.py
 msgid "The user does not have an account."
@@ -2502,6 +2503,25 @@ msgstr ""
 "Din organisation har konfigureret denne indstilling for dig. Ændring er ikke "
 "tilladt."
 
+#: reportapp/views/utilities/ews_utilities.py
+#: reportapp/views/utilities/google_utilities.py
+#: reportapp/views/utilities/smb_utilities.py
+msgid "Too many credentials available"
+msgstr "For mange tilgængelige bevillinger"
+
+#: reportapp/views/utilities/ews_utilities.py
+#: reportapp/views/utilities/google_utilities.py
+#: reportapp/views/utilities/smb_utilities.py
+msgid "No credentials available"
+msgstr "Ingen tilgængelig bevilling"
+
+#: reportapp/views/utilities/ews_utilities.py
+#: reportapp/views/utilities/google_utilities.py
+#: reportapp/views/utilities/msgraph_utilities.py
+#: reportapp/views/utilities/smb_utilities.py
+msgid "Function not enabled"
+msgstr "Funktionen er ikke slået til"
+
 #: reportapp/views/utilities/msgraph_utilities.py
 msgid "Your organization is missing a valid MSGraph grant."
 msgstr "Din organisation mangler en gyldig MSGraph bevilling."
@@ -2519,15 +2539,6 @@ msgid "Your organization does not allow this operation."
 msgstr "Din organisation tillader ikke denne handling."
 
 #: reportapp/views/utilities/msgraph_utilities.py
-msgid "System configuration does not allow mail deletion."
-msgstr "Systemindstillingerne tillader ikke email sletning."
-
-#: reportapp/views/utilities/msgraph_utilities.py
-#, python-brace-format
-msgid "Not allowed! You tried to delete an email belonging to {owner}!"
-msgstr "Ikke tilladt! Du har forsøgt at slette en email tilhørende {owner}!"
-
-#: reportapp/views/utilities/msgraph_utilities.py
 #, python-brace-format
 msgid "Couldn't delete email! Code: {status_code}"
 msgstr "Kunne ikke slette email! Fejlkode: {status_code}"
@@ -2538,15 +2549,11 @@ msgstr ""
 "Du har i øjeblikket ingen email resultater. Kan ikke oprette kategorier!"
 
 #: reportapp/views/utilities/msgraph_utilities.py
-msgid "System configuration does not allow file deletion."
-msgstr "Systemindstillingerne tillader ikke fil sletning."
-
-#: reportapp/views/utilities/msgraph_utilities.py
-#, python-brace-format
-msgid "Not allowed! You tried to delete a file belonging to {owner}!"
-msgstr "Ikke tilladt! Du har forsøgt at slette en fil tilhørende {owner}!"
-
-#: reportapp/views/utilities/msgraph_utilities.py
 #, python-brace-format
 msgid "Couldn't delete file! Code: {status_code}"
 msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
+
+#: reportapp/views/utilities/smb_utilities.py
+msgid "Target file is not on a Windows network drive"
+msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
+

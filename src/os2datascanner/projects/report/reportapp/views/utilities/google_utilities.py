@@ -8,6 +8,7 @@ from enum import Enum, auto
 
 import googleapiclient.errors
 import structlog
+from django.utils.translation import gettext_lazy as _
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
@@ -61,9 +62,9 @@ def get_google_api_grant(org) -> (bool, GoogleApiGrant):
         grant = GoogleApiGrant.objects.get(organization=org)
         return (True, grant)
     except GoogleApiGrant.DoesNotExist:
-        return (False, "no credentials available")
+        return (False, _("No credentials available"))
     except GoogleApiGrant.MultipleObjectsReturned:
-        return (False, "too many credentials available")
+        return (False, _("Too many credentials available"))
 
 
 def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
@@ -71,7 +72,7 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 
     if not user.account.organization.has_gmail_email_delete_permission():
         logger.warning("Gmail deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
 
     try:
         validate_delete_request(user, pks)
@@ -127,7 +128,7 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 
     if not user.account.organization.has_gdrive_file_delete_permission():
         logger.warning("Google Drive deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
 
     try:
         validate_delete_request(user, pks)

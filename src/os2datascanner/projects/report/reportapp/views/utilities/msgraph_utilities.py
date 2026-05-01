@@ -189,7 +189,7 @@ def try_msgraph_mail_delete(request, pks: list[int]) -> (bool, str):
     user = request.user
     if not user.account.organization.has_msgraph_email_delete_permission():
         logger.warning("MSGraph mail deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
     try:
         validate_delete_request(user, pks)
     except DeleteRequestError as e:
@@ -211,7 +211,7 @@ def try_msgraph_file_delete(request, pks: list[int]) -> (bool, str):
     user = request.user
     if not user.account.organization.has_msgraph_file_delete_permission():
         logger.warning("MSGraph file deletion request with function disabled!", user=user)
-        return (False, "function not enabled")
+        return (False, _("Function not enabled"))
     try:
         validate_delete_request(user, pks)
     except DeleteRequestError as e:
