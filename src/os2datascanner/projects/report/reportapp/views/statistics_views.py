@@ -683,7 +683,8 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
-            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(
+                document_reports__only_notify_remediators=True)
 
         context['scannerjob_choices'] = scannerjobs
 
@@ -758,7 +759,8 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
-            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True)
+            scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(
+                document_reports__only_notify_remediators=True)
 
         context['scannerjob_choices'] = scannerjobs
 

@@ -286,10 +286,14 @@ def create_alias_and_match_relations(sub_alias: Alias) -> int:
     # Although RFC 5321 says that the local part of an email address
     # -- the bit to the left of the @ --
     # is case sensitive, the real world disagrees..
+    # Exclude reports from remediator-only scanners: even though owner holds a real value,
+    # these reports must not be assigned to regular users via the sync path.
     if sub_alias.alias_type == AliasType.EMAIL:
-        reports = all_reports.filter(owner__iexact=sub_alias.value)
+        reports = all_reports.filter(
+            owner__iexact=sub_alias.value, only_notify_remediators=False)
     else:
-        reports = all_reports.filter(owner=sub_alias.value)
+        reports = all_reports.filter(
+            owner=sub_alias.value, only_notify_remediators=False)
 
     # If we've found reports above, we should make sure no remediator alias exist
     # for those.

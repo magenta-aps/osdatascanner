@@ -146,6 +146,7 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         "raw_scan_tag": prepare_json_object(scan_tag.to_json_object()),
         "raw_metadata": prepare_json_object(result),
         "only_notify_superadmin": scan_tag.scanner.test,
+        "only_notify_remediators": scan_tag.scanner.only_notify_remediators,
         "owner": owner,
     }
 
@@ -223,13 +224,17 @@ def create_aliases(dr: DocumentReport):
 
     # Look for relevant alias(es) and append relation(s) to new_objects.
     aliases = (Alias.objects.filter(_value__iexact=owner)
-               if owner else Alias.objects.none())
-    # If there aren't any, we must look for remediators
+               if owner and not dr.only_notify_remediators else Alias.objects.none())
+    # If only_notify_remediators is set, or there are no owner aliases, we must look for remediators
     if not aliases:
         # Alias type must be remediator and value either 0 (all scannerjobs) or remediator
         # for this specific scannerjob.
         aliases = Alias.objects.filter(Q(_alias_type=AliasType.REMEDIATOR) &
                                        (Q(_value=0) | Q(_value=dr.scanner_job.scanner_pk)))
+        # Remove any existing non-remediator alias relations. This handles the case where
+        # only_notify_remediators was turned on after a report was already assigned to its owner.
+        tm.objects.filter(documentreport_id=dr.pk).exclude(
+            alias___alias_type=AliasType.REMEDIATOR).delete()
     else:
         # This means we've found an alias that fits the owner - delete remediator relations if any.
         tm.objects.filter(documentreport_id=dr.pk,
@@ -311,6 +316,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             DocumentReport.objects.filter(pk=prev.pk).update(
                 raw_problem=None,
                 only_notify_superadmin=scan_tag.scanner.test,
+                only_notify_remediators=scan_tag.scanner.only_notify_remediators,
                 scan_time=scan_tag.time,
                 raw_scan_tag=prepare_json_object(scan_tag.to_json_object()),
                 source_type=source.type_label,
@@ -336,6 +342,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 scanner_job=scanner,
                 raw_problem=None,
                 only_notify_superadmin=scan_tag.scanner.test,
+                only_notify_remediators=scan_tag.scanner.only_notify_remediators,
                 scan_time=scan_tag.time,
                 raw_scan_tag=prepare_json_object(scan_tag.to_json_object()),
                 source_type=source.type_label,
@@ -364,11 +371,18 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
             if len(message.matches) == 1 and isinstance(message.matches[0].rule, LastModifiedRule):
                 # The file hasn't been changed, so the matches are the same as they were last time.
                 # Update scan_time, only_notify_superadmin, and raw_problem, leaving the rest as is.
+                only_notify_remediators_changed = (
+                    prev.only_notify_remediators != scan_tag.scanner.only_notify_remediators
+                )
                 DocumentReport.objects.filter(pk=prev.pk).update(
                     raw_problem=None,
                     only_notify_superadmin=scan_tag.scanner.test,
+                    only_notify_remediators=scan_tag.scanner.only_notify_remediators,
                     scan_time=scan_tag.time,
                 )
+                if only_notify_remediators_changed:
+                    prev.only_notify_remediators = scan_tag.scanner.only_notify_remediators
+                    create_aliases(prev)
             else:
                 # The file has been edited and the matches are no longer present.
                 # Resolve the report
@@ -402,7 +416,7 @@ def sort_matches_by_probability(body):
     return body
 
 
-def handle_problem_message(scan_tag, result):
+def handle_problem_message(scan_tag, result):  # noqa: CCR001 too high cognitive complexity
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
     obj: Handle | Source | None
     issue: messages.Issue
@@ -541,6 +555,7 @@ def handle_problem_message(scan_tag, result):
                             handle.sort_key if handle else "(source)"),
                     raw_problem=prepare_json_object(result),
                     only_notify_superadmin=scan_tag.scanner.test,
+                    only_notify_remediators=scan_tag.scanner.only_notify_remediators,
                     resolution_status=None)
 
             logger.debug(
