@@ -22,10 +22,18 @@ document.addEventListener("DOMContentLoaded",
           });
         });
 
-        // Reset source_type when scannerjob changes so a stale value is not
-        // carried over to requests where it is no longer valid.
+        // Reset dependent filters when a parent filter changes so stale values
+        // are not carried over to requests where they are no longer valid.
+        const orgUnitSelect = content.querySelector("#org_units");
         const scannerjobSelect = content.querySelector("#scannerjobs");
         const sourceTypeSelect = content.querySelector("#source_type");
+
+        if (orgUnitSelect && scannerjobSelect) {
+          orgUnitSelect.addEventListener("change", function () {
+            scannerjobSelect.value = "all";
+            if (sourceTypeSelect) { sourceTypeSelect.value = "all"; }
+          });
+        }
         if (scannerjobSelect && sourceTypeSelect) {
           scannerjobSelect.addEventListener("change", function () {
             sourceTypeSelect.value = "all";
