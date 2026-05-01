@@ -76,6 +76,22 @@ def scan_tag6(time1, org_frag):
 
 
 @pytest.fixture
+def scan_tag_only_rem(time0, org_frag):
+    return messages.ScanTagFragment(
+        scanner=messages.ScannerFragment(
+            pk=22, name="Dummy test scanner", only_notify_remediators=True),
+        time=parse_datetime(time0), user=None, organisation=org_frag)
+
+
+@pytest.fixture
+def scan_tag_only_rem_later(time2, org_frag):
+    return messages.ScanTagFragment(
+        scanner=messages.ScannerFragment(
+            pk=22, name="Dummy test scanner", only_notify_remediators=True),
+        time=parse_datetime(time2), user=None, organisation=org_frag)
+
+
+@pytest.fixture
 def common_handle_corrupt():
     return FilesystemHandle(
         FilesystemSource("/mnt/fs01.magenta.dk/brugere/af"),
@@ -347,6 +363,14 @@ def jens_remediator_alias(jens_account):
 
 
 @pytest.fixture
+def jens_email_alias(jens_account):
+    """An email alias for jens@example.invalid (i.e. a non-remediator owner alias)."""
+    return Alias.objects.create(
+        account=jens_account, user=jens_account.user,
+        _alias_type='email', _value='jens@example.invalid')
+
+
+@pytest.fixture
 def smb_metadata_3a(scan_tag2, smb_handle_3):
     return messages.MetadataMessage(
             scan_tag=scan_tag2,
@@ -360,6 +384,70 @@ def smb_metadata_3b(smb_metadata_3a):
                             metadata={
                                 "user-principal-name": "jens@example.invalid"
                                 })
+
+
+@pytest.fixture
+def smb_metadata_3c(scan_tag_only_rem_later, smb_handle_3):
+    """Metadata for smb_handle_3 with only_notify_remediators=True and a real owner."""
+    return messages.MetadataMessage(
+        scan_tag=scan_tag_only_rem_later,
+        handle=smb_handle_3,
+        metadata={"user-principal-name": "jens@example.invalid"})
+
+
+@pytest.fixture
+def positive_match_only_rem(common_scan_spec, scan_tag_only_rem, common_handle, common_rule):
+    """Positive match from a scanner with only_notify_remediators=True."""
+    return messages.MatchesMessage(
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag_only_rem),
+        handle=common_handle,
+        matched=True,
+        matches=[
+            messages.MatchFragment(
+                rule=common_rule,
+                matches=[{"dummy": "match object"}])
+        ])
+
+
+@pytest.fixture
+def common_metadata_with_owner(scan_tag2, common_handle):
+    """Metadata for common_handle with a real owner and only_notify_remediators=False."""
+    return messages.MetadataMessage(
+        scan_tag=scan_tag2,
+        handle=common_handle,
+        metadata={"user-principal-name": "jens@example.invalid"})
+
+
+@pytest.fixture
+def common_metadata_with_owner_only_rem(scan_tag_only_rem_later, common_handle):
+    """Metadata for common_handle with only_notify_remediators=True and a real owner."""
+    return messages.MetadataMessage(
+        scan_tag=scan_tag_only_rem_later,
+        handle=common_handle,
+        metadata={"user-principal-name": "jens@example.invalid"})
+
+
+@pytest.fixture
+def late_negative_match_only_rem(
+        common_scan_spec, scan_tag_only_rem_later, late_rule, common_rule, common_handle):
+    """Late negative match (file unchanged) from scanner with only_notify_remediators=True."""
+    return messages.MatchesMessage(
+        scan_spec=messages.replace(common_scan_spec,
+                                   scan_tag=scan_tag_only_rem_later,
+                                   rule=AndRule(late_rule, common_rule)),
+        handle=common_handle,
+        matched=False,
+        matches=[messages.MatchFragment(rule=late_rule, matches=[])])
+
+
+@pytest.fixture
+def transient_handle_error_only_rem(scan_tag_only_rem, common_handle):
+    """A transient problem from a scanner with only_notify_remediators=True."""
+    return messages.ProblemMessage(
+        scan_tag=scan_tag_only_rem,
+        source=None,
+        handle=common_handle,
+        message="Bad command or file name")
 
 
 @pytest.mark.django_db
@@ -868,3 +956,81 @@ class TestPipelineCollector:
         dr = DocumentReport.objects.get()
         assert dr.number_of_matches == 1
         assert dr.owner == "jens@example.invalid"
+
+    def test_only_notify_remediators_metadata_preserves_real_owner(self, smb_metadata_3c):
+        """A metadata message from a scanner with only_notify_remediators=True should store
+        the real owner from the metadata."""
+        record_metadata(smb_metadata_3c)
+        dr = DocumentReport.objects.get()
+        assert dr.only_notify_remediators is True
+        assert dr.owner == "jens@example.invalid"
+
+    def test_only_notify_remediators_routes_to_remediator_not_owner(
+            self, *, jens_email_alias, jens_remediator_alias, smb_metadata_3c):
+        """When only_notify_remediators=True, reports must go to the remediator alias
+        even if an owner alias matching the metadata owner exists. The owner alias should
+        receive no relations."""
+        record_metadata(smb_metadata_3c)
+        assert jens_remediator_alias.reports.count() == 1
+        assert jens_email_alias.reports.count() == 0
+
+    def test_only_notify_remediators_turns_on_removes_owner_alias_relations(
+            self, *, jens_email_alias, jens_remediator_alias, smb_metadata_3b, smb_metadata_3c):
+        """Turning on only_notify_remediators mid-way through a scanner's life should strip
+        the existing owner alias relations and route the report to the remediator instead."""
+        # Initial scan without flag: owner alias gets the report
+        record_metadata(smb_metadata_3b)
+        assert jens_email_alias.reports.count() == 1
+        assert jens_remediator_alias.reports.count() == 0
+
+        # Re-scan with flag on: owner alias relation must be removed, remediator gets it
+        record_metadata(smb_metadata_3c)
+        assert jens_email_alias.reports.count() == 0
+        assert jens_remediator_alias.reports.count() == 1
+
+    def test_only_notify_remediators_turns_on_in_last_modified_rescan(
+            self, *, jens_email_alias, jens_remediator_alias,
+            positive_match, common_metadata_with_owner, late_negative_match_only_rem):
+        """When only_notify_remediators is enabled on a re-scan that goes through the
+        last-modified code path, the flag must be updated and the remediator must be assigned.
+        The owner field is unchanged since it was set by the earlier metadata message."""
+        record_match(positive_match)
+        record_metadata(common_metadata_with_owner)
+        assert DocumentReport.objects.get().owner == "jens@example.invalid"
+
+        record_match(late_negative_match_only_rem)
+
+        dr = DocumentReport.objects.get()
+        assert dr.only_notify_remediators is True
+        assert dr.owner == "jens@example.invalid"
+        assert jens_remediator_alias.reports.count() == 1
+        assert jens_email_alias.reports.count() == 0
+
+    def test_only_notify_remediators_turns_off_in_last_modified_rescan(
+            self, *, jens_email_alias,
+            positive_match_only_rem, common_metadata_with_owner_only_rem,
+            late_negative_match):
+        """When only_notify_remediators is disabled on a re-scan that goes through the
+        last-modified code path, the flag is cleared and the owner alias is restored.
+        The owner field was never overwritten, so no metadata lookup is needed."""
+        record_match(positive_match_only_rem)
+        record_metadata(common_metadata_with_owner_only_rem)
+        dr = DocumentReport.objects.get()
+        assert dr.only_notify_remediators is True
+        assert dr.owner == "jens@example.invalid"
+
+        record_match(late_negative_match)
+
+        dr.refresh_from_db()
+        assert dr.only_notify_remediators is False
+        assert dr.owner == "jens@example.invalid"
+        assert jens_email_alias.reports.count() == 1
+
+    def test_problem_with_only_notify_remediators_routes_to_remediator(
+            self, transient_handle_error_only_rem):
+        """A new problem report from a scanner with only_notify_remediators=True should
+        have the flag set on the DocumentReport itself."""
+        record_problem(transient_handle_error_only_rem)
+        dr = DocumentReport.objects.get()
+        assert dr.only_notify_remediators is True
+        assert dr.owner is None

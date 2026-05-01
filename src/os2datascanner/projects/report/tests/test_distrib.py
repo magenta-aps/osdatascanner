@@ -184,3 +184,55 @@ class TestMatchDistribution:
         caro = Account.objects.get(username="CARO")
 
         assert dr in caro.aliases.get().reports.all()
+
+    def test_only_notify_remediators_blocks_sync_distribution(
+            self,
+            danish_botanists_organization,
+            lucky_match_message,
+            caro_metadata_message):
+        """Reports from a scanner with only_notify_remediators=True must not be assigned
+        to a regular user during alias sync, even when the owner field matches their alias.
+        This tests the path where the Alias already exists when the report arrives."""
+        create_botanists(danish_botanists_organization)
+
+        record_match(messages.deep_replace(
+            lucky_match_message,
+            scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid,
+            scan_spec__scan_tag__scanner__only_notify_remediators=True))
+        record_metadata(messages.deep_replace(
+            caro_metadata_message,
+            scan_tag__organisation__uuid=danish_botanists_organization.uuid,
+            scan_tag__scanner__only_notify_remediators=True))
+
+        caro = Account.objects.get(username="CARO")
+        dr = DocumentReport.objects.get()
+
+        assert dr.only_notify_remediators is True
+        assert dr.owner == "CARO@vstkom.dk"
+        assert dr not in caro.aliases.get().reports.all()
+
+    def test_only_notify_remediators_blocks_retroactive_sync_distribution(
+            self,
+            danish_botanists_organization,
+            lucky_match_message,
+            caro_metadata_message):
+        """Reports from a scanner with only_notify_remediators=True must not be assigned
+        to a regular user when aliases are retroactively synced after the report arrives.
+        create_alias_and_match_relations must respect the flag."""
+        record_match(messages.deep_replace(
+            lucky_match_message,
+            scan_spec__scan_tag__organisation__uuid=danish_botanists_organization.uuid,
+            scan_spec__scan_tag__scanner__only_notify_remediators=True))
+        record_metadata(messages.deep_replace(
+            caro_metadata_message,
+            scan_tag__organisation__uuid=danish_botanists_organization.uuid,
+            scan_tag__scanner__only_notify_remediators=True))
+
+        # Retroactive: aliases are created after the report already exists
+        create_botanists(danish_botanists_organization)
+
+        caro = Account.objects.get(username="CARO")
+        dr = DocumentReport.objects.get()
+
+        assert dr.only_notify_remediators is True
+        assert dr not in caro.aliases.get().reports.all()
