@@ -5,7 +5,6 @@
 
 import smbc
 import structlog
-from traceback import print_exc
 
 from os2datascanner.utils.system_utilities import time_now
 
@@ -15,6 +14,7 @@ from os2datascanner.engine2.model.smbc import SMBCHandle
 from os2datascanner.projects.grants.models.smbgrant import SMBGrant
 from os2datascanner.projects.report.reportapp.models.documentreport import (
         DocumentReport)
+from .document_report_utilities import validate_delete_request, DeleteRequestError
 
 
 logger = structlog.get_logger("reportapp")
@@ -24,39 +24,18 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
     if not user.account.organization.has_smb_file_delete_permission():
-        logger.warning(
-                "SMB deletion request with function disabled!",
-                user=user)
+        logger.warning("SMB deletion request with function disabled!", user=user)
         return (False, "function not enabled")
 
-    # Find the referenced DocumentReport
-    reports = DocumentReport.objects.filter(pk__in=pks)
-    if not reports.exists():
-        return (False, "DocumentReports not found")
-
-    # Find the active user account
-    account = user.account
-    aliases = account.aliases.all()
-    organization = account.organization
-
-    # Verify that the active user has an association to the DocumentReports
-    illegal_reports = reports.exclude(alias_relations__in=aliases)
-    if illegal_reports.exists():
-        logger.warning(
-                "SMB deletion request with no alias association!",
-                user=user, aliases=illegal_reports.values_list("alias_relations", flat=True))
-        return (False, "Account not associated with these DocumentReports")
-
-    # Check that the DocumentReports represents a match (and not, for example,
-    # an error message)
-
-    if reports.exclude(number_of_matches__gte=1).exists():
-        return (False, "DocumentReport does not identify a match")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
 
     # Try to get credentials for the remote network drive
     try:
         grant: SMBGrant = SMBGrant.objects.get(
-                organization__uuid=organization.uuid)
+                organization__uuid=user.account.organization.uuid)
     except SMBGrant.DoesNotExist:
         return (False, "no credentials available")
     except SMBGrant.MultipleObjectsReturned:
@@ -70,7 +49,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
 
     deleted_matches: list[int] = []
     result: tuple | None = None
-    for report in reports:
+    for report in DocumentReport.objects.filter(pk__in=pks):
         # Find the SMBCHandle object in this DocumentReport
         handle: Handle | None = None
         for handle in report.matches.handle.walk_up():
@@ -101,7 +80,8 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
             # let's just declare victory
             deleted_matches.append(report.pk)
         except Exception as ex:
-            print_exc()
+            logger.exception(f"unexpected error during deletion of report {report.pk}",
+                             exc_info=True)
             result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
 
     # Update the reports to indicate that the file is gone

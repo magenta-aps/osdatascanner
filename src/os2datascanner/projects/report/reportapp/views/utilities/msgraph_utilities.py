@@ -13,7 +13,6 @@ from os2datascanner.engine2.model.msgraph.files import MSGraphFileHandle
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.report.organizations.models import Account
-from os2datascanner.core_organizational_structure.models.aliases import AliasType
 
 logger = structlog.get_logger("reportapp")
 
@@ -103,22 +102,12 @@ def delete_email(document_report, account: Account):
     Retrieves a new access token if not provided one."""
     from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
-        import is_owner, handle_report
+        import handle_report
 
     # Return early scenarios
     graph_grant = check_msgraph_grant(account.organization)
-    if not account.organization.has_msgraph_email_delete_permission():
-        allow_deletion_message = _("System configuration does not allow mail deletion.")
-        logger.warning(allow_deletion_message)
-        raise PermissionDenied(allow_deletion_message)
 
     owner = document_report.owner
-
-    if not is_owner(owner, account):
-        logger.warning(f"User {account} tried to delete an email belonging to {owner}!")
-        not_owner_message = (_("Not allowed! You tried to delete an email belonging to {owner}!").
-                             format(owner=owner))
-        raise PermissionDenied(not_owner_message)
 
     # Open a session and start doing stuff
     with requests.Session() as session:
@@ -192,35 +181,67 @@ def get_msgraph_mail_categories_from_document_report(document_report) -> list:
     return document_report.metadata.metadata.get("outlook-categories", [])
 
 
+def try_msgraph_mail_delete(request, pks: list[int]) -> (bool, str):
+    """Wraps delete_email with the standard (request, pks) -> (bool, str) interface."""
+    from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+    from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
+        import validate_delete_request, DeleteRequestError
+    user = request.user
+    if not user.account.organization.has_msgraph_email_delete_permission():
+        logger.warning("MSGraph mail deletion request with function disabled!", user=user)
+        return (False, "function not enabled")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
+    result = None
+    for report in DocumentReport.objects.filter(pk__in=pks):
+        try:
+            delete_email(report, user.account)
+        except PermissionDenied as e:
+            result = (False, str(e))
+    return result or (True, "ok")
+
+
+def try_msgraph_file_delete(request, pks: list[int]) -> (bool, str):
+    """Wraps delete_file with the standard (request, pks) -> (bool, str) interface."""
+    from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
+    from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
+        import validate_delete_request, DeleteRequestError
+    user = request.user
+    if not user.account.organization.has_msgraph_file_delete_permission():
+        logger.warning("MSGraph file deletion request with function disabled!", user=user)
+        return (False, "function not enabled")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
+    result = None
+    for report in DocumentReport.objects.filter(pk__in=pks):
+        try:
+            delete_file(report, user.account)
+        except PermissionDenied as e:
+            result = (False, str(e))
+    return result or (True, "ok")
+
+
 def delete_file(document_report, account: Account):
     from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
-        import is_owner, handle_report
+        import handle_report
 
     # Return early scenarios
     graph_grant = check_msgraph_grant(account.organization)
-    if not account.organization.has_msgraph_file_delete_permission():
-        allow_deletion_message = _("System configuration does not allow file deletion.")
-        logger.warning(allow_deletion_message)
-        raise PermissionDenied(allow_deletion_message)
-
-    owner = document_report.owner
-
-    if (not is_owner(owner, account) and
-            not account.aliases.filter(_alias_type=AliasType.REMEDIATOR)):
-        logger.warning(f"User {account} tried to delete a file belonging to {owner}!")
-        not_owner_message = (_("Not allowed! You tried to delete a file belonging to {owner}!").
-                             format(owner=owner))
-        raise PermissionDenied(not_owner_message)
 
     with requests.Session() as session:
         gc = GraphCaller(graph_grant.make_token, session)
 
         file_handle = get_handle_from_document_report(document_report, MSGraphFileHandle)
+        drive_path = file_handle.source.drive_path
         item_path = file_handle.relative_path
 
         try:
-            delete_response = gc.delete_file(owner, item_path)
+            delete_response = gc.delete_file(drive_path, item_path)
 
             if delete_response.ok:
                 logger.info(f"Successfully deleted file on behalf of {account}! "
@@ -229,13 +250,13 @@ def delete_file(document_report, account: Account):
                               document_report=document_report,
                               action=DocumentReport.ResolutionChoices.REMOVED)
         except requests.HTTPError as ex:
-            # If the file is deleted from Outlook but a user clicks delete on the reportmodule
-            # It will still be handled as deleted.
+            # If the file is already deleted from OneDrive/SharePoint but a user clicks delete
+            # on the report module, it will still be handled as deleted.
             if ex.response.status_code in (404, 410):
                 handle_report(account,
                               document_report=document_report,
                               action=DocumentReport.ResolutionChoices.REMOVED)
-                logger.info(f"Delete mail got response code {ex.response.status_code}! "
+                logger.info(f"Delete file got response code {ex.response.status_code}! "
                             "Interpreted as file deleted - Document report handled as deleted")
 
             else:

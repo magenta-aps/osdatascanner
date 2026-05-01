@@ -7,7 +7,8 @@ from django.urls import path
 
 from .views.report_views import (
     HandleMatchView, MassHandleView, OpenMatchView, ShowMoreMatchesView,
-    DistributeMatchesView,
+    DistributeMatchesView)
+from .views.delete_views import (
     DeleteMailView, MassDeleteMailView,
     DeleteFileView, MassDeleteFileView,
     DeleteSMBFileView, MassDeleteSMBFileView,

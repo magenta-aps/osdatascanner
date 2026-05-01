@@ -18,6 +18,7 @@ from os2datascanner.projects.report.reportapp.models.documentreport import (
         DocumentReport)
 
 from os2datascanner.engine2.model.core import SourceManager
+from .document_report_utilities import validate_delete_request, DeleteRequestError
 
 logger = structlog.get_logger("reportapp")
 
@@ -69,36 +70,16 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
     user = request.user
 
     if not user.account.organization.has_exchange_email_delete_permission():
-        logger.warning(
-                "EWS deletion request with function disabled!",
-                user=user)
+        logger.warning("EWS deletion request with function disabled!", user=user)
         return (False, "function not enabled")
 
-    # Find the referenced DocumentReport
-    reports = DocumentReport.objects.filter(pk__in=pks)
-    if not reports.exists():
-        return (False, "DocumentReports not found")
-
-    # Find the active user account
-    account = user.account
-    aliases = account.aliases.all()
-    organization = account.organization
-
-    # Verify that the active user has an association to the DocumentReports
-    illegal_reports = reports.exclude(alias_relations__in=aliases)
-    if illegal_reports.exists():
-        logger.warning(
-                "EWS deletion request with no alias association!",
-                user=user, aliases=illegal_reports.values_list("alias_relations", flat=True))
-        return (False, "Account not associated with these DocumentReports")
-
-    # Check that the DocumentReports represents a match (and not, for example,
-    # an error message)
-    if reports.exclude(number_of_matches__gte=1).exists():
-        return (False, "DocumentReport does not identify a match")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
 
     grant = None
-    match find_exchange_grant(organization):
+    match find_exchange_grant(user.account.organization):
         case (True, g):
             grant = g
         case (False, str()) as failure:
@@ -124,7 +105,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
 
     deleted_matches: list[int] = []
     result: tuple | None = None
-    for report in reports:
+    for report in DocumentReport.objects.filter(pk__in=pks):
         # Find the EWSMailHandle
         handle: Handle | None = None
         for h in report.matches.handle.walk_up():

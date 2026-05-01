@@ -11,10 +11,33 @@ from os2datascanner.projects.report.reportapp.models.documentreport import Docum
 logger = structlog.get_logger("reportapp")
 
 
-def is_owner(owner: str, account: Account) -> bool:
-    """ Checks if user has an alias with _value corresponding to owner value.
-        Returns True/False"""
-    return bool(account.aliases.filter(_value__iexact=owner))
+class DeleteRequestError(Exception):
+    """Raised by validate_delete_request when a delete precondition fails."""
+
+
+def validate_delete_request(user, pks: list[int]):
+    """Verifies that the user is allowed to act on the requested DocumentReports.
+
+    Raises DeleteRequestError if any report is missing, not associated with one of the
+    user's aliases, or contains no matches.
+    """
+
+    reports = DocumentReport.objects.filter(pk__in=pks)
+    if not reports.exists():
+        raise DeleteRequestError("DocumentReports not found")
+
+    aliases = user.aliases.all()
+
+    illegal_reports = reports.exclude(alias_relations__in=aliases)
+    if illegal_reports.exists():
+        logger.warning(
+            "Deletion request with no alias association!",
+            user=user,
+            reports=illegal_reports.values_list("pk", flat=True))
+        raise DeleteRequestError("Account not associated with these DocumentReports")
+
+    if reports.exclude(number_of_matches__gte=1).exists():
+        raise DeleteRequestError("DocumentReport does not identify a match")
 
 
 def handle_report(account: Account,
