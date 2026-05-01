@@ -1349,8 +1349,6 @@ msgid "organizational unit"
 msgstr "Organisatorisk enhed"
 
 #: reportapp/templates/dpo_statistics_template.html
-#, fuzzy
-#| msgid "All"
 msgid "all"
 msgstr "Alle"
 
@@ -1463,14 +1461,10 @@ msgid "All"
 msgstr "Alle"
 
 #: reportapp/templates/leader_statistics_template.html
-#, fuzzy
-#| msgid "Reset the DPO overview"
 msgid "Reset the leader overview"
 msgstr "Nulstil DPO-overblikket"
 
 #: reportapp/templates/leader_statistics_template.html
-#, fuzzy
-#| msgid "Click here to reset the DPO overview"
 msgid "Click here to reset the leader overview"
 msgstr "Klik her for at nulstille DPO-overblikket"
 
@@ -2243,8 +2237,6 @@ msgid "Exchange Mail"
 msgstr "Exchange mail"
 
 #: reportapp/templatetags/handle_extras.py
-#, fuzzy
-#| msgid "Exchange Mail"
 msgid "Exchange Calendar"
 msgstr "Exchange mail"
 
