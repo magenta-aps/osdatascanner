@@ -21,6 +21,16 @@ document.addEventListener("DOMContentLoaded",
             showOverview(row, targ);
           });
         });
+
+        // Reset source_type when scannerjob changes so a stale value is not
+        // carried over to requests where it is no longer valid.
+        const scannerjobSelect = content.querySelector("#scannerjobs");
+        const sourceTypeSelect = content.querySelector("#source_type");
+        if (scannerjobSelect && sourceTypeSelect) {
+          scannerjobSelect.addEventListener("change", function () {
+            sourceTypeSelect.value = "all";
+          });
+        }
       }
     });
   }

@@ -24,6 +24,20 @@
             hx-swap="outerHTML"
             hx-trigger="change"
             hx-indicator="#report-page-indicator">
+        <!-- Org unit chart data selection -->
+        <div class="dropdown stats_dropdown">
+          <label for="orgunits">{% trans "organizational unit"|capfirst %}</label>
+          <select name="orgunit" id="orgunits" data-compareto="all" autocomplete="off">
+            <option value="all"
+                    {% if chosen_orgunit == "all" %}selected="selected"{% endif %}>{% trans "all"|capfirst %}</option>
+            {% for unit in orgunit_choices %}
+              <option value="{{ unit.uuid }}"
+                      {% if chosen_orgunit == unit.uuid|stringformat:"s" %}selected="selected"{% endif %}>
+                {{ unit.name }}
+              </option>
+            {% endfor %}
+          </select>
+        </div>
         <div class="dropdown stats_dropdown">
           <label for="scannerjobs">{% trans "scanner job"|capfirst %}</label>
           <select name="scannerjob"
@@ -38,20 +52,6 @@
               <option value="{{ scan.scanner_pk|unlocalize }}"
                       {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
                 {{ scan.scanner_name }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-        <!-- Org unit chart data selection -->
-        <div class="dropdown stats_dropdown">
-          <label for="orgunits">{% trans "organizational unit"|capfirst %}</label>
-          <select name="orgunit" id="orgunits" data-compareto="all" autocomplete="off">
-            <option value="all"
-                    {% if chosen_orgunit == "all" %}selected="selected"{% endif %}>{% trans "All" %}</option>
-            {% for unit in orgunit_choices %}
-              <option value="{{ unit.uuid }}"
-                      {% if chosen_orgunit == unit.uuid|stringformat:"s" %}selected="selected"{% endif %}>
-                {{ unit.name }}
               </option>
             {% endfor %}
           </select>

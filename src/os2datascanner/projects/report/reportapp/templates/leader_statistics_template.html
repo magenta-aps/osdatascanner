@@ -33,7 +33,9 @@
         {% endif %}
         {% trans "employees" %}
       </p>
+    </div>
 
+    <div class="content-body">
       <form name="leader_overview_form"
             hx-get="{{ view_url }}"
             hx-target=".content"
@@ -43,69 +45,108 @@
             hx-indicator="#report-page-indicator">
         <input type="hidden" name="order_by" id="order_by" value="{{ order_by }}" />
         <input type="hidden" name="order" id="order" value="{{ order }}" />
-        <div class="org_filtering_wrapper">
-          <div class="stat_form">
-            <div>
-              {% if user_units %}
-                <div>
-                  <label for="org_units" class="match_filtering_label">{% trans "Organizational units" %}</label>
+
+        <div class="filtering-UI__wrapper">
+          <div class="filtering-UI__body">
+            {% if user_units %}
+              <div class="dropdown__wrapper">
+                <div class="dropdown__label">
+                  <label for="org_units" class="match_filtering_label">{% trans "organizational unit"|capfirst %}</label>
                 </div>
-                <div class="org_filtering dropdown">
-                  <select name="org_unit"
-                          id="org_units"
-                          autocomplete="off"
-                          {% if request.GET.view_all %}disabled{% endif %}>
+                <div class="match_filtering dropdown">
+                  <select name="org_unit" id="org_units" autocomplete="off">
+                    <option value="all" {% if not org_unit %}selected="selected"{% endif %}>{% trans "all"|capfirst %}</option>
                     {% for unit in user_units %}
                       <option value="{{ unit.uuid }}"
                               {% if unit == org_unit %}selected="selected"{% endif %}>{{ unit.name }}</option>
                     {% endfor %}
                   </select>
                 </div>
-              {% endif %}
+              </div>
+            {% endif %}
+
+            <div class="dropdown__wrapper">
+              <div class="dropdown__label">
+                <label for="scannerjobs" class="match_filtering_label">{% trans "scanner job"|capfirst %}</label>
+              </div>
+              <div class="match_filtering dropdown">
+                <select name="scannerjob" id="scannerjobs" autocomplete="off">
+                  <option value="all"
+                          {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>{% trans "All" %}</option>
+                  {% for scan in scannerjob_choices %}
+                    <option value="{{ scan.scanner_pk|unlocalize }}"
+                            {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
+                      {{ scan.scanner_name }}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
             </div>
 
-            {% if settings.LEADER_CSV_EXPORT %}
-              <div class="form__buttons">
-                <div class="button-group">
+            <div class="dropdown__wrapper">
+              <div class="dropdown__label">
+                <label for="source_type" class="match_filtering_label">{% trans "Source Type" %}</label>
+              </div>
+              <div class="match_filtering dropdown">
+                <select name="source_type" id="source_type" autocomplete="off">
+                  <option value="all"
+                          {% if chosen_source_type == "all" %}selected="selected"{% endif %}>{% trans "All" %}</option>
+                  {% for st in source_type_choices %}
+                    <option value="{{ st.source_type }}"
+                            {% if chosen_source_type == st.source_type %}selected="selected"{% endif %}>
+                      {% find_scan_type st.source_type %}
+                    </option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+
+            <div class="form__buttons">
+              <div class="button-group">
+                <button type="button"
+                        class="button button--transparent-button"
+                        aria-label="{% trans 'Reset the leader overview' %}"
+                        title="{% trans 'Click here to reset the leader overview' %}"
+                        hx-trigger="click"
+                        hx-get="{{ view_url }}"
+                        hx-swap="outerHTML"
+                        hx-target=".content"
+                        hx-select=".content"
+                        hx-params="none"
+                        hx-indicator="#report-page-indicator">{% trans "Reset" %}</button>
+                {% if settings.LEADER_CSV_EXPORT %}
+                  <hr class="button-group__divider">
                   <a href="{{ export_url }}?{{ request.GET.urlencode }}"
                      class="button button--transparent-button"
                      aria-label="{% trans "Export leader data as a csv-file" %}"
                      title="{% trans "Click here to export leader data as a csv-file" %}">{% trans "Export CSV" %}</a>
-                </div>
+                {% endif %}
               </div>
-            {% endif %}
-          </div>
-
-          <div class="search_field_wrapper right">
-            <input class="form-control"
-                   type="search"
-                   name="search_field"
-                   id="search_field"
-                   placeholder="{% trans "Search for employee" %}"
-                   value="{{ request.GET.search_field }}" />
-          </div>
-        </div>
-
-        {% if user_units %}
-          <div class="org_filtering">
-            <div class="ds-checkbox">
-              <label>
-                {% trans "all employees"|capfirst %}
-                <input type="checkbox"
-                       name="view_all"
-                       {% if request.GET.view_all %}checked{% endif %}>
-
-                <span class="help-tooltip"
-                      title="{% blocktrans trimmed %} Include all users for whom you hold a leader position, ignoring unit selection.{% endblocktrans %}">
-                  <i id="help" class="material-symbols">help</i>
-                </span>
-
-              </label>
             </div>
           </div>
-        {% endif %}
-      </form>
 
+          <div class="filtering-UI__footer">
+            <div class="checkbox_wrapper checkbox-group">
+              <div class="ds-checkbox {% if only_with_results %}toggled__true{% else %}toggled__false{% endif %}">
+                <input type="checkbox"
+                       id="only_with_results"
+                       name="only_with_results"
+                       {% if only_with_results %}checked{% endif %}>
+                <label for="only_with_results">{% trans "Show only employees with results" %}</label>
+              </div>
+            </div>
+
+            <div class="search_field_wrapper right">
+              <input class="form-control"
+                     type="search"
+                     name="search_field"
+                     id="search_field"
+                     placeholder="{% trans "Search for employee" %}"
+                     value="{{ request.GET.search_field }}" />
+            </div>
+          </div>
+        </div>
+      </form>
     </div>
 
     <div class="datatablex__card-container no-side-scroll">
