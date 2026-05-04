@@ -77,7 +77,8 @@ class Organization(Core_Organization):
         return slugify(encoded_name, allow_unicode=True)
 
     def save(self, *args, **kwargs):
-        self.slug = self.convert_name_to_slug(self.name)
+        if not self.slug:
+            self.slug = self.convert_name_to_slug(self.name)
         return super().save(*args, **kwargs)
 
     @property
