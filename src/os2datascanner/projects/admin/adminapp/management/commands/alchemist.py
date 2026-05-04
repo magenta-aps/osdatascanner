@@ -143,8 +143,9 @@ class Command(BaseCommand):
                     table, tables, *fields)
             column_labels = {c.name: c for c in table.columns} | dict(zip(fields, columns))
             s = convert_rule_to_select(
-                    rule, table, tables, select(),
-                    column_labels).where(*constraint)
+                    rule, table, tables,
+                    select().where(*constraint),
+                    column_labels)
             if limit is not None:
                 s = s.limit(limit)
 
