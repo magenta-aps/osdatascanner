@@ -212,3 +212,25 @@ If you're using Azure as your IdP, it's common that these claims will be under t
 
 However, this is not a requirement and _can_ be changed in Azure, but be sure to include
 the full string if that is the case.
+
+## Changing the Realm name
+
+In order to change the name/id of a realm you need to do 2 things:
+
+1. Updating the OIDC endpoints to use include the new realm id.
+2. Run the `rename_realm` management command.
+
+These are the settings you need to update:
+
+```
+- OIDC_OP_AUTHORIZATION_ENDPOINT
+- OIDC_OP_TOKEN_ENDPOINT
+- OIDC_OP_USER_ENDPOINT
+- OIDC_OP_JWKS_ENDPOINT
+```
+
+The identity provider also needs to be reconfigured.
+
+`rename_realm` is a management command available in the admin module.
+If you only have a single realm, simply run `rename_realm <new_realm_id>`.
+Otherwise, use the `--client-name`, and/or `--org-name` flags to specify the organization you want to change the realm id of.

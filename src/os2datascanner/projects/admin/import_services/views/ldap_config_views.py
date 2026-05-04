@@ -168,7 +168,7 @@ def _keycloak_creation(config_instance):
     #  should only be retrieved once in a separate call, and the direct
     #  keycloak services should be called, not the two utility functions.
     if created:
-        create_realm(realm.pk)
+        create_realm(realm.realm_id)
     payload = config_instance.get_payload_dict()
     request_create_component(realm, payload)
     # TODO: consider moving request elsewhere,

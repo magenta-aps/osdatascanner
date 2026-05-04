@@ -20,7 +20,7 @@ logger = structlog.get_logger("import_services")
 class Realm(Exported, models.Model):
     realm_id = models.SlugField(
         allow_unicode=True,
-        primary_key=True,
+        unique=True,
         verbose_name=_('realm id'),
     )
     organization = models.OneToOneField(
