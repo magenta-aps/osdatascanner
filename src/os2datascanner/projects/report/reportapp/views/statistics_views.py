@@ -736,7 +736,7 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         return account_qs
 
     def filter_positions(self, qs):
-        if self.request.GET.get("view_all", False) or self.request.GET.get("org_unit") == 'all':
+        if self.request.GET.get("org_unit") == 'all':
             # Determine what units are "root nodes", we'll only want to call
             # get_descendants on units that won't be retrieved by get_descendants() on a
             # "higher" up node.

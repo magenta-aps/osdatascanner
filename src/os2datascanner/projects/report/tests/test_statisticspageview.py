@@ -486,24 +486,18 @@ class TestLeaderUnitsStatisticsPageView:
 
         assert response.status_code == 403
 
-    def test_leader_statisticspage_view_all(self, rf, egon_account,
-                                            olsenbanden_ou,
-                                            egon_manager_position,
-                                            olsenbanden_ou_positions,
-                                            harrys_skur_positions_egon_lead_harry_employee):
+    def test_leader_statisticspage_org_unit_filter(self, rf, egon_account,
+                                                   olsenbanden_ou,
+                                                   egon_manager_position,
+                                                   olsenbanden_ou_positions,
+                                                   harrys_skur_positions_egon_lead_harry_employee):
 
         # Specific OU selection, should contain 3 employees.
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params=f"?org_unit={olsenbanden_ou.pk}")
         assert response.context_data.get("employees").count() == 3
 
-        # view all, should be 4 employees.
-        # olsenbanden OU + 1 employee in Harrys Skur.
-        response = self.get_leader_statisticspage_response(rf, egon_account,
-                                                           params="?view_all=on")
-        assert response.context_data.get("employees").count() == 4
-
-        # org_unit=all is equivalent to view_all=on.
+        # org_unit=all, should be 4 employees: olsenbanden OU + 1 employee in Harrys Skur.
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params="?org_unit=all")
         assert response.context_data.get("employees").count() == 4
@@ -613,7 +607,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             superuser_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -639,7 +633,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             superuser_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -712,7 +706,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             egon_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -814,7 +808,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             superuser_account,
-            params="?view_all=on&search_field=Egon",
+            params="?org_unit=all&search_field=Egon",
         )
         employees = response.context_data['employees']
 
