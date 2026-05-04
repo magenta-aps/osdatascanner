@@ -488,16 +488,16 @@
         "components": [
           {
             "type": "sbsys-db-fieldrule",
-            "field": "SagsStatus.Navn",
+            "field": "SagsStatus.SagsTilstand",
             "operator": "eq",
-            "value": "Aktiv",
+            "value": 0,
             "name": ""
           },
           {
             "type": "sbsys-db-fieldrule",
             "field": "Behandler.Status",
             "operator": "eq",
-            "value": "0",
+            "value": 0,
             "name": "Aktive sager uden behandler"
           }
         ]

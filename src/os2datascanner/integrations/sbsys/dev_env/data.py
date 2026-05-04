@@ -298,6 +298,18 @@ SbSysNetDrift["Bruger"] = [
         "ObjectSID": "S-CYF",
         "UserPrincipalName": "jkowalski@vstkom.internal",
         "BrugerIdentity": "69131057-FA37-4EE0-A79F-D8A5EF879CB6",
+    },
+    _BRUGER_BASE | {
+        "ID": 3,
+        "LogonID": 3,
+        "Navn": "Inactive Bob",
+        "FagomraadeID": 1,
+        "AdresseID": 1,
+        "AnsaettelsesstedID": 1,
+        "Status": 0,  # Supposed to mean inactive.
+        "ObjectSID": "S-INAC",
+        "UserPrincipalName": "inactivebob@vstkom.internal",
+        "BrugerIdentity": "99991057-FA37-9AA9-A79F-D8A5EA999AA9",
     }
 ]
 
@@ -561,6 +573,23 @@ SbSysNetDrift["Sag"] = [
 
         "ErBeskyttet": 1,       # Protected
         "SecuritySetID": 1,     # Security group "Alle brugere"
+    },
+    _SAG_BASE | {
+        "ID": 7,
+        "SagIdentity": "F3F4E908-F2A1-7111-BADA-A12399671101",
+        "Nummer": "29.70.01-K02-3-13",
+        "Titel": "Aktiv sag med behandler inaktiv status",
+        "BehandlerID": 3,  # "Bruger" table, Bruger with "Status" 0 meaning inactive
+        "Kommentar": "Denne sag handler ikke om noget",
+        "SagsStatusID": 1,  # SagStatus with SagsTilstand value of 0, meaning active.
+        "CreatedByID": 1,
+        "Created": datetime(2016, 9, 11),
+        "LastChangedByID": 1,
+        "LastChanged": datetime(2023, 9, 11),
+        "AnsaettelsesstedID": 1,
+        "ArkivAfklaringStatusID": 1,
+        "ErBeskyttet": 1,  # Protected
+        "SecuritySetID": 1,  # Security group "Alle brugere"
     },
 ]
 
