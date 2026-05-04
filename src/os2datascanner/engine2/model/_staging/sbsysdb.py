@@ -142,7 +142,8 @@ class SBSYSDBSource(Source):
         expr = convert_rule_to_select(
                 rule,
                 Sag, tables,
-                select(), column_labels,
+                select().where(*constraint),
+                column_labels,
                 virtual_columns={
                     # Subtracting two datetimes in SQL Server utterly
                     # bafflingly gives you /a third datetime/ (2024-01-01 -
@@ -152,7 +153,7 @@ class SBSYSDBSource(Source):
                     # terms of the unit you request
                     "?Age?": sql_func.datediff(
                             sql_text("day"), Sag.c.LastChanged, sql_func.now())
-                }).where(*constraint)  # Include the required_columns constraint
+                })
 
         counter = Counter()
         for db_row in exec_expr(

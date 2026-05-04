@@ -8,9 +8,9 @@ import structlog
 
 from sqlalchemy import (
         and_, or_, not_, true, false,
-        Table, Column)
+        Table, Column, select)
 from sqlalchemy.sql.elements import BinaryExpression, OperatorExpression
-from sqlalchemy.sql.expression import Select
+from sqlalchemy.sql.expression import Select, func as sql_func
 
 from os2datascanner.utils.ref import Counter
 from os2datascanner.engine2.rules import logical
@@ -183,7 +183,16 @@ def convert_rule_to_select(
     The resulting expression is guaranteed to select columns in the same order
     as the keys of the column_labels dict. (One useful consequence of this is
     that you can make a mapping from field names to results by just zipping
-    the keys together with a result tuple.)"""
+    the keys together with a result tuple.)
+
+    Through-table joins (M2M relations) multiply rows per primary-key value of
+    the base table. The inner select is wrapped in a ROW_NUMBER() subquery and only the first row
+    per primary key is returned. The rule has already been verified by WHERE, so any
+    representative row per primary key is correct.
+
+    Callers must apply any caller-side constraints (e.g. constraints from
+    resolve_complex_column_names on the required output columns) to the
+    initial_select they pass in, not to the returned expression."""
 
     def rule_to_constraints(r) -> (list[BinaryExpression], OperatorExpression):
         """Recursively converts an OSdatascanner Rule into a SQLAlchemy
@@ -233,8 +242,16 @@ def convert_rule_to_select(
     # To turn our constraint object into a valid Select expression, we need to
     # make sure we actually select the columns required by the constraints.
     # Luckily rule_to_constraints stashes those away in the column_labels dict
-    rv = initial_select.add_columns(*column_labels.values())
-    return rv.where(*join, expr)
+    inner = initial_select.add_columns(*column_labels.values()).where(*join, expr)
+
+    # MSSQL requires ROW_NUMBER() OVER (...) to have a non-empty ORDER BY, primary key seems
+    # like a fine candidate for that..
+    pk = list(table.primary_key.columns)
+    row_num = sql_func.row_number().over(
+            partition_by=pk, order_by=pk).label("_row_num")
+    sub = inner.add_columns(row_num).subquery()
+    outer_cols = [c for c in sub.c if c.name != "_row_num"]
+    return select(*outer_cols).where(sub.c._row_num == 1)
 
 
 def exec_expr(
