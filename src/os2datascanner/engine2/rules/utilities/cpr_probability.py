@@ -246,7 +246,7 @@ class CprProbabilityCalculator(object):
         :param birh_date: The birh date to check.
         :return: A list of all legal CPRs for that date.
         """
-        cache_key = str(birth_date)
+        cache_key = (str(birth_date), mod11_check)
         if cache_key in self.cached_cprs:
             return self.cached_cprs[cache_key]
         legal_7 = self._legal_7s(birth_date.year)
