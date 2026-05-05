@@ -18,6 +18,7 @@ from .models.scanner_reference import ScannerReference
 
 from os2datascanner.engine2.pipeline import messages  # noqa
 from os2datascanner.projects.report.organizations.models import Organization, Account
+from os2datascanner.projects.report.organizations.admin import ReadOnlyAdminMixin
 from os2datascanner.projects.report.reportapp.management.commands import (
         result_collector as r_c)
 
@@ -101,7 +102,7 @@ class DocumentReportAdmin(admin.ModelAdmin):
 
 
 @admin.register(ScannerReference)
-class ScannerReferenceAdmin(admin.ModelAdmin):
+class ScannerReferenceAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
     list_display = (
         "scanner_name",
         "scanner_pk",

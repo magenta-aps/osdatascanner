@@ -29,6 +29,9 @@
 
 - Added more leader statistics filters and aligned the UI with Report/Archive
 
+- ScannerReferences can't be edited in the report modules admin page,
+  bringing them in line with other exported models.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.
