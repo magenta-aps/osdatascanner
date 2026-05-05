@@ -153,6 +153,11 @@ class Scanner(models.Model):
         verbose_name=_('only notify superadmin'),
     )
 
+    only_notify_remediators = models.BooleanField(
+        default=False,
+        verbose_name=_('only notify remediators'),
+    )
+
     keep_false_positives = models.BooleanField(
         default=True,
         verbose_name=_('keep false positives'),
@@ -301,7 +306,8 @@ class Scanner(models.Model):
                         pk=self.pk,
                         name=self.name,
                         test=self.only_notify_superadmin,
-                        keep_fp=self.keep_false_positives),
+                        keep_fp=self.keep_false_positives,
+                        only_notify_remediators=self.only_notify_remediators),
                 organisation=messages.OrganisationFragment(
                         name=self.organization.name,
                         uuid=self.organization.uuid))
@@ -781,6 +787,7 @@ class ScannerSerializer(serializers.ModelSerializer):
             "org_units",
             "scan_entire_org",
             "only_notify_superadmin",
+            "only_notify_remediators",
         ]
 
 

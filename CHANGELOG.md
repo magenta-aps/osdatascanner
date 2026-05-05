@@ -10,6 +10,8 @@
 
 - Added a new management command for changing the realm id of an organization.
 
+- Scanners now have an option to send all results to remediators.
+
 ### General improvements
 
 - Upgrade rabbitMQ version to 3.13

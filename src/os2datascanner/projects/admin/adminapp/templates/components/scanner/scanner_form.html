@@ -599,6 +599,13 @@
 
                 {% endif %}
 
+                {% if form.only_notify_remediators %}
+                  <div class="checkbox-group form__group">
+                    {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.only_notify_remediators %}
+                  </div>
+
+                {% endif %}
+
                 {% if form.scan_deleted_items_folder %}
                   <div class="checkbox-group form__group">
                     {% include "components/scanner/scanner_form_checkbox_field.html" with field=form.scan_deleted_items_folder %}

@@ -688,6 +688,10 @@ msgid "only notify superadmin"
 msgstr "underret kun superadmin"
 
 #: adminapp/models/scannerjobs/scanner.py
+msgid "only notify remediators"
+msgstr "underret kun opryddere"
+
+#: adminapp/models/scannerjobs/scanner.py
 msgid "keep false positives"
 msgstr "behold falske positive"
 

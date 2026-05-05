@@ -119,6 +119,11 @@ class DocumentReport(models.Model):
         db_index=True
     )
 
+    only_notify_remediators = models.BooleanField(
+        default=False,
+        db_index=True
+    )
+
     owner = models.TextField(
         blank=True,
         null=True,

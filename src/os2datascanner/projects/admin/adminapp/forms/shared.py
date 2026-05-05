@@ -24,13 +24,13 @@ class Groups:
 
     RESULT_SETTINGS = (
         _("Result settings"),
-        ["contacts", "only_notify_superadmin", "keep_false_positives"],
+        ["contacts", "only_notify_superadmin", "only_notify_remediators", "keep_false_positives"],
     )
 
     ADVANCED_RESULT_SETTINGS = (
         _("Result settings"),
         ["contacts", "remediators", "only_notify_superadmin",
-         "keep_false_positives"],
+         "only_notify_remediators", "keep_false_positives"],
     )
 
     SCHEDULED_EXECUTION_SETTINGS = (
