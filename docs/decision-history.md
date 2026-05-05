@@ -292,6 +292,35 @@ active scans. When a status message arrives with a file hash:
 The `HashCache` is cleaned up automatically when a scan completes or is
 cancelled, to avoid accumulating stale rows.
 
+## Per-scan conversion queues
+
+Earlier versions of OSdatascanner sent conversion messages through *shared*
+queues - `os2ds_conversions` by default, or `conversions_full` and
+`conversions_delta` when the `QUEUE_PRIORITY` configuration was used to keep
+delta scans out of the way of full scans.
+
+Cancelling a scan in that model meant either draining the shared queue while
+filtering out messages tagged for the cancelled scan - which is slow, and keeps
+workers doing wasted work for as long as the queue holds cancelled messages -
+or purging the queue entirely, which would also discard any other scans
+currently in flight. Neither was acceptable.
+
+We now give each scan its own conversion queue, named after the scanner PK
+and the scan start time (`osds_conversions.{pk}_{YYYYMMDDTHHMMSS}`).
+Cancellation collapses to a single server-side `queue_delete`: the broker
+drops every undelivered message for the cancelled scan in one operation, and
+the workers' channels close cleanly because they receive a `delete_queue`
+broadcast first.
+
+The trade-off is more queues and a slightly more involved discovery flow:
+workers subscribe to per-scan queues dynamically via broadcast
+`CommandMessage`s (`new_queue`, `delete_queue`), and a `worker_hello`
+round-trip on worker startup makes sure restarted workers learn about ongoing
+scans they would otherwise have missed. The cost is small compared to
+actually being able to cancel a scan in milliseconds.
+
+For configuration details, see [RabbitMQ](./architecture/rabbitmq.md).
+
 [1]: https://cpr.dk/media/12066/personnummeret-i-cpr.pdf "Method for performing a modulus-11 check."
 
 [2]: https://cpr.dk/cpr-systemet/personnumre-uden-kontrolciffer-modulus-11-kontrol "CPR-numbers exempt from modulus-11 check."

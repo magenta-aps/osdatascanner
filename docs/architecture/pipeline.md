@@ -208,6 +208,18 @@ the exporter.
 
 Of cause, the extraction might fail in which case a `ProblemMessage` is enqueued in RabbitMQ.
 
+#### Per-scan conversion queues
+
+The worker doesn't read its conversion messages from a single shared queue.
+Instead, it dynamically subscribes to a *per-scan* conversion queue for each
+running scan: the admin module declares the queue and broadcasts its name when
+the scan starts, the worker subscribes via the new-queue hook, and the queue
+is deleted when the scan finishes or is cancelled. This makes scan
+cancellation a single server-side `queue_delete` rather than a client-side
+drain.
+
+For full details, see [RabbitMQ](./rabbitmq.md).
+
 ### Exporter
 
 The exporter is the final stage of the pipeline before the data leaves the engine.

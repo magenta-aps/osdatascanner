@@ -22,6 +22,18 @@
   new message classes have been introduced to represent missing and
   irrelevant objects.
 
+- Each scan now uses a dedicated RabbitMQ conversion queue
+  (`osds_conversions.{scanner_pk}_{time}`) instead of shared full/delta
+  queues. Cancelling a scan deletes the queue server-side in one operation
+  instead of draining cancelled messages from a shared queue.
+
+  - Workers can be biased towards delta or full scans through a new
+    `CONVERSION_PRIORITY` env var, replacing the older approach of routing
+    delta and full scans to dedicated named queues.
+
+  - Long-running OCR conversions and PDF processing now poll an abort flag and stop between pages
+    when their scan is cancelled.
+
 - Renamed and restructured scannerjob list templates to follow the same naming convention as for
   scanstatus.
 
