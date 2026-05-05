@@ -597,7 +597,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        qs = self.get_account_queryset()
+        base_qs = self.get_account_queryset()
 
         if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
                 (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
@@ -606,11 +606,30 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         else:
             reports = DocumentReport.objects.all()
 
+        source_type_choices = reports.filter(
+            alias_relations__account__in=base_qs,
+            alias_relations__shared=False,
+            number_of_matches__gte=1,
+        ).order_by('source_type').values('source_type').distinct()
+        context['source_type_choices'] = source_type_choices
+
+        source_type = self.request.GET.get('source_type', 'all')
+        if source_type != 'all':
+            if source_type_choices.filter(source_type=source_type).exists():
+                reports = reports.filter(source_type=source_type)
+            else:
+                source_type = 'all'
+
         retention_days = self.org.retention_days if self.org.retention_policy else None
 
-        qs = self.annotate_account_queryset(qs, reports, retention_days)
+        qs = self.annotate_account_queryset(base_qs, reports, retention_days)
+
+        if self.request.GET.get('only_with_results'):
+            qs = qs.filter(unhandled_results__gt=0)
+
         qs = self.order_employees(qs)
         context["employees"] = qs[:self.max_objects]
+        context["base_qs"] = base_qs
 
         context['order_by'] = self.request.GET.get('order_by', 'first_name')
         context['order'] = self.request.GET.get('order', 'ascending')
@@ -620,6 +639,8 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context['retention_days'] = self.org.retention_days
         context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
+        context['chosen_source_type'] = source_type
+        context['only_with_results'] = self.request.GET.get('only_with_results')
         context['2org_fp_rate'] = 2 * self.org.false_positive_rate
         context['max_objects'] = self.max_objects
 
@@ -678,7 +699,7 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
         scannerjobs = self.org.scanners.filter(
             document_reports__number_of_matches__gte=1,
-            document_reports__alias_relations__account__in=context['employees'],
+            document_reports__alias_relations__account__in=context['base_qs'],
             document_reports__alias_relations__shared=False,
         ).distinct()
         if not self.request.user.has_perm(
@@ -715,7 +736,7 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         return account_qs
 
     def filter_positions(self, qs):
-        if self.request.GET.get("view_all", False):
+        if self.request.GET.get("org_unit") == 'all':
             # Determine what units are "root nodes", we'll only want to call
             # get_descendants on units that won't be retrieved by get_descendants() on a
             # "higher" up node.
@@ -753,7 +774,7 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
             Q(org_units__in=self.descendant_units)
             | Q(
                 document_reports__number_of_matches__gte=1,
-                document_reports__alias_relations__account__in=context['employees'],
+                document_reports__alias_relations__account__in=context['base_qs'],
                 document_reports__alias_relations__shared=False,
             )
         ).distinct()
@@ -772,8 +793,11 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         else:
             self.user_units = self.request.user.account.get_managed_units().order_by("name")
 
-        if unit_uuid := request.GET.get('org_unit', None):
+        unit_uuid = request.GET.get('org_unit', None)
+        if unit_uuid and unit_uuid != 'all':
             self.org_unit = self.user_units.get(uuid=unit_uuid)
+        elif unit_uuid == 'all':
+            self.org_unit = None
         else:
             self.org_unit = self.user_units.first() or None
 
@@ -861,11 +885,17 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         else:
             reports = DocumentReport.objects.all()
 
+        if (source_type := self.request.GET.get('source_type')) and source_type != 'all':
+            reports = reports.filter(source_type=source_type)
+
         retention_days = self.org.retention_days if self.org.retention_policy else None
         account_qs = self.get_account_queryset()
         account_qs = LeaderStatisticsPageView.annotate_account_queryset(
             qs=account_qs, reports=reports, retention_days=retention_days
         )
+
+        if self.request.GET.get('only_with_results'):
+            account_qs = account_qs.filter(unhandled_results__gt=0)
 
         account_qs = self.order_employees(account_qs)
 

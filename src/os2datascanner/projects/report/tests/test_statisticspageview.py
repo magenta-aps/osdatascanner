@@ -486,21 +486,20 @@ class TestLeaderUnitsStatisticsPageView:
 
         assert response.status_code == 403
 
-    def test_leader_statisticspage_view_all(self, rf, egon_account,
-                                            olsenbanden_ou,
-                                            egon_manager_position,
-                                            olsenbanden_ou_positions,
-                                            harrys_skur_positions_egon_lead_harry_employee):
+    def test_leader_statisticspage_org_unit_filter(self, rf, egon_account,
+                                                   olsenbanden_ou,
+                                                   egon_manager_position,
+                                                   olsenbanden_ou_positions,
+                                                   harrys_skur_positions_egon_lead_harry_employee):
 
         # Specific OU selection, should contain 3 employees.
         response = self.get_leader_statisticspage_response(rf, egon_account,
                                                            params=f"?org_unit={olsenbanden_ou.pk}")
         assert response.context_data.get("employees").count() == 3
 
-        # view all, should be 4 employees.
-        # olsenbanden OU + 1 employee in Harrys Skur.
+        # org_unit=all, should be 4 employees: olsenbanden OU + 1 employee in Harrys Skur.
         response = self.get_leader_statisticspage_response(rf, egon_account,
-                                                           params="?view_all=on")
+                                                           params="?org_unit=all")
         assert response.context_data.get("employees").count() == 4
 
     def test_leader_statisticspage_scanner_filter(
@@ -608,7 +607,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             superuser_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -634,7 +633,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             superuser_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -707,7 +706,7 @@ class TestLeaderUnitsStatisticsPageView:
         response = self.get_leader_statisticspage_response(
             rf,
             egon_account,
-            params="?view_all=on",
+            params="?org_unit=all",
         )
         choices = response.context_data['scannerjob_choices']
 
@@ -715,6 +714,107 @@ class TestLeaderUnitsStatisticsPageView:
         assert choices.count() == 1
         assert not choices.filter(scanner_pk=1).exists()
         assert choices.filter(scanner_pk=2).exists()
+
+    def test_leader_statisticspage_source_type_filter(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        """Filtering by source_type limits unhandled_results to that source type."""
+        # Arrange
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1, source_type="smb")
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=1, source_type="ews")
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&source_type=smb",
+        )
+        børge = response.context_data['employees'].first()
+
+        # Assert
+        assert børge.unhandled_results == 3
+
+    def test_leader_statisticspage_stale_source_type_resets(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        """When source_type is not valid for the chosen scannerjob, it resets to 'all'."""
+        # Arrange: scannerjob 1 has "smb" results, scannerjob 2 has only "ews" results.
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1, source_type="smb")
+        create_reports_for(børge_email_alias, num=4, scanner_job_pk=2, source_type="ews")
+
+        # Act: request scannerjob=2 with a source_type=smb stale from scannerjob=1.
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}&scannerjob=2&source_type=smb",
+        )
+
+        # Assert: chosen_source_type is reset to 'all', so all results for scannerjob 2 are shown.
+        assert response.context_data['chosen_source_type'] == 'all'
+        børge = response.context_data['employees'].first()
+        assert børge.unhandled_results == 4
+
+    def test_leader_statisticspage_source_type_choices(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+            ):
+        """source_type_choices contains the distinct source types from matching reports."""
+        # Arrange
+        create_reports_for(børge_email_alias, num=2, scanner_job_pk=1, source_type="smb")
+        create_reports_for(børge_email_alias, num=2, scanner_job_pk=1, source_type="ews")
+
+        # Act
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params=f"?org_unit={børges_værelse.pk}",
+        )
+        choices = response.context_data['source_type_choices']
+
+        # Assert
+        assert choices.count() == 2
+        assert choices.filter(source_type="smb").exists()
+        assert choices.filter(source_type="ews").exists()
+
+    def test_leader_statisticspage_search_field(
+                self,
+                rf,
+                superuser_account,
+                børges_værelse_ou_positions,
+                børge_email_alias,
+                olsenbanden_ou_positions,
+                egon_email_alias,
+            ):
+        """search_field filters the employee list by first or last name."""
+        # Arrange: two employees with results in scope
+        create_reports_for(egon_email_alias, num=2, scanner_job_pk=1)
+        create_reports_for(børge_email_alias, num=3, scanner_job_pk=1)
+
+        # Act: search by Egon's first name
+        response = self.get_leader_statisticspage_response(
+            rf,
+            superuser_account,
+            params="?org_unit=all&search_field=Egon",
+        )
+        employees = response.context_data['employees']
+
+        # Assert: only Egon is returned
+        assert employees.count() == 1
+        assert employees.first().first_name == "Egon"
 
     def test_leader_export_as_manager(self, rf, egon_account, egon_manager_position):
         """A user with a 'manager'-position to an organizational unit should

@@ -27,6 +27,8 @@
 
 - When creating slugs for organizations, aa, ae, and oe are now used for Danish letters.
 
+- Added more leader statistics filters and aligned the UI with Report/Archive
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.

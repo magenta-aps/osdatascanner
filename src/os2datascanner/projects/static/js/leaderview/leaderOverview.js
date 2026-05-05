@@ -21,6 +21,24 @@ document.addEventListener("DOMContentLoaded",
             showOverview(row, targ);
           });
         });
+
+        // Reset dependent filters when a parent filter changes so stale values
+        // are not carried over to requests where they are no longer valid.
+        const orgUnitSelect = content.querySelector("#org_units");
+        const scannerjobSelect = content.querySelector("#scannerjobs");
+        const sourceTypeSelect = content.querySelector("#source_type");
+
+        if (orgUnitSelect && scannerjobSelect) {
+          orgUnitSelect.addEventListener("change", function () {
+            scannerjobSelect.value = "all";
+            if (sourceTypeSelect) { sourceTypeSelect.value = "all"; }
+          });
+        }
+        if (scannerjobSelect && sourceTypeSelect) {
+          scannerjobSelect.addEventListener("change", function () {
+            sourceTypeSelect.value = "all";
+          });
+        }
       }
     });
   }
