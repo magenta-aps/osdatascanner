@@ -894,11 +894,39 @@ class CommandMessage:
     target process will print and clear any profiling statistics it might
     already have collected."""
 
+    new_queue: Optional[str] = None
+    """If set, the name of a new per-scan conversion queue that pipeline
+    workers should subscribe to. Sent by the admin module when a new scan
+    starts, before the ScanSpecMessage is dispatched."""
+
+    new_queue_priority: Optional[str] = None
+    """If set alongside new_queue, a tag identifying the type of scan that
+    owns the queue (e.g. "delta" or "full"). Workers use this to decide
+    which queues to subscribe to and in what order."""
+
+    delete_queue: Optional[str] = None
+    """If set, the name of a per-scan conversion queue that is about to be
+    deleted. Workers should cancel their consumer for this queue before it
+    disappears, to avoid broker-initiated channel closures. (Avoid crashing)"""
+
+    worker_hello: Optional[str] = None
+    """If set, a worker has just started up and is requesting that the
+    status_collector send it all active per-scan queue names so it can
+    subscribe to any ongoing scans it missed.
+
+    The value is the name of the worker's own anonymous command queue.
+    The status_collector uses this to reply directly to that worker
+    instead of broadcasting to every RabbitMQ-consumer in the system."""
+
     def to_json_object(self):
         return {
             "abort": self.abort.to_json_object() if self.abort else None,
             "log_level": self.log_level,
-            "profiling": self.profiling
+            "profiling": self.profiling,
+            "new_queue": self.new_queue,
+            "new_queue_priority": self.new_queue_priority,
+            "delete_queue": self.delete_queue,
+            "worker_hello": self.worker_hello,
         }
 
     @classmethod
@@ -909,7 +937,11 @@ class CommandMessage:
                 abort=ScanTagFragment.from_json_object(abort)
                 if abort else None,
                 log_level=obj.get("log_level"),
-                profiling=obj.get("profiling"))
+                profiling=obj.get("profiling"),
+                new_queue=obj.get("new_queue"),
+                new_queue_priority=obj.get("new_queue_priority"),
+                delete_queue=obj.get("delete_queue"),
+                worker_hello=obj.get("worker_hello"))
 
 
 __all__ = (

@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
 from collections.abc import Generator
 import structlog
 
@@ -37,6 +38,20 @@ PROMETHEUS_DESCRIPTION = "Messages handled by worker"
 # this if performance issues occur.
 PREFETCH_COUNT = 2
 
+_cancelled_tags: set = set()
+"""Scan tags for which processing should be aborted as soon as possible.
+Populated by notify_abort() when the runner receives an abort command while
+a worker is mid-processing. Checked in explore() between sub-items so that
+a large scan (e.g. a 1000-page PDF) stops between pages rather than running
+to completion."""
+
+
+def notify_abort(scan_tag) -> None:
+    """Register a scan tag as cancelled so that in-progress processing stops
+    at the next inter-page boundary in explore()."""
+    logger.info("scan abort received, will stop at next checkpoint", scan_tag=scan_tag)
+    _cancelled_tags.add(scan_tag)
+
 
 def determine_channel(scan_spec, for_type: str) -> str:
     scan_spec_obj = messages.ScanSpecMessage.from_json_object(scan_spec)
@@ -52,6 +67,9 @@ def explore(
         sm: SourceManager, msg: messages.ScanSpecMessage,
         *, check=True) -> Generator[messages.SerialisableMessage]:
     for m in explorer_handler(msg, sm):
+        if msg.scan_tag in _cancelled_tags:
+            # Scan has been cancelled, stop processing
+            return
         if isinstance(m, messages.ConversionMessage):
             yield from process(sm, m, check=check)
         elif isinstance(m, messages.ScanSpecMessage):
@@ -69,7 +87,20 @@ def explore(
 def process(
         sm: SourceManager, msg: messages.ConversionMessage,
         *, check=True) -> Generator[messages.SerialisableMessage]:
-    for m in processor_handler(msg, sm, _check=check):
+
+    scan_tag = msg.scan_spec.scan_tag
+
+    def should_abort():
+        return scan_tag in _cancelled_tags
+
+    if should_abort():
+        # Scan has been cancelled, stop processing
+        return
+
+    for m in processor_handler(msg, sm, _check=check, should_abort=should_abort):
+        if should_abort():
+            # Scan has been cancelled, stop processing
+            return
         if isinstance(m, messages.RepresentationMessage):
             # Processing this object has produced a request for a new
             # conversion; there's no need to call Resource.check() a second
@@ -162,6 +193,51 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()
+
+
+def basic_consume_hook(runner):
+    """Called after the worker's consumers are registered.
+
+    Announces this worker's presence to the status_collector by broadcasting
+    a worker_hello message that includes our anonymous command queue name.
+    The status_collector responds by sending us all active per-scan queue
+    names directly, so we can subscribe to any ongoing scans we missed."""
+    hello = messages.CommandMessage(worker_hello=runner._anon_queue_name)
+    runner.channel.basic_publish(
+            exchange="broadcast",
+            routing_key="",
+            body=json.dumps(hello.to_json_object()).encode())
+
+
+def new_queue_hook(runner, queue_name, tag):
+    """Called when the runner receives a new_queue command.
+
+    Workers subscribe to each per-scan conversion queue so they can pick up
+    conversion jobs for that scan. Other stage types (explorer, exporter)
+    must not subscribe, as they cannot process ConversionMessages.
+
+    If the worker has a conversion_priority list, only queues whose tag
+    appears in that list are subscribed to. Untagged queues (empty tag)
+    are always accepted when there is no conversion_priority filter."""
+    if runner._conversion_priority and tag not in runner._conversion_priority:
+        return
+    runner._subscribe_to_queue(queue_name, tag)
+
+
+def tick_hook(runner):
+    """Called every 50 ticks to adjust which queues this worker consumes.
+
+    Two independent priority mechanisms run here:
+    - Queue priority switching: if multiple named queues are configured via
+      --queue-priority, the worker focuses on the highest-priority non-empty
+      queue and cancels consumers for lower-priority ones.
+    - Per-scan priority: if --conversion-priority is set, the worker focuses
+      on the highest-priority tag with active deliveries and pauses
+      lower-priority tags."""
+    if runner._queue_priorities:
+        runner._check_and_switch_priority()
+    if runner._conversion_priority and runner._per_scan_queue_priorities:
+        runner._check_per_scan_priority()
 
 
 if __name__ == "__main__":

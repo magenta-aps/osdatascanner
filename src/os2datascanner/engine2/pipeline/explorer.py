@@ -195,6 +195,16 @@ def message_received_raw(body, channel, source_manager):
             yield (queue, json_form)
 
 
+def tick_hook(runner):
+    """Called every 50 ticks to adjust which queues this explorer consumes.
+
+    If multiple named queues are configured via --queue-priority, the explorer
+    focuses on the highest-priority non-empty queue and cancels consumers for
+    lower-priority ones."""
+    if runner._queue_priorities:
+        runner._check_and_switch_priority()
+
+
 if __name__ == "__main__":
     from .run_stage import _compatibility_main  # noqa
     _compatibility_main("explorer")

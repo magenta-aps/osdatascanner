@@ -2,6 +2,7 @@
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
+from typing import override
 
 import math
 import structlog
@@ -17,12 +18,14 @@ from prometheus_client import Summary, start_http_server
 
 from os2datascanner.utils import debug
 from os2datascanner.engine2.pipeline import messages
-from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+from os2datascanner.engine2.pipeline.utilities.pika import ANON_QUEUE, PikaPipelineThread
 
 
 from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
-from ...models.scannerjobs.scanner_helpers import MIMETypeProcessStat, DuplicationStat, HashCache
+from ...models.scannerjobs.scanner_helpers import (
+        MIMETypeProcessStat, DuplicationStat, HashCache, delete_per_scan_queue,
+        notify_new_conversion_queues_batch)
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
@@ -170,6 +173,9 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 scan_status.save()
                 # Clean up the hash cache for this scan
                 HashCache.objects.filter(scan_status=scan_status).delete()
+
+                # Clean up the per-scan conversion queue now that all work is done.
+                delete_per_scan_queue(scan_status.scan_tag)
             else:
                 logger.warning(
                     "BUG: received status message for a ScanStatus marked as complete!",
@@ -178,11 +184,67 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     yield from []
 
 
+_REBROADCAST_INTERVAL_TICKS = 600  # ~60 seconds at 0.1s/tick
+
+
 class StatusCollectorRunner(PikaPipelineThread):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         start_http_server(9091)
 
+    # TODO: Re-broadcasting of queues may not really belong in StatusCollector, consider moving
+    # it / creating another service for this type of work
+
+    @override
+    def make_channel(self):
+        channel = super().make_channel()
+        anon_queue = channel.queue_declare(
+                ANON_QUEUE,
+                passive=False, durable=False, exclusive=False,
+                auto_delete=True, arguments={"x-max-priority": 10})
+        channel.queue_bind(
+                exchange="broadcast", queue=anon_queue.method.queue)
+        return channel
+
+    @override
+    def _basic_consume(self, *, exclusive=False):
+        consumer_tags = super()._basic_consume(exclusive=exclusive)
+        consumer_tags["anon"] = self.channel.basic_consume(
+                ANON_QUEUE, self.handle_message_raw, exclusive=False)
+        return consumer_tags
+
+    @override
+    def _processing_complete(self, tick):
+        if tick and tick % _REBROADCAST_INTERVAL_TICKS == 0:
+            self._rebroadcast_active_queues()
+        return super()._processing_complete(tick)
+
+    def _rebroadcast_active_queues(self, target_queue: str = None):
+        """Sends all active per-scan conversion queue names to workers so they
+        can subscribe to any ongoing scans they may have missed.
+
+        If target_queue is given, each message is sent directly to that single
+        worker's anonymous command queue (worker_hello response). Otherwise,
+        messages are broadcast to all workers (periodic re-broadcast).
+
+        All messages are sent in a single RabbitMQ connection to avoid the
+        overhead of one connection per active scan."""
+        active = ScanStatus.objects.exclude(
+                ScanStatus._completed_or_cancelled_Q).values_list(
+                "scan_tag", "conversion_queue_tag", "conversion_queue_name")
+        queues = [
+            (conversion_queue_name, tag)
+            for scan_tag, tag, conversion_queue_name in active
+            if conversion_queue_name
+        ]
+        if queues:
+            notify_new_conversion_queues_batch(queues, target_queue=target_queue)
+            logger.debug(
+                    "Sent active per-scan queues to worker",
+                    count=len(queues),
+                    target=target_queue or "broadcast")
+
+    @override
     def handle_message(self, routing_key, body):
         with SUMMARY.time():
             logger.debug(
@@ -190,6 +252,16 @@ class StatusCollectorRunner(PikaPipelineThread):
                 routing_key=routing_key,
                 body=body
             )
+            if routing_key == "":
+                command = messages.CommandMessage.from_json_object(body)
+                if command.worker_hello:
+                    logger.info(
+                            "Worker hello received, sending active queues directly",
+                            target=command.worker_hello)
+                    self._rebroadcast_active_queues(target_queue=command.worker_hello)
+                yield from []
+                return
+
             try:
                 with transaction.atomic():
                     if routing_key == "os2ds_status":

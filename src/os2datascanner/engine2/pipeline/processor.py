@@ -15,6 +15,7 @@ from .. import settings
 from ..model.core import Source
 from ..utilities.backoff import TimeoutRetrier
 from ..conversions import convert, conversion_exists
+from ..conversions.abort import current_abort_check
 from ..conversions.types import OutputType, encode_dict
 from . import messages
 logger = structlog.get_logger("processor")
@@ -62,7 +63,8 @@ def message_received(
         conversion: messages.ConversionMessage,
         sm: SourceManager,
         *,
-        _check: bool = True) -> Generator[messages.SerialisableMessage]:
+        _check: bool = True,
+        should_abort=None) -> Generator[messages.SerialisableMessage]:
     tr = TimeoutRetrier(
         seconds=settings.pipeline["op_timeout"],
         max_tries=settings.pipeline["op_tries"]
@@ -86,10 +88,21 @@ def message_received(
                     "conversion failed due to inauspicious numbers:"
                     f" {rand} ≤ {fail_percent}")
 
-        resource = conversion.handle.follow(sm)
-        representation = do_conversion(resource, conversion, tr, sm)
+        if should_abort and should_abort():
+            return
 
-        yield from emit_representation(conversion, representation)
+        # Make the worker's abort check reachable from deep converters (like OCR)
+        # without adding a parameter to every function in between.
+        # The callable is wired in by worker.process(); it returns True when an
+        # abort command for this scan_tag has been broadcast and recorded in worker._cancelled_tags.
+        token = current_abort_check.set(should_abort)
+        try:
+            resource = conversion.handle.follow(sm)
+            representation = do_conversion(resource, conversion, tr, sm)
+
+            yield from emit_representation(conversion, representation)
+        finally:
+            current_abort_check.reset(token)
 
     except KeyError:
         yield from handle_conversion_key_error(conversion, sm)

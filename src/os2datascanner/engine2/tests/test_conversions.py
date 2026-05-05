@@ -6,6 +6,8 @@
 import pytest
 import os.path
 
+from os2datascanner.engine2.conversions.abort import current_abort_check
+from os2datascanner.engine2.conversions.text.ocr import image_processor, tesseract_pymupdf
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
 from os2datascanner.engine2.conversions.types import OutputType
@@ -116,3 +118,41 @@ class TestEngine2Conversion:
         assert ".highlight" not in converted  # style tag
         assert "template tag" not in converted  # template tag
         assert "JavaScript is disabled" not in converted  # noscript tag
+
+
+class TestAbortableOCR:
+    def test_tesseract_pymupdf_returns_none_when_aborted_before_start(self, monkeypatch):
+        """tesseract_pymupdf() must return None without touching the image bytes
+        when the abort check fires. But since it currently catches exceptions and returns None,
+        monkeypatch it to raise SystemExit here for test purposes."""
+        def _no_pixmap(*a, **kw):
+            raise SystemExit("Pixmap should not be constructed when aborting")
+        monkeypatch.setattr(
+            "os2datascanner.engine2.conversions.text.ocr.pymupdf.Pixmap",
+            _no_pixmap)
+
+        token = current_abort_check.set(lambda: True)
+        try:
+            result = tesseract_pymupdf(b"anything", filetype="png")
+            assert result is None
+        finally:
+            current_abort_check.reset(token)
+
+    def test_image_processor_returns_none_when_aborted(self):
+        """image_processor() must return None without reading the stream when
+        the abort check is set.
+
+        This is when cancellation happens just before the image is passed to tesseract.
+        """
+        token = current_abort_check.set(lambda: True)
+        try:
+            class _NeverReadResource:
+                handle = type("handle", (), {"name": "test.png"})()
+
+                def make_stream(self):
+                    raise AssertionError("make_stream should not be called on abort")
+
+            result = image_processor(_NeverReadResource())
+            assert result is None
+        finally:
+            current_abort_check.reset(token)

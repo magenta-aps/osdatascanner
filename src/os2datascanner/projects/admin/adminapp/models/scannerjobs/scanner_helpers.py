@@ -22,7 +22,9 @@ from django.contrib.auth.models import User
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Handle
 import os2datascanner.engine2.pipeline.messages as messages
-from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
+import pika.exceptions
+from os2datascanner.engine2.pipeline.utilities.pika import (
+        PikaPipelineThread, PikaConnectionHolder)
 
 
 logger = structlog.get_logger("adminapp")
@@ -242,6 +244,18 @@ class ScanStatus(AbstractScanStatus):
         default=False
     )
 
+    conversion_queue_tag = models.CharField(
+        verbose_name=_("conversion queue tag"),
+        max_length=32,
+        default="full",
+    )
+
+    conversion_queue_name = models.CharField(
+        verbose_name=_("conversion queue name"),
+        max_length=64,
+        blank=True,
+    )
+
     @property
     def estimated_completion_time(self) -> datetime.datetime | None:
         """Returns an estimate of the completion time of the scan, based on a
@@ -348,16 +362,20 @@ class ScanStatus(AbstractScanStatus):
         """Queues a message to RabbitMQ, telling all pipeline processes to throw away all
         future messages from this job."""
         if self.is_running:
-            # Instruct the pipeline to throw out all future messages from this scan
-            cancel_scan_tag_messages(self.scan_tag)
+            # Mark as cancelled BEFORE deleting the queue. The periodic
+            # _rebroadcast_active_queues queries the DB for active scans; if
+            # cancelled=True is not committed yet when the queue is deleted, a
+            # concurrent re-broadcast can re-create the queue as a zombie. [¬º-°]¬
+            self.cancelled = True
+            self.save()
+
+            # Instruct the pipeline to throw messages from this scan by deleting the queue.
+            cancel_scan_tag_messages(self.scan_tag, delete_queue=True)
 
             # Remove CoveredAccounts for this scan to make sure no accounts are skipped during next
             # scan on account of this scan.
             CoveredAccount.objects.filter(scan_status=self).delete()
 
-            # Update this object to correctly reflect that it has been cancelled
-            self.cancelled = True
-            self.save()
             logger.info(
                 "ScanStatus cancelled.",
                 status=self,
@@ -645,9 +663,101 @@ class HashCache(models.Model):
         ]
 
 
-def cancel_scan_tag_messages(tag: dict):
-    """Requests that all running pipeline
-    components blacklist and ignore messages from the scan tag."""
+def _per_scan_queue_name(tag: dict) -> str | None:
+    """Returns the per-scan conversion queue name for the given scan tag dict,
+    or None if the tag is too old/incomplete to derive one."""
+    tag_obj = messages.ScanTagFragment.from_json_object(tag)
+    if tag_obj.scanner and tag_obj.time:
+        safe_time = tag_obj.time.strftime("%Y%m%dT%H%M%S")
+        return f"osds_conversions.{tag_obj.scanner.pk}_{safe_time}"
+    return None
+
+
+def _delete_queue(queue_name: str):
+    """Broadcasts a delete_queue notice so workers can cleanly unsubscribe,
+    then deletes the named RabbitMQ queue (and any remaining messages)."""
+    msg = messages.CommandMessage(delete_queue=queue_name)
+    try:
+        with PikaPipelineThread() as p:
+            p.enqueue_message("", msg.to_json_object(), "broadcast", priority=10)
+            p.enqueue_stop()
+            p.run()
+    except Exception:
+        logger.warning(
+                "Could not broadcast queue deletion notice",
+                queue=queue_name, exc_info=True)
+    try:
+        with PikaConnectionHolder() as conn:
+            # if_unused and if_empty toggle "only delete the queue if it's unused|empty"
+            # We intentionally want to delete the queue even if it's not empty.
+            conn.channel.queue_delete(queue_name, if_unused=False, if_empty=False)
+            logger.info("Deleted per-scan conversion queue", queue=queue_name)
+    except pika.exceptions.ChannelClosedByBroker:
+        # Queue doesn't exist, so it's already cleaned up (or was never created?)
+        logger.debug("Per-scan queue not found during deletion", queue=queue_name)
+    except Exception:
+        logger.warning(
+                "Could not delete per-scan queue",
+                queue=queue_name, exc_info=True)
+
+
+def delete_per_scan_queue(tag: dict):
+    """Deletes the per-scan conversion queue for the given scan_tag if one exists.
+    Safe to call on completion or cancellation, idempotent if already gone."""
+    if queue_name := _per_scan_queue_name(tag):
+        _delete_queue(queue_name)
+
+
+def notify_new_conversion_queue(scan_status: ScanStatus,
+                                tag: str = "full",
+                                target_queue: str = None,
+                                declare: bool = True):
+    """Tells workers to subscribe to a per-scan conversion queue.
+
+    declare=True (default) also creates the queue on the broker. Re-broadcasts
+    should pass declare=False to avoid re-creating a deleted queue.
+
+    If target_queue is given, routes directly to that single worker's command
+    queue instead of broadcasting."""
+    msg = messages.CommandMessage(
+        new_queue=scan_status.conversion_queue_name,
+        new_queue_priority=tag)
+    write_queues = {scan_status.conversion_queue_name} if declare else set()
+    exchange = "" if target_queue else "broadcast"
+    routing_key = target_queue or ""
+    with PikaPipelineThread(write=write_queues) as p:
+        p.enqueue_message(routing_key, msg.to_json_object(), exchange, priority=10)
+        p.enqueue_stop()
+        p.run()
+
+
+def notify_new_conversion_queues_batch(
+        queues: list[tuple[str, str]],
+        target_queue: str = None):
+    """Sends multiple new_queue commands in a single connection.
+
+    Used by the status_collector's periodic re-broadcast and worker_hello
+    responses to avoid opening one connection per active scan."""
+    if not queues:
+        return
+    with PikaPipelineThread() as p:
+        exchange = "" if target_queue else "broadcast"
+        routing_key = target_queue or ""
+        for queue_name, tag in queues:
+            msg = messages.CommandMessage(
+                    new_queue=queue_name, new_queue_priority=tag)
+            p.enqueue_message(
+                    routing_key, msg.to_json_object(), exchange, priority=10)
+        p.enqueue_stop()
+        p.run()
+
+
+def cancel_scan_tag_messages(tag: dict, delete_queue: bool = False):
+    """Requests that all running pipeline components blacklist and ignore
+    messages from the scan tag.
+
+    If delete_queue is True, also deletes the per-scan conversion queue
+    server-side so workers do not need to drain it message-by-message."""
     msg = messages.CommandMessage(
             abort=messages.ScanTagFragment.from_json_object(tag))
     with PikaPipelineThread() as p:
@@ -657,6 +767,12 @@ def cancel_scan_tag_messages(tag: dict):
         p.enqueue_stop()
         p.run()
 
+    if delete_queue:
+        # Fast path: delete the queue entirely, discarding all remaining messages
+        # server-side in one operation rather than draining them one-by-one.
+        if queue_name := _per_scan_queue_name(tag):
+            _delete_queue(queue_name)
+
 
 @receiver(post_delete)
 def post_delete_callback(sender, instance, using, **kwargs):
@@ -664,5 +780,5 @@ def post_delete_callback(sender, instance, using, **kwargs):
     if not isinstance(instance, ScanStatus):
         return
 
-    cancel_scan_tag_messages(instance.scan_tag)
+    cancel_scan_tag_messages(instance.scan_tag, delete_queue=True)
     logger.info("ScanStatus deleted. Sending abort message to message queue.", instance=instance)

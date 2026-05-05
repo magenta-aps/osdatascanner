@@ -127,3 +127,36 @@ class TestMessage:
         # Assert
         assert isinstance(mo, messages.ContentIrrelevantMessage)
         assert mo.handle.relative_path == "path/to/second-document.txt"
+
+
+class TestCommandMessage:
+    def test_new_queue_roundtrip(self):
+        msg = messages.CommandMessage(
+                new_queue="osds_conversions.42_20240101T120000",
+                new_queue_priority="delta")
+        restored = messages.CommandMessage.from_json_object(msg.to_json_object())
+        assert restored.new_queue == "osds_conversions.42_20240101T120000"
+        assert restored.new_queue_priority == "delta"
+        assert restored.delete_queue is None
+        assert restored.worker_hello is None
+
+    def test_delete_queue_roundtrip(self):
+        msg = messages.CommandMessage(
+                delete_queue="osds_conversions.42_20240101T120000")
+        restored = messages.CommandMessage.from_json_object(msg.to_json_object())
+        assert restored.delete_queue == "osds_conversions.42_20240101T120000"
+        assert restored.new_queue is None
+
+    def test_worker_hello_roundtrip(self):
+        msg = messages.CommandMessage(worker_hello="amq.gen-abc123")
+        restored = messages.CommandMessage.from_json_object(msg.to_json_object())
+        assert restored.worker_hello == "amq.gen-abc123"
+        assert restored.abort is None
+
+    def test_default_fields_are_none(self):
+        msg = messages.CommandMessage()
+        obj = msg.to_json_object()
+        assert obj["new_queue"] is None
+        assert obj["new_queue_priority"] is None
+        assert obj["delete_queue"] is None
+        assert obj["worker_hello"] is None
