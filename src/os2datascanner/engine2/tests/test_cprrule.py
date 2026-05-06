@@ -3,11 +3,15 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import os
 import pytest
 from datetime import date
 
 from os2datascanner.engine2.rules.cpr import CPRRule, WordOrSymbol
 from os2datascanner.engine2.rules.utilities.cpr_probability import CprProbabilityCalculator
+
+here_path = os.path.dirname(__file__)
+test_data_path = os.path.join(here_path, "data")
 
 
 class TestCPRRule:
@@ -119,22 +123,8 @@ class TestWordOrSymbol:
         assert not bool(word_or_sym.symbol)
 
 
-class TestCprProbabilityCacheKeyBug:
-    """Regression test for a bug where the probability cache used only the birth
-    date as the key, ignoring the mod11_check parameter.
-
-    Scenario: the same date is evaluated first with mod11_check=True (yielding a
-    short list of ~60 valid CPRs) and then with mod11_check=False (yielding ~6000
-    valid CPRs). With the old key, the second call would hit the first result and
-    return an artificially low probability — or no match at all — for CPRs that
-    fall beyond position 100 in the mod11 list.
-
-    1111119990 born 1911-11-11 fails the mod11 check:
-      - mod11_check=True  → not in the legal list → CPRRule returns []
-      - mod11_check=False → in the legal list at a high index → probability 0.1
-    With the old key both calls shared the same cache entry, so the second call
-    returned [] instead of a match.
-    """
+class TestCprProbabilityCacheKey:
+    """The probability cache must store results separately per (birth_date, mod11_check) pair."""
 
     def test_cache_key_includes_mod11_flag(self):
         calc = CprProbabilityCalculator()
@@ -143,54 +133,32 @@ class TestCprProbabilityCacheKeyBug:
         cprs_with_mod11 = calc._calc_all_cprs(birth, mod11_check=True)
         cprs_without_mod11 = calc._calc_all_cprs(birth, mod11_check=False)
 
-        # Without mod11 the list must be much larger (all 10-digit combinations
-        # for that date), so the two results must differ.
         assert cprs_with_mod11 != cprs_without_mod11
-        # Sanity: both cache entries must be stored independently.
         assert len(calc.cached_cprs) == 2
 
-    def test_mod11_false_result_not_poisoned_by_prior_mod11_true_call(self):
-        """Calling with mod11=True first must not corrupt the mod11=False result."""
-        calc = CprProbabilityCalculator()
+    def test_mod11_false_not_poisoned_by_mod11_true_same_birth_date(self):
+        """A mod11=False scan for 1111119990 must still find a match even if
+        a mod11=True scan for a CPR sharing the same birth date ran first."""
+        rule_mod11 = CPRRule(ignore_irrelevant=True, modulus_11=True, examine_context=False)
+        rule_no_mod11 = CPRRule(ignore_irrelevant=True, modulus_11=False, examine_context=False)
 
-        # Prime the cache with mod11=True (1111119990 fails → not in this list).
-        result_true = calc.cpr_check("1111119990", do_mod11_check=True)
-        assert result_true == "Modulus 11 does not match"
+        mod11_matches = list(rule_mod11.match("1111119992"))
+        assert mod11_matches != [], "Setup failed: expected 1111119992 to match with mod11=True"
 
-        # Now call with mod11=False — must return a probability, not a poisoned result.
-        result_false = calc.cpr_check("1111119990", do_mod11_check=False)
-        assert isinstance(result_false, float), (
-            f"Expected a probability float but got {result_false!r}. "
-            "This indicates the cache returned the mod11=True result for the "
-            "mod11=False query (the old cache-key bug)."
-        )
+        no_mod11_matches = list(rule_no_mod11.match("1111119990"))
+        assert no_mod11_matches != []
 
-    def test_cprrule_mod11_false_not_poisoned_by_same_birth_date(self):
-        """The real-world trigger: two CPRs sharing the same birth date (2011-11-11),
-        one passing mod11 ('1111119992') and one failing it ('1111119990').
+    def test_scenario_from_data_file(self):
+        """A mod11=False scan must find 1111119990 even after a mod11=True scan
+        of the same content with a CPR sharing the same birth date."""
+        with open(os.path.join(test_data_path, "cpr_same_birth_date.txt")) as f:
+            content = f.read()
 
-        With the old single-string cache key:
-          1. mod11=True scan of '1111119992' → passes mod11 → _calc_all_cprs(2011-11-11,
-             mod11=True) called → cache['2011-11-11'] = <~60 valid CPRs>
-          2. mod11=False scan of '1111119990' → same birth date → cache hit →
-             returns the mod11=True list → '1111119990' not in it →
-             cpr_check returns 'CPR is not a legal value' → no match reported
+        rule_mod11 = CPRRule(ignore_irrelevant=True, modulus_11=True, examine_context=False)
+        rule_no_mod11 = CPRRule(ignore_irrelevant=True, modulus_11=False, examine_context=False)
 
-        With the fix (tuple key), step 2 builds its own cache['2011-11-11', False]
-        and correctly finds '1111119990' at probability 0.1.
-        """
-        rule_strict = CPRRule(ignore_irrelevant=True, modulus_11=True, examine_context=False)
-        rule_loose = CPRRule(ignore_irrelevant=True, modulus_11=False, examine_context=False)
+        list(rule_mod11.match(content))
 
-        # Step 1: strict scan primes the cache for birth date 2011-11-11.
-        strict_matches = list(rule_strict.match("1111119992"))
-        assert strict_matches != [], "Setup failed: expected 1111119992 to match with mod11=True"
-
-        # Step 2: loose scan for a different CPR with the same birth date
-        # must NOT hit the mod11=True cache entry.
-        loose_matches = list(rule_loose.match("1111119990"))
-        assert loose_matches != [], (
-            "Got no matches for '1111119990' with mod11=False after '1111119992' was "
-            "scanned with mod11=True. Both share birth date 2011-11-11. This is the "
-            "old cache-key bug: the mod11=True list was returned for the mod11=False query."
-        )
+        no_mod11_matches = [m for m in rule_no_mod11.match(content)
+                            if "1111119990" in str(m)]
+        assert no_mod11_matches != []
