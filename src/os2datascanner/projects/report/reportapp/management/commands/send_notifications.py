@@ -186,6 +186,7 @@ class Command(BaseCommand):
 
         user_results = user.account.get_report(Account.ReportType.RAW)
 
+        time_threshold = None
         if org.retention_policy and not all_results:
             # If all_results is not provided, and the organization has a retention policy, do not
             # include results newer than the number of days specified by the policy.
@@ -201,21 +202,26 @@ class Command(BaseCommand):
 
         self.debug_message['estimated_amount_of_users'] += 1
 
+        def count_report(report_type):
+            qs = user.account.get_report(report_type)
+            if time_threshold:
+                qs = qs.filter(datasource_last_modified__lte=time_threshold)
+            return qs.count()
+
         # Let the user know how many of these results are targeted for them.
         user_alias_bound_results = context["user_alias_bound_results"] = (
-                user.account.get_report(Account.ReportType.PERSONAL).count())
+                count_report(Account.ReportType.PERSONAL))
 
         # If the user falls under either "superadmin" or remediator,
         # let the user know how many of these results stem from that.
         superadmin_bound_results = 0
         if user.is_superuser:
             superadmin_bound_results = context["superadmin_bound_results"] = (
-                    user.account.get_report(
-                            Account.ReportType.WITHHELD_AND_SHARED).count())
+                    count_report(Account.ReportType.WITHHELD_AND_SHARED))
         remediator_bound_results = context["remediator_bound_results"] = (
-                user.account.get_report(Account.ReportType.REMEDIATOR).count())
+                count_report(Account.ReportType.REMEDIATOR))
         shared_bound_results = context["shared_bound_results"] = (
-                user.account.get_report(Account.ReportType.SHARED).count())
+                count_report(Account.ReportType.SHARED))
 
         context["total_result_count"] = (
                 user_alias_bound_results

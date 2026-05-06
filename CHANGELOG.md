@@ -61,6 +61,9 @@
 - Corrected traditional Windows logon names imported from Microsoft Entra not being converted
  to OSdatascanner Alias.
 
+- Email notifications now respect the organisation's retention policy, so the
+  reported result count matches what users see in the report module.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"

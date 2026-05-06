@@ -124,6 +124,36 @@ class TestEmailNotification:
         assert result_user1["shared_bound_results"] == shared_num
         assert result_user1["total_result_count"] == personal_num + remediator_num + shared_num
 
+    def test_count_user_results_respects_retention_policy(
+            self,
+            send_notifications_command,
+            egon_account,
+            egon_email_alias,
+            egon_remediator_alias,
+            olsenbanden_organization):
+        """Results newer than the retention threshold must not be counted in
+        email notifications."""
+        old_date = time_now() - datetime.timedelta(days=31)
+
+        create_reports_for(egon_email_alias, num=3, datasource_last_modified=old_date)
+        create_reports_for(egon_email_alias, num=2, scanner_job_pk=2)
+        create_reports_for(egon_remediator_alias, num=1, datasource_last_modified=old_date,
+                           scanner_job_pk=3)
+        create_reports_for(egon_remediator_alias, num=4, scanner_job_pk=4)
+
+        olsenbanden_organization.retention_policy = True
+        olsenbanden_organization.retention_days = 30
+        olsenbanden_organization.save()
+
+        result = send_notifications_command.count_user_results(
+            all_results=False,
+            user=egon_account.user,
+            org=olsenbanden_organization)
+
+        assert result["user_alias_bound_results"] == 3
+        assert result["remediator_bound_results"] == 1
+        assert result["total_result_count"] == 4
+
     def test_schedule_check(self, send_notifications_command, olsenbanden_organization):
         olsenbanden_organization.email_notification_schedule = "RRULE:FREQ=DAILY"
         # Set an arbitrary day that's at least before _now_, as we wouldn't be including the
