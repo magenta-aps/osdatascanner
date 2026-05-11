@@ -660,17 +660,6 @@ class TestPipelineCollector:
         record_problem(deletion)
         assert DocumentReport.objects.count() == 0
 
-    def test_requeued_problem_with_existing_report(self, transient_handle_error):
-        """ If exactly the same problem message enters the queue again,
-        it should not cause any reports nor crash. """
-
-        record_problem(transient_handle_error)
-        # Imagine a world, where the same message enters the queue again:
-        record_problem(transient_handle_error)
-
-        # Check that have no DocumentReports
-        assert DocumentReport.objects.count() == 0
-
     def test_requeued_match_with_existing_report(self, positive_match):
         """ If exactly the same match message enters the queue again,
          it should not cause two reports nor crash. """
@@ -996,7 +985,7 @@ class TestPipelineCollector:
         assert jens_email_alias.reports.count() == 1
 
     def test_ignore_problem_for_unknown_object(self, transient_handle_error):
-        """When a problem occours for an object we don't already have a DocumentReport for,
+        """When a problem occurs for an object we don't already have a DocumentReport for,
         the message should be ignored."""
         record_problem(transient_handle_error)
 

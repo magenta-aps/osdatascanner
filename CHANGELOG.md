@@ -101,6 +101,8 @@
   The checkup is automatically cleaned up once a descendant of the source has been
   successfully scanned.
 
+- ProblemMessages alone no longer result in DocumentReports being created.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"

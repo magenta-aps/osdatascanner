@@ -465,7 +465,7 @@ def handle_problem_message(scan_tag, result):  # noqa: CCR001 too high cognitive
         case (None, messages.ContentMissingMessage()):
             # We've received a report that a resource is missing, but we have
             # nothing associated with it. Nothing to do
-            logger.debug("Problem message of no relevance. Throwing away.")
+            logger.debug("Content missing message of no relevance. Throwing away.")
             pass
         case (DocumentReport() as prev, messages.ContentMissingMessage()) \
                 if prev.number_of_matches == 0:
@@ -535,36 +535,9 @@ def handle_problem_message(scan_tag, result):  # noqa: CCR001 too high cognitive
             pass
 
         case (None, messages.ProblemMessage()):
-            # A resource not previously known to us has a problem. Store it
-            source = (
-                    issue.handle.source
-                    if issue.handle else issue.source)
-            while source.handle:
-                source = source.handle.source
-
-            dr = DocumentReport.objects.create(
-                    path=path,
-                    scanner_job=scanner,
-
-                    scan_time=scan_tag.time,
-                    raw_scan_tag=prepare_json_object(
-                            scan_tag.to_json_object()),
-
-                    source_type=source.type_label,
-                    sort_key=prepare_json_object(
-                            handle.sort_key if handle else "(source)"),
-                    raw_problem=prepare_json_object(result),
-                    only_notify_superadmin=scan_tag.scanner.test,
-                    only_notify_remediators=scan_tag.scanner.only_notify_remediators,
-                    resolution_status=None)
-
-            logger.debug(
-                "Unresolved, created new report",
-                report=dr,
-                handle=presentation,
-                msgtype="problem",
-            )
-            return dr
+            # A resource not previously known to us has a problem. No reason to care
+            logger.debug("Problem message of no relevance. Throwing away.")
+            pass
         case (DocumentReport() as prev, messages.ProblemMessage()):
             # A resource known to us (either because of its matches or because
             # of a pre-existing problem) has a new problem, but we can't say
