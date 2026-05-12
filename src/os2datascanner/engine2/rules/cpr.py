@@ -55,7 +55,7 @@ class CPRRule(RegexRule):
     BLACKLIST_WORDS = {
         "p-nr", r"p\.nr", "p-nummer", "pnr",
         "customer no", "customer-no",
-        "bilagsnummer",
+        "bilagsnummer", "licens nr", "licensnummer",
         "order number", "ordrenummer",
         "fakturanummer", "faknr", "fak-nr",
         "fakturanr", "varenummer",
