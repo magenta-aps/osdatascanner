@@ -1,0 +1,5 @@
+To CPR-numre med samme fødselsdato (11. november 1911) til at teste CPR cache
+
+Patient A: 1111114001
+
+Patient B: 1111119990

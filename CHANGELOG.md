@@ -64,6 +64,9 @@
 - Email notifications now respect the organisation's retention policy, so the
   reported result count matches what users see in the report module.
 
+- Fixed a bug where CPR probability results could be incorrect when the
+  same date was checked with and without mod11 validation.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
