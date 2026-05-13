@@ -23,6 +23,7 @@
   <div class="tabs"
        name="status_tabs_poll"
        id="status_tabs_poll"
+       hx-preserve
        hx-get="{% url "status" %}"
        hx-swap="outerHTML"
        hx-target="#new_errors"

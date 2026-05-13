@@ -70,6 +70,9 @@
 - Fixed the distribute modal on the withheld results tab not appearing for
   users with the `distribute_withheld_results` permission.
 
+- Fixed a bug where the active tab highlight was lost on the scan status
+  page after HTMX partial updates.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
