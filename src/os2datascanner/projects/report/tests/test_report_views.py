@@ -727,6 +727,29 @@ class TestUndistributedView:
         assert response.status_code == 200
         assert response.context_data["allow_handle"] == has_permission
 
+    def test_distribute_modal_present_with_distribute_permission(self, client, egon_account):
+        """A user with distribute_withheld_results should see the distribute modal."""
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="view_withheld_results"),
+            Permission.objects.get(codename="distribute_withheld_results"))
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("reports:undistributed"))
+
+        assert response.status_code == 200
+        assert b"distribute-results-modal" in response.content
+
+    def test_distribute_modal_absent_without_distribute_permission(self, client, egon_account):
+        """A user without distribute_withheld_results should not see the distribute modal."""
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="view_withheld_results"))
+
+        client.force_login(egon_account.user)
+        response = client.get(reverse_lazy("reports:undistributed"))
+
+        assert response.status_code == 200
+        assert b"distribute-results-modal" not in response.content
+
 #     # Helper functions
 
     def remediator_get_queryset(self, rf, account, params=''):

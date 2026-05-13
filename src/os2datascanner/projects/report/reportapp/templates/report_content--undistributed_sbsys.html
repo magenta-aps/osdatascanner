@@ -28,7 +28,7 @@
   {% include "components/report_table/report_table--filters.html" %}
   {% include "components/report_table/report_table--sbsys.html" %}
 
-  {% if perms.os2datascanner_report.distribute_withheld_documentreport %}
+  {% if perms.organizations.distribute_withheld_results %}
     {% include "components/modals/modal__distribute-results.html" %}
   {% endif %}
 {% endblock content %}
