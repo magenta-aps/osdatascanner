@@ -844,6 +844,60 @@ def hansi_upn_alias(hansi):
 
 
 @pytest.fixture
+def fritz_sid_alias(fritz):
+    return Alias.objects.create(
+        account=fritz,
+        _alias_type="SID",
+        _value="S-1-5-21-1-2-3-1000",
+        imported=True)
+
+
+@pytest.fixture
+def günther_sid_alias(günther):
+    return Alias.objects.create(
+        account=günther,
+        _alias_type="SID",
+        _value="S-1-5-21-1-2-3-1001",
+        imported=True)
+
+
+@pytest.fixture
+def hansi_sid_alias(hansi):
+    return Alias.objects.create(
+        account=hansi,
+        _alias_type="SID",
+        _value="S-1-5-21-1-2-3-1002",
+        imported=True)
+
+
+@pytest.fixture
+def fritz_logon_alias(fritz):
+    return Alias.objects.create(
+        account=fritz,
+        _alias_type="logon",
+        _value="fritz",
+        imported=True)
+
+
+@pytest.fixture
+def günther_logon_alias(günther):
+    return Alias.objects.create(
+        account=günther,
+        _alias_type="logon",
+        _value="guenther",
+        imported=True)
+
+
+@pytest.fixture
+def hansi_logon_alias(hansi):
+    return Alias.objects.create(
+        account=hansi,
+        _alias_type="logon",
+        _value="hansi",
+        imported=True)
+
+
+@pytest.fixture
 def gammel_nok(test_org):
     return Account.objects.create(
         username="gammelnok",

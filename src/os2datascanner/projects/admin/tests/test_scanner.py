@@ -760,3 +760,71 @@ class TestScannerSourcesWithAccounts:
                 raise AssertionError(
                         "expected rule to start with UPN filter SBSYSDBRule,"
                         f" but got {k}")
+
+    def test_sbsys_sid_owner_field(
+            self, *,
+            smb_grant, sbsysdb_scanner, nisserne,
+            fritz_sid_alias, günther_sid_alias, hansi_sid_alias):
+        """SBSYSDBScanner._yield_sources filters on Behandler.ObjectSid when
+        owner_field is set to SID."""
+        # Arrange
+        sbsysdb_scanner.org_units.add(nisserne)
+        sbsysdb_scanner.grant = smb_grant
+        sbsysdb_scanner.owner_field = "SID"
+        nisse_sids = {
+            fritz_sid_alias.value,
+            günther_sid_alias.value,
+            hansi_sid_alias.value,
+        }
+
+        # Act
+        spec_template = sbsysdb_scanner._construct_scan_spec_template(
+                None, True)
+        sources = list(
+                sbsysdb_scanner._yield_sources(spec_template, True, None))
+
+        # Assert
+        assert len(sources) == 1
+        match sources[0].rule.split():
+            case (SBSYSDBRule("Behandler.ObjectSid",
+                              SBSYSDBRule.Op.IIN,
+                              s), _, _) if set(s) == nisse_sids:
+                pass
+            case k:
+                raise AssertionError(
+                        "expected rule to start with SID filter SBSYSDBRule,"
+                        f" but got {k}")
+
+    def test_sbsys_logon_owner_field(
+            self, *,
+            smb_grant, sbsysdb_scanner, nisserne,
+            fritz_logon_alias, günther_logon_alias, hansi_logon_alias):
+        """SBSYSDBScanner._yield_sources filters on Behandler.LogonID when
+        owner_field is set to logon."""
+        # Arrange
+        sbsysdb_scanner.org_units.add(nisserne)
+        sbsysdb_scanner.grant = smb_grant
+        sbsysdb_scanner.owner_field = "logon"
+        nisse_logons = {
+            fritz_logon_alias.value,
+            günther_logon_alias.value,
+            hansi_logon_alias.value,
+        }
+
+        # Act
+        spec_template = sbsysdb_scanner._construct_scan_spec_template(
+                None, True)
+        sources = list(
+                sbsysdb_scanner._yield_sources(spec_template, True, None))
+
+        # Assert
+        assert len(sources) == 1
+        match sources[0].rule.split():
+            case (SBSYSDBRule("Behandler.LogonID",
+                              SBSYSDBRule.Op.IIN,
+                              lo), _, _) if set(lo) == nisse_logons:
+                pass
+            case k:
+                raise AssertionError(
+                        "expected rule to start with logon filter SBSYSDBRule,"
+                        f" but got {k}")

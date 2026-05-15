@@ -603,18 +603,6 @@ msgid "Microsoft 365 SharePoint scanner"
 msgstr "Microsoft 365 SharePoint-scanner"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-msgid "User principal name"
-msgstr "Brugerens hovednavn (UPN)"
-
-#: adminapp/models/scannerjobs/sbsysdb.py
-msgid "Windows domain login"
-msgstr "Windows-domænelogin"
-
-#: adminapp/models/scannerjobs/sbsysdb.py
-msgid "Windows domain security identifier"
-msgstr "Windows-domæne SID-værdi"
-
-#: adminapp/models/scannerjobs/sbsysdb.py
 msgid "SBSYS database server"
 msgstr "SBSYS-databaseserver"
 
@@ -665,9 +653,9 @@ msgid "Ownership field"
 msgstr "Ejerskabsfelt"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-msgid "The database field to use to associate SBSYS cases with imported users."
+msgid "The user alias value to use to associate SBSYS cases with imported users."
 msgstr ""
-"Det databasefelt, der bruges til at tilknytte SBSYS-sager til importerede "
+"Den aliasværdi, der bruges til at tilknytte SBSYS-sager til importerede "
 "brugere."
 
 #: adminapp/models/scannerjobs/sbsysdb.py

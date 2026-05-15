@@ -51,7 +51,8 @@ class SBSYSDBSource(Source):
             self, server, port, db, user, password,
             *,
             reflect_tables: tuple[str, ...] | None,
-            base_weblink: str | None):
+            base_weblink: str | None,
+            owner_field: str | None = None):
         self._server = server
         self._port = port
         self._db = db
@@ -60,6 +61,7 @@ class SBSYSDBSource(Source):
         self._reflect_tables = (
                 tuple(reflect_tables) if reflect_tables else None)
         self._base_weblink = base_weblink
+        self._owner_field = owner_field
 
     @property
     def reflect_tables(self) -> Sequence[str]:
@@ -78,7 +80,8 @@ class SBSYSDBSource(Source):
         return SBSYSDBSource(
                 self._server, self._port, self._db, None, None,
                 reflect_tables=self._reflect_tables,
-                base_weblink=self._base_weblink)
+                base_weblink=self._base_weblink,
+                owner_field=self._owner_field)
 
     def _make_dp_token(self):
         return mint_cc_token(
@@ -185,7 +188,8 @@ class SBSYSDBSource(Source):
                     list(self._reflect_tables)
                     if self._reflect_tables
                     else None),
-            "base_weblink": self._base_weblink
+            "base_weblink": self._base_weblink,
+            "owner_field": self._owner_field,
         }
 
     @classmethod
@@ -197,7 +201,8 @@ class SBSYSDBSource(Source):
             "user": obj["user"],
             "password": obj["password"],
             "reflect_tables": obj.get("reflect_tables", cls._Suppress),
-            "base_weblink": obj.get("base_weblink")
+            "base_weblink": obj.get("base_weblink"),
+            "owner_field": obj.get("owner_field"),
         }
 
 
@@ -229,12 +234,16 @@ class SBSYSDBHandles:
                     yield ("datasource-creation-time",
                            OutputType.LastModified.encode_json_object(lm))
 
-                if upn := row.get("Behandler.UserPrincipalName"):
-                    yield ("user-principal-name", upn)
-                if sid := row.get("Behandler.ObjectSid"):
-                    yield ("sbsys-caseworker-sid", sid)
-                if logon := row.get("Behandler.LogonID"):
-                    yield ("windows-domain-user", logon)
+                match self.handle.source._owner_field:
+                    case "SID":
+                        if sid := row.get("Behandler.ObjectSid"):
+                            yield ("sbsys-caseworker-sid", sid)
+                    case "logon":
+                        if logon := row.get("Behandler.LogonID"):
+                            yield ("windows-domain-user", logon)
+                    case _:  # "upn" or None (backward compat)
+                        if upn := row.get("Behandler.UserPrincipalName"):
+                            yield ("user-principal-name", upn)
 
             def compute_type(self):
                 return SBSYSDBHandles.Case._DUMMY_MIME

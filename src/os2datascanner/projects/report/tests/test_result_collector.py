@@ -810,11 +810,18 @@ class TestPipelineCollector:
             },
             "fbentsen@vejstrand.dk",
         ),
+        # Standalone cases for SBSYS-emitted keys and UPN (all lowest priority)
         (
-            md | {
-                "user-principal-name": "frederik@vstkom.internal",
-            },
+            {"user-principal-name": "frederik@vstkom.internal"},
             "frederik@vstkom.internal",
+        ),
+        (
+            {"sbsys-caseworker-sid": "S-1-5-21-7765476978-8465208469-83848333-10000"},
+            "S-1-5-21-7765476978-8465208469-83848333-10000",
+        ),
+        (
+            {"windows-domain-user": "KWLSKJ"},
+            "KWLSKJ",
         ),
         ])
     def test_owner_extraction(

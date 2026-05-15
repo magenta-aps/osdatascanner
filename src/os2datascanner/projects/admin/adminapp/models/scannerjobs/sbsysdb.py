@@ -111,7 +111,8 @@ class SBSYSDBScanner(Scanner):
                 self.db_server, self.db_port, self.db_name,
                 self.grant.traditional_name, self.grant.password,
                 reflect_tables=None,  # trust the defaults
-                base_weblink=self.weblink or None)
+                base_weblink=self.weblink or None,
+                owner_field=self.owner_field)
 
     object_name = pgettext_lazy("unit of scan", "case")
     object_name_plural = pgettext_lazy("unit of scan", "cases")
