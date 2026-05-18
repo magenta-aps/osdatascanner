@@ -133,17 +133,13 @@ def message_received(  # noqa: CCR001,E501 too high cognitive complexity
 
         # Censor mail subject in handle
         if hasattr(message.handle, "_mail_subject"):
-            censored_handle = message.handle
             rules = message.scan_spec.rule.flatten()
-            censored_handle._mail_subject = censor_context(censored_handle._mail_subject, rules)
-            messages.replace(message, handle=censored_handle)
+            message.handle._mail_subject = censor_context(message.handle._mail_subject, rules)
 
         # Censor item name in handle for sharepoint lists
         if hasattr(message.handle, "_item_name"):
-            censored_handle = message.handle
             rules = message.scan_spec.rule.flatten()
-            censored_handle._item_name = censor_context(censored_handle._item_name, rules)
-            messages.replace(message, handle=censored_handle)
+            message.handle._item_name = censor_context(message.handle._item_name, rules)
 
         # Censor calendar event subject in handle
         # It's neater to match the class here since the attribute we are censoring
