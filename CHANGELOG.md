@@ -67,6 +67,9 @@
 - Fixed a bug where CPR probability results could be incorrect when the
   same date was checked with and without mod11 validation.
 
+- Fixed the distribute modal on the withheld results tab not appearing for
+  users with the `distribute_withheld_results` permission.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
