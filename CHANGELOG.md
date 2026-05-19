@@ -12,6 +12,8 @@
 
 - Scanners now have an option to send all results to remediators.
 
+- Added scaffold setup for a scan info row.
+
 ### General improvements
 
 - Upgrade rabbitMQ version to 3.13
