@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-23 15:06+0200\n"
+"POT-Creation-Date: 2026-04-27 11:10+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2260,6 +2260,17 @@ msgstr ""
 msgid "The scanner will start at the following time for the selected days:"
 msgstr "Scanneren vil starte på følgende tidspunkt på de valgte dage:"
 
+#: adminapp/templates/components/scannerjobs/card_dummy.html
+msgid "Temporary card"
+msgstr "Midlertidigt card"
+
+#: adminapp/templates/components/scannerjobs/card_dummy.html
+msgid ""
+"This is what it could look like when we know what info we want to show here."
+msgstr ""
+"Det her er hvordan det kunne se ud, når vi ved hvilken info vi gerne vil "
+"vise her."
+
 #: adminapp/templates/components/scannerjobs/modal--cleanup.html
 msgid "Clean up stale accounts"
 msgstr "Ryd op i frakoblede konti"
@@ -2487,8 +2498,16 @@ msgstr ""
 "permanent slettet."
 
 #: adminapp/templates/components/scannerjobs/scannerjobs--active.html
+msgid "Show more information about this scannerjob."
+msgstr "Vis mere information om dette scannerjob."
+
+#: adminapp/templates/components/scannerjobs/scannerjobs--active.html
 msgid "No scannerjob added"
 msgstr "Der er ikke tilføjet nogen scannerjob"
+
+#: adminapp/templates/components/scannerjobs/scannerjobs--info_row.html
+msgid "Overview for"
+msgstr "Overblik for"
 
 #: adminapp/templates/components/scannerjobs/scannerjobs--removed.html
 msgid "Type"

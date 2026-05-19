@@ -1,0 +1,43 @@
+{# scannerjobs--info_row.html #}
+
+{% load i18n l10n utility_tags %}
+
+<td colspan="{% if view.type == 'web' or view.type == 'file' %}5{% else %}4{% endif %}"
+    class="statistics statistics--scannerjobs">
+  <div class="statistics__wrapper">
+    <div class="statistics__header">
+      <h1 class="statistics__header__title">
+        {% trans "Overview for" %}
+        <span class="scannerjob-name">{{ scanner.name }}</span>
+      </h1>
+    </div>
+
+    <div class="statistics__body">
+      <section class="statistics__section statistics__section--primary-overview">
+        <div class="section__body">
+          {# Primary cards live here #}
+          <div class="section__region section__region--dummy">
+            {# Dummy cards #}
+            {% include "components/scannerjobs/card_dummy.html" %}
+          </div>
+        </div>
+      </section>
+
+      <section class="statistics__section statistics__section--secondary-overview">
+        <div class="section__body">{# Secondary cards live here #}</div>
+      </section>
+    </div>
+
+    <div class="statistics__footer"></div>
+  </div>
+
+  {% comment %}
+    {# Leaving this loading element commented out, because it's a part of our standard layout, but it won't work until there's actual data to load. #}
+    
+    <div class="loading">
+      <svg class="relative page-indicator" id="report-page-indicator" viewbox="0 0 100 100">
+        <circle id="circle" cx="50" cy="50" r="45"></circle>
+      </svg>
+    </div>
+  {% endcomment %}
+</td>

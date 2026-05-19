@@ -73,7 +73,7 @@
           <span>{% trans "Send notification" %}</span>
         </a>
 
-        <button type="button" class="overview-expand button button--caret-button" aria-label="{% trans "Show/hide overview" %}" title="{% trans "Show/hide overview" %}">
+        <button type="button" class="overview-expand toggleInfoRow button button--caret-button" aria-label="{% trans "Show/hide overview" %}" title="{% trans "Show/hide overview" %}">
           <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
         </button>
       </div>
@@ -81,7 +81,8 @@
   </td>
 </tr>
 
-<tr class="user-overview datatablex__row" hidden>
+<tr class="user-overview datatablex__row datatablex__row--expanded expandableInfoRow"
+    hidden>
   <td colspan="{{ num_cols }}">
     <div class="overview_wrapper"
          hx-get="{% url 'statistics-user-id' employee.uuid %}"

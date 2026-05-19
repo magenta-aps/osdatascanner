@@ -991,6 +991,17 @@ $font-size_subtitle: 0.875rem;
     }
   }
 
+  &__row--expanded {
+    // Adding appropriate styling to the expanded row only.
+    box-shadow: inset 4px 0 0 var(--color-primary);
+    background-color: rgba(0, 0, 0, 0.035);
+
+    > td {
+      padding: calc(var(--datatable-cell-padding) / 2)
+        var(--datatable-cell-padding);
+    }
+  }
+
   .column {
     width: auto;
     /* Sets all column widths to auto unless otherwise specified. */
@@ -1076,6 +1087,12 @@ $font-size_subtitle: 0.875rem;
       // Typography
       text-align: center;
       font-style: italic;
+    }
+
+    &--actions {
+      #expand_more {
+        color: var(--color-primary-dark);
+      }
     }
   }
 
@@ -1661,7 +1678,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         think it's worth waiting until after we've refactored all datatables */
         flex-wrap: nowrap;
 
-        .button {
+        .button:not(:has(#expand_more)) {
           .material-symbols,
           .material-symbols-outlined {
             color: var(--color-primary-dark);
@@ -2013,51 +2030,30 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       .button-group {
         flex-wrap: nowrap;
       }
-
-      #expand_more {
-        // The caret icon
-        color: var(--color-primary-dark);
-      }
     }
   }
 
-  .datatablex__row--expanded {
-    /* NOTE: Not sure if this should live here permanently. It's behaviour/styles we might wanna
-    reuse in other datatables. */
+  .matches-list {
+    &__column {
+      width: auto;
 
-    > td {
-      padding: calc(var(--datatable-cell-padding) / 2)
-        var(--datatable-cell-padding);
-    }
+      &--match {
+        min-width: 30%;
 
-    // Adding appropriate styling to the expanded row only.
-    &.matches-list {
-      box-shadow: inset 4px 0 0 var(--color-primary);
-      background-color: rgba(0, 0, 0, 0.035);
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        -ms-word-break: break-all;
+        word-break: break-all;
+      }
 
-      .matches-list {
-        &__column {
-          width: auto;
+      &--probability {
+        max-width: 7.5rem; // 120px, fits the width of the <th> content.
+        text-align: right;
+      }
 
-          &--match {
-            min-width: 30%;
-
-            overflow-wrap: break-word;
-            word-wrap: break-word;
-            -ms-word-break: break-all;
-            word-break: break-all;
-          }
-
-          &--probability {
-            max-width: 7.5rem; // 120px, fits the width of the <th> content.
-            text-align: right;
-          }
-
-          &--show-more-matches {
-            padding-left: 0; // Align button inside with left side.
-            padding-top: 2rem; // Add visual space between button and rows above.
-          }
-        }
+      &--show-more-matches {
+        padding-left: 0; // Align button inside with left side.
+        padding-top: 2rem; // Add visual space between button and rows above.
       }
     }
   }
@@ -2148,20 +2144,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       .button-group {
         flex-wrap: nowrap;
         justify-content: flex-end;
-
-        #expand_more {
-          // The caret icon that expands the "hidden" <tr>
-          color: var(--color-primary-dark);
-        }
       }
-    }
-  }
-
-  .datatablex__row {
-    // Adding appropriate styling to the expanded row only.
-    &.user-overview {
-      box-shadow: inset 4px 0 0 var(--color-primary);
-      background-color: rgba(0, 0, 0, 0.035);
     }
   }
 }

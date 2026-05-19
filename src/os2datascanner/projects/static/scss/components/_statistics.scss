@@ -1023,7 +1023,8 @@ $statistics-card-spacing: 1.5rem;
 }
 
 /*** Variants/modifiers ***/
-.statistics--scanstatus {
+.statistics--scanstatus,
+.statistics--scannerjobs {
   .statistics__header__title:is(h1) {
     font-size: medium;
   }
@@ -1182,6 +1183,13 @@ $statistics-card-spacing: 1.5rem;
       @include layout-vertical(1.5rem);
       flex-grow: 1;
     }
+  }
+}
+
+.statistics--scannerjobs {
+  // Temporary:
+  .section__region--dummy {
+    width: 30%;
   }
 }
 

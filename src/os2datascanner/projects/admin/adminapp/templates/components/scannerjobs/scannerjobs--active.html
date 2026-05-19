@@ -1,5 +1,10 @@
 {% extends "scannerjobs.html" %}
-{% load i18n humanize utility_tags %}
+{% load i18n humanize utility_tags static %}
+
+{% block scripts %}
+  {{ block.super }}
+  <script src="{% static 'js/tables/tableBehavior.js' %}"></script>
+{% endblock scripts %}
 
 {% block aside_extra %}
   {% if perms.os2datascanner.add_scanner %}
@@ -220,9 +225,23 @@
                         </button>
                       </form>
                     {% endif %}
+
+                    {% if settings.ENABLE_SCANNERJOB_INFO_ROW %}
+                      <button class="scanner-settings-expand toggleInfoRow button button--caret-button"
+                              aria-label="{% trans "Show more information about this scannerjob." %}"
+                              title="{% trans "Show more information about this scannerjob." %}"
+                              type="button">
+                        <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                      </button>
+                    {% endif %}
                   </div>
                 </td>
               </tr>
+
+              {% if settings.ENABLE_SCANNERJOB_INFO_ROW %}
+                <tr class="datatablex__row datatablex__row--expanded expandableInfoRow"
+                    hidden>{% include "components/scannerjobs/scannerjobs--info_row.html" %}</tr>
+              {% endif %}
             {% endfor %}
           </tbody>
         </table>

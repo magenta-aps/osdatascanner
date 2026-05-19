@@ -126,7 +126,7 @@
                       </button>
                     </form>
                   {% endif %}
-                  <button class="timelines-expand button button--caret-button"
+                  <button class="timelines-expand toggleInfoRow button button--caret-button"
                           aria-label="{% trans 'Show/hide timeline' %}"
                           title="{% trans 'Show/hide timeline' %}"
                           type="button">
@@ -140,7 +140,7 @@
                 {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
               {% if status.message and status.status_is_error %}<td colspan="4">{{ status.message }}</td>{% endif %}
             </tr>
-            <tr class="statistic_row" hidden>
+            <tr class="statistic_row expandableInfoRow" hidden>
               <td colspan="7"
                   hx-get="{% url 'status-timeline' status.pk %}"
                   hx-trigger="intersect"
