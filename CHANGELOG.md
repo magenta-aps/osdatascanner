@@ -16,7 +16,7 @@
 
 ### General improvements
 
-- Upgrade rabbitMQ version to 3.13
+- Upgrade RabbitMQ version to 3.13
 
 - The development environment now uses keycloak 26.6.0, which allows for realm renaming.
 
@@ -85,6 +85,19 @@
 
 - MIME types for MSGraphFile resources are now trusted from Graph-API metadata, resulting in 
   performance gains, by not having to download given file(s) multiple times.
+
+- OCR conversions, PDF preprocessing, and PDF page extraction now run
+   in isolated subprocesses with enforced timeouts, so a segfault or
+   hang in `pymupdf`/MuPDF/Tesseract can no longer take down the engine
+   worker. A new `pdf_clean_timeout` setting (default 15 minutes)
+   governs how long the cleaning step is allowed to run before it's
+   killed.
+
+- Transient exploration failures of derived sources, such as PDF
+  preprocessing timeouts, now produce a `ScheduledCheckup` (and where possible,
+  set a path on `UserErrorLog`s) so the failing object is retried on the next scan. 
+  The checkup is automatically cleaned up once a descendant of the source has been
+  successfully scanned.
 
 ## Version 3.31.3, 14th April 2026
 

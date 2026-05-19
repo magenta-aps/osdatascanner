@@ -5,10 +5,13 @@
 
 import io
 import mimetypes
+import os
 import string
+import sys
+from subprocess import DEVNULL
 import structlog
 from tempfile import TemporaryDirectory
-import pymupdf
+from os2datascanner.utils.system_utilities import run_custom
 from ... import settings as engine2_settings
 from ...utilities.i18n import gettext as _
 from ..core import Handle, Resource, Source
@@ -16,6 +19,7 @@ from .derived import DerivedSource
 from .utilities.extraction import (should_skip_images,
                                    MD5DeduplicationFilter,
                                    TinyImageFilter)
+from .utilities.pdf_open import open_pdf_wrapped
 
 logger = structlog.get_logger("engine2")
 
@@ -24,13 +28,11 @@ PAGE_TYPE = "application/x.os2datascanner.pdf-page"
 WHITESPACE_PLUS = string.whitespace + "\udcc0\udc80"
 
 
-def _open_pdf_wrapped(obj):
-    pdf = pymupdf.open(obj)
-    if pdf.is_encrypted:
-        # Some PDFs are "encrypted" with an empty password: give that a shot...
-        if pdf.authenticate("") == 0:
-            raise RuntimeError("Failed to decrypt PDF")
-    return pdf
+# Invoked by filesystem path (not`python -m ...`) so the subprocesses
+# don't have to run engine2's package-init every time.
+_CLI_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utilities")
+_PDF_CLEAN_CLI = os.path.join(_CLI_DIR, "_pdf_clean_cli.py")
+_PDF_PAGE_EXTRACT_CLI = os.path.join(_CLI_DIR, "_pdf_page_extract_cli.py")
 
 
 @Source.mime_handler("application/pdf")
@@ -40,28 +42,38 @@ class PDFSource(DerivedSource):
     def _generate_state(self, sm):
         with self.handle.follow(sm).make_path() as path:
             # Explicitly download the file here for the sake of PDFPageSource,
-            if engine2_settings.pdf["PREPROCESS_PDF"]:
-                with TemporaryDirectory() as outputdir:
-                    logger.info("Starting preprocessing PDF!", path=path, outputdir=outputdir)
-                    converted_path = "{0}/ez_save.pdf".format(outputdir)
-                    pdf = pymupdf.open(path)
-                    pdf.ez_save(converted_path, clean=True)
-                    pdf.close()
-                    logger.info("Finished preprocessing PDF!",
-                                converted_path=converted_path)
-                    yield converted_path
-            else:
+
+            if not engine2_settings.pdf["PREPROCESS_PDF"]:
                 yield path
+                return
+
+            with TemporaryDirectory() as outputdir:
+                logger.info(
+                        "Starting preprocessing PDF!",
+                        path=path, outputdir=outputdir)
+                converted_path = f"{outputdir}/ez_save.pdf"
+
+                run_custom(
+                        [sys.executable, _PDF_CLEAN_CLI, path, converted_path],
+                        stdout=DEVNULL, stderr=DEVNULL,
+                        timeout=engine2_settings.subprocess["pdf_clean_timeout"],
+                        kill_group=True, isolate_tmp=True, check=True)
+
+                logger.info(
+                        "Finished preprocessing PDF!",
+                        converted_path=converted_path)
+
+                yield converted_path
 
     def handles(self, sm, **kwargs):
-        pdf = _open_pdf_wrapped(sm.open(self))
+        pdf = open_pdf_wrapped(sm.open(self))
         for page_num in range(len(pdf)):
             yield PDFPageHandle(self, str(page_num + 1))
 
 
 class PDFPageResource(Resource):
     def _generate_metadata(self):
-        pdf = _open_pdf_wrapped(self._sm.open(self.handle.source))
+        pdf = open_pdf_wrapped(self._sm.open(self.handle.source))
         # Some PDF authoring tools helpfully stick null bytes into the
         # author field. Make sure we remove these
         author = pdf.metadata.get("author", "").strip(WHITESPACE_PLUS)
@@ -72,7 +84,7 @@ class PDFPageResource(Resource):
     def check(self) -> bool:
         page = int(self.handle.relative_path)
         with self.handle.source._make_stream(self._sm) as fp:
-            reader = _open_pdf_wrapped(fp)
+            reader = open_pdf_wrapped(fp)
             return 0 < page <= len(reader)
 
     def compute_type(self):
@@ -121,31 +133,24 @@ class PDFPageSource(DerivedSource):
         # produces a dictionary mapping virtual filenames to their
         # byte content. This avoids writing temporary files to disk.
         page = int(self.handle.relative_path) - 1
-        pdf = pymupdf.open(sm.open(self.handle.source))
-        extracted_data = {}
-        pdf_page = pdf[page]
+        skip_images = should_skip_images(sm.configuration)
+        path = sm.open(self.handle.source)
 
-        # 1. Extract text into memory
-        text = pdf_page.get_text("text")
-        if text:
-            extracted_data["page.txt"] = text.encode("utf-8")
+        extracted_data: dict[str, bytes] = {}
+        with TemporaryDirectory() as outputdir:
+            run_custom(
+                    [sys.executable, _PDF_PAGE_EXTRACT_CLI,
+                     path, str(page),
+                     # 1/0 are True/False for the CLI.
+                     "1" if skip_images else "0", outputdir],
+                    stdout=DEVNULL, stderr=DEVNULL,
+                    timeout=engine2_settings.subprocess["timeout"],
+                    kill_group=True, isolate_tmp=True, check=True)
 
-        if not should_skip_images(sm.configuration):
-            # 2. Extract images into memory
-            for img_index, img_info in enumerate(pdf_page.get_images(full=True)):
-                xref = img_info[0]
-                base_image = pdf.extract_image(xref)
-                if not base_image:
-                    continue
+            for name in os.listdir(outputdir):
+                with open(os.path.join(outputdir, name), "rb") as f:
+                    extracted_data[name] = f.read()
 
-                image_bytes = base_image["image"]
-                image_ext = base_image["ext"]
-                image_filename = f"image-{img_index + 1}.{image_ext}"
-                extracted_data[image_filename] = image_bytes
-
-        pdf.close()
-
-        # Apply filters to the in-memory data before yielding
         filtered_data = MD5DeduplicationFilter.apply_dict(extracted_data)
         filtered_data = TinyImageFilter.apply_dict(filtered_data)
         yield filtered_data

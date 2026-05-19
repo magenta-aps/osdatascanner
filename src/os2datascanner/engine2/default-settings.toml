@@ -43,6 +43,8 @@ AMQP_VHOST = "/"
 [subprocess]
 # The maximum runtime allowed for an external tool (in seconds)
 timeout = 45
+# Timeout specifically for PymuPDF pre-processing (in seconds)
+pdf_clean_timeout = 900
 
 [tesseract]
 # Extra arguments to be added to the Tesseract command line, if any

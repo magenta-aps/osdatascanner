@@ -122,14 +122,13 @@ class TestEngine2Conversion:
 
 class TestAbortableOCR:
     def test_tesseract_pymupdf_returns_none_when_aborted_before_start(self, monkeypatch):
-        """tesseract_pymupdf() must return None without touching the image bytes
-        when the abort check fires. But since it currently catches exceptions and returns None,
-        monkeypatch it to raise SystemExit here for test purposes."""
-        def _no_pixmap(*a, **kw):
-            raise SystemExit("Pixmap should not be constructed when aborting")
+        """tesseract_pymupdf() must return None without spawning the OCR
+        subprocess when the abort check fires."""
+        def _no_run(*a, **kw):
+            raise SystemExit("OCR subprocess should not be spawned when aborting")
         monkeypatch.setattr(
-            "os2datascanner.engine2.conversions.text.ocr.pymupdf.Pixmap",
-            _no_pixmap)
+            "os2datascanner.engine2.conversions.text.ocr.run_custom",
+            _no_run)
 
         token = current_abort_check.set(lambda: True)
         try:

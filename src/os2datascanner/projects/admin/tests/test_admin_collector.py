@@ -9,6 +9,8 @@ from django.db import transaction
 from django.db.utils import DataError
 
 from os2datascanner.engine2.pipeline import messages
+from os2datascanner.engine2.model.derived.filtered import (
+    FilteredHandle, GzipSource)
 
 from ..adminapp.management.commands import checkup_collector
 from ..adminapp.management.commands.checkup_collector import (
@@ -106,6 +108,81 @@ class TestPipelineCollector:
         sc = ScheduledCheckup.objects.get(scanner=basic_scanner)
         for hint in ("fresh", "last_modified",):
             assert sc.handle.hint(hint) is None
+
+    def test_descendant_match_clears_problem_origin_ancestor_checkup(
+            self, basic_scanner, file_handle, basic_rule, basic_scan_tag):
+        """A MatchesMessage at a descendant handle clears a problem-origin
+        (interested_after=None) ScheduledCheckup at an ancestor handle."""
+
+        descendant_handle = FilteredHandle(GzipSource(file_handle), "inner")
+
+        ancestor_checkup = ScheduledCheckup.objects.create(
+                handle_representation=file_handle.to_json_object(),
+                interested_after=None,
+                scanner=basic_scanner,
+                path=file_handle.censor().crunch(hash=True))
+
+        scan_spec = messages.ScanSpecMessage(
+                scan_tag=basic_scan_tag,
+                source=file_handle.source,
+                rule=basic_rule.make_engine2_rule(),
+                configuration={},
+                filter_rule=None,
+                progress=None)
+        matches_msg = messages.MatchesMessage(
+                scan_spec=scan_spec,
+                handle=descendant_handle,
+                matched=False,
+                matches=[])
+
+        with transaction.atomic():
+            checkup_collector.update_scheduled_checkup(
+                    handle=descendant_handle.censor(),
+                    message=matches_msg,
+                    scan_time=basic_scan_tag.time,
+                    scanner=basic_scanner,
+                    ss=None)
+
+        assert not ScheduledCheckup.objects.filter(
+                pk=ancestor_checkup.pk).exists()
+
+    def test_descendant_match_preserves_match_origin_ancestor_checkup(
+            self, basic_scanner, file_handle, basic_rule, basic_scan_tag):
+        """A MatchesMessage at a descendant handle must NOT clear an
+        ancestor checkup whose interested_after is set (match-origin):
+        a real match was once recorded at that handle, so its checkup
+        is still very relevant."""
+        descendant_handle = FilteredHandle(GzipSource(file_handle), "inner")
+
+        ancestor_checkup = ScheduledCheckup.objects.create(
+                handle_representation=file_handle.to_json_object(),
+                interested_after=basic_scan_tag.time,
+                scanner=basic_scanner,
+                path=file_handle.censor().crunch(hash=True))
+
+        scan_spec = messages.ScanSpecMessage(
+                scan_tag=basic_scan_tag,
+                source=file_handle.source,
+                rule=basic_rule.make_engine2_rule(),
+                configuration={},
+                filter_rule=None,
+                progress=None)
+        matches_msg = messages.MatchesMessage(
+                scan_spec=scan_spec,
+                handle=descendant_handle,
+                matched=False,
+                matches=[])
+
+        with transaction.atomic():
+            checkup_collector.update_scheduled_checkup(
+                    handle=descendant_handle.censor(),
+                    message=matches_msg,
+                    scan_time=basic_scan_tag.time,
+                    scanner=basic_scanner,
+                    ss=None)
+
+        assert ScheduledCheckup.objects.filter(
+                pk=ancestor_checkup.pk).exists()
 
     def test_retro_checkup_message(self, basic_scanner, positive_web_match_message):
         """A message with an outdated scan tag format should still be able to
