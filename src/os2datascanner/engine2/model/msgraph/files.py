@@ -3,7 +3,6 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from io import BytesIO
 from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
@@ -12,6 +11,7 @@ from datetime import datetime, timezone
 from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource, FileResource
 from ..derived.derived import DerivedSource
+from ..utilities.temp_resource import NamedTemporaryResource
 from .utilities import MSGraphSource, warn_on_httperror
 from ...rules.rule import Rule
 
@@ -280,12 +280,30 @@ class MSGraphFileResource(FileResource):
     def get_size(self):
         return self.get_file_metadata()["size"]
 
+    def compute_type(self):
+        # Trust Graph's reported MIME type instead of downloading the file
+        # just to feed 512 bytes to libmagic.
+        mime_type = self.get_file_metadata().get("file", {}).get("mimeType")
+        if mime_type:
+            return mime_type
+        return self.handle.guess_type()
+
+    DOWNLOAD_CHUNK_SIZE = 1024 * 1024 * 2  # 2MiB
+
     @contextmanager
-    def make_stream(self):
-        response = self._get_cookie().get(
-                self.make_object_path() + ":/content")
-        with BytesIO(response.content) as fp:
-            yield fp
+    def make_path(self):
+        with NamedTemporaryResource(self.handle.name) as ntr:
+            response = self._get_cookie().get(
+                    self.make_object_path() + ":/content", stream=True)
+            try:
+                with ntr.open("wb") as f:
+                    for chunk in response.iter_content(
+                            chunk_size=self.DOWNLOAD_CHUNK_SIZE):
+                        if chunk:
+                            f.write(chunk)
+            finally:
+                response.close()
+            yield ntr.get_path()
 
 
 class MSGraphFileHandle(Handle):
