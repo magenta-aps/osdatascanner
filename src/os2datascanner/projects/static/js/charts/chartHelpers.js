@@ -1,5 +1,3 @@
-// REFACTOR NOTE: This is where chart specific helpers should live.
-
 /* exported stepSizeFunction, resetZoomHighest, resetZoomDevelopment, avoidZero */
 
 // Step size function
@@ -7,6 +5,7 @@
 // steps = how many steps on y-axis ( 0 doesn't count)
 var stepSizeFunction = function (array, steps) {
   "use strict";
+  if (array.length === 0) { return 0.1; }
   return (Math.ceil(Math.max.apply(null, array) / 100) * 100) / steps;
 };
 
@@ -16,10 +15,6 @@ var avoidZero = function (a, b) {
   "use strict";
   return isNaN((a / b) * 100) ? 0 + "%" : ((a / b) * 100).toFixed(0) + "%";
 };
-
-// Set default animation duration on charts - this can be changed for each chart if needed.
-Chart.defaults.animation.easing = "easeOutQuad";
-Chart.defaults.animation.duration = 1700;
 
 function drawCharts() {
   // json_script solution - Safe from in-page script execution

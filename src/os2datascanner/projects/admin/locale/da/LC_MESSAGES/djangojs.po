@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-20 14:39+0100\n"
+"POT-Creation-Date: 2026-04-15 13:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,24 +17,24 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: dist/js/charts/analysis/analysisBar-ChartJS3.js
+#: dist/js/charts/analysis/analysisBarCharts.js
 #: dist/js/charts/analysis/analysisChartWrapper.js
-#: js/charts/analysis/analysisBar-ChartJS3.js
+#: js/charts/analysis/analysisBarCharts.js
 #: js/charts/analysis/analysisChartWrapper.js
 msgid "Number of files"
 msgstr "Antal filer"
 
-#: dist/js/charts/analysis/analysisBar-ChartJS3.js
-#: dist/js/charts/analysis/analysisPie-ChartJS3.js
-#: js/charts/analysis/analysisBar-ChartJS3.js
-#: js/charts/analysis/analysisPie-ChartJS3.js
+#: dist/js/charts/analysis/analysisBarCharts.js
+#: dist/js/charts/analysis/analysisPieCharts.js
+#: js/charts/analysis/analysisBarCharts.js
+#: js/charts/analysis/analysisPieCharts.js
 msgid "file"
 msgstr "fil"
 
-#: dist/js/charts/analysis/analysisBar-ChartJS3.js
-#: dist/js/charts/analysis/analysisPie-ChartJS3.js
-#: js/charts/analysis/analysisBar-ChartJS3.js
-#: js/charts/analysis/analysisPie-ChartJS3.js
+#: dist/js/charts/analysis/analysisBarCharts.js
+#: dist/js/charts/analysis/analysisPieCharts.js
+#: js/charts/analysis/analysisBarCharts.js
+#: js/charts/analysis/analysisPieCharts.js
 msgid "files"
 msgstr "filer"
 
@@ -43,18 +43,13 @@ msgstr "filer"
 msgid "Storage space"
 msgstr "Opbevaringsplads"
 
-#: dist/js/charts/barCharts.js dist/js/charts/lineCharts.js
-#: js/charts/barCharts.js js/charts/lineCharts.js
+#: dist/js/charts/chartPlugins.js js/charts/chartPlugins.js
 msgid "No data available"
 msgstr "Ingen tilgængelig data"
 
 #: dist/js/charts/doughnutCharts.js dist/js/charts/pieCharts.js
 #: js/charts/doughnutCharts.js js/charts/pieCharts.js
 msgid "No data"
-msgstr "Ingen data"
-
-#: dist/js/charts/pieCharts.js js/charts/pieCharts.js
-msgid "No Data"
 msgstr "Ingen data"
 
 #: dist/js/forms/clearUploadedFile.js js/forms/clearUploadedFile.js
