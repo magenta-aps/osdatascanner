@@ -77,6 +77,8 @@
 - Fixed a bug where the active tab highlight was lost on the scan status
   page after HTMX partial updates.
 
+- Fixed a bug where the close button in the miniscanner's "show rules" modal did not close the modal.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"
