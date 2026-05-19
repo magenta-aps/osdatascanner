@@ -107,7 +107,7 @@ function makeLineChart(xdata, ydata, chartElement, xLabel = "", swapXY = false, 
 				}
 			},
 		},
-		plugins: [makeNoDataPlugin(ydata.length === 0)],
+		plugins: [...(ydata.length === 0 ? [noDataPlugin] : [])],
 	});
 
 	return lineChart;

@@ -85,7 +85,7 @@ function drawTimelines(snapshotData, pk) {
           },
         },
       },
-      plugins: [makeNoDataPlugin(snapshotData.length === 0)],
+      plugins: [...(snapshotData.length === 0 ? [noDataPlugin] : [])],
     });
   }
 }

@@ -77,7 +77,7 @@ function makeBarChart(chartLabels, chartDatasets, chartElement, swapXY = false, 
 				}
 			},
 		},
-		plugins: [chartAreaBorderPlugin, makeNoDataPlugin(chartDatasets.length === 0)],
+		plugins: [chartAreaBorderPlugin, ...(chartDatasets.length === 0 ? [noDataPlugin] : [])],
     });
 
     return barChart;

@@ -1,6 +1,6 @@
 // This is where chart.js specific plugins live.
 
-/* exported chartAreaBorderPlugin, makeNoDataPlugin */
+/* exported chartAreaBorderPlugin, noDataPlugin */
 
 const chartAreaBorderPlugin = {
 	id: "chartAreaBorder",
@@ -16,17 +16,14 @@ const chartAreaBorderPlugin = {
 	}
 };
 
-function makeNoDataPlugin(isEmpty) {
-	if (!isEmpty) { return {}; }
-	return {
-		id: "noData",
-		afterDatasetsDraw(chart) {
-			const {ctx, chartArea: {left, top, width, height}} = chart;
-			ctx.save();
-			ctx.font = "bold 20px sans-serif";
-			ctx.textAlign = "center";
-			ctx.fillText(gettext("No data available"), left + width / 2, top + height / 2);
-			ctx.restore();
-		}
-	};
-}
+const noDataPlugin = {
+	id: "noData",
+	afterDatasetsDraw(chart) {
+		const {ctx, chartArea: {left, top, width, height}} = chart;
+		ctx.save();
+		ctx.font = "bold 20px sans-serif";
+		ctx.textAlign = "center";
+		ctx.fillText(gettext("No data available"), left + width / 2, top + height / 2);
+		ctx.restore();
+	}
+};
