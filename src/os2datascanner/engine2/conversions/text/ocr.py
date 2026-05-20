@@ -4,10 +4,10 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+import sys
 import structlog
-from subprocess import PIPE, DEVNULL
-import pymupdf
-
+from subprocess import PIPE, DEVNULL, CalledProcessError, TimeoutExpired
+from tempfile import TemporaryDirectory
 from ... import settings as engine2_settings
 from ....utils.system_utilities import run_custom
 from ..abort import current_abort_check
@@ -16,60 +16,57 @@ from ..registry import conversion
 
 logger = structlog.get_logger("engine2")
 
+# Absolute path to the OCR CLI worker. Invoked by filesystem path (not
+# `python -m ...`) so the subprocess doesn't have to run engine2's package-init every time.
+_OCR_CLI = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                        "utilities", "_ocr_cli.py")
+
 
 def tesseract_pymupdf(image_bytes, filetype=None):
-    """
-    Performs OCR on in-memory image bytes using pymupdf's Tesseract bindings.
-    It automatically downscales large images to improve performance.
+    """Performs OCR on in-memory image bytes via a subprocess pymupdf
+    worker.
 
-    Checks current_abort_check before and during pixmap preparation. Note that
-    once pdfocr_tobytes() is called, it cannot be interrupted, the abort check
-    prevents starting OCR on an already-cancelled scan but does not kill
-    in-progress OCR.
-    """
+    The actual Tesseract/MuPDF work happens in a subprocess so that f.e. a
+    segfault in either library cannot kill the engine2 worker.
 
-    # Check if the scan has been cancelled before we start processing the image
+    Timeout and process-group cleanup are enforced by run_custom().
+    """
     should_abort = current_abort_check.get()
     if should_abort and should_abort():
         return None
 
-    try:
-        logger.info("Running tesseract with pymupdf")
-        # Create a Pixmap object from the image bytes
-        pix = pymupdf.Pixmap(image_bytes)
+    logger.info("Running tesseract with pymupdf (in a subprocess)")
+    with TemporaryDirectory() as tmpdir:
+        in_path = os.path.join(tmpdir, "in.bin")
+        out_path = os.path.join(tmpdir, "out.txt")
+        with open(in_path, "wb") as f:
+            f.write(image_bytes)
 
-        # Check dimensions and downscale if necessary
-        if pix.width > 2000 or pix.height > 2000:
-            pix.shrink(1)
+        try:
+            run_custom(
+                    # in_path and out_path are arguments to the OCR cli.
+                    [sys.executable, _OCR_CLI, in_path, out_path],
+                    stdout=DEVNULL, stderr=DEVNULL,
+                    timeout=engine2_settings.subprocess["timeout"],
+                    kill_group=True, isolate_tmp=True, check=True,
+                    env=os.environ | {"OMP_THREAD_LIMIT": "1"})
+        except (CalledProcessError, TimeoutExpired) as e:
+            # TODO: I'm not sure if this is always right, but it's what our testsuite expects.
+            # See test_corrupted_ocr in test_images.py.
 
-        # Tesseract needs RGB or RGBA to function properly, so convert if needed
-        if pix.colorspace.n < 3:  # n=1 for grayscale, n=3 for RGB, n=4 for RGBA
-            pix = pymupdf.Pixmap(pymupdf.csRGB, pix)
-
-        # Tesseract also can't handle an alpha channel - remove if needed.
-        if pix.alpha:
-            pix = pymupdf.Pixmap(pix, 0)
-
-        # Check if the scan has been cancelled again - just before we hand it off to Tesseract.
-        if should_abort and should_abort():
+            # Corrupted image, segfault inside pymupdf/Tesseract, or a hang:
+            # treat as "this image isn't OCRable" rather than failing the whole
+            # conversion.
+            logger.warning(
+                    "OCR subprocess failed", filetype=filetype, exc_info=e)
             return None
 
-        # Create a 1-page PDF in memory with an OCR text layer
-        ocr_pdf_bytes = pix.pdfocr_tobytes(
-            language="dan+eng"
-        )
+        with open(out_path, "rb") as f:
+            # errors=replace inserts "U+FFFD" on invalid bytes instead of crashing.
+            # I guess that's more reasonable than crashing in OCR context.
+            text = f.read().decode("utf-8", errors="replace").strip()
 
-        with pymupdf.open("pdf", ocr_pdf_bytes) as ocr_doc:
-            ocr_result = ocr_doc[0].get_text().strip()
-            if ocr_result:
-                return ocr_result
-            else:
-                return None
-
-    except Exception as e:
-        logger.warning(f"OCR failed for image stream (type: {filetype}): {e}")
-        # If pymupdf fails to process the image, return None
-        return None
+    return text or None
 
 
 def tesseract_cli(path, dest="stdout", *args):

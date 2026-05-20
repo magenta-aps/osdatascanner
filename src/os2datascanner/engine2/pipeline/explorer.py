@@ -129,7 +129,8 @@ def message_received(  # noqa: CCR001
                         " {server}, but source not found")
 
         yield messages.ProblemMessage(
-                scan_tag=message.scan_tag, source=message.source, handle=None,
+                scan_tag=message.scan_tag, source=message.source,
+                handle=getattr(message.source, "handle", None),
                 message=exp_fmt.format(**exp_args))
         log.warning(
                 "finished unsuccessfully",

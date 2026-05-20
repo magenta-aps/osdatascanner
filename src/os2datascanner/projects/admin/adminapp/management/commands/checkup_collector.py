@@ -52,6 +52,8 @@ def create_usererrorlog(
         path = str(message.handle)
     elif message.handle and message.handle.presentation_name:
         path = message.handle.presentation_name
+    elif source_handle := getattr(message.source, "handle", None):
+        path = str(source_handle)
     else:
         path = ""
 
@@ -143,6 +145,30 @@ def checkup_message_received_raw(body):
 
 def update_scheduled_checkup(  # noqa: CCR001 E501
         handle, message, scan_time, scanner, ss: ScanStatus):
+
+    if isinstance(message, messages.MatchesMessage):
+        # A MatchesMessage at this handle implies the source(s) above it
+        # were explored successfully. Delete any problem-origin
+        # ScheduledCheckup recorded at an ancestor handle. The exploration
+        # error that produced it is no longer happening.
+        # We distinguish problem-origin from match-origin rows by
+        # "interested_after", if it's None, we're certain it originated from a problem.
+        # every match-related path sets it to scan_time.
+        ancestor_paths = [
+                h.crunch(hash=True)
+                for h in handle.walk_up() if h != handle]
+        if ancestor_paths:
+            deleted, _ = ScheduledCheckup.objects.filter(
+                    scanner=scanner,
+                    path__in=ancestor_paths,
+                    interested_after__isnull=True,
+            ).delete()
+            if deleted:
+                logger.info(
+                        "Descendant succeeded,"
+                        " deleted ancestor problem-origin checkup(s)",
+                        handle=str(handle), deleted=deleted)
+
     locked_qs = ScheduledCheckup.objects.select_for_update(
         of=('self',)
     ).filter(
