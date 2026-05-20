@@ -79,6 +79,13 @@
 
 - Fixed a bug where the close button in the miniscanner's "show rules" modal did not close the modal.
 
+- MSGraphFile (OneDrive/Sharepoint) resources no longer buffer entire files in memory before
+  processing, but instead streams in chunks to temporary files, preventing potential out-of-memory
+  errors.
+
+- MIME types for MSGraphFile resources are now trusted from Graph-API metadata, resulting in 
+  performance gains, by not having to download given file(s) multiple times.
+
 ## Version 3.31.3, 14th April 2026
 
 "The Future's Bright"

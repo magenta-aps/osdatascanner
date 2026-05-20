@@ -7,6 +7,7 @@ from contextlib import contextmanager
 from dateutil.parser import isoparse
 from requests import HTTPError
 from datetime import datetime, timezone
+from typing import override
 
 from ...utilities.i18n import gettext as _
 from ..core import Handle, Source, Resource, FileResource
@@ -248,6 +249,7 @@ class MSGraphFileResource(FileResource):
         super().__init__(sm, handle)
         self._metadata = None
 
+    @override
     def _generate_metadata(self):
         msgraph_metadata = self.get_file_metadata()
         yield "msgraph-owner-account", msgraph_metadata["createdBy"]["user"]["email"]
@@ -255,6 +257,7 @@ class MSGraphFileResource(FileResource):
         yield "msgraph-last-modified-date-time", msgraph_metadata["lastModifiedDateTime"]
         yield from super()._generate_metadata()
 
+    @override
     def check(self) -> bool:
         try:
             self._get_cookie().get(self.make_object_path())
@@ -273,13 +276,16 @@ class MSGraphFileResource(FileResource):
             self._metadata = self._get_cookie().get(self.make_object_path()).json()
         return self._metadata
 
+    @override
     def get_last_modified(self):
         timestamp = self.get_file_metadata().get("lastModifiedDateTime")
         return isoparse(timestamp) if timestamp else None
 
+    @override
     def get_size(self):
         return self.get_file_metadata()["size"]
 
+    @override
     def compute_type(self):
         # Trust Graph's reported MIME type instead of downloading the file
         # just to feed 512 bytes to libmagic.
@@ -290,6 +296,7 @@ class MSGraphFileResource(FileResource):
 
     DOWNLOAD_CHUNK_SIZE = 1024 * 1024 * 2  # 2MiB
 
+    @override
     @contextmanager
     def make_path(self):
         with NamedTemporaryResource(self.handle.name) as ntr:
