@@ -24,8 +24,9 @@ from .utilities.pdf_open import open_pdf_wrapped
 logger = structlog.get_logger("engine2")
 
 PAGE_TYPE = "application/x.os2datascanner.pdf-page"
-# Pymupdf replaces nullbytes with "\udcc0\udc80"
-WHITESPACE_PLUS = string.whitespace + "\udcc0\udc80"
+# pymupdf may return null bytes either raw ("\0") or as
+# "\udcc0\udc80".
+WHITESPACE_PLUS = string.whitespace + "\0" + "\udcc0\udc80"
 
 
 # Invoked by filesystem path (not`python -m ...`) so the subprocesses
