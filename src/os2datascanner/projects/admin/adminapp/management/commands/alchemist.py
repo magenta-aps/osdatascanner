@@ -146,6 +146,12 @@ class Command(BaseCommand):
                     rule, table, tables,
                     select().where(*constraint),
                     column_labels)
+
+            if rule_bits:
+                (filtered_count,), = exec_expr(
+                        engine, select(sql_func.count("*")).select_from(s.subquery()))
+                print(f" after filter: {filtered_count}")
+
             if limit is not None:
                 s = s.limit(limit)
 
