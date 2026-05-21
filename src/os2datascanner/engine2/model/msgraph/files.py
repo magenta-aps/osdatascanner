@@ -177,7 +177,7 @@ class MSGraphDriveSource(DerivedSource):
         yield sm.open(self.handle.source)
 
     @property
-    def _drive_path(self):
+    def drive_path(self):
         if drive_id := self.handle.relative_path:
             return f"drives/{drive_id}"
         elif user_principal_name := self.handle._user_account:
@@ -236,11 +236,11 @@ class MSGraphDriveSource(DerivedSource):
                 elif "folder" in obj:
                     folder_id: str = obj["id"]
                     subfolder = gc.get(
-                        f"{self._drive_path}/items/"
+                        f"{self.drive_path}/items/"
                         f"{folder_id}/children").json()
                     yield from _explore_folder(
                         here, subfolder["value"], parent_weblink=web_url)
-        root = [gc.get(f"{self._drive_path}/root").json()]
+        root = [gc.get(f"{self.drive_path}/root").json()]
         yield from _explore_folder([], root, is_root=True)
 
 
@@ -268,7 +268,7 @@ class MSGraphFileResource(FileResource):
             raise
 
     def make_object_path(self):
-        drive_path: str = self.handle.source._drive_path
+        drive_path: str = self.handle.source.drive_path
         return f"{drive_path}/root:/{self.handle.relative_path}"
 
     def get_file_metadata(self):

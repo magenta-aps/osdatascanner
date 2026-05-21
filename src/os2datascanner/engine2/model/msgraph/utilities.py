@@ -93,8 +93,8 @@ class MSGraphSource(Source):
         def delete_message(self, owner, msg_id):
             return self.delete(f"users/{owner}/messages/{msg_id}")
 
-        def delete_file(self, owner, item_path):
-            return self.delete(f"users/{owner}/drive/root:/{item_path}")
+        def delete_file(self, drive_path, item_path):
+            return self.delete(f"{drive_path}/root:/{item_path}")
 
         def create_outlook_category(self, owner, category_name, category_colour):
             return self.post(

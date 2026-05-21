@@ -48,6 +48,8 @@
 
 - Centralized chart.js plugins, helpers, and defaults.
 
+- Reworked deletion logic of remote resources in the report module.
+
 ### Bugfixes
 
 - Fix broken ownership check when mass-handling archived results.

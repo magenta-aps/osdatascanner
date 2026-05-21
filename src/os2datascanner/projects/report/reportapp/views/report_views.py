@@ -9,24 +9,20 @@ import structlog
 from datetime import timedelta
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import PermissionDenied
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, F, Q
-from django.http import Http404, HttpResponse, HttpResponseBadRequest
+from django.http import Http404
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import View, ListView, DetailView
+from django.views.generic import ListView, DetailView
 
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.rules.rule import Sensitivity
 
-from .utilities.ews_utilities import try_ews_delete
-from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
-from .utilities.smb_utilities import try_smb_delete_1
+from .base_views import HTMXEndpointView, BaseMassView
 from .utilities.document_report_utilities import handle_report, get_deviations
-from .utilities.msgraph_utilities import delete_email, delete_file
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ..models.scanner_reference import ScannerReference
 from ...organizations.models.account import Account
@@ -591,27 +587,6 @@ class SBSYSUndistributedArchiveView(ArchiveMixin, SBSYSUndistributedView):
     """Presents a superuser with all undistributed handled SBSYS results."""
 
 
-class HTMXEndpointView(LoginRequiredMixin, View):
-    """A view for sending POST-requests via HTMX to the backend."""
-
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-
-        # Add a header value to the response before returning to initiate reload of some elements.
-        response = HttpResponse()
-        response.headers["HX-Trigger"] = "reload-htmx"
-
-        return response
-
-    def dispatch(self, request, *args, **kwargs):
-        self.is_htmx = request.headers.get('HX-Request')
-        if self.is_htmx == "true":
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            return HttpResponseBadRequest("HTMX endpoint called from non-HTMX source!")
-
-
 class HandleMatchView(HTMXEndpointView, DetailView):
     """Endpoint for handling matches via HTMX."""
 
@@ -635,20 +610,6 @@ class HandleMatchView(HTMXEndpointView, DetailView):
         handle_report(self.request.user.account, report, action)
 
         return response
-
-
-class BaseMassView(ListView):
-    """
-    Base class for Mass-related views.
-    A ListView, defining get_queryset, returning queryset of items checked in table-checkbox.
-    Not for any use alone.
-    """
-
-    def get_queryset(self):
-        qs = super().get_queryset()
-        pks = self.request.POST.getlist("table-checkbox", [])
-        reports = qs.filter(pk__in=pks)
-        return reports
 
 
 class MassHandleView(HTMXEndpointView, BaseMassView):
@@ -754,294 +715,3 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
         logger.info(f"Updated DocumetReport objects: {update_output}")
 
         return response
-
-
-class DeleteMailView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for an email
-    through the MSGraph message API. """
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        try:
-            delete_email(report, request.user.account)
-        except PermissionDenied as e:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=e)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-        return response
-
-
-class MassDeleteMailView(HTMXEndpointView, BaseMassView):
-    """ View for sending delete requests for multiple emails
-     through the MSGraph message API. """
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_emails(reports)
-
-        return response
-
-    def delete_emails(self, document_reports):
-        for report in document_reports:
-            try:
-                delete_email(report, self.request.user.account)
-            except PermissionDenied as e:
-                error_message = _("Failed to delete {pn}: {e}").format(
-                    pn=report.matches.handle.presentation_name, e=e)
-                messages.add_message(
-                    self.request,
-                    messages.WARNING,
-                    error_message,
-                    extra_tags="manual_close"
-                )
-
-
-class DeleteFileView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for a file
-    through the MSGraph API. """
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        try:
-            delete_file(report, request.user.account)
-        except PermissionDenied as e:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=e)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-        return response
-
-
-class MassDeleteFileView(HTMXEndpointView, BaseMassView):
-    """ View for sending delete requests for multiple files
-     through the MSGraph API. """
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_files(reports)
-
-        return response
-
-    def delete_files(self, document_reports):
-        for report in document_reports:
-            try:
-                delete_file(report, self.request.user.account)
-            except PermissionDenied as e:
-                error_message = _("Failed to delete {pn}: {e}").format(
-                    pn=report.matches.handle.presentation_name, e=e)
-                messages.add_message(
-                    self.request,
-                    messages.WARNING,
-                    error_message,
-                    extra_tags="manual_close"
-                )
-
-
-class DeleteSMBFileView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for a file
-    on an SMB share."""
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        deleted, problem = try_smb_delete_1(request, [report.pk])
-        if not deleted:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=problem)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-        return response
-
-
-class MassDeleteSMBFileView(HTMXEndpointView, BaseMassView):
-    """View for sending delete requests for multiple files
-    on an SMB share."""
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_files(reports)
-
-        return response
-
-    def delete_files(self, document_reports):
-        deleted, problem = try_smb_delete_1(
-            self.request, document_reports.values_list(
-                "pk", flat=True))
-
-        if not deleted:
-            error_message = _("Failed to delete some reports: {e}").format(
-                e=problem)
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-
-class DeleteEWSMailView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for an EWS mail."""
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        deleted, problem = try_ews_delete(request, [report.pk])
-        if not deleted:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=problem)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-        return response
-
-
-class MassDeleteEWSMailView(HTMXEndpointView, BaseMassView):
-    """View for sending delete requests for multiple EWS mails."""
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_ews_mails(reports)
-
-        return response
-
-    def delete_ews_mails(self, document_reports):
-        deleted, problem = try_ews_delete(
-            self.request, document_reports.values_list(
-                "pk", flat=True))
-
-        if not deleted:
-            error_message = _("Failed to delete some reports: {e}").format(
-                e=problem)
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-
-class DeleteGmailView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for a gmail."""
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        deleted, problem = try_gmail_delete(request, [report.pk])
-        if not deleted:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=problem)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-        return response
-
-
-class MassDeleteGmailView(HTMXEndpointView, BaseMassView):
-    """View for sending delete requests for multiple Gmails."""
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_gmails(reports)
-
-        return response
-
-    def delete_gmails(self, document_reports):
-        deleted, problem = try_gmail_delete(
-            self.request, document_reports.values_list(
-                "pk", flat=True))
-
-        if not deleted:
-            error_message = _("Failed to delete some reports: {e}").format(
-                e=problem)
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-
-class DeleteGoogleDriveView(HTMXEndpointView, DetailView):
-    """ View for sending a delete request for a Google Drive file."""
-    model = DocumentReport
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        report = self.get_object()
-
-        deleted, problem = try_gdrive_delete(request, [report.pk])
-        if not deleted:
-            error_message = _("Failed to delete {pn}: {e}").format(
-                pn=report.matches.handle.presentation_name, e=problem)
-            messages.add_message(
-                request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )
-
-        return response
-
-
-class MassDeleteGoogleDriveView(HTMXEndpointView, BaseMassView):
-    """View for sending delete requests for multiple Google Drive files."""
-
-    def post(self, request, *args, **kwargs):
-        response = super().post(request, *args, **kwargs)
-        reports = self.get_queryset()
-        self.delete_gdrive_files(reports)
-
-        return response
-
-    def delete_gdrive_files(self, document_reports):
-        deleted, problem = try_gdrive_delete(
-            self.request, document_reports.values_list(
-                "pk", flat=True))
-        if not deleted:
-            error_message = _("Failed to delete some reports: {e}").format(
-                e=problem)
-            messages.add_message(
-                self.request,
-                messages.WARNING,
-                error_message,
-                extra_tags="manual_close"
-            )

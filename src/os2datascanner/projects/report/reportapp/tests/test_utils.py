@@ -7,7 +7,6 @@ import pytest
 from django.db import IntegrityError
 
 from ...organizations.models import Organization, Account, Alias, AliasType
-from ..views.utilities.document_report_utilities import is_owner
 
 
 @pytest.mark.django_db
@@ -156,15 +155,3 @@ class TestUtils:
         with pytest.raises(IntegrityError):  # Assert
             # Act
             mismatched_alias.save()
-
-    def test_alias_and_report_owner_no_match(self):
-        """
-        Test that the is_owner returns False when DocumentReport.owner doesn't match any alias for
-        the given account.
-        """
-
-        # Arrange
-        file_owner = "thisisnota@match.com"
-
-        # Act/assert
-        assert not is_owner(file_owner, self.account_sam)

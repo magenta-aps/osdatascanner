@@ -8,6 +8,7 @@ from enum import Enum, auto
 
 import googleapiclient.errors
 import structlog
+from django.utils.translation import gettext_lazy as _
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
@@ -18,6 +19,7 @@ from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities 
 from os2datascanner.engine2.model.gmail import GmailHandle
 from os2datascanner.engine2.model.googledrive import GoogleDriveHandle
 from os2datascanner.engine2.model.googleshareddrive import GoogleSharedDriveHandle
+from .document_report_utilities import validate_delete_request, DeleteRequestError
 
 logger = structlog.get_logger("reportapp")
 
@@ -60,58 +62,40 @@ def get_google_api_grant(org) -> (bool, GoogleApiGrant):
         grant = GoogleApiGrant.objects.get(organization=org)
         return (True, grant)
     except GoogleApiGrant.DoesNotExist:
-        return (False, "no credentials available")
+        return (False, _("No credentials available"))
     except GoogleApiGrant.MultipleObjectsReturned:
-        return (False, "too many credentials available")
+        return (False, _("Too many credentials available"))
 
 
 def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
     if not user.account.organization.has_gmail_email_delete_permission():
-        logger.warning(
-            "Gmail deletion request with function disabled!",
-            user=user)
-        return (False, "function not enabled")
+        logger.warning("Gmail deletion request with function disabled!", user=user)
+        return (False, _("Function not enabled"))
 
-    reports = DocumentReport.objects.filter(pk__in=pks)
-    if not reports.exists():
-        return (False, "DocumentReports not found",)
-
-    # Find the active user account
-    account = user.account
-    aliases = account.aliases.all()
-    organization = account.organization
-
-    # Verify that the active user has an association to the DocumentReports
-    illegal_reports = reports.exclude(alias_relations__in=aliases)
-    if illegal_reports.exists():
-        logger.warning(
-                "Gmail deletion request with no alias association!",
-                user=user, aliases=illegal_reports.values_list("alias_relations", flat=True))
-        return (False, "Account not associated with these DocumentReports")
-
-    # Check that the DocumentReports represents a match (and not, for example,
-    # an error message)
-    if reports.exclude(number_of_matches__gte=1).exists():
-        return (False, "DocumentReport does not identify a match")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
 
     grant = None
-    match get_google_api_grant(organization):
+    match get_google_api_grant(user.account.organization):
         case (True, g):
             grant = g
         case (False, str()) as failure:
             return failure
 
-    srvc_acc = google_deletion_service_account(account, grant, google_service=GoogleService.GMAIL)
+    srvc_acc = google_deletion_service_account(
+        user.account, grant, google_service=GoogleService.GMAIL)
 
     deleted_matches: list[int] = []
     result: tuple | None = None
-    for report in reports:
+    for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             message_handle = get_handle_from_document_report(report, GmailHandle)
             msg_id = message_handle.relative_path if message_handle else None
-            srvc_acc.users().messages().trash(userId=account.email, id=msg_id).execute()
+            srvc_acc.users().messages().trash(userId=user.account.email, id=msg_id).execute()
             deleted_matches.append(report.pk)
 
         except googleapiclient.errors.HttpError as http_error:
@@ -143,46 +127,27 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
     user = request.user
 
     if not user.account.organization.has_gdrive_file_delete_permission():
-        logger.warning(
-            "Google Drive deletion request with function disabled!",
-            user=user)
-        return (False, "function not enabled")
+        logger.warning("Google Drive deletion request with function disabled!", user=user)
+        return (False, _("Function not enabled"))
 
-    reports = DocumentReport.objects.filter(pk__in=pks)
-    if not reports.exists():
-        return (False, "DocumentReports not found",)
-
-    # Find the active user account
-    account = user.account
-    aliases = account.aliases.all()
-    organization = account.organization
-
-    # Verify that the active user has an association to the DocumentReports
-    illegal_reports = reports.exclude(alias_relations__in=aliases)
-    if illegal_reports.exists():
-        logger.warning(
-                "Google Drive request with no alias association!",
-                user=user, aliases=illegal_reports.values_list("alias_relations", flat=True))
-        return (False, "Account not associated with these DocumentReports")
-
-    # Check that the DocumentReports represents a match (and not, for example,
-    # an error message)
-    if reports.exclude(number_of_matches__gte=1).exists():
-        return (False, "DocumentReport does not identify a match")
+    try:
+        validate_delete_request(user, pks)
+    except DeleteRequestError as e:
+        return (False, str(e))
 
     grant = None
-    match get_google_api_grant(organization):
+    match get_google_api_grant(user.account.organization):
         case (True, g):
             grant = g
         case (False, str()) as failure:
             return failure
 
-    srvc_acc = google_deletion_service_account(account, grant,
-                                               google_service=GoogleService.GOOGLEDRIVE)
+    srvc_acc = google_deletion_service_account(
+        user.account, grant, google_service=GoogleService.GOOGLEDRIVE)
 
     deleted_matches: list[int] = []
     result: tuple | None = None
-    for report in reports:
+    for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             file_handle = None
             match report.source_type:
