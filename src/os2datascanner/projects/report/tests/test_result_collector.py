@@ -539,37 +539,6 @@ class TestPipelineCollector:
         assert saved_match.resolution_status == DocumentReport.ResolutionChoices.IRRELEVANT.value
         assert saved_match.resolution_time >= start
 
-    def test_removal_problem(self, transient_handle_error, deletion):
-        """Deleting a file, which was previously the source of a problem but
-        not a match, should delete the previously created DocumentReport."""
-        problem_report = record_problem(transient_handle_error)
-        record_problem(deletion)
-
-        with pytest.raises(DocumentReport.DoesNotExist):
-            problem_report.refresh_from_db()
-
-    def test_removal_irrelevance(self, transient_handle_error, irrelevance):
-        """Removing a file from the scope of a scan, which was previously the
-        source of a problem but not a match, should delete the previously
-        created DocumentReport."""
-        problem_report = record_problem(transient_handle_error)
-        record_problem(irrelevance)
-
-        with pytest.raises(DocumentReport.DoesNotExist):
-            problem_report.refresh_from_db()
-
-    def test_transient_handle_errors(self, transient_handle_error):
-        """Source types should be correctly extracted from Handle errors."""
-        new = record_problem(transient_handle_error)
-
-        assert new.source_type == transient_handle_error.handle.source.type_label
-
-    def test_transient_source_errors(self, transient_source_error):
-        """Source types should be correctly extracted from Source errors."""
-        new = record_problem(transient_source_error)
-
-        assert new.source_type == transient_source_error.source.type_label
-
     def test_recycler(self, positive_match, late_negative_match, time2):
         """Receiving a failed match message which failed because of the
         Last-Modified check should update the timestamp of the previous match
@@ -690,17 +659,6 @@ class TestPipelineCollector:
         has no relevance, should be thrown away and not create a new DR."""
         record_problem(deletion)
         assert DocumentReport.objects.count() == 0
-
-    def test_requeued_problem_with_existing_report(self, transient_handle_error):
-        """ If exactly the same problem message enters the queue again,
-        it should not cause two reports nor crash. """
-
-        record_problem(transient_handle_error)
-        # Imagine a world, where the same message enters the queue again:
-        record_problem(transient_handle_error)
-
-        # Check that we've only got one DocumentReport
-        assert DocumentReport.objects.count() == 1
 
     def test_requeued_match_with_existing_report(self, positive_match):
         """ If exactly the same match message enters the queue again,
@@ -1026,11 +984,9 @@ class TestPipelineCollector:
         assert dr.owner == "jens@example.invalid"
         assert jens_email_alias.reports.count() == 1
 
-    def test_problem_with_only_notify_remediators_routes_to_remediator(
-            self, transient_handle_error_only_rem):
-        """A new problem report from a scanner with only_notify_remediators=True should
-        have the flag set on the DocumentReport itself."""
-        record_problem(transient_handle_error_only_rem)
-        dr = DocumentReport.objects.get()
-        assert dr.only_notify_remediators is True
-        assert dr.owner is None
+    def test_ignore_problem_for_unknown_object(self, transient_handle_error):
+        """When a problem occurs for an object we don't already have a DocumentReport for,
+        the message should be ignored."""
+        record_problem(transient_handle_error)
+
+        assert not DocumentReport.objects.exists()
