@@ -33,7 +33,7 @@ class Command(BaseCommand):
         parser.add_argument(
             "-a", "--all-results",
             action="store_true",
-            help="Include results under 30 days in count."
+            help="Include all results regardless of age"
         )
         parser.add_argument(
             "-cu", "--context-for-user",
