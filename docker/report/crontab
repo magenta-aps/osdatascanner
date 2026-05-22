@@ -10,5 +10,5 @@
 # Labs as required approval to your MR if you have any changes.                #
 ################################################################################
 
-0 6 * * * ./manage.py send_notifications --all-results
+0 6 * * * ./manage.py send_notifications
 0 3 * * * ./manage.py push_db_metrics
