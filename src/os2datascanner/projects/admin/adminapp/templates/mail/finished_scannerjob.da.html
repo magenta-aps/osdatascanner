@@ -43,6 +43,9 @@
       <strong>{{ object_size|filesizeformat }}</strong> i alt – på
       <strong>{{ completion_time }}</strong>.
     </p>
+    {% if zero_bytes %}
+      <p>Der blev scannet 0 bytes – det kan være værd at tjekke, om scanneren er sat rigtigt op.</p>
+    {% endif %}
     {% if usererrorlogs %}
       <p>
         <strong>{{ usererrorlogs }}</strong> fejl opstod under scannet.

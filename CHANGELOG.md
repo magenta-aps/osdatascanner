@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 3.32.1
+
+## New in this release
+
+### General improvements
+
+- Adds a warning to the scan completion email when scan completes with 0 bytes scanned.
+
+### Bugfixes Changelog
+
 ## Version 3.32.0, 22nd May 2026
 
 "Oh My God We're Back Again"
