@@ -1,6 +1,7 @@
 {% extends "components/scanner/scanner_form_select_option_field.html" %}
 {% load grant_tags %}
-{% block grant_extra %}
+{% block extra_container_class %}grant-select-field{% endblock %}
+{% block select_action_button %}
   {% if perms|can_add:field.name %}
     <button type="button"
             class="button button--icon-button"
@@ -15,13 +16,13 @@
       </svg>
     </button>
   {% endif %}
+{% endblock select_action_button %}
 
+{% block grant_extra %}
   <div id="{{ field.name }}-form-container" class="mt-3">
 
     {% if grant_form %}
       {% include "grants/grant_update_partial.html" with form=grant_form %}
     {% endif %}
   </div>
-
-
 {% endblock grant_extra %}

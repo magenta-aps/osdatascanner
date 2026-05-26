@@ -1,26 +1,28 @@
 <div id="{{ field.auto_id }}_container"
-     class="dropdown-group form__group{% if field.errors %} has-error{% endif %}">
+     class="dropdown-group form__group{% if field.errors %} has-error{% endif %} {% block extra_container_class %}{% endblock %}">
   <label {% if required %}class="required-form"{% endif %}
          for="id_{{ field.name }}">{{ field.label }}</label>
-  <div class="dropdown">
-    <select name="{{ field.name }}"
-            id="id_{{ field.name }}"
-            {% if field.field.choices|length <= 1 %}disabled="disabled"{% endif %}
-            {% if update_form %} hx-get="" hx-swap="outerHTML" hx-target=".content" hx-select=".content" hx-trigger="change" {% endif %}>
-      {% for value, tag in field.field.choices %}
-        <option value="{{ value }}"
-                {% if field.value|stringformat:"s"  == value|stringformat:"s" %}selected="selected"{% endif %}>
-          {{ tag }}
-        </option>
-        {% if field.field.choices|length <= 1 %}
-          <input type="hidden"
-                 id="hidden_{{ field.name }}"
-                 name="{{ field.name }}"
-                 value="{{ value }}">
-        {% endif %}
-      {% endfor %}
-    </select>
-
+  <div class="field-with-button__container">
+    <div class="dropdown">
+      <select name="{{ field.name }}"
+              id="id_{{ field.name }}"
+              {% if field.field.choices|length <= 1 %}disabled="disabled"{% endif %}
+              {% if update_form %} hx-get="" hx-swap="outerHTML" hx-target=".content" hx-select=".content" hx-trigger="change" {% endif %}>
+        {% for value, tag in field.field.choices %}
+          <option value="{{ value }}"
+                  {% if field.value|stringformat:"s"  == value|stringformat:"s" %}selected="selected"{% endif %}>
+            {{ tag }}
+          </option>
+          {% if field.field.choices|length <= 1 %}
+            <input type="hidden"
+                   id="hidden_{{ field.name }}"
+                   name="{{ field.name }}"
+                   value="{{ value }}">
+          {% endif %}
+        {% endfor %}
+      </select>
+    </div>
+    {% block select_action_button %}{% endblock %}
   </div>
 
   {% if field.help_text %}<span class="form__help-text">{{ field.help_text }}</span>{% endif %}

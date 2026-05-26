@@ -1,6 +1,5 @@
 {% load i18n %}
 
-
 {% include "components/feedback/snackbarNew.html" %}
 
 {% for error in form.non_field_errors %}<div class="form__error">{{ error }}</div>{% endfor %}
@@ -42,7 +41,7 @@
 
 <button type="submit"
         form="partial-grant-form"
-        class="button button--cta-button"
+        class="button button--cta-button grant-form__submit"
         aria-label="{% trans 'save Grant'|capfirst %}"
         title="{% trans 'save Grant'|capfirst %}"
         {% if form.prefix == "google_api_grant" %}hx-encoding="multipart/form-data"{% endif %}

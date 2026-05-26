@@ -13,6 +13,8 @@
   ORG_STRUCTURE has been removed as it only hid UI elements that aren't necessary to hide, it was
   once used as a temporary mean for migration.
 
+- Improves the styling of scanner grant forms
+
 ### Bugfixes
 
 - Narrowed status_collector's query for corresponding ScanStatus to avoid message loss on schema
