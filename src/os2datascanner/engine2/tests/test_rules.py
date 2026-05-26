@@ -302,6 +302,26 @@ class TestRules:
             assert outcome == conclusion
             assert evaluation_count == len(evaluations)
 
+    def test_cpr_and_negated_email_header(self):
+        """AndRule(CPR, EmailHeader(subject, NotRule(regex))) should match only
+        when a CPR number is present and the subject does not contain the word."""
+        rule = AndRule(
+            CPRRule(modulus_11=False, ignore_irrelevant=False),
+            EmailHeaderRule(prop="subject", rule=NotRule(RegexRule("Dodgy"))),
+        )
+        cases = [
+            # CPR present, clean subject → match
+            ({"text": "2205995008", "email-headers": {"subject": "Clean"}}, True, 2),
+            # CPR present, dodgy subject → no match
+            ({"text": "2205995008", "email-headers": {"subject": "Dodgy stuff"}}, False, 2),
+            # No CPR → short-circuits before the header check
+            ({"text": "no cpr here", "email-headers": {"subject": "Clean"}}, False, 1),
+        ]
+        for representations, expected_conclusion, expected_evaluations in cases:
+            conclusion, evaluations = rule.try_match(representations)
+            assert conclusion == expected_conclusion
+            assert len(evaluations) == expected_evaluations
+
     def test_or_rule_one_component(self):
         """Even though users shouldn't be allowed to create rules with one components,
         they should still be able to run without problems."""
