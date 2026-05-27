@@ -194,7 +194,7 @@ Build API:
     POSTGRES_DB: os2datascanner
     POSTGRES_USER: os2datascanner
     POSTGRES_PASSWORD: os2datascanner
-  coverage: '/^TOTAL.+?(\d+\%)$/'
+  coverage: '/^TOTAL.+?(\d+(?:\.\d+)?\%)$/'
 
 Unit Test Admin Application:
   extends: .test-default
@@ -210,14 +210,15 @@ Unit Test Admin Application:
     - cd /code/src/os2datascanner/projects/admin
     # check migrations
     - python manage.py makemigrations --check --dry-run
-    - coverage run -m pytest
+    - pytest
       --ignore=/code/src/os2datascanner/projects/admin/tests/integration
       --junitxml $CI_PROJECT_DIR/admin_unit_tests-junit.xml
       -p no:cacheprovider
       --color=yes
-    - coverage report
-      --omit="**/engine2/**,*/migrations/*,*/tests/*,tests/*"
-    - coverage xml -o ${CI_PROJECT_DIR}/admin-coverage.xml
+      --cov
+      --cov-config=${CI_PROJECT_DIR}/setup.cfg
+      --cov-report=xml:${CI_PROJECT_DIR}/admin-coverage.xml
+      --cov-report=term-missing
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/admin-coverage.xml
@@ -263,7 +264,6 @@ Integration Test Admin Application:
     POSTGRES_DB: os2datascanner
     POSTGRES_USER: os2datascanner
     POSTGRES_PASSWORD: os2datascanner
-    COVERAGE_FILE: /tmp/.coverage
     FF_NETWORK_PER_BUILD: "true"
     DATASYNTH_HOST: "datasynth"
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
@@ -288,12 +288,14 @@ Integration Test Engine:
     - Build Engine
   script:
     - cd /code/src/os2datascanner/engine2/tests
-    - coverage run -m pytest integration/
+    - pytest integration/
       --junitxml $CI_PROJECT_DIR/integration-junit.xml
       -p no:cacheprovider
       --color=yes
-    - coverage report
-    - coverage xml -o ${CI_PROJECT_DIR}/intergration-engine-coverage.xml
+      --cov
+      --cov-config=${CI_PROJECT_DIR}/setup.cfg
+      --cov-report=xml:${CI_PROJECT_DIR}/intergration-engine-coverage.xml
+      --cov-report=term-missing
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/intergration-engine-coverage.xml
@@ -322,7 +324,8 @@ Unit Test Engine:
       --color=yes
       -n auto
       --dist=loadfile
-      --cov=os2datascanner.engine2
+      --cov
+      --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/engine-coverage.xml
       --cov-report=term-missing
   artifacts:
@@ -352,7 +355,6 @@ Benchmark Test Engine:
   script:
     - cd /code/src/os2datascanner/engine2
     - pytest --color=yes --benchmark-only tests/benchmarks
-  coverage: '/^TOTAL.+?(\d+\%)$/'
 
 Performance Test:
   image:
@@ -388,7 +390,6 @@ Performance Test:
     POSTGRES_DB: os2datascanner
     POSTGRES_USER: os2datascanner
     POSTGRES_PASSWORD: os2datascanner
-    COVERAGE_FILE: /tmp/.coverage
     FF_NETWORK_PER_BUILD: "true"
     DATASYNTH_HOST: "datasynth"
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
@@ -421,14 +422,15 @@ Unit Test Report Application:
     - cd /code/src/os2datascanner/projects/report
     # check migrations
     - python manage.py makemigrations --check --dry-run
-    - coverage run -m pytest
+    - pytest
       --ignore=/code/src/os2datascanner/projects/report/tests/integration
       --junitxml $CI_PROJECT_DIR/report-junit.xml
       -p no:cacheprovider
       --color=yes
-    - coverage report
-      --omit="**/engine2/**,*/migrations/*,*/tests/*,tests/*"
-    - coverage xml -o ${CI_PROJECT_DIR}/report-coverage.xml
+      --cov
+      --cov-config=${CI_PROJECT_DIR}/setup.cfg
+      --cov-report=xml:${CI_PROJECT_DIR}/report-coverage.xml
+      --cov-report=term-missing
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/report-coverage.xml
@@ -485,12 +487,14 @@ Unit Test API server:
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
   script:
     - cd /code/src/os2datascanner/server/tests
-    - coverage run -m pytest
-      --ignore=/code/src/os2datascanner/server/tests
+    - pytest
       --junitxml $CI_PROJECT_DIR/api-junit.xml
       -p no:cacheprovider
       --color=yes
-    - coverage xml -o ${CI_PROJECT_DIR}/api-coverage.xml
+      --cov
+      --cov-config=${CI_PROJECT_DIR}/setup.cfg
+      --cov-report=xml:${CI_PROJECT_DIR}/api-coverage.xml
+      --cov-report=term-missing
   artifacts:
     paths:
       - ${CI_PROJECT_DIR}/api-coverage.xml

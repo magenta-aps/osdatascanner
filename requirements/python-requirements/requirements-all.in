@@ -1,6 +1,5 @@
 # Admin
 pycryptodome
-pytest-django
 python-dateutil
 tenacity
 
@@ -14,7 +13,6 @@ click
 google-api-python-client
 more_itertools
 oauth2client
-parameterized
 pika>=1.2.0
 rich
 sortedcontainers
@@ -42,16 +40,11 @@ pydantic-settings
 pymssql
 pymupdf>=1.27.2.3
 pysmbc@git+https://github.com/magenta-aps/pysmbc.git@T2
-pytest
-pytest-cov
-pytest-xdist
-pytest-benchmark
 python-dateutil
 python-magic
 pytz
 regex
 requests
-requests-mock
 sqlalchemy
 xattr
 xlrd
@@ -63,15 +56,19 @@ pycodestyle
 
 # Report
 mozilla-django-oidc
-faker
 psutil
-pytest-django
 python3-saml
-randomtimestamp
 
 # Test
-coverage
-unittest-xml-reporting
+faker
+parameterized
+pytest
+pytest-benchmark
+pytest-cov
+pytest-django
+pytest-xdist
+randomtimestamp
+requests-mock
 
 # Django
 ipython
