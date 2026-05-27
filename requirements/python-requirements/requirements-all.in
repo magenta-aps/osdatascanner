@@ -43,6 +43,7 @@ pymssql
 pymupdf>=1.27.2.3
 pysmbc@git+https://github.com/magenta-aps/pysmbc.git@T2
 pytest
+pytest-cov
 pytest-xdist
 pytest-benchmark
 python-dateutil
