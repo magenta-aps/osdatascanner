@@ -318,6 +318,23 @@ class TestRules:
         conclusion, evaluations = rule.try_match(representations)
         assert conclusion
 
+    @pytest.mark.parametrize("representations,expected_conclusion,expected_evaluations", [
+        ({"text": "2205995008", "email-headers": {"subject": "Clean"}}, True, 2),
+        ({"text": "2205995008", "email-headers": {"subject": "Dodgy stuff"}}, False, 2),
+        ({"text": "no cpr here", "email-headers": {"subject": "Clean"}}, False, 1),
+    ])
+    def test_cpr_and_negated_email_header(
+            self, representations, expected_conclusion, expected_evaluations):
+        """AndRule(CPR, EmailHeader(subject, NotRule(regex))) should match only
+        when a CPR number is present and the subject does not contain the word."""
+        rule = AndRule(
+            CPRRule(modulus_11=False, ignore_irrelevant=False),
+            EmailHeaderRule(prop="subject", rule=NotRule(RegexRule("Dodgy"))),
+        )
+        conclusion, evaluations = rule.try_match(representations)
+        assert conclusion == expected_conclusion
+        assert len(evaluations) == expected_evaluations
+
     def test_resume(self):
         """Resuming execution of a rule after its try_match method has returned
         should complete the execution correctly."""

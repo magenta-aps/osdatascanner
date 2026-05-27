@@ -30,8 +30,9 @@ class DictLookupRule(SimpleRule):
         conclusion, all_matches = self._rule.try_match(representations)
 
         if conclusion is True:
-            for _, rms in all_matches:
-                yield from (r for r in rms if r["match"])
+            sub_matches = [r for _, rms in all_matches for r in rms if r["match"]]
+            # NotRule matches produce no sub-matches; fall back to the property value.
+            yield from sub_matches or [{"match": value[self._prop]}]
 
     def to_json_object(self):
         return super().to_json_object() | {
@@ -80,8 +81,9 @@ class EmailHeaderRule(DictLookupRule):
         conclusion, all_matches = self._rule.try_match(representations)
 
         if conclusion is True:
-            for _, rms in all_matches:
-                yield from (r for r in rms if r["match"])
+            sub_matches = [r for _, rms in all_matches for r in rms if r["match"]]
+            # NotRule matches produce no sub-matches; fall back to the property value.
+            yield from sub_matches or [{"match": value[self._prop]}]
 
 
 Rule.json_handler(EmailHeaderRule.type_label)(EmailHeaderRule.from_json_object)
