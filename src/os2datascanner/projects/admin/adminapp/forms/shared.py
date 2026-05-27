@@ -4,6 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django import forms
+from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User, Permission
 from django.db.models import Q
@@ -19,18 +20,42 @@ from ...organizations.models.aliases import AliasType
 class Groups:
     GENERAL_SETTINGS = (
         _("General settings"),
-        ["name", "organization", "validation_status"],
+        [
+            "name",
+            "organization",
+            "validation_status"
+        ],
     )
 
     RESULT_SETTINGS = (
         _("Result settings"),
-        ["contacts", "only_notify_superadmin", "only_notify_remediators", "keep_false_positives"],
+        [
+            "keep_false_positives",
+            "contacts",
+            "only_notify_superadmin",
+            "only_notify_remediators",
+        ],
     )
 
     ADVANCED_RESULT_SETTINGS = (
         _("Result settings"),
-        ["contacts", "remediators", "only_notify_superadmin",
-         "only_notify_remediators", "keep_false_positives"],
+        [
+            "keep_false_positives",
+            (
+                _("User associations"),
+                [
+                    "contacts",
+                    "remediators",
+                ],
+            ),
+            (
+                _("Result allocation"),
+                [
+                    "only_notify_superadmin",
+                    "only_notify_remediators",
+                ],
+            ),
+        ],
     )
 
     SCHEDULED_EXECUTION_SETTINGS = (
@@ -43,9 +68,17 @@ class Groups:
         ["scan_scope_mode"],
     )
 
+    FILE_SETTINGS = (
+        _("File settings"),
+        [
+            "do_ocr",
+            "max_pdf_size",
+        ],
+    )
+
 
 class RemediatorSelectMultipleWidget(forms.SelectMultiple):
-    """ Select multiple widget with display of universal remediators added"""
+    """Select multiple widget with display of universal remediators added."""
     template_name = "components/admin_widgets/remediator_select_multiple.html"
 
     def __init__(self, *args, **kwargs):
@@ -59,18 +92,43 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
         return context
 
 
+class ScanMaxFileSizeWidget(forms.NumberInput):
+    """Togglable number input widget for file size limits. Submits 0 when unchecked."""
+    template_name = "components/admin_widgets/scan_max_file_size.html"
+
+    class Media:
+        js = ["js/forms/djangoforms/checkboxes/scanMaxFileSize.js"]
+
+    def __init__(self, *args, **kwargs):
+        self.checkbox_label = ""
+        super().__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        ctx = super().get_context(name, value, attrs)
+        toggle = forms.CheckboxInput()
+        toggle_checked = bool(value and value not in ("0", 0))
+        toggle_id = (attrs.get("id") or name) + "_toggle"
+        toggle_ctx = toggle.get_context(name + "_toggle", toggle_checked, {"id": toggle_id})
+        ctx["toggle"] = toggle_ctx["widget"]
+        ctx["checkbox_label"] = self.checkbox_label
+        return ctx
+
+
 class ScanScopeMixin(forms.Form):
     """
     Opt-in mixin for scanners that support OU scoping.
 
     Features:
-      - Radio-based UI for scope selection
-      - Nested rendering of org_units
-      - Mapping scan_scope_mode -> scan_entire_org
+      • Radio-based UI for scope selection
+      • Nested rendering of org_units
+      • Mapping scan_scope_mode -> scan_entire_org
     """
 
     class ScanScopeRadioWidget(forms.RadioSelect):
         template_name = "components/admin_widgets/scan_scope_radio.html"
+
+        class Media:
+            js = ["js/forms/djangoforms/checkboxes/scanAllUnits.js"]
 
         def __init__(self, *args, **kwargs):
             # BoundField for org_units is injected by the mixin
@@ -189,11 +247,29 @@ class ScannerForm(GroupingModelForm):
                     })
                     )
 
+    max_pdf_size = forms.IntegerField(
+        label=_("Set a max size for PDF files (MB)"),
+        help_text=_("Set a size limit for PDF files that the scanner will process (in megabytes)."),
+        required=False,
+        min_value=0,
+        widget=ScanMaxFileSizeWidget(
+            attrs={
+                "placeholder": _("E.g. 10")}),
+             )
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user")
         self.org = kwargs.pop("org")
         self.this_url = kwargs.pop("this_url")
         super().__init__(*args, **kwargs)
+
+        for field in self.fields.values():
+            if isinstance(field.widget, ScanMaxFileSizeWidget):
+                field.widget.checkbox_label = str(field.label)
+                field.label = ""
+
+        if not settings.EXCLUSION_RULES:
+            self.fields.pop("exclusion_rule", None)
 
         # Make sure changes to the organization field calls the correct view
         self.fields["organization"].widget.attrs["hx-get"] = self.this_url
@@ -246,13 +322,15 @@ class ScannerForm(GroupingModelForm):
             Q(organization=None, organizations__uuid=self.org.uuid)
         )
 
-        # Only allow the user to choose between exclusion rules related to the organization
-        self.fields["exclusion_rule"].queryset = self.fields["exclusion_rule"].queryset.filter(
-            # Rules belonging to the organization ...
-            Q(organization_id=self.org.uuid) |
-            # ... or system rules applied to the organization
-            Q(organization=None, organizations__uuid=self.org.uuid)
-        )
+        # Only render if `EXCLUSION_RULES = true`:
+        if "exclusion_rule" in self.fields:
+            # Only allow the user to choose between exclusion rules related to the organization
+            self.fields["exclusion_rule"].queryset = self.fields["exclusion_rule"].queryset.filter(
+                # Rules belonging to the organization ...
+                Q(organization_id=self.org.uuid) |
+                # ... or system rules applied to the organization
+                Q(organization=None, organizations__uuid=self.org.uuid)
+            )
 
         # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
