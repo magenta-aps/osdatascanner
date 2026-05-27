@@ -54,6 +54,24 @@ class TestFinishedScannerNotificationEmail:
 
         assert list(users) == []
 
+    def test_create_context_zero_bytes_flag_true(
+            self, basic_scanner, basic_scanstatus_completed, ronald_mcdonald):
+        """zero_bytes is True when objects were scanned but scanned_size is 0."""
+        # basic_scanstatus_completed has total_objects=1, scanned_size=0 (default)
+        context = FinishedScannerNotificationEmail(
+            basic_scanner, basic_scanstatus_completed).create_context(ronald_mcdonald)
+
+        assert context["zero_bytes"] is True
+
+    def test_create_context_zero_bytes_flag_false(
+            self, basic_scanner, basic_scanstatus_completed, ronald_mcdonald):
+        """zero_bytes is False when scanned_size is greater than 0."""
+        basic_scanstatus_completed.scanned_size = 1024
+        context = FinishedScannerNotificationEmail(
+            basic_scanner, basic_scanstatus_completed).create_context(ronald_mcdonald)
+
+        assert context["zero_bytes"] is False
+
 
 @pytest.mark.django_db
 class TestInvalidScannerNotificationEmail:

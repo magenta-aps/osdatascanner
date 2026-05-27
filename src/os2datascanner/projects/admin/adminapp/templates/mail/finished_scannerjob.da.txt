@@ -4,6 +4,9 @@ Til orientering er dit OSdatascanner-scan @ {{ scanner_name }} lige kørt færdi
 
 {{ total_objects }} {{ object_plural }} blev scannet -- {{ object_size|filesizeformat }} i alt -- på {{ completion_time }}.
 
+{% if zero_bytes %}
+Der blev scannet 0 bytes -- det kan være værd at tjekke, om scanneren er sat rigtigt op.
+{% endif %}
 {% if usererrorlogs %}
 {{ usererrorlogs }} fejl opstod under scannet.
 {% endif %}

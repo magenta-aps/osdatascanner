@@ -104,7 +104,8 @@ class TestStatus:
             'object_size': 0,
             'scanner_name': 'SomeScanner-test_org',
             'total_objects': 0,
-            'usererrorlogs': 0}
+            'usererrorlogs': 0,
+            'zero_bytes': False}
                 )
 
     def test_cancel_running_status(self, basic_scanstatus):

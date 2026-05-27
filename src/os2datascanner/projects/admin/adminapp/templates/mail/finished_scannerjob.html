@@ -43,6 +43,9 @@
       <strong>{{ object_size|filesizeformat }}</strong> in total – in
       <strong>{{ completion_time }}</strong>.
     </p>
+    {% if zero_bytes %}
+      <p>0 bytes were scanned – it may be worth checking that the scanner is set up correctly.</p>
+    {% endif %}
     {% if usererrorlogs %}
       <p>
         <strong>{{ usererrorlogs }}</strong> errors occured during the scan.

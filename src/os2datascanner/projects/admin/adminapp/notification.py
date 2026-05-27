@@ -116,6 +116,7 @@ class FinishedScannerNotificationEmail(NotificationEmail):
             "completion_time": get_scanner_time(self.status),
             "usererrorlogs": user_logs,
             "object_plural": self.scanner.as_subclass().object_name_plural,
+            "zero_bytes": self.status.scanned_size == 0 and self.status.total_objects > 0,
         }
 
         return context
