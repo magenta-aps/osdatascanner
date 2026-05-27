@@ -8,7 +8,10 @@
 
 - Adds a warning to the scan completion email when scan completes with 0 bytes scanned.
 
-### Bugfixes Changelog
+### Bugfixes
+
+- Fixed a bug where `EmailHeaderRule` would discard matches when used together
+  with `NotRule`.
 
 ## Version 3.32.0, 22nd May 2026
 
