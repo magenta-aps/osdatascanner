@@ -17,6 +17,7 @@ from ..utilities.backoff import TimeoutRetrier
 from ..conversions import convert, conversion_exists
 from ..conversions.abort import current_abort_check
 from ..conversions.types import OutputType, encode_dict
+from ..conversions.utilities.navigable import make_navigable
 from . import messages
 logger = structlog.get_logger("processor")
 
@@ -122,7 +123,7 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
             (messages.ScanSpecMessage, ["os2ds_scan_specs"]))
 
 
-def do_conversion(resource, conversion, retrier, source_manager):
+def do_conversion(resource, conversion, retrier, source_manager):  # noqa, CCR001 Cognitive complexity
     required = conversion.progress.rule.split()[0].operates_on
     configuration = conversion.scan_spec.configuration
     skip_mime_types = configuration.get("skip_mime_types", [])
@@ -146,6 +147,17 @@ def do_conversion(resource, conversion, retrier, source_manager):
         # Hm, we didn't have any appropriate conversion at hand.
         # Maybe there's one in the parent hierarchy?
         for handle in conversion.handle.walk_up():
+            # Where possible, we collect email headers at exploration time. They're cheap,
+            # and we can store them as a hint on the mail handle. This way, we can avoid rewinding
+            # and re-downloading the entire mail if we're coming from an image,
+            # in a PDF, attached to an email.
+            if (required == OutputType.EmailHeaders
+                    and (hinted := handle.hint(required.value)) is not None):
+                logger.info("Using handle.hint email headers for required output type!")
+                # Doesn't really make sense to run this through retrier, so just return something
+                # navigable, like convert does anyway.
+                return make_navigable(hinted)
+
             if conversion_exists(resource := handle.follow(source_manager), required):
                 logger.info(
                          "hierarchy rewound for conversion",

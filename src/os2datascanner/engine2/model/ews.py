@@ -15,6 +15,7 @@ from exchangelib.errors import (
 from exchangelib.protocol import BaseProtocol
 
 from ..utilities.backoff import DefaultRetrier
+from ..conversions.email_headers import email_headers_hint
 from .core import Source, Handle, FileResource
 
 
@@ -207,7 +208,8 @@ class EWSAccountSource(Source):
         def relevant_mails(relevant_folders):
             for folder in relevant_folders:
                 for mail in self._relevant_mails(
-                        folder, "id", "subject", "web_client_read_form_query_string"):
+                        folder, "id", "subject", "web_client_read_form_query_string",
+                        "headers"):
                     wcs = mail.web_client_read_form_query_string
                     yield EWSMailHandle(
                         self,
@@ -216,6 +218,9 @@ class EWSAccountSource(Source):
                         folder.name,
                         mail.entry_id.hex(),
                         wcs if wcs.startswith(("http://", "https://",)) else None,
+                        hints=email_headers_hint(
+                            (h.name, h.value)
+                            for h in (getattr(mail, "headers", None) or [])),
                     )
 
         yield from relevant_mails(self._relevant_folders(account))
@@ -334,8 +339,9 @@ class EWSMailHandle(Handle):
         folder_name: str,
         entry_id: int,
         web_link: Optional[str],
+        hints: Optional[dict] = None,
     ):
-        super().__init__(source, path)
+        super().__init__(source, path, hints=hints)
         self._mail_subject = mail_subject
         self._folder_name = folder_name
         self._entry_id = entry_id
@@ -394,4 +400,5 @@ class EWSMailHandle(Handle):
             obj.get("folder_name"),
             obj.get("entry_id"),
             obj.get("web_link"),
+            hints=obj.get("hints"),
         )
