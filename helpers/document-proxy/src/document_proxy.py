@@ -23,6 +23,7 @@ expiry = int(getenv("DP_TOKEN_LIFETIME", "3600"))
 @dataclass
 class CacheEntry:
     db_str: str
+    tables: frozenset
     connection: Engine = field(compare=False)
     metadata: MetaData = field(compare=False)
 
@@ -34,18 +35,17 @@ cache_size = 10
 def open_connection(db_str, tables):
     global cache
 
+    tables = frozenset(tables)
     ce: CacheEntry | None = None
     for idx, ce in enumerate(cache):
-        if ce.db_str == db_str:
+        if ce.db_str == db_str and ce.tables == tables:
             cache.pop(idx)
             break
     else:
         engine = create_engine(db_str)
         metadata = MetaData()
         metadata.reflect(bind=engine, only=tables)
-
-        cache.append(ce := CacheEntry(db_str, engine, metadata))
-
+        ce = CacheEntry(db_str, tables, engine, metadata)
     cache.append(ce)
     cache = cache[-cache_size:]
     return (ce.connection, ce.metadata)
