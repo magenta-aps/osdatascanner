@@ -4,6 +4,8 @@
 
 ## New in this release
 
+- SBSYS results extract the department they belong to.
+
 ### General improvements
 
 - Adds a warning to the scan completion email when scan completes with 0 bytes scanned.

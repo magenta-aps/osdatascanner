@@ -167,6 +167,7 @@ class SBSYSDBSource(Source):
             yield SBSYSDBHandles.Case(
                     self,
                     db_row["Nummer"], db_row["Titel"], weblink,
+                    db_row.get("Ansaettelsessted.Navn"),
                     hints={"db_row": row_hint})
 
         logger.info(
@@ -235,10 +236,16 @@ class SBSYSDBHandles:
                 number: str,
                 title: str | None,
                 weblink: str | None,
+                department: str | None = None,
                 **kwargs):
             super().__init__(source, number, **kwargs)
             self._title = title
             self._weblink = weblink
+            self._department = department
+
+        @property
+        def department(self):
+            return self._department
 
         def guess_type(self):
             return self._DUMMY_MIME
@@ -263,6 +270,7 @@ class SBSYSDBHandles:
             return super().to_json_object() | {
                 "title": self._title,
                 "weblink": self._weblink,
+                "department": self._department,
             }
 
         @staticmethod
@@ -272,6 +280,7 @@ class SBSYSDBHandles:
                     Source.from_json_object(obj["source"]),
                     obj["path"], obj["title"],
                     obj.get("weblink"),
+                    obj.get("department"),
                     hints=obj["hints"])
 
     @Handle.stock_json_handler("sbsys-db-case-field")
@@ -414,7 +423,8 @@ class SBSYSDBSources:
 
         required_columns = (
                 "ID", "Nummer", "Titel", "Kommentar",
-                "Behandler.UserPrincipalName", "LastChanged",)
+                "Behandler.UserPrincipalName", "LastChanged",
+                "Ansaettelsessted.Navn",)
 
         def _generate_state(self, sm: SourceManager):
             yield sm.open(self.handle.source)
