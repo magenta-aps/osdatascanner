@@ -22,6 +22,8 @@
 
 - Fixed inconsistent behaviour when scanning emails with both `OCR` and `EmailHeaderRule`
 
+- Added Django Forms widget to handle the max-file-size-setting for scannerjobs.
+
 ## Version 3.32.0, 22nd May 2026
 
 "Oh My God We're Back Again"
