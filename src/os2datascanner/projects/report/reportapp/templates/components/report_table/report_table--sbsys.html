@@ -90,17 +90,19 @@
  
             <th class="column--datasource_last_modified">
               <div class="th__flex-container">
-                <label for="datasource_last_modified-caret">
-                  <span>{% trans "resource age"|capfirst %}</span>
+                <label class="th-label"
+                       title="{% blocktrans trimmed %}Time when the case was last modified.{% endblocktrans %}"
+                       for="datasource_last_modified-caret">
+                  <span>{% trans "last modified"|capfirst %}</span>
                 </label>
  
                 <button type="button"
                         name="datasource_last_modified"
-                        aria-label="{% trans "Sort table by" %} {% trans "resource age" %}"
-                        title="{% trans "Sort table by" %} {% trans "resource age" %}"
+                        aria-label="{% trans "Sort the results by when the source object was last modified." %}"
+                        title="{% trans "Sort the results by when the source object was last modified." %}"
                         id="datasource_last_modified-caret"
-                        class="order-by button button--caret-button{% if order_by == "datasource_last_modified" and order == "ascending" %} up{% endif %}"
-                        value="{% if order_by == "datasource_last_modified" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                        class="order-by button button--caret-button{% if order_by == 'datasource_last_modified' and order == 'ascending' %} up{% endif %}"
+                        value="{% if order_by == 'datasource_last_modified' and order == 'ascending' %}descending{% else %}ascending{% endif %}">
                   <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
                 </button>
               </div>
