@@ -1929,10 +1929,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--datasource_last_modified {
-      width: calc(var(--datatable-cell-padding) + 12ch);
-      // 12ch is the exact number of characters needed for "dd._mon_yyyy".
-      // Side-padding for table cells is defined as "--datatable-cell-padding/2".
-      // So it ends up being 12ch + (2em/2)*2 = 120px + 32px = 152px.
+      width: calc(var(--datatable-cell-padding) + 8.25rem);
 
       @media (max-width: $break-xl) {
         display: none;
