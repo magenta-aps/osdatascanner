@@ -215,7 +215,7 @@ Unit Test Admin Application:
       --junitxml $CI_PROJECT_DIR/admin_unit_tests-junit.xml
       -p no:cacheprovider
       --color=yes
-      --cov
+      --cov=/code/src/os2datascanner/projects/admin
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/admin-coverage.xml
       --cov-report=term-missing
@@ -292,7 +292,7 @@ Integration Test Engine:
       --junitxml $CI_PROJECT_DIR/integration-junit.xml
       -p no:cacheprovider
       --color=yes
-      --cov
+      --cov=/code/src/os2datascanner/engine2
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/intergration-engine-coverage.xml
       --cov-report=term-missing
@@ -324,7 +324,7 @@ Unit Test Engine:
       --color=yes
       -n auto
       --dist=loadfile
-      --cov
+      --cov=/code/src/os2datascanner/engine2
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/engine-coverage.xml
       --cov-report=term-missing
@@ -427,7 +427,7 @@ Unit Test Report Application:
       --junitxml $CI_PROJECT_DIR/report-junit.xml
       -p no:cacheprovider
       --color=yes
-      --cov
+      --cov=/code/src/os2datascanner/projects/report
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/report-coverage.xml
       --cov-report=term-missing
@@ -491,7 +491,7 @@ Unit Test API server:
       --junitxml $CI_PROJECT_DIR/api-junit.xml
       -p no:cacheprovider
       --color=yes
-      --cov
+      --cov=/code/src/os2datascanner/server
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/api-coverage.xml
       --cov-report=term-missing
