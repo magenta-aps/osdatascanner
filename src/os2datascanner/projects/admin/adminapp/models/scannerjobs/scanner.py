@@ -321,7 +321,7 @@ class Scanner(models.Model):
     def _construct_rule(self, force: bool) -> Rule:
         """Builds an object that represents the rules configured for this
         scanner."""
-        basic = self.rule.make_engine2_rule()
+        configured_rule = self.rule.make_engine2_rule()
 
         prerules = []
         if not force and self.do_last_modified_check:
@@ -335,11 +335,12 @@ class Scanner(models.Model):
                 if last:
                     prerules.append(LastModifiedRule(last))
 
-        content_branch = AllRule.make(*self.local_all_rules(), basic)
+        # Rules that inspect converted content.
+        content_rules = AllRule.make(*self.local_all_rules(), configured_rule)
 
         if self.do_ocr and any(
                 r.operates_on == OutputType.Text
-                for r in content_branch.flatten()):
+                for r in content_rules.flatten()):
             # If we're doing OCR (and we have a rule that actually /requires/
             # text), then filter out any images smaller than 128x32 (or 32x128)
             cr = make_if(
@@ -349,13 +350,13 @@ class Scanner(models.Model):
                             height_range=range(32, 16385),
                             min_dim=128),
                     True)
-            content_branch = AndRule.make(cr, content_branch)
+            content_rules = AndRule.make(cr, content_rules)
 
         # append any model-specific rules. Order matters!
         # AllRule will evaluate all rules, no matter the outcome of current rule
         # AndRule will only evaluate next rule, if current rule have match
         # OrRule will stop evaluating as soon as one rule have match
-        rule = OrRule.make(*self.local_or_rules(), content_branch)
+        rule = OrRule.make(*self.local_or_rules(), content_rules)
         rule = AndRule.make(*self.local_and_rules(), rule)
 
         # Explicitly insert at index 0 to evaluate early to avoid compatibility issues

@@ -18,6 +18,8 @@
 - Fixed a bug where `EmailHeaderRule` would discard matches when used together
   with `NotRule`.
 
+- Fixed inconsistent behaviour when scanning emails with both `OCR` and `EmailHeaderRule`
+
 ## Version 3.32.0, 22nd May 2026
 
 "Oh My God We're Back Again"
