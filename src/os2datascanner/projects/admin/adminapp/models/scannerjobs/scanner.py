@@ -321,7 +321,7 @@ class Scanner(models.Model):
     def _construct_rule(self, force: bool) -> Rule:
         """Builds an object that represents the rules configured for this
         scanner."""
-        rule = self.rule.make_engine2_rule()
+        configured_rule = self.rule.make_engine2_rule()
 
         prerules = []
         if not force and self.do_last_modified_check:
@@ -335,23 +335,12 @@ class Scanner(models.Model):
                 if last:
                     prerules.append(LastModifiedRule(last))
 
-        # append any model-specific rules. Order matters!
-        # AllRule will evaluate all rules, no matter the outcome of current rule
-        # AndRule will only evaluate next rule, if current rule have match
-        # OrRule will stop evaluating as soon as one rule have match
-        rule = AllRule.make(*self.local_all_rules(), rule)
-        rule = OrRule.make(*self.local_or_rules(), rule)
-        rule = AndRule.make(*self.local_and_rules(), rule)
-
-        # Explicitly insert at index 0 to evaluate early to avoid compatibility issues
-        # with other rules that require early execution.
-        if self.max_pdf_size:
-            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
-            prerules.insert(0, sr)
+        # Rules that inspect converted content.
+        content_rules = AllRule.make(*self.local_all_rules(), configured_rule)
 
         if self.do_ocr and any(
                 r.operates_on == OutputType.Text
-                for r in rule.flatten()):
+                for r in content_rules.flatten()):
             # If we're doing OCR (and we have a rule that actually /requires/
             # text), then filter out any images smaller than 128x32 (or 32x128)
             cr = make_if(
@@ -361,9 +350,22 @@ class Scanner(models.Model):
                             height_range=range(32, 16385),
                             min_dim=128),
                     True)
-            prerules.append(cr)
+            content_rules = AndRule.make(cr, content_rules)
 
-        # prerules includes: do_ocr, LastModifiedRule
+        # append any model-specific rules. Order matters!
+        # AllRule will evaluate all rules, no matter the outcome of current rule
+        # AndRule will only evaluate next rule, if current rule have match
+        # OrRule will stop evaluating as soon as one rule have match
+        rule = OrRule.make(*self.local_or_rules(), content_rules)
+        rule = AndRule.make(*self.local_and_rules(), rule)
+
+        # Explicitly insert at index 0 to evaluate early to avoid compatibility issues
+        # with other rules that require early execution.
+        if self.max_pdf_size:
+            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
+            prerules.insert(0, sr)
+
+        # prerules includes: SizeRule, LastModifiedRule
         return AndRule.make(*prerules, rule)
 
     def _construct_filter_rule(self) -> Rule:
