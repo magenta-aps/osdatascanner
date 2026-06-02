@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 3.32.1
+## Version 3.32.1, ?? ?? ??
 
 ## New in this release
 
@@ -9,6 +9,9 @@
 ### General improvements
 
 - Adds a warning to the scan completion email when scan completes with 0 bytes scanned.
+
+- Mailscanners (EWS, O365 & Gmail) now store a subset of email headers as hints, making
+  scanners that use these more efficient.
 
 ### Bugfixes
 
