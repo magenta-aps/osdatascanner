@@ -89,12 +89,6 @@ OS2MO_REQUEST_TIMEOUT = 120
 OAUTH2_TOKEN_TIMEOUT = 180
 
 
-# [test]
-TEST_RUNNER = "xmlrunner.extra.djangotestrunner.XMLTestRunner"
-TEST_OUTPUT_DESCRIPTIONS = true
-TEST_OUTPUT_VERBOSE = true
-# TEST_OUTPUT_FILE_NAME is set under dirs
-
 # [installation]
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -322,4 +316,3 @@ VAR_DIR = ["*", "var"]
 LOGS_DIR = ["*", "var", "logs"]
 STATIC_ROOT = ["*", 'src', 'os2datascanner', 'projects', 'static', 'admin']
 MEDIA_ROOT = ["*", "uploads", "admin"]
-TEST_OUTPUT_FILE_NAME = ["*", "build", "test-results.xml"]
