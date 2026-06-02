@@ -167,6 +167,10 @@ def do_conversion(resource, conversion, retrier, source_manager):  # noqa, CCR00
                 )
                 return retrier.run(convert, resource, required)
 
+        # Size has no generic converter; a missing size should NOT trigger Source reinterpretation
+        if required == OutputType.Size:
+            return None
+
         # There wasn't any in the parent hierarchy. Let it run, raise a KeyError and be handled
         # by the handle_conversion_key_error function. Likely we can reinterpret as a Source.
         return retrier.run(convert, resource, required)
