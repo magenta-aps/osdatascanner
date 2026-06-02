@@ -20,6 +20,7 @@ from ..derived.derived import DerivedSource
 from .utilities import MSGraphSource, warn_on_httperror, MailFSBuilder
 
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
+from ...conversions.email_headers import email_headers_hint
 
 logger = structlog.get_logger("engine2")
 
@@ -222,7 +223,8 @@ class MSGraphMailAccountSource(DerivedSource):
         pn = self.handle.relative_path
         ps = engine2_settings.model["msgraph"]["page_size"]
         builder = MailFSBuilder(self, sm, pn)
-        query = f"users/{pn}/messages?$select=id,subject,webLink,parentFolderId&$top={ps}"
+        query = (f"users/{pn}/messages?$select=id,subject,webLink,parentFolderId,"
+                 f"internetMessageHeaders&$top={ps}")
         scan_deleted_items = self.handle.source.scan_deleted_items_folder
         scan_sync_issues = self.handle.source.scan_syncissues_folder
 
@@ -252,7 +254,10 @@ class MSGraphMailAccountSource(DerivedSource):
         folder = builder.build_path(fid)
         return MSGraphMailMessageHandle(
             self, message["id"], mail_subject=message["subject"],
-            weblink=message["webLink"], folder=folder)
+            weblink=message["webLink"], folder=folder,
+            hints=email_headers_hint(
+                (h["name"], h["value"])
+                for h in (message.get("internetMessageHeaders") or [])))
 
     @staticmethod
     def from_url(url):  # TODO: Question, is this method even used? I see no good way of getting
@@ -338,8 +343,8 @@ class MSGraphMailMessageHandle(Handle):
 
     def __init__(self, source, path,  # noqa: R0913
                  mail_subject, weblink,
-                 folder=None):
-        super().__init__(source, path)
+                 folder=None, hints=None):
+        super().__init__(source, path, hints=hints)
         self._mail_subject = mail_subject
         self._weblink = weblink
         self._folder = folder
@@ -388,4 +393,4 @@ class MSGraphMailMessageHandle(Handle):
         return MSGraphMailMessageHandle(
                 Source.from_json_object(obj["source"]),
                 obj["path"], obj["mail_subject"], obj["weblink"],
-                obj.get("folder", None))
+                obj.get("folder", None), hints=obj.get("hints"))

@@ -10,6 +10,7 @@ from datetime import datetime
 from .utilities.utilities import GoogleSource
 from ..rules.rule import Rule
 from .core import Source, Handle, FileResource
+from ..conversions.email_headers import email_headers_hint
 from googleapiclient.errors import HttpError
 from os2datascanner.engine2.rules.utilities.analysis import compute_mss
 import base64
@@ -81,11 +82,16 @@ class GmailSource(GoogleSource):
                 email = service.users().messages().get(userId=self._user_email,
                                                        id=msgId).execute()
                 headers = email["payload"]["headers"]
-                subject = [i['value'] for i in headers if i["name"] == "Subject"][0]
+                hints = {'size': email.get('sizeEstimate')}
+
+                if (header_hint := email_headers_hint(
+                        (h["name"], h["value"]) for h in headers)):
+                    hints |= header_hint
+
+                subject = hints.get('email-headers', {}).get('subject')
                 # Id of given email is set to be path.
                 yield GmailHandle(
-                    self, msgId, mail_subject=subject,
-                    hints={'size': email.get('sizeEstimate')})
+                    self, msgId, mail_subject=subject, hints=hints)
 
     # Censoring service account details
     def censor(self):
