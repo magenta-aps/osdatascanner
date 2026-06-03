@@ -13,6 +13,8 @@
 - Mailscanners (EWS, O365 & Gmail) now store a subset of email headers as hints, making
   scanners that use these more efficient.
 
+- Renamed column header from "source age" to "last modified" + updated the related tooltips.
+
 ### Bugfixes
 
 - Fixed a bug where `EmailHeaderRule` would discard matches when used together
