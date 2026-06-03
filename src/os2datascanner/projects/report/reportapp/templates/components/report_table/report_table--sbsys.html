@@ -7,7 +7,7 @@
   <div class="datatablex__card-container no-side-scroll"
        role="region"
        tabindex="0"
-       aria-label="{% trans 'Results' %}"
+       aria-label="{% trans "Results" %}"
        name="handle-matches-get"
        hx-get="{{ request.path }}"
        hx-swap="outerHTML"
@@ -57,8 +57,8 @@
                        type="checkbox"
                        {% if not allow_handle %}disabled{% endif %}>
                 <label for="select-all"
-                       aria-label="{% trans 'Select all results' %}"
-                       title="{% trans 'Select all results' %}"></label>
+                       aria-label="{% trans "Select all results" %}"
+                       title="{% trans "Select all results" %}"></label>
               </div>
             </th>
  
@@ -101,8 +101,8 @@
                         aria-label="{% trans "Sort the results by when the source object was last modified." %}"
                         title="{% trans "Sort the results by when the source object was last modified." %}"
                         id="datasource_last_modified-caret"
-                        class="order-by button button--caret-button{% if order_by == 'datasource_last_modified' and order == 'ascending' %} up{% endif %}"
-                        value="{% if order_by == 'datasource_last_modified' and order == 'ascending' %}descending{% else %}ascending{% endif %}">
+                        class="order-by button button--caret-button{% if order_by == "datasource_last_modified" and order == "ascending" %} up{% endif %}"
+                        value="{% if order_by == "datasource_last_modified" and order == "ascending" %}descending{% else %}ascending{% endif %}">
                   <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
                 </button>
               </div>
@@ -115,11 +115,11 @@
  
                   <button type="button"
                           name="resolution_status"
-                          aria-label="{% trans 'Sort table by' %} {% trans 'Status'|lower %}"
-                          title="{% trans 'Sort table by' %} {% trans 'Status'|lower %}"
+                          aria-label="{% trans "Sort table by" %} {% trans "Status"|lower %}"
+                          title="{% trans "Sort table by" %} {% trans "Status"|lower %}"
                           id="status-caret"
-                          class="order-by button button--caret-button{% if order_by == 'resolution_status' and order == 'descending' %} up{% endif %}"
-                          value="{% if order_by == 'resolution_status' and order == 'descending' %}ascending{% else %}descending{% endif %}">
+                          class="order-by button button--caret-button{% if order_by == "resolution_status" and order == "descending" %} up{% endif %}"
+                          value="{% if order_by == "resolution_status" and order == "descending" %}ascending{% else %}descending{% endif %}">
                     <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
                   </button>
                 </div>
@@ -127,8 +127,8 @@
             {% endif %}
 
             <th class="column--actions">
-              <span aria-label="{% trans 'actions'|capfirst %}"
-                    title="{% trans 'actions'|capfirst %}">{% trans 'actions'|capfirst %}</span>
+              <span aria-label="{% trans "actions"|capfirst %}"
+                    title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
             </th>
           </tr>
         </thead>
