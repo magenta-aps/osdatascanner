@@ -7,7 +7,7 @@
   <div class="datatablex__card-container no-side-scroll"
        role="region"
        tabindex="0"
-       aria-label="{% trans "Results" %}"
+       aria-label="{% trans "results"|capfirst %}"
        name="handle-matches-get"
        hx-get="{{ request.path }}"
        hx-swap="outerHTML"
@@ -57,8 +57,8 @@
                        type="checkbox"
                        {% if not allow_handle %}disabled{% endif %}>
                 <label for="select-all"
-                       aria-label="{% trans "Select all results" %}"
-                       title="{% trans "Select all results" %}"></label>
+                       aria-label="{% trans "Select all results." %}"
+                       title="{% trans "Select all results." %}"></label>
               </div>
             </th>
  
@@ -78,8 +78,8 @@
  
                 <button type="button"
                         name="case_number"
-                        aria-label="{% trans "Sort table by" %} {% trans "case number" %}"
-                        title="{% trans "Sort table by" %} {% trans "case number" %}"
+                        aria-label="{% trans "Sort the results by case number." %}"
+                        title="{% trans "Sort the results by case number." %}"
                         id="case_number-caret"
                         class="order-by button button--caret-button{% if order_by == "case_number" and order == "ascending" %} up{% endif %}"
                         value="{% if order_by == "case_number" and order == "ascending" %}descending{% else %}ascending{% endif %}">
@@ -91,7 +91,7 @@
             <th class="column--datasource_last_modified">
               <div class="th__flex-container">
                 <label class="th-label"
-                       title="{% blocktrans trimmed %}Time when the case was last modified.{% endblocktrans %}"
+                       title="{% trans "Time when the source object was last modified." %}"
                        for="datasource_last_modified-caret">
                   <span>{% trans "last modified"|capfirst %}</span>
                 </label>
@@ -115,8 +115,8 @@
  
                   <button type="button"
                           name="resolution_status"
-                          aria-label="{% trans "Sort table by" %} {% trans "Status"|lower %}"
-                          title="{% trans "Sort table by" %} {% trans "Status"|lower %}"
+                          aria-label="{% trans "Sort the results by resolution status." %}"
+                          title="{% trans "Sort the results by resolution status." %}"
                           id="status-caret"
                           class="order-by button button--caret-button{% if order_by == "resolution_status" and order == "descending" %} up{% endif %}"
                           value="{% if order_by == "resolution_status" and order == "descending" %}ascending{% else %}descending{% endif %}">

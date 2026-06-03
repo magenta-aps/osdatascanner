@@ -10,8 +10,6 @@
 
 - Adds a warning to the scan completion email when scan completes with 0 bytes scanned.
 
-- Renamed column header from "source age" to "last modified" + updated the related tooltips.
-
 - Mailscanners (EWS, O365 & Gmail) now store a subset of email headers as hints, making
   scanners that use these more efficient.
 

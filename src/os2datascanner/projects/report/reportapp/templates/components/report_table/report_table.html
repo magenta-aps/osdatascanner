@@ -7,7 +7,7 @@
   <div class="datatablex__card-container no-side-scroll"
        role="region"
        tabindex="0"
-       aria-label="{% trans "Results" %}"
+       aria-label="{% trans "results"|capfirst %}"
        name="handle-matches-get"
        hx-get="{{ request.path }}"
        hx-swap="outerHTML"
@@ -62,24 +62,24 @@
                        type="checkbox"
                        {% if not allow_handle %}disabled{% endif %}>
                 <label for="select-all"
-                       aria-label="{% trans "Select all results" %}"
-                       title="{% trans "Select all results" %}"></label>
+                       aria-label="{% trans "Select all results." %}"
+                       title="{% trans "Select all results." %}"></label>
               </div>
             </th>
 
             <th class="column column--name">
-              <div class="th__flex-container">{% trans "Name" %}</div>
+              <div class="th__flex-container">{% trans "name"|capfirst %}</div>
             </th>
 
             <th class="column column--matchcount column--numeral">
               <div class="th__flex-container">
                 <label class="th-label" for="matches-caret">
-                  <span>{% trans "Matches" %}</span>
+                  <span>{% trans "matches"|capfirst %}</span>
                 </label>
                 <button type="button"
                         name="number_of_matches"
-                        aria-label="{% trans "Sort table by" %} {% trans "Matches"|lower %}"
-                        title="{% trans "Sort table by" %} {% trans "Matches"|lower %}"
+                        aria-label="{% trans "Sort the results by number of matches." %}"
+                        title="{% trans "Sort the results by number of matches." %}"
                         id="matches-caret"
                         class="order-by button button--caret-button{% if order_by == "number_of_matches" and order == "descending" %} up{% endif %}"
                         value="{% if order_by == "number_of_matches" and order == "descending" %}ascending{% else %}descending{% endif %}">
@@ -91,7 +91,7 @@
             <th class="column column--datasource_last_modified">
               <div class="th__flex-container">
                 <label class="th-label"
-                       title="{% blocktrans trimmed %}For files and web pages: time when the source was last modified. For mails: time when the mail was sent.{% endblocktrans %}"
+                       title="{% trans "Time when the source object was last modified." %}"
                        for="datasource_last_modified-caret">
                   <span>{% trans "last modified"|capfirst %}</span>
                 </label>
@@ -109,18 +109,18 @@
             </th>
 
             <th class="column column--source column--attribute">
-              <div class="th__flex-container">{% trans "Source" %}</div>
+              <div class="th__flex-container">{% trans "source"|capfirst %}</div>
             </th>
 
             <th class="column column--path">
               <div class="th__flex-container">
-                <label class="th-label" for="path-caret">{% trans "Path" %}</label>
+                <label class="th-label" for="path-caret">{% trans "path"|capfirst %}</label>
                 {% comment %}We use a click event handler on this button to
                 submit the form defined in report_table--filters.html{% endcomment %}
                 <button type="button"
                         name="sort_key"
-                        aria-label="{% trans "Sort table by" %} {% trans "Path"|lower %} {% trans "name"|lower %}"
-                        title="{% trans "Sort table by" %} {% trans "Path"|lower %} {% trans "name"|lower %}"
+                        aria-label="{% trans "Sort the results by path name." %}"
+                        title="{% trans "Sort the results by path name." %}"
                         id="path-caret"
                         class="order-by button button--caret-button{% if order_by == "sort_key" and order == "descending" %} up{% endif %}"
                         value="{% if order_by == "sort_key" and order == "descending" %}ascending{% else %}descending{% endif %}">
@@ -132,12 +132,12 @@
             {% if is_archive %}
               <th class="column column--resolution-status">
                 <div class="th__flex-container">
-                  <label class="th-label" for="status-caret">{% trans "Status" %}</label>
+                  <label class="th-label" for="status-caret">{% trans "status"|capfirst %}</label>
 
                   <button type="button"
                           name="resolution_status"
-                          aria-label="{% trans "Sort table by" %} {% trans "Status"|lower %}"
-                          title="{% trans "Sort table by" %} {% trans "Status"|lower %}"
+                          aria-label="{% trans "Sort the results by resolution status." %}"
+                          title="{% trans "Sort the results by resolution status." %}"
                           id="status-caret"
                           class="order-by button button--caret-button{% if order_by == "resolution_status" and order == "descending" %} up{% endif %}"
                           value="{% if order_by == "resolution_status" and order == "descending" %}ascending{% else %}descending{% endif %}">
@@ -148,7 +148,8 @@
             {% endif %}
 
             <th class="column column--actions">
-              <span aria-label="{% trans "Actions" %}" title="{% trans "Actions" %}">{% trans "Actions" %}</span>
+              <span aria-label="{% trans "actions"|capfirst %}"
+                    title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
             </th>
           </tr>
         </thead>
