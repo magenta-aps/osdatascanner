@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-22 13:27+0200\n"
+"POT-Creation-Date: 2026-05-29 13:51+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -115,7 +115,15 @@ msgstr "Generelle indstillinger"
 
 #: adminapp/forms/shared.py
 msgid "Result settings"
-msgstr "Indstillinger for resultater"
+msgstr "Resultatindstillinger"
+
+#: adminapp/forms/shared.py
+msgid "User associations"
+msgstr "Brugertilknytninger"
+
+#: adminapp/forms/shared.py
+msgid "Result allocation"
+msgstr "Resultattildeling"
 
 #: adminapp/forms/shared.py
 msgid "Scheduled execution settings"
@@ -124,6 +132,10 @@ msgstr "Indstillinger for planlagte kørsler"
 #: adminapp/forms/shared.py
 msgid "Scan scope"
 msgstr "Scanningsområde"
+
+#: adminapp/forms/shared.py
+msgid "File settings"
+msgstr "Filindstillinger"
 
 #: adminapp/forms/shared.py
 msgid "Scan all accounts in organization"
@@ -166,6 +178,20 @@ msgstr "Regel"
 #: adminapp/forms/shared.py
 msgid "Exclusion rule"
 msgstr "Udelukkelsesregel"
+
+#: adminapp/forms/shared.py
+msgid "Set a max size for PDF files (MB)"
+msgstr "Angiv en max størrelse for PDF-filer (MB)"
+
+#: adminapp/forms/shared.py
+msgid ""
+"Set a size limit for PDF files that the scanner will process (in megabytes)."
+msgstr ""
+"Angiv en størrelsesbegrænsning for PDF-filer som scanneren skal behandle."
+
+#: adminapp/forms/shared.py
+msgid "E.g. 10"
+msgstr "F.eks. 10"
 
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"

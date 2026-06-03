@@ -1,0 +1,27 @@
+{# scan_max_file_size.html #}
+
+{% load i18n %}
+
+<div {% if widget.attrs.id %}id="{{ widget.attrs.id }}_wrapper"{% endif %}
+     data-scan-max-file-size
+     class="max-file-size__wrapper">
+  <div class="checkbox-wrapper">
+    {% include toggle.template_name with widget=toggle %}
+    <label for="{{ toggle.attrs.id }}" class="form-widget__checkbox-label">{{ checkbox_label }}</label>
+  </div>
+  <div class="max-file-size__input-wrapper">
+    <input type="number"
+           name="{{ widget.name }}"
+           id="{{ widget.attrs.id }}"
+           class="custom-field custom-field--number max-file-size__input"
+           min="1"
+           {% if widget.attrs.placeholder %}placeholder="{{ widget.attrs.placeholder }}"{% endif %}
+           {% if widget.value and widget.value != "0" %}value="{{ widget.value }}"{% else %}disabled{% endif %}>
+    {# Note: The hidden input submits 0 when the visible input is disabled (meaning: no file size limit set), so min="1" above intentionally excludes 0. #}
+    <input type="hidden"
+           name="{{ widget.name }}"
+           id="{{ widget.attrs.id }}_hidden"
+           value="0"
+           {% if widget.value and widget.value != "0" %}disabled{% endif %}>
+  </div>
+</div>

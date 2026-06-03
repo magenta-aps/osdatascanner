@@ -46,9 +46,11 @@
  
                 {# Only render the icon if help_text isn't empty. #}
                 {% if bf.help_text %}
-                  <span class="form-widget__help-icon material-symbols"
-                        title="{{ bf.help_text }}"
-                        aria-hidden="true">info</span>
+                  <div class="form-widget__help-icon-wrapper">
+                    <span class="form-widget__help-icon material-symbols"
+                          title="{{ bf.help_text }}"
+                          aria-hidden="true">info</span>
+                  </div>
                 {% endif %}
               </div>
 
@@ -66,9 +68,11 @@
 
                 {# Only render the icon if help_text isn't empty. #}
                 {% if bf.help_text %}
-                  <span class="form-widget__help-icon material-symbols"
-                        title="{{ bf.help_text }}"
-                        aria-hidden="true">info</span>
+                  <div class="form-widget__help-icon-wrapper">
+                    <span class="form-widget__help-icon material-symbols"
+                          title="{{ bf.help_text }}"
+                          aria-hidden="true">info</span>
+                  </div>
                 {% endif %}
               </div>
 

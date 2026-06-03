@@ -33,6 +33,34 @@ class GroupingModelForm(forms.ModelForm):
                 "pattern": pattern
             }
 
+    def _build_items(self, spec, field_dict):
+        out = []
+        for entry in spec:
+            # treat any 2-tuple or 2-list [title, sub_spec] as subgroup
+            if (
+                isinstance(entry, (list, tuple))
+                and len(entry) == 2
+                and isinstance(entry[1], Sequence)
+                and not isinstance(entry[0], (list, tuple))
+            ):
+                title, sub_spec = entry
+                out.append({
+                    "type": "group",
+                    "title": title,
+                    "items": self._build_items(sub_spec, field_dict),
+                })
+            else:
+                # must be a field name — skip if removed from self.fields
+                if entry not in field_dict:
+                    continue
+                bf, errors = field_dict[entry]
+                out.append({
+                    "type": "field",
+                    "bf": bf,
+                    "errors": errors,
+                })
+        return out
+
     def get_context(self):
         # Slightly hacked-up version of the original to support grouping and to
         # allow widget attributes to be patched
@@ -50,39 +78,12 @@ class GroupingModelForm(forms.ModelForm):
 
         field_dict = {name: (bf, errors) for name, bf, errors in fields}
 
-        # Recursive builder:
-        def build_items(spec):
-            out = []
-            for entry in spec:
-                # treat any 2-tuple or 2-list [title, sub_spec] as subgroup
-                if (
-                    isinstance(entry, (list, tuple))
-                    and len(entry) == 2
-                    and isinstance(entry[1], Sequence)
-                    and not isinstance(entry[0], (list, tuple))
-                ):
-                    title, sub_spec = entry
-                    out.append({
-                        "type": "group",
-                        "title": title,
-                        "items": build_items(sub_spec),
-                    })
-                else:
-                    # must be a field name
-                    bf, errors = field_dict[entry]
-                    out.append({
-                        "type": "field",
-                        "bf": bf,
-                        "errors": errors,
-                    })
-            return out
-
         # Build the top level:
         groups_ctx = []
         for title, spec in self.groups:
             groups_ctx.append({
                 "title": title,
-                "items": build_items(spec),
+                "items": self._build_items(spec, field_dict),
             })
 
         return {
