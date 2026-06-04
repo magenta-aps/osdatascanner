@@ -4,6 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+from dataclasses import replace
 from urllib.parse import urlsplit
 
 from django.apps import apps
@@ -162,9 +163,9 @@ def merge_renderable_match_fragments(match_fragments: list):
         case [one]:
             return one
         case [first, *rest]:
-            merged_fragment = first
-            return merged_fragment.matches.extend(
-                match
-                for fragment in rest
-                for match in fragment.matches
-            )
+            # MatchFragment is "frozen", so, to respect that, we use list to make a copy.
+            merged = list(first.matches)
+
+            for fragment in rest:
+                merged.extend(fragment.matches)
+            return replace(first, matches=merged)
