@@ -93,6 +93,11 @@
         {{ document_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
       </td>
 
+      <td class="column--datasource_creation_time">
+        {% translate "unknown" as unknown_label %}
+        {{ document_report.datasource_creation_time|naturalday:"j. M Y"|default_if_none:unknown_label|capfirst }}
+      </td>
+
       {% if is_archive %}
         <td class="column--resolution-status">
           <div class="status">

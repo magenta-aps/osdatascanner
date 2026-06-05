@@ -1928,7 +1928,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       // Empty
     }
 
-    &--datasource_last_modified {
+    &--datasource_last_modified,
+    &--datasource_creation_time {
       width: calc(var(--datatable-cell-padding) + 8.25rem);
 
       @media (max-width: $break-xl) {

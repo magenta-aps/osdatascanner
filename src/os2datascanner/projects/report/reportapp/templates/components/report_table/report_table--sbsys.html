@@ -30,13 +30,14 @@
           <col class="column column--flexible">
           <col class="column column--case-number">
           <col class="column column--datasource_last_modified">
+          <col class="column column--datasource_creation_time">
           {% if is_archive %}<col class="column column--resolution-status">{% endif %}
           <col class="column column--actions{% if not is_archive %} false-positive{% endif %}">
         </colgroup>
  
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if is_archive %}7{% else %}6{% endif %}">
+            <th colspan="{% if is_archive %}8{% else %}7{% endif %}">
               <div class="table-toolbar">
                 {% include "components/report_table/report_table--toolbar.html" %}
 
@@ -107,6 +108,27 @@
                 </button>
               </div>
             </th>
+
+            <th class="column--datasource_creation_time">
+              <div class="th__flex-container">
+                <label class="th-label"
+                       title="{% trans "Time when the source object was created." %}"
+                       for="case_created-caret">
+                  <span>{% trans "creation date"|capfirst %}</span>
+                </label>
+
+                <button type="button"
+                        name="datasource_creation_time"
+                        aria-label="{% trans "Sort the results by when the source object was created." %}"
+                        title="{% trans "Sort the results by when the source object was created." %}"
+                        id="datasource_creation_time-caret"
+                        class="order-by button button--caret-button{% if order_by == "datasource_creation_time" and order == "ascending" %} up{% endif %}"
+                        value="{% if order_by == "datasource_creation_time" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                  <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                </button>
+              </div>
+            </th>
+
  
             {% if is_archive %}
               <th class="column--resolution-status">
@@ -145,11 +167,11 @@
  
         <tfoot>
           {% if is_archive %}
-            {% with colspan=7 %}
+            {% with colspan=8 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% else %}
-            {% with colspan=6 %}
+            {% with colspan=7 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% endif %}

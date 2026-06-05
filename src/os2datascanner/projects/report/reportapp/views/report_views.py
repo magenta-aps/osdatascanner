@@ -440,15 +440,21 @@ class SBSYSMixin:
         order_by = self.request.GET.get("order_by")
         order = self.request.GET.get("order")
 
-        if order_by == "case_number" and order:
-            queryset = queryset.annotate(
-                case_number_sort=F("raw_matches__handle__path")
-            )
+        # These are SBSYS-specific, the usual ones we get from ReportView-
+        extra_sorting_options = ["case_number", "datasource_creation_time"]
+
+        if order_by in extra_sorting_options and order:
+            if order_by == "case_number":
+                # Extra-extra special, that has no separate field and so has to be derived first.
+                queryset = queryset.annotate(
+                    case_number=F("raw_matches__handle__path")
+                )
             match order:
                 case "ascending":
-                    queryset = queryset.order_by("case_number_sort", "pk")
+                    queryset = queryset.order_by(order_by, "pk")
                 case "descending":
-                    queryset = queryset.order_by("-case_number_sort", "pk")
+                    # Those we don't (maybe _yet_?) go last.
+                    queryset = queryset.order_by(F(order_by).desc(nulls_last=True), "pk")
         return queryset
 
     def get_context_data(self, **kwargs):

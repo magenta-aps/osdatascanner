@@ -220,6 +220,15 @@ class SBSYSDBHandles:
                         lm = lm.replace(tzinfo=tz.gettz())
                     yield ("last-modified",
                            OutputType.LastModified.encode_json_object(lm))
+
+                if isinstance(lm := row.get("Created"), datetime):
+                    if lm.tzinfo is None:
+                        # Same reasoning as above
+                        lm = lm.replace(tzinfo=tz.gettz())
+                    # Borrowing the OutputType for serialization.
+                    yield ("datasource-creation-time",
+                           OutputType.LastModified.encode_json_object(lm))
+
                 if upn := row.get("Behandler.UserPrincipalName"):
                     yield ("user-principal-name", upn)
 
@@ -423,7 +432,7 @@ class SBSYSDBSources:
 
         required_columns = (
                 "ID", "Nummer", "Titel", "Kommentar",
-                "Behandler.UserPrincipalName", "LastChanged",
+                "Behandler.UserPrincipalName", "LastChanged", "Created",
                 "Ansaettelsessted.Navn",)
 
         def _generate_state(self, sm: SourceManager):
