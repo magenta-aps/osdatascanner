@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.32.1, ?? ?? ??
+## Version 3.32.1, 5th June 2026
+
+"Chaos Gremlin"
 
 ## New in this release
 
