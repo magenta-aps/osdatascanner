@@ -161,6 +161,11 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         # shown.
         update_fields['datasource_last_modified'] = scan_tag.time or time_now()
 
+    if "datasource-creation-time" in message.metadata:
+        update_fields['datasource_creation_time'] = OutputType.LastModified.decode_json_object(
+            message.metadata["datasource-creation-time"]
+        )
+
     # Specific to Outlook matches - if they have a "False Positive" category set, resolve them.
     outlook_categories = message.metadata.get("outlook-categories", [])
     outlook_false_positive = False

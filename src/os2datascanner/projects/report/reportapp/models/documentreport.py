@@ -107,6 +107,9 @@ class DocumentReport(models.Model):
     # This timestamp is collected during scan and is from the datasource.
     datasource_last_modified = models.DateTimeField(null=True)
 
+    datasource_creation_time = models.DateTimeField(null=True,
+                                                    blank=True)
+
     scanner_job = models.ForeignKey(
         ScannerReference,
         on_delete=models.CASCADE,

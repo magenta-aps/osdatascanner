@@ -6,6 +6,8 @@
 
 - SBSYS results extract the department they belong to.
 
+- SBSYS results now collect Case creation time, which can then be sorted by in the report module UI.
+
 ### General improvements
 
 - Adds a warning to the scan completion email when scan completes with 0 bytes scanned.
