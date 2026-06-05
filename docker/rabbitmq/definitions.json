@@ -1,8 +1,4 @@
 {
-  "rabbit_version": "3.11.1",
-  "rabbitmq_version": "3.11.1",
-  "product_name": "RabbitMQ",
-  "product_version": "3.11.1",
   "users": [
     {
       "name": "os2ds",
