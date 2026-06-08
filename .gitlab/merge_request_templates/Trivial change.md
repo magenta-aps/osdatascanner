@@ -11,8 +11,10 @@ Examples:
 /label ~trivial
 /milestone %"Next Release"
 <!-- Other recommended quick actions (remove # to apply and delete unwanted actions): -->
-#/request_review @af @jkh @nsn @sos @asl @en @apb
+#/request_review @jkh @nsn @sos @asl @en @apb
+
 #/label ~bug
+
 #/label ~feature
 
 ## Author's checklist
@@ -28,11 +30,10 @@ Checkboxes can be pre-filled before submitting the MR by replacing
     - [ ] The CHANGELOG.md file has been updated to reflect the change made in this MR
 - [ ] Workflow:
     - [ ] The title of this MR contains the relevant ticket no., formatted like `[#12345]`
-    - [ ] The corresponding Redmine ticket has been set to `Needs review`, assigned to the principal reviewer and contains a link to MR
+    - [ ] The corresponding Redmine ticket has been set to `Needs review` and contains a link to MR
     - [ ] The MR has been labelled with either ~bug (if it is a bugfix) or ~feature (if it is a feature)
 
 ## On Merge
 - [ ] Update redmine:
     - [ ] Status (to `Done`)
-    - [ ] Version (upcoming release)
-    - [ ] Assignee (if relevant)
+    - [ ] Version (to `Næste release`)
