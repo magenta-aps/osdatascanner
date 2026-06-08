@@ -1,5 +1,13 @@
 # Changelog
 
+## Version ??, ?? ?? ??
+
+
+### Bugfixes
+
+- Narrowed status_collector's query for corresponding ScanStatus to avoid message loss on schema
+  changes.
+
 ## Version 3.32.1, 5th June 2026
 
 "Chaos Gremlin"

@@ -53,6 +53,30 @@ class TestPipelineCollector:
         assert scan_status.scanned_objects == expected_scanned_objects
         assert scan_status.scanned_size == expected_scanned_size
 
+    def test_scan_tag_schema_change_shouldnt_drop_messages(
+            self, basic_scanner, status_message_with_object_size):
+        """ We shouldn't depend on exact equality of ScanStatus.scan_tag.
+            What happens if we do? ScanStatuses aren't updated.
+        """
+        outgoing_body = status_message_with_object_size.to_json_object()
+        assert "only_notify_remediators" in outgoing_body["scan_tag"]["scanner"]
+
+        legacy_scan_tag = status_message_with_object_size.scan_tag.to_json_object()
+        legacy_scan_tag["scanner"].pop("only_notify_remediators", None)
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=legacy_scan_tag,
+                total_sources=1,
+                total_objects=10,
+                scanned_objects=0,
+                scanned_size=0)
+
+        [_ for _ in status_message_received_raw(outgoing_body)]
+
+        scan_status = ScanStatus.objects.get(scanner=basic_scanner)
+        assert scan_status.scanned_objects == 1, "ScanStatus wasn't updated!"
+        assert scan_status.scanned_size == 100
+
     def test_surrogate_errors_are_caught(self, positive_corrupt_match_message):
         """How to test an exception is caught?
         We expect that no object is created if a DataError occurs. Reason being

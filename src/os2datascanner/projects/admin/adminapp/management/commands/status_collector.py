@@ -49,8 +49,9 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     locked_qs = ScanStatus.objects.select_for_update(
         of=('self',)
     ).filter(
+        # The same scanner, at the same time, should be what we're looking for.
         scanner=scanner,
-        scan_tag=body["scan_tag"]
+        scan_tag__time=body["scan_tag"]["time"]
     )
     # Queryset is evaluated immediately with .first() to lock the database entry.
     scan_status = locked_qs.first()
