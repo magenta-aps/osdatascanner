@@ -1,3 +1,7 @@
+# Disabled in tests: the surrounding-number check is prone to false negatives
+# (see docs/decision-history.md)
+CPRRULE_CONTEXT_NUMBER_CHECK = false
+
 [amqp]
 # Nested amqp settings are picked up by the common amqp utility module
 AMQP_HOST = "rabbitmq"

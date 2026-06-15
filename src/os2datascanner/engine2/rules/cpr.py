@@ -10,6 +10,7 @@ from itertools import chain
 from enum import Enum, unique
 import structlog
 
+from .. import settings as engine2_settings
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
 from .logical import oxford_comma
@@ -18,6 +19,8 @@ from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator
 from .utilities.properties import RuleProperties, RulePrecedence
 
 logger = structlog.get_logger("engine2")
+
+CONTEXT_NUMBER_CHECK = getattr(engine2_settings, "CPRRULE_CONTEXT_NUMBER_CHECK", True)
 
 cpr_regex = r"\b(\d{6})(?:[ \-/\.\t]|[ ]\-[ ])?(\d{4})\b"
 calculator = CprProbabilityCalculator()
@@ -180,15 +183,16 @@ class CPRRule(RegexRule):
     def examine_context(  # noqa: CCR001, C901 too high cognitive complexity
         self, match: Match[str]
     ) -> Tuple[Optional[float], List[tuple]]:
-        """Estimate a probality (0-1) based on the context of the match
+        """Estimate a probability (0-1) based on the context of the match,
+        or None if the context offers no strong signal either way.
 
-        Returns 0.0 if any of the following conditions are found
-        - The CPR-nr is surrounded by a number that doesn't resembles a CPR
-        - The word before or after is not either: lower-, title- or upper-case.
-        - A blacklisted surrounding_exception word is found around a CPR match
+        Returns 1.0 if
+        - pre- or post-context contains "cpr" or any other whitelist word
 
-        But returns 1.0 if
-        - pre-context contains "cpr" or any other whitelist words
+        Returns 0.0 if
+        - a blacklisted surrounding_exception word is found around the match
+
+        Otherwise, returns None, leaving the probability to the CprProbabilityCalculator.
         """
 
         probability = None
@@ -216,14 +220,16 @@ class CPRRule(RegexRule):
                     ctype.append((Context.BLACKLIST, cw))
                     return 0.0, ctype
 
+        # TODO: Reevaluate this and potentially remove it, after testing running with it off.
         # only do context checking on surrounding words
-        for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
-            if not w.word or self._compiled_expression.match(w.word):
-                continue
-            # test if surrounding word is a number (and not looks like a cpr)
-            elif w.word and is_number(w.word):
-                probability = 0.0
-                ctype.append((Context.NUMBER, w.word))
+        if CONTEXT_NUMBER_CHECK:
+            for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
+                if not w.word or self._compiled_expression.match(w.word):
+                    continue
+                # test if surrounding word is a number (and not looks like a cpr)
+                elif w.word and is_number(w.word):
+                    probability = 0.0
+                    ctype.append((Context.NUMBER, w.word))
 
         return probability, ctype
 
@@ -316,6 +322,7 @@ class CPRRule(RegexRule):
             else obj.get("surrounding_exceptions"))
 
 
+# TODO: Remove function CONTEXT_NUMBER_CHECK is out-phased.
 def is_number(s: str) -> bool:
     """Return True if the string is a int/float"""
 

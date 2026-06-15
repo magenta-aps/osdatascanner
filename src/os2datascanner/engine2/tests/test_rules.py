@@ -92,7 +92,7 @@ Vejstrand Kommune, Børn- og Ungeforvaltningen. 2205995008 4444
 Vejstrand Kommune, Børn- og Ungeforvaltningen. whiteword 230500-0003 4444
 Vejstrand Kommune, Børn- og Ungeforvaltningen. Benjamin McDonald 240501-0006
 Vejstrand Kommune, 250501-1980""",
-        ["2305XXXXXX", "2405XXXXXX", "2505XXXXXX"],
+        ["2205XXXXXX", "2305XXXXXX", "2405XXXXXX", "2505XXXXXX"],
     ),
     (
         CPRRule(

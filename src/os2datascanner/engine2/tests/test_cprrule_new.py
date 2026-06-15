@@ -60,20 +60,21 @@ class TestCPRRule:
         assert self.simplify_matches(CPRRule().match(text)) == expected
 
     @pytest.mark.parametrize(
-            "text,potential",
+            "text,expected",
             [
-                # CPR numbers lying around next to other, non-CPR numbers are
-                # ignored
+                # A valid CPR followed by a few unrelated numbers is not
+                # dismissed by the context check. A single numeric neighbour is
+                # too weak a signal. cpr_bin_check governs dense numeric soup instead
+                # (see test_bin_check.py::test_cpr_rule_with_bin_check). This
+                # sparse run has a high CPR/number ratio, so it's kept.
                 ("6742132882 1412661636 9424 1505642917 377377244444",
                  ["1412XXXXXX", "1505XXXXXX"]),
             ])
-    def test_context_check(self, text, potential):
-        """Test that the context check causes valid CPR numbers to be
-        dismissed."""
+    def test_context_check(self, text, expected):
         assert self.simplify_matches(
-                CPRRule().match(text)) == []
+                CPRRule().match(text)) == expected
         assert self.simplify_matches(
-                CPRRule(examine_context=False).match(text)) == potential
+                CPRRule(examine_context=False).match(text)) == expected
 
     @pytest.mark.parametrize(
             "text,potential",
@@ -113,20 +114,27 @@ class TestCPRRule:
                 CPRRule(blacklist=[]).match(text)) == potential
 
     @pytest.mark.parametrize(
-            "text,whitelist,potential",
+            "text,whitelist,surrounding_exceptions,potential",
             [
-                ("123456 222 444 PERSONNUMMER 444 141266-4872 997977-9777",
+                # A surrounding_exception word dismisses this CPR (probability
+                # 0.0), but a whitelist word in the same context overrides it
+                # (whitelist is checked first and returns 1.0), bringing the
+                # match back in.
+                ("telefon 141266-4872 vedr. personnummer",
                  ["personnummer"],
+                 ["telefon"],
                  ["1412XXXXXX"]),
             ])
-    def test_whitelist(self, text, whitelist, potential):
-        """Test that the presence of whitelisted words causes valid CPR numbers
-        that would otherwise be dismissed by the context check to be candidates
-        again."""
+    def test_whitelist(self, text, whitelist, surrounding_exceptions, potential):
+        """Test that a whitelisted word overrides a surrounding_exception that
+        would otherwise dismiss the match via the context check."""
         assert self.simplify_matches(
-                CPRRule().match(text)) == []
+                CPRRule(surrounding_exceptions=surrounding_exceptions)
+                .match(text)) == []
         assert self.simplify_matches(
-                CPRRule(whitelist=whitelist).match(text)) == potential
+                CPRRule(whitelist=whitelist,
+                        surrounding_exceptions=surrounding_exceptions)
+                .match(text)) == potential
 
     def test_p_numre_pdf(self):
         """The file `p-numre.pdf` contains a lot of "p-numre", about 20% of which are valid

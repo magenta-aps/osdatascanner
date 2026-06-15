@@ -20,6 +20,11 @@ LANGUAGES = ["da"]
 # (required for some on-premises Exchange scans)
 FORCE_LEGACY_OPENSSL_PROVIDER = true
 
+# Should the CPRRule invalidate a candidate when its immediate neighbour is a
+# non-CPR-like number? Might be prone to false negatives
+# (see docs/decision-history.md).
+CPRRULE_CONTEXT_NUMBER_CHECK = true
+
 # Should we preprocess PDF files before scanning them?
 # Uses pymupdf's ez_save with clean=True (corresponds to mutools clean -sc)
 [pdf]
