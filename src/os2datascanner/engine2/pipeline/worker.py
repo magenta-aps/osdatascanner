@@ -182,7 +182,7 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
             pass
         yield ("os2ds_status", messages.StatusMessage(
                 scan_tag=message.scan_spec.scan_tag,
-                message="", status_is_error=False,
+                message="",
                 object_size=object_size,
                 # Computing the MIME type is unnecessary -- we don't use it for
                 # anything, we just need it to be present(?)

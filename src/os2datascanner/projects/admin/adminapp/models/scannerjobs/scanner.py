@@ -423,7 +423,8 @@ class Scanner(models.Model):
                 rule = spec_template.rule
                 try:
                     cva = CoveredAccount.objects.filter(
-                            account=account, scanner=self).latest()
+                            account=account, scanner=self,
+                            scan_status__status_is_error=False).latest()
                     # OK, this Account has been covered by this Scanner before,
                     # so make a custom LastModifiedRule for them
                     rule = AndRule.make(
@@ -647,7 +648,8 @@ class Scanner(models.Model):
         return scan_tag.to_json_object()
 
     def get_last_successful_run_at(self) -> datetime:
-        query = ScanStatus.objects.filter(ScanStatus._completed_Q & Q(scanner=self))
+        query = ScanStatus.objects.filter(
+                ScanStatus._completed_Q & Q(scanner=self, status_is_error=False))
         last = max(query, key=lambda status: status.start_time, default=None)
         return last.start_time if last else None
 

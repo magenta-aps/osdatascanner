@@ -95,6 +95,28 @@ class TestPipelineCollector:
         assert list(ScanStatusSnapshot.objects.order_by(
                 "time_stamp").values_list("scanned_objects", flat=True)) == [1, 2, 3]
 
+    def test_exploration_error_not_reset_by_worker_message(
+            self, basic_scanner, status_message_with_error,
+            status_message_with_object_size):
+        """A worker StatusMessage (status_is_error=False) arriving after an
+        explorer error StatusMessage must not reset status_is_error to False.
+        This covers the scenario where ScheduledCheckups are processed
+        concurrently with a failing explorer."""
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=status_message_with_error.scan_tag.to_json_object(),
+                total_sources=1,
+                scanned_objects=0,
+                scanned_size=0)
+
+        [s for s in status_message_received_raw(
+                status_message_with_error.to_json_object())]
+        [s for s in status_message_received_raw(
+                status_message_with_object_size.to_json_object())]
+
+        scan_status = ScanStatus.objects.get(scanner=basic_scanner)
+        assert scan_status.status_is_error is True
+
     def test_scan_tag_schema_change_shouldnt_drop_messages(
             self, basic_scanner, status_message_with_object_size):
         """ We shouldn't depend on exact equality of ScanStatus.scan_tag.

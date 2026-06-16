@@ -662,7 +662,7 @@ class StatusMessage:
     """A short message connected with this update, if appropriate."""
 
     status_is_error: bool = False
-    """Indicates whether or not the message is an error message."""
+    """Should only be set by explorers to indicate whether or not the exploration succeeded."""
 
     # Emitted by (top-level) explorers
     total_objects: Optional[int] = None
