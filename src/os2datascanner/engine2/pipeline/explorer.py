@@ -37,7 +37,8 @@ def process_exploration_error(scan_spec, handle_candidate, ex):
             + ", ".join(str(a) for a in ex.args))
     yield messages.ProblemMessage(
             scan_tag=scan_spec.scan_tag, source=scan_spec.source,
-            handle=handle_candidate, message=exception_message)
+            handle=handle_candidate, message=exception_message,
+            account_uuid=scan_spec.account_uuid)
     logger.info(
             "found problem",
             scan_tag=scan_spec.scan_tag, handle=handle_candidate)
@@ -145,7 +146,8 @@ def message_received(  # noqa: CCR001
         yield messages.ProblemMessage(
                 scan_tag=message.scan_tag, source=message.source,
                 handle=getattr(message.source, "handle", None),
-                message=exception_message)
+                message=exception_message,
+                account_uuid=message.account_uuid)
         log.warning(
                 "finished unsuccessfully",
                 handle_count=handle_count, source_count=source_count,

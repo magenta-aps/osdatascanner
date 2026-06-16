@@ -394,39 +394,50 @@ class Scanner(models.Model):
     def _supports_account_annotations(self) -> bool:
         return hasattr(self, "generate_sources_with_accounts")
 
+    def _account_cutoff_rule(self, account, rule):
+        """Adds a LastModifiedRule to rule based on the given Account's own
+        last successful CoveredAccount for this Scanner, if any."""
+        try:
+            cva = CoveredAccount.objects.filter(
+                    account=account, scanner=self,
+                    status_is_error=False).latest()
+            # OK, this Account has been covered by this Scanner before,
+            # so make a custom LastModifiedRule for them
+            logger.info(
+                    f"{self}: account {account} last scanned at"
+                    f" {cva.scan_status.start_time}")
+            return AndRule.make(LastModifiedRule(cva.scan_status.start_time), rule)
+        except CoveredAccount.DoesNotExist:
+            # This Account is new to this Scanner, so do nothing -- the
+            # default rule is fine
+            logger.info(f"{self}: account {account} not previously scanned")
+            return rule
+
     def _yield_sources(
             self, spec_template: messages.ScanSpecMessage, force: bool,
             source_counter: Counter | None = None):
         """Yields scan specifications, based on the provided scan
         specification template, for every Source covered by this scanner."""
-        if (self.do_last_modified_check
-                and not force
-                and self._supports_account_annotations):
-            # CoveredAccount-aware scanner!
+        if self._supports_account_annotations:
+            # CoveredAccount-aware scanner! account_uuid is tagged on every
+            # scan spec regardless of do_last_modified_check/force, so an
+            # exploration failure can always be traced back to its account -
+            # even on a full scan, which has no cutoff to protect but can
+            # still fail one account's Source without failing the others.
             # TODO: If an account has more than one Alias, we'll try to scan both.
             # This is an issue when it comes to service accounts/shared mailboxes.
             for account, source in self.generate_sources_with_accounts():
                 rule = spec_template.rule
-                try:
-                    cva = CoveredAccount.objects.filter(
-                            account=account, scanner=self,
-                            scan_status__status_is_error=False).latest()
-                    # OK, this Account has been covered by this Scanner before,
-                    # so make a custom LastModifiedRule for them
-                    rule = AndRule.make(
-                            LastModifiedRule(cva.scan_status.start_time),
-                            rule)
-                    logger.info(
-                            f"{self}: account {account} last scanned at"
-                            f" {cva.scan_status.start_time}")
-                except CoveredAccount.DoesNotExist:
-                    # This Account is new to this Scanner, so do nothing -- the
-                    # default rule is fine
-                    logger.info(
-                            f"{self}: account {account} not previously"
-                            " scanned")
+                # Some account-aware scanners yield sources with no owning
+                # Account at all (e.g. MSGraphFileScanner's SharePoint site
+                # drives) - there's nothing to track a per-account cutoff or
+                # error against for those.
+                if account is not None and self.do_last_modified_check and not force:
+                    rule = self._account_cutoff_rule(account, rule)
                 Counter.try_incr(source_counter)
-                yield messages.replace(spec_template, source=source, rule=rule)
+                yield messages.replace(
+                        spec_template, source=source, rule=rule,
+                        account_uuid=str(account.uuid) if account else None)
         else:
             # The scanner isn't CoveredAccount-aware, or we're running without
             # the Last-Modified check. In either case, we just put Sources into

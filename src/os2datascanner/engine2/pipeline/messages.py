@@ -322,6 +322,11 @@ class ScanSpecMessage:
     """The RabbitMQ queue to which the pipeline's explorer stage should send
     conversion tasks."""
 
+    account_uuid: Optional[str] = None
+    """If this Source was generated on behalf of a specific Account (see
+    Scanner._yield_sources() in the admin module), that Account's UUID as a
+    string. None for scanners with no per-account Source generation."""
+
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
@@ -335,6 +340,7 @@ class ScanSpecMessage:
                     self.progress.to_json_object() if self.progress else None),
             "explorer_queue": self.explorer_queue,
             "conversion_queue": self.conversion_queue,
+            "account_uuid": self.account_uuid,
         }
 
     @classmethod
@@ -361,7 +367,8 @@ class ScanSpecMessage:
                     if progress_fragment
                     else None),
                 explorer_queue=obj.get("explorer_queue", "os2ds_scan_specs"),
-                conversion_queue=obj.get("conversion_queue", "os2ds_conversions")
+                conversion_queue=obj.get("conversion_queue", "os2ds_conversions"),
+                account_uuid=obj.get("account_uuid"),
         )
 
 
@@ -590,12 +597,18 @@ class ProblemMessage:
     message: str
     """A short description of the error."""
 
+    account_uuid: Optional[str] = None
+    """If this error originated from a Source generated on behalf of a
+    specific Account (see ScanSpecMessage.account_uuid), that Account's UUID
+    as a string."""
+
     def to_json_object(self):
         return {
             "scan_tag": self.scan_tag.to_json_object(),
             "source": self.source.to_json_object() if self.source else None,
             "handle": self.handle.to_json_object() if self.handle else None,
             "message": self.message,
+            "account_uuid": self.account_uuid,
         }
 
     @classmethod
@@ -625,7 +638,8 @@ class ProblemMessage:
                     scan_tag=scan_tag,
                     source=Source.from_json_object(source) if source else None,
                     handle=Handle.from_json_object(handle) if handle else None,
-                    message=obj["message"])
+                    message=obj["message"],
+                    account_uuid=obj.get("account_uuid"))
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)

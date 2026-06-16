@@ -442,6 +442,15 @@ class CoveredAccount(models.Model):
             'organizations.Account', null=False, on_delete=models.CASCADE)
     scan_status = models.ForeignKey(
             ScanStatus, null=False, on_delete=models.CASCADE)
+    status_is_error = models.BooleanField(default=False)
+    """Whether the Source generated for this Account under this ScanStatus
+    failed to explore. Sticky: only ever set to True, never reset back to
+    False (see checkup_collector.checkup_message_received_raw)."""
+    message = models.TextField(blank=True, default="")
+    """The error message from the ProblemMessage that last set
+    status_is_error, if any. Kept separately from ScanStatus.message, which
+    is shared by every Account covered by the same scan and so can't be
+    trusted to describe this Account's own failure."""
 
     class Meta:
         constraints = [
