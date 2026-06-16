@@ -2539,6 +2539,10 @@ msgstr ""
 "Din organisation har konfigureret denne indstilling for dig. Ændring er ikke "
 "tilladt."
 
+#: reportapp/views/user_views.py
+msgid "Failed to update your Outlook category settings."
+msgstr "Kunne ikke opdatere indstillinger for Outlook-kategorisering."
+
 #: reportapp/views/utilities/ews_utilities.py
 #: reportapp/views/utilities/google_utilities.py
 #: reportapp/views/utilities/smb_utilities.py

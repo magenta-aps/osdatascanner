@@ -8,6 +8,8 @@
 - Narrowed status_collector's query for corresponding ScanStatus to avoid message loss on schema
   changes.
 
+- Fixed Outlook Settings not reflecting the current database state
+
 ## Version 3.32.1, 5th June 2026
 
 "Chaos Gremlin"

@@ -6,7 +6,6 @@
 
 import structlog
 from django.contrib import messages
-from django.contrib.messages import get_messages
 from django.core.exceptions import PermissionDenied
 from django import forms
 from django.http import HttpResponse, Http404
@@ -36,14 +35,25 @@ class AccountOutlookSettingForm(forms.ModelForm):
     def __init__(self, organization, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        match_colour = (
+            self.instance.match_category.category_colour
+            if self.instance and self.instance.match_category
+            else OutlookCategory.OutlookCategoryColour.DarkRed
+        )
+        fp_colour = (
+            self.instance.false_positive_category.category_colour
+            if self.instance and self.instance.false_positive_category
+            else OutlookCategory.OutlookCategoryColour.DarkGreen
+        )
+
         self.fields['match_category_colour'] = forms.ChoiceField(
             label=_('match category colour'),
             choices=OutlookCategory.OutlookCategoryColour.choices,
-            initial=OutlookCategory.OutlookCategoryColour.DarkRed)
+            initial=match_colour)
         self.fields['false_positive_category_colour'] = forms.ChoiceField(
             label=_('false positive category colour'),
             choices=OutlookCategory.OutlookCategoryColour.choices,
-            initial=OutlookCategory.OutlookCategoryColour.DarkGreen)
+            initial=fp_colour)
 
         # Both these settings means that the user should not be able to choose.
         # NONE hides this form entirely, but included here for good measure.
@@ -100,52 +110,71 @@ class AccountOutlookSettingView(LoginRequiredMixin, DetailView):
             match_colour = request.POST.get("match_category_colour")
             false_positive_colour = request.POST.get("false_positive_category_colour")
 
-            # If categorization is enabled, either by POST data or ORG_LEVEL
-            if (categorize_check or
-                    account.organization.outlook_categorize_email_permission ==
-                    OutlookCategorizeChoices.ORG_LEVEL):
+            try:
+                # If categorization is enabled, either by POST data or ORG_LEVEL
+                if (categorize_check or
+                        account.organization.outlook_categorize_email_permission ==
+                        OutlookCategorizeChoices.ORG_LEVEL):
 
-                # and a category is missing
-                if not match_category or not fp_category:
-                    # Create/Verify that categories are populated
-                    message = outl_setting.populate_setting()
+                    # and a category is missing
+                    if not match_category or not fp_category:
+                        # Create/Verify that categories are populated
+                        message = outl_setting.populate_setting()
+                        messages.add_message(
+                            request,
+                            messages.SUCCESS,
+                            message,
+                            extra_tags="auto_close"
+                        )
+
+                    # Else, we can assume that we're updating.
+                    # Check if one of the colours are changed
+                    if (fp_category and fp_category.category_colour
+                            != false_positive_colour) or (match_category and
+                                                          match_category.category_colour
+                                                          != match_colour):
+
+                        message = outl_setting.update_colour(match_colour, false_positive_colour)
+                        messages.add_message(
+                            request,
+                            messages.SUCCESS,
+                            message,
+                            extra_tags="auto_close"
+                        )
+                # Unchecking means disabling and will delete categories.
+                elif not categorize_check:
+                    message = outl_setting.delete_categories()
                     messages.add_message(
                         request,
                         messages.SUCCESS,
                         message,
                         extra_tags="auto_close"
                     )
-
-                # Else, we can assume that we're updating.
-                # Check if one of the colours are changed
-                if (fp_category and fp_category.category_colour
-                        != false_positive_colour) or (match_category and
-                                                      match_category.category_colour
-                                                      != match_colour):
-
-                    message = outl_setting.update_colour(match_colour, false_positive_colour)
-                    messages.add_message(
-                        request,
-                        messages.SUCCESS,
-                        message,
-                        extra_tags="auto_close"
-                    )
-            # Unchecking means disabling and will delete categories.
-            elif not categorize_check:
-                message = outl_setting.delete_categories()
+            except Exception:
+                logger.exception("Failed to update Outlook category settings",
+                                 account=account)
                 messages.add_message(
                     request,
-                    messages.SUCCESS,
-                    message,
+                    messages.ERROR,
+                    _("Failed to update your Outlook category settings."),
                     extra_tags="auto_close"
                 )
 
-        # Used to make Django's messages framework and HTMX play ball.
+        # Re-render the settings component with the current state from the database,
+        # so the checkbox always reflects reality even if saving failed.
+        outl_setting_obj = outl_setting.get()
+        form = AccountOutlookSettingForm(
+            instance=outl_setting_obj,
+            organization=account.organization
+        )
         response = HttpResponse()
         response.write(
             render_to_string(
-                template_name="components/feedback/snackbarNew.html",
-                context={"messages": get_messages(request)},
+                template_name="components/user/outlook_category_settings.html",
+                context={
+                    "outlook_settings_form": form,
+                    "categorize_check": outl_setting_obj.categorize_email,
+                },
                 request=request
             )
         )

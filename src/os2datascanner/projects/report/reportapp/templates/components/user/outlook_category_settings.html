@@ -1,59 +1,64 @@
 {% load i18n %}
 
-{% include "components/common/page_load_indicator.html" %}
+<div id="outlook-category-settings">
+  {% include "components/common/page_load_indicator.html" %}
 
-<h2 id="outlook-settings-title">{% trans "Outlook Settings" %}</h2>
+  <h2 id="outlook-settings-title">{% trans "Outlook Settings" %}</h2>
 
-{% include "components/feedback/snackbarNew.html" %}
+  {% include "components/feedback/snackbarNew.html" %}
 
-<table class="userprofile-table outlook-settings">
-  <tbody>
-    <form id="settings-form"
-          hx-post="{% url 'outlook-category-settings' %}"
-          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          hx-trigger="change from:input, change from:select "
-          hx-vals='{"outlook_setting": "true" }'>
-      {% csrf_token %}
-      <tr>
-        <td>{% trans "Categorize emails" %}</td>
-        <td class="ds-checkbox">
-          {{ outlook_settings_form.categorize_email }}
-          <label for="{{ outlook_settings_form.categorize_email.id_for_label }}"></label>
-        </td>
-      </tr>
-      <tr class="hide-on-uncheck"
-          {% if not categorize_check %}hidden{% endif %}>
-        <td>{% trans "Match category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.match_category_colour }}</td>
-      </tr>
-      <tr class="hide-on-uncheck"
-          {% if not categorize_check %}hidden{% endif %}>
-        <td>{% trans "False positive category colour" %}</td>
-        <td class="dropdown">{{ outlook_settings_form.false_positive_category_colour }}</td>
-      </tr>
-    </form>
-    <tr class="hide-on-uncheck"
-        {% if not categorize_check %}hidden{% endif %}>
-      <td>{% trans "Categorize all existing" %}</td>
-      <td>
-        <button class="button"
-          name="categorize_existing"
-          title="{% trans "Categorizes your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
-          hx-post="{% url 'outlook-category-settings' %}"
-          hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
-          hx-swap="none"
-          hx-trigger="click"
-          hx-confirm="{% trans "This action will categorize your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
-          hx-indicator="#report-page-indicator"
-          >
-          {% trans "Categorize" %}
-        </button>
-      </td>
-    </tr>
-  </tbody>
-</table>
+  <form id="settings-form"
+        autocomplete="off"
+        hx-post="{% url 'outlook-category-settings' %}"
+        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+        hx-trigger="change"
+        hx-target="#outlook-category-settings"
+        hx-swap="outerHTML"
+        hx-vals='{"outlook_setting": "true" }'>
+    {% csrf_token %}
+    <table class="userprofile-table outlook-settings">
+      <tbody>
+        <tr>
+          <td>{% trans "Categorize emails" %}</td>
+          <td class="ds-checkbox">
+            {{ outlook_settings_form.categorize_email }}
+            <label for="{{ outlook_settings_form.categorize_email.id_for_label }}"></label>
+          </td>
+        </tr>
+        <tr class="hide-on-uncheck"
+            {% if not categorize_check %}hidden{% endif %}>
+          <td>{% trans "Match category colour" %}</td>
+          <td class="dropdown">{{ outlook_settings_form.match_category_colour }}</td>
+        </tr>
+        <tr class="hide-on-uncheck"
+            {% if not categorize_check %}hidden{% endif %}>
+          <td>{% trans "False positive category colour" %}</td>
+          <td class="dropdown">{{ outlook_settings_form.false_positive_category_colour }}</td>
+        </tr>
+        <tr class="hide-on-uncheck"
+            {% if not categorize_check %}hidden{% endif %}>
+          <td>{% trans "Categorize all existing" %}</td>
+          <td>
+            <button type="button"
+              class="button"
+              name="categorize_existing"
+              title="{% trans "Categorizes your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
+              hx-post="{% url 'outlook-category-settings' %}"
+              hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+              hx-swap="none"
+              hx-trigger="click"
+              hx-confirm="{% trans "This action will categorize your emails based on your existing results. Be aware that scannerjob runs will also do this for you, if you've enabled categorizing." %}"
+              hx-indicator="#report-page-indicator"
+              >
+              {% trans "Categorize" %}
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
 
-<script>
+  <script>
   htmx.onLoad(() => {
     const checkbox = document.getElementById("id_categorize_email");
     checkbox.addEventListener("change", () => {
@@ -66,4 +71,5 @@
         }
       }})
     })
-</script>
+  </script>
+</div>
