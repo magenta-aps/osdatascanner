@@ -1,6 +1,10 @@
 DEBUG = true
 
 secret_value = "THIS VALUE IS NOT SECRET"
+
+# Disabled in dev: the surrounding-number check is prone to false negatives
+# (see docs/decision-history.md)
+CPRRULE_CONTEXT_NUMBER_CHECK = false
 # [logging]
 LOG_LEVEL = "DEBUG"
 

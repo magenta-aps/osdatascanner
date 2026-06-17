@@ -117,20 +117,6 @@ If the abbreviation "cpr" (case insensitive) is present up to 3 words away
 from the matched number, the match is validated by context, no matter the 
 results of the the following checks.
 
-##### Surrounding numbers
-
-If the word immediately before or after the matched number is another number, 
-and that number does not match the simple CPR-number regex, the matched number 
-is invalidated.
-
-This is because other non-CPR-like numbers before or after the matched number 
-indicates, that the matched number is not really a CPR-number, but rather part 
-of a larger number, which is separated by spaces.
-
-Do note that a number separated from the CPR-number by a symbol, such as a 
-parenthesis, is not considered immediately before or after the CPR-number,
-the _symbol_ is.
-
 ##### Surrounding words
 
 Similar to the `Blacklist` context check, this context check invalidates a 
@@ -178,6 +164,29 @@ This was then updated to 25%.
 While expected percentage of valid cpr-numbers in a list of random 10 digit numbers,
 is less than 0.4%, this update was done on the basis of a customer provided file
 of "P-numre", where many of the pages included between 16% and 20% valid cpr-numbers.
+
+--
+
+Up to and including version 3.32.1, OSdatascanner invalidated a CPR number
+candidate if the word immediately before or after it was another number that
+did not itself match the CPR-number regex, on the assumption that a non-CPR
+number adjacent to the candidate indicated it was really part of a larger
+number separated by spaces.
+
+This assumption does not hold for tabular data. F.e. in spreadsheets, CSV exports
+and OCR'd forms, a genuine CPR column is commonly followed by other numeric
+columns (phone numbers, postal codes, amounts) or by stray OCR-read digits.
+That means that the check was quite prone to false negatives.  
+
+The spreadsheet false-positive case it _probably_ was meant to address
+(large amounts of 10-digit numbers, some coincidentally valid) is handled more
+robustly by the bin check, which reasons about the density of valid numbers
+across the whole object rather than looking at a single neighbour. 
+
+This check has been removed. It may result in more false positives if we're dealing with
+coincidentally valid numbers in random data such as log files, but until further field-testing
+has been conducted, the false negative potential outweighs.
+
 
 #### Exceptions
 

@@ -2,6 +2,10 @@
 
 ## Version ??, ?? ?? ??
 
+### General improvements
+
+- CPRRule refinement: No longer discards valid CPR-numbers based on a non-CPR number right before
+  or right after, the potential match. 
 
 ### Bugfixes
 
