@@ -267,7 +267,7 @@ msgstr "SBSYS-fane adgang"
 
 #: models/organization.py
 msgid "Leader tab configuration"
-msgstr "Leaderfane konfiguration"
+msgstr "Lederfane konfiguration"
 
 #: models/organization.py
 msgid "Prioritize MSGraph grant"
