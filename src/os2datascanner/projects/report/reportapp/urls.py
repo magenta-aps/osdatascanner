@@ -13,7 +13,6 @@ from django.views.generic import RedirectView
 
 from os2datascanner import __version__
 
-from .views.api import JSONAPIView
 from .views.statistics_views import (
     LeaderUnitsStatisticsPageView, LeaderStatisticsRedirectView,
     DPOStatisticsPageView, DPOStatisticsCSVView,
@@ -127,7 +126,6 @@ urlpatterns = [
     path("account/outlook-category-settings/", AccountOutlookSettingView.as_view(),
          name="outlook-category-settings"),
 
-    re_path('api$',     JSONAPIView.as_view(),     name="json-api"),
     re_path(r'^health/', lambda r: HttpResponse()),
     re_path(r'^version/?$', lambda r: HttpResponse(__version__)),
     re_path(r'^help/$', ManualMainView.as_view(), name="guide"),
