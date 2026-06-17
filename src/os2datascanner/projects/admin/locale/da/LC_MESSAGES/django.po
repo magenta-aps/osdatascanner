@@ -5027,3 +5027,10 @@ msgstr "Udløbsdato"
 #: organizations/views/org_views.py
 msgid "That name is already taken."
 msgstr "Navnet er allerede i brug."
+
+#: organizations/views/org_views.py
+msgid ""
+"Outlook categorization requires a Microsoft Graph grant that is synchronized "
+"to the report module."
+msgstr ""
+"Outlook kategorisering kræver at en MSGraph bevilling er synkroniseret til rapport modulet."

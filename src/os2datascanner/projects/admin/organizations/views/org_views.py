@@ -19,6 +19,8 @@ from django.core.exceptions import PermissionDenied
 from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 
 from os2datascanner.projects.admin.core.models import Client, ImportSource, Administrator
+from os2datascanner.core_organizational_structure.models.organization import (
+    OutlookCategorizeChoices)
 from ..models.organization import Organization
 
 from django.conf import settings
@@ -174,9 +176,27 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
             slug=Organization.convert_name_to_slug(form.instance.name)).exclude(
                 slug=slug).exists():
             form.add_error('name', _('That name is already taken.'))
+
+        # Categorization relies on the report module having a GraphGrant for the
+        # organization. Enabling it before that grant is synchronized could crash
+        # the report event_collector.
+        categorize = form.cleaned_data.get('outlook_categorize_email_permission')
+        if (categorize and categorize != OutlookCategorizeChoices.NONE
+                and not self._has_synced_graphgrant(form.instance)):
+            form.add_error(
+                'outlook_categorize_email_permission',
+                _('Outlook categorization requires a Microsoft Graph grant that is '
+                  'synchronized to the report module.'))
+
+        if form.errors:
             return self.form_invalid(form)
-        else:
-            return super().form_valid(form)
+
+        return super().form_valid(form)
+
+    @staticmethod
+    def _has_synced_graphgrant(organization) -> bool:
+        return GraphGrant.objects.filter(
+            organization=organization, grant_extra__should_broadcast=True).exists()
 
     def get_queryset(self):
         return super().get_queryset(org_path="uuid")
