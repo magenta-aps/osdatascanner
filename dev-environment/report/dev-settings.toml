@@ -49,8 +49,6 @@ OIDC_OP_TOKEN_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protoc
 OIDC_OP_USER_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/userinfo"
 # signing algorithm and key
 OIDC_OP_JWKS_ENDPOINT = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/certs"
-# login and logout urls
-LOGOUT_URL = "http://localhost:8090/auth/realms/osdatascanner/protocol/openid-connect/logout"
 
 # [Prometheus pushgateway]
 PUSHGATEWAY_HOST = "http://pushgateway:9091"
