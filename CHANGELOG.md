@@ -7,6 +7,12 @@
 - CPRRule refinement: No longer discards valid CPR-numbers based on a non-CPR number right before
   or right after, the potential match. 
 
+- Deprecated Client.Feature in favor of Client.import_source that now holds choice of import type,
+  simplifying validation of "only one import type pr. Client", more intuitive naming and selection.
+  ADMIN_API has been removed, as it gated nothing.
+  ORG_STRUCTURE has been removed as it only hid UI elements that aren't necessary to hide, it was
+  once used as a temporary mean for migration.
+
 ### Bugfixes
 
 - Narrowed status_collector's query for corresponding ScanStatus to avoid message loss on schema

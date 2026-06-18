@@ -8,7 +8,8 @@ from uuid import UUID
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
-from os2datascanner.projects.admin.core.models import Client, Feature
+from os2datascanner.projects.admin.core.models import Client
+from os2datascanner.projects.admin.core.models.client import ImportSource
 from os2datascanner.projects.admin.organizations.models import Organization
 from os2datascanner.projects.admin.import_services.models import LDAPConfig
 
@@ -44,14 +45,11 @@ class Command(BaseCommand):
         client = self.get_client(client_name)
         self.stdout.write(f"Found client: '{client.name}'.")
 
-        client.features |= (
-            Feature.ORG_STRUCTURE.value | Feature.IMPORT_SERVICES.value
-        )
+        client.import_source = ImportSource.LDAP
         client.save()
         self.stdout.write(
             self.style.SUCCESS(
-                f"Enabled ORG_STRUCTURE and IMPORT_SERVICES for client "
-                f"'{client.name}'."
+                f"Set import source to LDAP for client '{client.name}'."
             )
         )
 

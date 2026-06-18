@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-05-29 13:51+0200\n"
+"POT-Creation-Date: 2026-06-18 13:12+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3427,24 +3427,12 @@ msgid "Management"
 msgstr "Administration"
 
 #: core/forms.py core/models/client.py
-msgid "enabled features"
-msgstr "aktiverede features"
-
-#: core/forms.py
-msgid "Select a feature to enable it for this client."
-msgstr "Vælg en feature for at aktivere den for denne kunde."
-
-#: core/forms.py core/models/client.py
 msgid "activated scan types"
 msgstr "tilgængelige scannertyper"
 
 #: core/forms.py
 msgid "Select a scan type to activate it for this client."
 msgstr "Vælg en scannertype for at gøre den tilgængelig for denne kunde."
-
-#: core/forms.py
-msgid "Only one type of import service can be active at a time."
-msgstr "Kun en type af importservice kan være aktiveret."
 
 #: core/management/commands/run_background_jobs.py
 #, python-format
@@ -3563,29 +3551,24 @@ msgid "Microsoft Graph - Teams file scan"
 msgstr "Microsoft Graph - Teams filscan"
 
 #: core/models/client.py
-msgid "administration API"
-msgstr "administrations-API"
+msgid "No import"
+msgstr "Ingen import"
 
 #: core/models/client.py
-msgid "structured organization support"
-msgstr "understøttelse af strukturerede organisationer"
-
-#: core/models/client.py import_services/apps.py
-#: import_services/models/import_service.py
-msgid "import services"
-msgstr "importtjenester"
+msgid "LDAP"
+msgstr "LDAP"
 
 #: core/models/client.py
-msgid "import services (MS Graph)"
-msgstr "importtjenester (MS Graph)"
+msgid "Microsoft Graph"
+msgstr "Microsoft Graph"
 
 #: core/models/client.py
-msgid "import services (OS2mo)"
-msgstr "importtjenester (OS2mo)"
+msgid "OS2mo"
+msgstr "OS2mo"
 
 #: core/models/client.py
-msgid "import services (Google Workspace)"
-msgstr "importtjenester (Google Workspace)"
+msgid "Google Workspace"
+msgstr "Google Workspace"
 
 #: core/models/client.py
 msgid "client ID"
@@ -3598,6 +3581,10 @@ msgstr "e-mail"
 #: core/models/client.py
 msgid "phone number"
 msgstr "telefonnummer"
+
+#: core/models/client.py
+msgid "import source"
+msgstr "importkilde"
 
 #: core/models/client.py
 msgid "clients"
@@ -3615,6 +3602,10 @@ msgstr "Annullér opgave"
 #: core/templates/components/background_job.html
 msgid "last updated"
 msgstr "sidst opdateret"
+
+#: import_services/apps.py import_services/models/import_service.py
+msgid "import services"
+msgstr "importtjenester"
 
 #: import_services/models/exported_mixin.py
 msgid "last successful export"
@@ -3664,7 +3655,6 @@ msgid "hide new organizational units by default"
 msgstr "skjul nye organisatoriske enheder som standard"
 
 #: import_services/models/import_service.py
-#: organizations/templates/organizations/org_table.html
 msgid "import service"
 msgstr "importservice"
 
@@ -4615,10 +4605,6 @@ msgstr "gå tilbage til siden for organisatorisk struktur"
 msgid "go back"
 msgstr "gå tilbage"
 
-#: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "you don't have the right credentials to access this page"
-msgstr "du har ikke de rigtige rettigheder til at tilgå denne side"
-
 #: organizations/templates/organizations/grants_list.html
 msgid "grants for"
 msgstr "bevillinger for"
@@ -4678,6 +4664,10 @@ msgstr "Tilføj ny organisation"
 #: organizations/templates/organizations/org_table.html
 msgid "contact info"
 msgstr "kontaktinformation"
+
+#: organizations/templates/organizations/org_table.html
+msgid "import service (LDAP)"
+msgstr "importservice (LDAP)"
 
 #: organizations/templates/organizations/org_table.html
 msgid "import service (Microsoft Graph)"
@@ -4923,10 +4913,6 @@ msgstr "som DPO af"
 #: organizations/templates/organizations/orgunit_list.html
 msgid "No organizational units found ..."
 msgstr "Ingen organisatoriske enheder fundet ..."
-
-#: organizations/templates/organizations/orgunit_list.html
-msgid "No organizational units."
-msgstr "Ingen organisatoriske enheder"
 
 #: organizations/templates/sso/sso_edit.html
 #: organizations/templates/sso/sso_error.html

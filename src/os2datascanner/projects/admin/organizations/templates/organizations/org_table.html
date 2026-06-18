@@ -37,18 +37,16 @@
           <tr class="datatablex__row">
             <th class="column column--name">{% trans "name"|capfirst %}</th>
             <th class="column column--info">{% trans "contact info"|capfirst %}</th>
-            {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
-              <th class="column column--import">{% trans "import service"|capfirst %}</th>
-            {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
+            {% if client.import_source == IMPORT_SOURCE.LDAP %}
+              <th class="column column--import">{% trans "import service (LDAP)"|capfirst %}</th>
+            {% elif client.import_source == IMPORT_SOURCE.MS_GRAPH %}
               <th class="column column--import">{% trans "import service (Microsoft Graph)"|capfirst %}</th>
-            {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
+            {% elif client.import_source == IMPORT_SOURCE.OS2MO %}
               <th class="column column--import">{% trans "import service (OS2mo)"|capfirst %}</th>
-            {% elif FEATURES.IMPORT_SERVICES_GOOGLE_WORKSPACE in client.enabled_features %}
+            {% elif client.import_source == IMPORT_SOURCE.GOOGLE_WORKSPACE %}
               <th class="column column--import">{% trans "import service (Google Workspace)"|capfirst %}</th>
             {% endif %}
-            {% if request.user.is_superuser or FEATURES.ORG_STRUCTURE in client.enabled_features %}
-              <th class="column column--actions">{% trans "Actions" %}</th>
-            {% endif %}
+            <th class="column column--actions">{% trans "Actions" %}</th>
           </tr>
         </thead>
 
@@ -77,7 +75,7 @@
                   </div>
                 </td>
 
-                {% if FEATURES.IMPORT_SERVICES in client.enabled_features %}
+                {% if client.import_source == IMPORT_SOURCE.LDAP %}
                   <td id="import_column__{{ organization.slug }}"
                       class="column column--import">
                     <div class="flex">
@@ -117,7 +115,7 @@
                       </div>
                     </div>
                   </td>
-                {% elif FEATURES.IMPORT_SERVICES_OS2MO in client.enabled_features %}
+                {% elif client.import_source == IMPORT_SOURCE.OS2MO %}
                   <td id="import_column__{{ organization.slug }}"
                       class="column column--import">
                     <div class="flex">
@@ -156,7 +154,7 @@
                       </div>
                     </div>
                   </td>
-                {% elif FEATURES.IMPORT_SERVICES_MS_GRAPH in client.enabled_features %}
+                {% elif client.import_source == IMPORT_SOURCE.MS_GRAPH %}
                   <td id="import_column__{{ organization.slug }}"
                       class="column column--import">
                     <div class="flex">
@@ -205,7 +203,7 @@
                       </div>
                     </div>
                   </td>
-                {% elif FEATURES.IMPORT_SERVICES_GOOGLE_WORKSPACE in client.enabled_features %}
+                {% elif client.import_source == IMPORT_SOURCE.GOOGLE_WORKSPACE %}
                   <td id="import_column__{{ organization.slug }}" class="column--import">
                     <div class="flex">
                       <div class="button-group">
@@ -246,7 +244,7 @@
                 {% endif %}
                 <td class="column column--actions">
                   <div class="action-wrapper button-group">
-                    {% if FEATURES.ORG_STRUCTURE in client.enabled_features and perms.organizations.view_organizationalunit %}
+                    {% if perms.organizations.view_organizationalunit %}
                       <a href="{% url "orgunit-list" organization.slug %}"
                          class="button button--icon-button"
                          aria-label="{% trans "View organizational units." %}"

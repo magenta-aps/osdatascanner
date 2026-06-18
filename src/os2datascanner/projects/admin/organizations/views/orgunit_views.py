@@ -9,7 +9,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from ...adminapp.views.views import RestrictedListView
 from ..models import (OrganizationalUnit, Account, Position,
                       Organization, OrganizationalUnitSerializer)
-from ...core.models import Feature
 from os2datascanner.projects.utils.pagination import EmptyPagePaginator
 from ..utils import ClientAdminMixin
 from os2datascanner.core_organizational_structure.models.position import Role
@@ -72,7 +71,6 @@ class OrganizationalUnitListView(ClientAdminMixin, PermissionRequiredMixin, Rest
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['organization'] = self.kwargs['org']
-        context['FEATURES'] = Feature.__members__
         context['uni_dpos'] = Account.objects.filter(
             organization=self.kwargs['org'],
             is_universal_dpo=True
@@ -158,7 +156,6 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, PermissionRequiredMixin
         organization = get_object_or_404(Organization, slug=org_slug)
 
         context['organization'] = organization
-        context['FEATURES'] = Feature.__members__
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
 

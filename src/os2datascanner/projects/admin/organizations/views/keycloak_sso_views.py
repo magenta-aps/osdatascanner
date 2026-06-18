@@ -20,7 +20,7 @@ from os2datascanner.projects.admin.import_services.models.realm import (Identity
                                                                         IdPMappers,
                                                                         Realm,
                                                                         KeycloakClient)
-from os2datascanner.projects.admin.core.models.client import Feature
+from os2datascanner.projects.admin.core.models.client import ImportSource
 
 from django.utils.translation import gettext_lazy as _
 from rest_framework.reverse import reverse_lazy
@@ -134,10 +134,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
         if not (settings.KEYCLOAK_ENABLED and (
-                Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
-                Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
-                Feature.IMPORT_SERVICES in org.client.enabled_features or
-                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
+                org.client.import_source != ImportSource.NONE or
                 settings.OIDC_CREATE_USER
         )):
             return HttpResponseRedirect(reverse_lazy("sso-error"))
@@ -211,9 +208,8 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
             logger.info("Creating Keycloak Client")
             keycloak_client.create_keycloak_client()
 
-        # IMPORT_SERVICE is LDAP based import. That requires a different kind of flow, as we
-        # utilize Keycloak User Federation.
-        if Feature.IMPORT_SERVICES in org.client.enabled_features:
+        # LDAP-based import requires a different flow: Keycloak User Federation.
+        if org.client.import_source == ImportSource.LDAP:
             auth_flow = realm.setup_federated_sso_flow()
         else:
             auth_flow = realm.setup_non_federated_sso_flow()
@@ -248,10 +244,7 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
         if not (settings.KEYCLOAK_ENABLED and (
-                Feature.IMPORT_SERVICES_MS_GRAPH in org.client.enabled_features or
-                Feature.IMPORT_SERVICES_OS2MO in org.client.enabled_features or
-                Feature.IMPORT_SERVICES in org.client.enabled_features or
-                Feature.IMPORT_SERVICES_GOOGLE_WORKSPACE in org.client.enabled_features or
+                org.client.import_source != ImportSource.NONE or
                 settings.OIDC_CREATE_USER
         )):
             return HttpResponseRedirect(reverse_lazy("sso-error"))

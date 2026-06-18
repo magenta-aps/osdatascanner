@@ -25,7 +25,6 @@ from ..serializers import OrganizationalUnitSerializer
 from ..models.scannerjobs.exchangescanner import (
         ExchangeScanner, get_users_from_file)
 from ..models.scannerjobs.exchangecalendarscanner import ExchangeCalendarScanner
-from ...core.models import Feature
 from ...organizations.models import OrganizationalUnit
 
 
@@ -74,8 +73,6 @@ class ExchangeScannerBase(View):
         context["org_units"] = (
                 OrganizationalUnit.objects.filter(user.make_org_Q()))
 
-        # Needed to upheld feature flags.
-        context['FEATURES'] = Feature.__members__
         context['client'] = user.get_client()
         return context
 
@@ -310,8 +307,6 @@ class ExchangeCalendarScannerBase(View):
         context["org_units"] = (
                 OrganizationalUnit.objects.filter(user.make_org_Q()))
 
-        # Needed to upheld feature flags.
-        context['FEATURES'] = Feature.__members__
         context['client'] = user.get_client()
         return context
 

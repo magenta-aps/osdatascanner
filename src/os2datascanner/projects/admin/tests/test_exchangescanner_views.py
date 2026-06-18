@@ -53,33 +53,6 @@ class TestExchangeScannerViews:
         assert list(tree_queryset) == expected_order
         assert olsen_banden not in tree_queryset
 
-    # TODO: Figure out why client is not updated in database and make unit test pass
-    # def test_exchangesscanner_org_units_list_viewable_as_administrator(self):
-    #     """Testcase for testing if ldap feature flags are complied with."""
-    #     admin = Administrator.objects.create(
-    #         user=self.kjeld,
-    #         client=Client.objects.get(name="client1"),
-    #     )
-    #     # Check if is possible NOT to choose an org. unit.
-    #     response = self.get_exchangescanner_response()
-    #     response.render()
-    #     self.assertNotIn(str(response.content), 'sel_1')
-    #
-    #     features = 0
-    #     features += (1 << 0)
-    #     features += (1 << 1)
-    #     features += (1 << 2)
-    #     client1 = Client.objects.get(name='client1')
-    #     client1.features = features
-    #     client1.save()
-    #     # Check if is possible to choose an org. unit.
-    #     response1 = self.get_exchangescanner_response()
-    #     self.assertIn(str(response1.content), 'sel_1')
-    #
-    #     client1.features = 0
-    #     client1.save()
-    #     admin.delete()
-
     def test_exchangescanner_org_units_list_as_superuser(
             self, superuser, familien_sand, nisserne, olsen_banden):
         expected_order = [familien_sand, nisserne, olsen_banden]
