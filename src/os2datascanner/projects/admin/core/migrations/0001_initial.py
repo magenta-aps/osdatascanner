@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=256, unique=True, verbose_name='name')),
                 ('contact_email', models.CharField(max_length=256, verbose_name='e-mail')),
                 ('contact_phone', models.CharField(max_length=32, verbose_name='phone number')),
-                ('features', models.PositiveIntegerField(default=0, validators=[os2datascanner.projects.admin.core.models.client.Feature.validator], verbose_name='enabled features')),
+                ('features', models.PositiveIntegerField(default=0, verbose_name='enabled features')),
                 ('scans', models.PositiveIntegerField(default=0, validators=[os2datascanner.projects.admin.core.models.client.Scan.validator], verbose_name='activated scan types')),
             ],
             options={

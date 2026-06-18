@@ -18,7 +18,7 @@ from django.core.exceptions import PermissionDenied
 
 from os2datascanner.projects.grants.models import GraphGrant, EWSGrant
 
-from os2datascanner.projects.admin.core.models import Client, Feature, Administrator
+from os2datascanner.projects.admin.core.models import Client, ImportSource, Administrator
 from ..models.organization import Organization
 
 from django.conf import settings
@@ -47,7 +47,7 @@ class OrganizationListView(RestrictedListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
-        context['FEATURES'] = Feature.__members__
+        context['IMPORT_SOURCE'] = ImportSource
         return context
 
     @override

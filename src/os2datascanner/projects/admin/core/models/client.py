@@ -28,28 +28,21 @@ class Scan(ModelChoiceFlag):
     # Thus a maximum of 31 scan types in one Flag class
 
 
-class Feature(ModelChoiceFlag):
-    """Enumeration of available features."""
-    ADMIN_API = (1, _('administration API'))
-    # To ease the transition from the old `adminapp.Organization` to the new
-    # `organizations.Organization`, the feature flag below is provided. It
-    # allows the activation (or deactivation, depending on state) of the other
-    # models and features in the `organizations` app; existing customers may
-    # thus be migrated "silently" to the new `Organization` without being
-    # overwhelmed by additional features.
-    ORG_STRUCTURE = (1 << 1, _('structured organization support'))
-    IMPORT_SERVICES = (1 << 2, _('import services'))
-    IMPORT_SERVICES_MS_GRAPH = (1 << 3, _('import services (MS Graph)'))
-    IMPORT_SERVICES_OS2MO = (1 << 4, _('import services (OS2mo)'))
-    IMPORT_SERVICES_GOOGLE_WORKSPACE = (1 << 5, _('import services (Google Workspace)'))
+class ImportSource(models.TextChoices):
+    """The single identity-management source a Client imports organizational data from."""
+    NONE = "none", _("No import")
+    LDAP = "ldap", _("LDAP")
+    MS_GRAPH = "msgraph", _("Microsoft Graph")
+    OS2MO = "os2mo", _("OS2mo")
+    GOOGLE_WORKSPACE = "google", _("Google Workspace")
 
 
 class Client(models.Model):
     """Stores data for a specific client.
 
-    A Clients is identified by a uuid and further stores a human readable name,
-    contact information (email and phone number), and flags representing the
-    activated features and enabled scan types for that Client.
+    A Client is identified by a uuid and further stores a human readable name,
+    contact information (email and phone number), the import source for
+    organizational data, and enabled scan types.
 
     In a multi-tenant system, any Client should only be able to access and
     manage resources owned by that Client.
@@ -75,10 +68,11 @@ class Client(models.Model):
         verbose_name=_('phone number'),
     )
 
-    features = models.PositiveIntegerField(
-        default=0,
-        validators=[Feature.validator],
-        verbose_name=_('enabled features'),
+    import_source = models.CharField(
+        max_length=16,
+        choices=ImportSource.choices,
+        default=ImportSource.NONE,
+        verbose_name=_('import source'),
     )
 
     scans = models.PositiveIntegerField(
@@ -99,14 +93,6 @@ class Client(models.Model):
     conversion_full_queue = models.TextField(
         default="os2ds_conversions"
     )
-
-    @property
-    def enabled_features(self):
-        return Feature(self.features)
-
-    @enabled_features.setter
-    def enabled_features(self, flag_enum):
-        self.features = flag_enum.value
 
     @property
     def activated_scan_types(self):
