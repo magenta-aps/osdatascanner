@@ -1,4 +1,4 @@
-site_name: OS2Datascanner Docs
+site_name: OSdatascanner Docs
 site_url: https://os2datascanner.rtfd.io
 
 theme: readthedocs
@@ -10,9 +10,21 @@ markdown_extensions:
 
 nav:
   - Overview: index.md
-  - Data sources: data-sources.md
-  - Development environment: dev-environment.md
+  - Data Sources: data-sources.md
   - Management Commands: management-commands.md
+  - Development Environment:
+    - The Basics: development_environment/the-basics.md
+    - Docker Compose: development_environment/docker-compose.md
+    - Quickstart Scannables: development_environment/quickstart_dev_scannables.md
+    - Connecting to Host: development_environment/connecting_to_host.md
+    - Translations: development_environment/translations.md
+    - Missing Permissions: development_environment/missing-permissions.md
+    - Hooks and Linting: development_environment/hooks_and_lint.md
+    - Run Tests: development_environment/tests.md
+    - Debugging: development_environment/debugging.md
+    - Keycloak/LDAP: development_environment/keycloak_ldap.md
+    - O365 Scan Prerequisites: development_environment/O365_scan_prerequisites.md
+    - OS2mo Import job: development_environment/OS2mo_import.md
   - The engine:
     - Engine/pipeline: architecture/pipeline.md
     - Engine/RabbitMQ: architecture/rabbitmq.md

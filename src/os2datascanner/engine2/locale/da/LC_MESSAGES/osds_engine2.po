@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: engine 2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 11:21+0000\n"
+"POT-Creation-Date: 2026-06-10 09:06+0000\n"
 "PO-Revision-Date: 2025-02-27 14:21+0100\n"
 "Last-Translator: Alexander Faithfull-Murawski <af@magenta.dk>\n"
 "Language-Team: none\n"
@@ -12,90 +12,90 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " contains {value}"
 msgstr " indeholder {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " contains {value} (case-insensitively)"
 msgstr " indeholder {value} (ikke versalfølsomt)"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is equal to {value}"
 msgstr " er lige med {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 msgid " is false"
 msgstr " er falsk"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is found (case-insensitively) in {value}"
 msgstr " findes (ikke versalfølsomt) i {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is found in {value}"
 msgstr " findes i {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is greater than or equal to {value}"
 msgstr " er større end eller lige med {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is greater than {value}"
 msgstr " er større end {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is less than or equal to {value}"
 msgstr " er mindre end eller lige med {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is less than {value}"
 msgstr " er mindre end {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is not equal to {value}"
 msgstr " er ikke lige med {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is not {value}"
 msgstr " er ikke {value}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 msgid " is true"
 msgstr " er sandt"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid " is {value}"
 msgstr " er {value}"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/files.py
+#: engine2/locale/../model/msgraph/files.py
 #, python-brace-format
 msgid "\"{folder_name}\" (owned by {owner})"
 msgstr "\"{folder_name}\" (ejet af {owner})"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/mail.py
+#: engine2/locale/../model/msgraph/mail.py
 #, python-brace-format
 msgid "\"{folder}\" of {mail_account}"
 msgstr "mappen \"{folder}\" af mailkontoen {mail_account}"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/lists.py
+#: engine2/locale/../model/msgraph/lists.py
 #, python-brace-format
 msgid "Description in list \"{list_name}\""
 msgstr "Beskrivelse i liste \"{list_name}\""
 
-#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#: engine2/locale/../pipeline/explorer.py
 #, python-brace-format
 msgid ""
 "Exploration error: authenticated successfully against {server}, but source "
@@ -104,135 +104,135 @@ msgstr ""
 "Fejl i udforskningen: autentificering imod {server} lykkedes, men kilden "
 "fandtes alligevel ikke"
 
-#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#: engine2/locale/../pipeline/explorer.py
 #, python-brace-format
 msgid "Exploration error: could not communicate with the server at {server}"
 msgstr "Fejl i udforskningen: kunne ikke komme i kontakt med serveren {server}"
 
-#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#: engine2/locale/../pipeline/explorer.py
 #, python-brace-format
 msgid "Exploration error: no valid authentication for server {server}"
 msgstr ""
 "Fejl i udforskningen: autentificering imod serveren {server} mislykkedes"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/lists.py
+#: engine2/locale/../model/msgraph/lists.py
 #, python-brace-format
 msgid "List \"{list_name}\" (on site {site_name})"
 msgstr "Liste \"{list_name}\" (på websted {site_name})"
 
-#: src/os2datascanner/engine2/locale/../pipeline/explorer.py
+#: engine2/locale/../pipeline/explorer.py
 #, python-brace-format
 msgid "Unknown exploration error of type {type}"
 msgstr "Ukendt udforskningsfejl af typen {type}"
 
-#: src/os2datascanner/engine2/locale/../model/webdav.py
+#: engine2/locale/../model/webdav.py
 #, python-brace-format
 msgid "WebDAV folder '{folder}'"
 msgstr "WebDAV-mappe '{folder}'"
 
-#: src/os2datascanner/engine2/locale/../model/derived/mail.py
+#: engine2/locale/../model/derived/mail.py
 #, python-brace-format
 msgid "attachment \"{filename}\" in {mail}"
 msgstr "vedhæftet fil \"{filename}\" i mailen {mail}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+#: engine2/locale/../model/_staging/sbsysdb.py
 #, python-brace-format
 msgid "case \"{title}\""
 msgstr "sag \"{title}\""
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+#: engine2/locale/../model/_staging/sbsysdb.py
 msgid "draft"
 msgstr "kladde"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+#: engine2/locale/../model/_staging/sbsysdb.py
 #, python-brace-format
 msgid "field \"{field}\" of {case}"
 msgstr "rubrikken \"{field}\" fra {case}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py
+#: engine2/locale/../model/derived/libreoffice.py
 #, python-brace-format
 msgid "image in {file}"
 msgstr "billede i {file}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "image on {page} of {file}"
 msgstr "billede på {page} af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "page {page_nr}"
 msgstr "side {page_nr}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/spreadsheet.py
+#: engine2/locale/../model/derived/spreadsheet.py
 #, python-brace-format
 msgid "sheet {title} of {file}"
 msgstr "regneark {title} af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py
+#: engine2/locale/../model/derived/libreoffice.py
 #, python-brace-format
 msgid "text of {file}"
 msgstr "tekst af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "text on {page} of {file}"
 msgstr "tekst på {page} af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 #, python-brace-format
 msgid "the database field '{db_field}'"
 msgstr "databasefeltet '{db_field}'"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb_rule.py
+#: engine2/locale/../model/_staging/sbsysdb_rule.py
 msgid "the number of days since the last update"
 msgstr "antal dage siden den sidste opdatering"
 
-#: src/os2datascanner/engine2/locale/../model/derived/libreoffice.py
+#: engine2/locale/../model/derived/libreoffice.py
 #, python-brace-format
 msgid "unknown object in {file}"
 msgstr "ukendt objekt i {file}"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "unknown object on {page} of {file}"
 msgstr "ukendt objekt på {page} af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+#: engine2/locale/../model/_staging/sbsysdb.py
 msgid "untitled case"
 msgstr "unavngiven sag"
 
-#: src/os2datascanner/engine2/locale/../model/_staging/sbsysdb.py
+#: engine2/locale/../model/_staging/sbsysdb.py
 #, python-brace-format
 msgid "{draft} document \"{name}\" (attached to {handle})"
 msgstr "{draft} dokument \"{name}\" (vedhæftet {handle})"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/files.py
+#: engine2/locale/../model/msgraph/files.py
 #, python-brace-format
 msgid "{folder} (in {parent})"
 msgstr "{folder} (i {parent})"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/mail.py
+#: engine2/locale/../model/msgraph/mail.py
 #, python-brace-format
 msgid "{mail_account}"
 msgstr "mailkontoen {mail_account}"
 
-#: src/os2datascanner/engine2/locale/../model/core/handle.py
+#: engine2/locale/../model/core/handle.py
 #, python-brace-format
 msgid "{name} (in {place})"
 msgstr "{name} (i {place})"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "{name} (on {place})"
 msgstr "{name} (på {place})"
 
-#: src/os2datascanner/engine2/locale/../model/derived/pdf.py
+#: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "{page_desc} of {file}"
 msgstr "{page_desc} af {file}"
 
-#: src/os2datascanner/engine2/locale/../model/msgraph/files.py
+#: engine2/locale/../model/msgraph/files.py
 #, python-brace-format
 msgid "{user_account}'s files"
 msgstr "filerne tilhørende {user_account}"
