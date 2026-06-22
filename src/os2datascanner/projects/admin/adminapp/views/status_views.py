@@ -23,8 +23,6 @@ class StatusBase(RestrictedListView):
         return super().get_queryset(org_path="scanner__organization")
 
     def get_context_data(self, **kwargs):
-        ScanStatus.clean_defunct()
-
         context = super().get_context_data(**kwargs)
         context["new_error_logs"] = count_new_errors(self.request.user)
         return context

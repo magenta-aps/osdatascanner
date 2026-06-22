@@ -20,6 +20,9 @@
 
 - Fixed Outlook Settings not reflecting the current database state
 
+- Removes ScanStatus.clean_defunct(), as it could lead to orphaned message queues and
+  wrong information in the admin module UI.
+
 ## Version 3.32.1, 5th June 2026
 
 "Chaos Gremlin"
