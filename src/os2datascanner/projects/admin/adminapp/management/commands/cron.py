@@ -10,7 +10,7 @@ import datetime
 from django.core.management.base import BaseCommand
 
 from os2datascanner.utils.system_utilities import time_now
-from ...models.scannerjobs.scanner import Scanner, ScanStatus
+from ...models.scannerjobs.scanner import Scanner
 from ...notification import InvalidScannerNotificationEmail
 
 logger = structlog.get_logger("adminapp")
@@ -60,11 +60,8 @@ class Command(BaseCommand):
                                          now=now)
 
             if start:
-
                 # In principle, we should start this scanner now. Check that
                 # it's not already running, though
-                ScanStatus.clean_defunct()
-
                 last_status = scanner.statuses.last()
                 if last_status is None or not last_status.is_running:
                     scanner.run()
