@@ -1,6 +1,8 @@
 # Changelog
 
-## Version ??, ?? ?? ??
+## Version 3.32.2, 23rd June 2026
+
+"We've had one, yes. But what about a second heat wave?"
 
 ### General improvements
 
