@@ -28,6 +28,8 @@
 - It is no longer possible to enable email categorization through the admin module UI, for an Organization 
   with no GraphGrant synchronized. Previously, this could lead to crashes of the event_collector.
 
+- MSGraph-import now properly updates Account.manager
+
 ## Version 3.32.1, 5th June 2026
 
 "Chaos Gremlin"
