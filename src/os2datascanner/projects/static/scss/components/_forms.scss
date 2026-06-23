@@ -208,10 +208,15 @@
     }
 
     .field-with-button__container {
-      display: flex;
-      gap: 0.5rem;
+      @include layout-horizontal(0.5rem);
 
-      > .button {
+      > .dropdown {
+        flex: 1;
+      }
+    }
+
+    &.grant-select-field {
+      label + .field-with-button__container {
         margin-top: 0.5rem;
       }
     }
