@@ -25,6 +25,9 @@
 - Removes ScanStatus.clean_defunct(), as it could lead to orphaned message queues and
   wrong information in the admin module UI.
 
+- It is no longer possible to enable email categorization through the admin module UI, for an Organization 
+  with no GraphGrant synchronized. Previously, this could lead to crashes of the event_collector.
+
 ## Version 3.32.1, 5th June 2026
 
 "Chaos Gremlin"

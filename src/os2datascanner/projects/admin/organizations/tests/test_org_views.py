@@ -360,6 +360,115 @@ class TestUpdateOrganizationViews:
         assert test_org.contact_phone == "new phone, who dis?"
 
 
+def _update_org_payload(**overrides):
+    """A full, valid POST body for UpdateOrganizationView.
+    Override fields as needed."""
+    return {
+        'name': 'Updated Organization',
+        'contact_email': 'something@else.com',
+        'contact_phone': 'new phone, who dis?',
+        'leadertab_access': StatisticsPageConfigChoices.MANAGERS,
+        'dpotab_access': StatisticsPageConfigChoices.DPOS,
+        'show_support_button': False,
+        'support_contact_method': SupportContactChoices.NONE,
+        'support_name': 'IT',
+        'support_value': '',
+        'dpo_contact_method': DPOContactChoices.NONE,
+        'dpo_name': '',
+        'dpo_value': '',
+        'outlook_categorize_email_permission': OutlookCategorizeChoices.NONE,
+        'outlook_delete_email_permission': False,
+        'onedrive_delete_permission': False,
+        'synchronization_time': "17:00",
+        'leadertab_config': LeaderTabConfigChoices.BOTH,
+        'sbsystab_access': SBSYSTabConfigChoices.NONE,
+    } | overrides
+
+
+@pytest.mark.django_db
+class TestEnableCategorizationRequiresSyncedGraphGrant:
+    """Enabling Outlook categorization requires a GraphGrant that is synchronized
+    to the report module (GrantExtra.should_broadcast=True). Without it the report
+    event_collector would receive the enable without a GraphGrant present and crash."""
+
+    def test_cannot_enable_without_graphgrant(self, client, superuser, test_org, settings):
+        # Arrange
+        settings.ENABLE_MSGRAPH_MAILSCAN = True
+        client.force_login(superuser)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+
+        # Act
+        response = client.post(url, _update_org_payload(
+            outlook_categorize_email_permission=OutlookCategorizeChoices.ORG_LEVEL))
+
+        test_org.refresh_from_db()
+
+        # Assert
+        assert response.status_code == 200
+        assert 'outlook_categorize_email_permission' in response.context['form'].errors
+        assert test_org.outlook_categorize_email_permission == OutlookCategorizeChoices.NONE
+
+    def test_cannot_enable_with_unsynced_graphgrant(
+            self, client, superuser, test_org, msgraph_grant, settings):
+
+        # Arrange:
+        settings.ENABLE_MSGRAPH_MAILSCAN = True
+        # Verifying created grant is not synced to report.
+        assert msgraph_grant.grant_extra.should_broadcast is False
+
+        # Act
+        client.force_login(superuser)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+
+        response = client.post(url, _update_org_payload(
+            outlook_categorize_email_permission=OutlookCategorizeChoices.ORG_LEVEL))
+        test_org.refresh_from_db()
+
+        # Assert
+        assert response.status_code == 200
+        assert 'outlook_categorize_email_permission' in response.context['form'].errors
+        assert test_org.outlook_categorize_email_permission == OutlookCategorizeChoices.NONE
+
+    def test_can_enable_with_synced_graphgrant(
+            self, client, superuser, test_org, msgraph_grant, settings):
+
+        # Arrange
+        settings.ENABLE_MSGRAPH_MAILSCAN = True
+        grant_extra = msgraph_grant.grant_extra
+        grant_extra.should_broadcast = True
+        grant_extra.save()
+
+        # Act
+        client.force_login(superuser)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+
+        response = client.post(url, _update_org_payload(
+            outlook_categorize_email_permission=OutlookCategorizeChoices.ORG_LEVEL))
+
+        test_org.refresh_from_db()
+
+        # Assert
+        assert response.status_code == 302
+        assert response["Location"] == reverse_lazy('organization-list')
+        assert test_org.outlook_categorize_email_permission == OutlookCategorizeChoices.ORG_LEVEL
+
+    def test_can_disable_without_graphgrant(self, client, superuser, test_org, settings):
+        """Disabling categorization (NONE) must always work, grant or not."""
+
+        # Arrange
+        settings.ENABLE_MSGRAPH_MAILSCAN = True
+
+        # Act
+        client.force_login(superuser)
+        url = reverse_lazy('edit-organization', kwargs={'slug': test_org.slug})
+
+        response = client.post(url, _update_org_payload(
+            outlook_categorize_email_permission=OutlookCategorizeChoices.NONE))
+
+        # Assert
+        assert response.status_code == 302
+
+
 @pytest.mark.django_db
 class TestDeleteOrganizationViews:
 
