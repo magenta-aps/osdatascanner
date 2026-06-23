@@ -39,7 +39,14 @@ class TestMSGraphImport:
                         "surname": "Darwin",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
                         "samAccountName": None,
-                        "email": "Charles@darwindomain.onmicrosoft.com"
+                        "email": "Charles@darwindomain.onmicrosoft.com",
+                        "manager": {
+                            "@odata.type": "#microsoft.graph.user",
+                            "id": "3382c90d-9646-4562-9f47-3994957030a6",
+                            "givenName": "Albert",
+                            "surname": "Twostones",
+                            "userPrincipalName": "albert@darwindomain.onmicrosoft.com"
+                        }
                     }
                 ]
             },
@@ -64,6 +71,13 @@ class TestMSGraphImport:
                         "samAccountName": "MONKEYBOY",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
                         "email": "Charles@darwindomain.onmicrosoft.com",
+                        "manager": {
+                            "@odata.type": "#microsoft.graph.user",
+                            "id": "3382c90d-9646-4562-9f47-3994957030a6",
+                            "givenName": "Albert",
+                            "surname": "Twostones",
+                            "userPrincipalName": "albert@darwindomain.onmicrosoft.com"
+                        }
                     },
                 ]
             },
@@ -77,7 +91,14 @@ class TestMSGraphImport:
                         "givenName": "Charles",
                         "surname": "Darwin",
                         "userPrincipalName": "Charles@darwindomain.onmicrosoft.com",
-                        "email": "Charles@darwindomain.onmicrosoft.com"
+                        "email": "Charles@darwindomain.onmicrosoft.com",
+                        "manager": {
+                            "@odata.type": "#microsoft.graph.user",
+                            "id": "3382c90d-9646-4562-9f47-3994957030a6",
+                            "givenName": "Albert",
+                            "surname": "Twostones",
+                            "userPrincipalName": "albert@darwindomain.onmicrosoft.com"
+                        }
                     },
                     {
                         "type": "group",
@@ -304,3 +325,99 @@ class TestMSGraphImport:
                                           first_name="Guy", last_name="Average").exists()
         assert Account.objects.filter(imported_id="99x1o23k-3811-476f-ac56-e7f0d1337baa",
                                       first_name="Guy", last_name="Average").exists()
+
+    def test_manager_imported(self):
+        # Charles' manager is initially Albert (see TEST_CORP)
+        assert (Account.objects.get(username="Charles@darwindomain.onmicrosoft.com").manager
+                == Account.objects.get(username="albert@darwindomain.onmicrosoft.com")
+                )
+
+    def test_manager_update(self, TEST_CORP, test_org):
+        # Charles' manager is initially Albert (see TEST_CORP)
+        charles = Account.objects.get(username="Charles@darwindomain.onmicrosoft.com")
+        albert = Account.objects.get(username="albert@darwindomain.onmicrosoft.com")
+        assert charles.manager == albert
+
+        # Charles gets a new manager: Guy Average
+        UPDATED_CORP = deepcopy(TEST_CORP)
+        for ou in UPDATED_CORP:
+            for member in ou["members"]:
+                if member["uuid"] == "118e5d18-90ba-4150-a11c-9162c24bb5ce":
+                    member["manager"] = {
+                        "@odata.type": "#microsoft.graph.user",
+                        "id": "93f2f74e-3811-476f-ac56-e7f0d3007fcc",
+                        "givenName": "Guy",
+                        "surname": "Average",
+                        "userPrincipalName": "guy@darwindomain.onmicrosoft.com",
+                    }
+
+        # Run import again
+        msgraph_import_actions.perform_msgraph_import(
+            UPDATED_CORP, test_org
+        )
+
+        # Charles' manager should now be Guy Average
+        charles.refresh_from_db()
+        guy = Account.objects.get(username="guy@darwindomain.onmicrosoft.com")
+        assert charles.manager == guy
+
+    def test_manager_attribute_update_to_none(self, TEST_CORP, test_org):
+        # Charles' manager is initially Albert (see TEST_CORP)
+        charles = Account.objects.get(username="Charles@darwindomain.onmicrosoft.com")
+        albert = Account.objects.get(username="albert@darwindomain.onmicrosoft.com")
+        assert charles.manager == albert
+
+        # Charles' no longer has any manager.
+        UPDATED_CORP = deepcopy(TEST_CORP)
+        for ou in UPDATED_CORP:
+            for member in ou["members"]:
+                if member["uuid"] == "118e5d18-90ba-4150-a11c-9162c24bb5ce":
+                    member.pop("manager")
+
+        # Run import again
+        msgraph_import_actions.perform_msgraph_import(
+            UPDATED_CORP, test_org
+        )
+
+        # Charles' manager should now be None.
+        charles.refresh_from_db()
+        assert charles.manager is None
+
+    def test_manager_is_newly_imported_account(self, TEST_CORP, test_org):
+        # An existing account (Guy Average, who has no manager) gets a brand-new
+        # account as manager in the same import that creates that manager.
+        guy = Account.objects.get(username="guy@darwindomain.onmicrosoft.com")
+        assert guy.manager is None
+
+        new_manager_id = "abcdef12-0000-4000-8000-000000000001"
+        UPDATED_CORP = deepcopy(TEST_CORP)
+        for ou in UPDATED_CORP:
+            if ou["uuid"] == "7e6bc04d-15c1-420b-999d-c12581520c23":  # Vejstrand
+                # The brand-new manager account, created by this very import
+                ou["members"].append({
+                    "type": "user",
+                    "uuid": new_manager_id,
+                    "givenName": "Nina",
+                    "surname": "Newboss",
+                    "userPrincipalName": "nina@darwindomain.onmicrosoft.com",
+                    "email": "nina@darwindomain.onmicrosoft.com",
+                })
+                for member in ou["members"]:
+                    if member["uuid"] == "93f2f74e-3811-476f-ac56-e7f0d3007fcc":
+                        member["manager"] = {
+                            "@odata.type": "#microsoft.graph.user",
+                            "id": new_manager_id,
+                            "givenName": "Nina",
+                            "surname": "Newboss",
+                            "userPrincipalName": "nina@darwindomain.onmicrosoft.com",
+                        }
+
+        # Run import again
+        msgraph_import_actions.perform_msgraph_import(
+            UPDATED_CORP, test_org
+        )
+
+        # Guy's manager should now be the newly imported Nina Newboss
+        guy.refresh_from_db()
+        nina = Account.objects.get(username="nina@darwindomain.onmicrosoft.com")
+        assert guy.manager == nina
