@@ -189,10 +189,11 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
         unit = evaluate_org_unit(group)
         for member in group['members']:
             acc, manager_info = evaluate_group_member(member)
-            manager_id = manager_info.get("id") if manager_info else None
-            if manager_id:
-                manager_relations[acc] = manager_id
             if acc:
+                # Record unconditionally, including a missing manager as None, so a
+                # removed manager is cleared rather than left stale on re-import.
+                manager_relations[acc] = manager_info.get("id") if manager_info else None
+
                 evaluate_aliases(account=acc,
                                  email=member.get("email"),
                                  sid=member.get("sid"),
@@ -212,9 +213,12 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
 
         progress_callback("group_handled", unit.name)
 
-    # Sort out Account-manager relations
+    # Add to to_update if the manager has changed.
     for acc, manager_id in manager_relations.items():
-        acc.manager = accounts.get(manager_id)
+        manager = accounts.get(manager_id)
+        if acc.manager_id != getattr(manager, "pk", None):
+            to_update.append((acc, ("manager",)))
+        acc.manager = manager
 
     # Figure out which positions to delete for each user.
     for acc in account_positions:
