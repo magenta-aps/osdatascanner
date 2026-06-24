@@ -31,7 +31,7 @@ class PositionSerializer(Core_PositionSerializer):
         pk_field=UUIDField(format='hex_verbose'))
 
     unit = serializers.PrimaryKeyRelatedField(
-        queryset=OrganizationalUnit.objects.all(),
+        queryset=OrganizationalUnit.objects,
         required=True,
         allow_null=False,
         # This will properly serialize uuid.UUID to str:

@@ -8,13 +8,13 @@ from uuid import uuid4
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from mptt.models import MPTTModel, TreeForeignKey
+from treebeard.al_tree import AL_Node
 
 from ..serializer import BaseSerializer
 from .position import Role
 
 
-class OrganizationalUnit(MPTTModel):
+class OrganizationalUnit(AL_Node):
     """Represents a fragment of an organizational hierarchy.
 
     An OrganizationalUnit typically represents a department or a product team.
@@ -23,6 +23,8 @@ class OrganizationalUnit(MPTTModel):
     """
 
     serializer_class = None
+
+    node_order_by = ['name']
 
     uuid = models.UUIDField(
         primary_key=True,
@@ -35,7 +37,8 @@ class OrganizationalUnit(MPTTModel):
         max_length=256,
         verbose_name=_('name'),
     )
-    parent = TreeForeignKey(
+
+    parent = models.ForeignKey(
         'self',
         on_delete=models.CASCADE,
         null=True,
@@ -43,6 +46,7 @@ class OrganizationalUnit(MPTTModel):
         related_name='children',
         verbose_name=_('parent unit'),
     )
+
     organization = models.ForeignKey(
         'Organization',
         on_delete=models.CASCADE,
@@ -71,9 +75,6 @@ class OrganizationalUnit(MPTTModel):
         abstract = True
         verbose_name = _('organizational unit')
         verbose_name_plural = _('organizational units')
-
-    class MPTTMeta:
-        order_insertion_by = ["name"]
 
     def __str__(self):
         return self.name
