@@ -249,7 +249,6 @@ class KeycloakImporter:
                 hidden=self.org.importservice.hide_units_on_import,
                 name=name,
                 parent=parent,
-                lft=0, rght=0, tree_id=0, level=0
             )
             self.to_add.append(org_unit)
 

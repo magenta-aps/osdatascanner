@@ -85,5 +85,4 @@ class OrganizationalUnit(AL_Node):
 
 class OrganizationalUnitSerializer(BaseSerializer):
     class Meta:
-        fields = ["pk", "name", "parent", "organization", "lft", "rght", "tree_id", "level",
-                  "hidden"]
+        fields = ["pk", "name", "parent", "organization", "hidden"]

@@ -55,10 +55,6 @@ class OrganizationalUnitBulkSerializer(BaseBulkSerializer):
 
 class OrganizationalUnitSerializer(Core_OrganizationalUnitSerializer):
     pk = serializers.UUIDField(read_only=False)
-    lft = serializers.IntegerField(read_only=False)
-    rght = serializers.IntegerField(read_only=False)
-    tree_id = serializers.IntegerField(read_only=False)
-    level = serializers.IntegerField(read_only=False)
 
     parent = SelfRelatingField(queryset=OrganizationalUnit.objects, many=False,
                                allow_null=True)
