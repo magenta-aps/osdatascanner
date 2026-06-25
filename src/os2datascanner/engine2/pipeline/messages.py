@@ -784,6 +784,73 @@ class StatusMessage:
                 content_identifier=obj.get("content_identifier"))
 
 
+@dataclass(frozen=True, slots=True, kw_only=True)
+class ObjectProgressMessage:
+    """An ObjectProgressMessage is a liveness heartbeat about a single
+    top-level object that a worker is processing in-process.
+
+    It exists to inform the admin module of work being done in nested files,
+    f.e. a zip of tars of zips, or a large PDF.
+    It never contributes to the scan's ScanStatus, total_objects/scanned_objects counts ignore it
+    entirely.
+
+    Workers only emit it for objects that have been in-flight past a time
+    threshold, and at a throttled interval, so fast objects produce no extra
+    traffic. A message with final=True signals that the object has finished
+    and its tracking row can be removed."""
+
+    scan_tag: ScanTagFragment
+    """The identifier of this scan."""
+
+    object_key: str
+    """A stable, bounded identifier for the top-level object this heartbeat
+    describes (a hash of the top-level handle)."""
+
+    object_path: str = ""
+    """Human-readable presentation of the top-level object (str(handle))."""
+
+    current_path: str = ""
+    """Human-readable presentation of the nested sub-object the worker is
+    walking right now (str(handle) of the current ConversionMessage), so an
+    we can display where inside a large container the work has reached."""
+
+    items_processed: int = 0
+    """Count of nested objects walked so far for this top-level
+    object."""
+
+    elapsed_seconds: int = 0
+    """Seconds since the worker began processing this top-level
+    object."""
+
+    final: bool = False
+    """True when the object has finished processing, the collector removes the
+    tracking row on receipt."""
+
+    def to_json_object(self):
+        return {
+            "type": "object_progress",
+            "scan_tag": self.scan_tag.to_json_object(),
+            "object_key": self.object_key,
+            "object_path": self.object_path,
+            "current_path": self.current_path,
+            "items_processed": self.items_processed,
+            "elapsed_seconds": self.elapsed_seconds,
+            "final": self.final,
+        }
+
+    @classmethod
+    def from_json_object(cls, obj: dict) -> ObjectProgressMessage:
+        require_fields(cls, obj, "scan_tag", "object_key")
+        return ObjectProgressMessage(
+                scan_tag=ScanTagFragment.from_json_object(obj["scan_tag"]),
+                object_key=obj["object_key"],
+                object_path=obj.get("object_path", ""),
+                current_path=obj.get("current_path", ""),
+                items_processed=obj.get("items_processed", 0),
+                elapsed_seconds=obj.get("elapsed_seconds", 0),
+                final=obj.get("final", False))
+
+
 def check_metadata_dict(cls_metadata, obj_metadata):
     for key, expected_value in cls_metadata.items():
         obj_value = obj_metadata.get(key)

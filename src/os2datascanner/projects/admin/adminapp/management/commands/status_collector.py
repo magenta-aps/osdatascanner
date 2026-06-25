@@ -25,7 +25,7 @@ from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
 from ...models.scannerjobs.scanner_helpers import (
         MIMETypeProcessStat, DuplicationStat, HashCache, delete_per_scan_queue,
-        notify_new_conversion_queues_batch)
+        notify_new_conversion_queues_batch, ActiveObjectStatus)
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
 
@@ -231,6 +231,48 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     yield from []
 
 
+def object_progress_received_raw(body):
+    """Upserts (or, for a final heartbeat, removes) the ActiveObjectStatus row
+    for the top-level object described by an ObjectProgressMessage.
+
+    This never touches the scan's object ScanStatus, it only maintains the
+     liveness view of objects currently being scanned through."""
+    message = messages.ObjectProgressMessage.from_json_object(body)
+
+    try:
+        scanner = Scanner.objects.get(pk=message.scan_tag.scanner.pk)
+    except Scanner.DoesNotExist:
+        # Residual message for a deleted scanner, discard it.
+        return
+
+    scan_status = ScanStatus.objects.filter(
+            scanner=scanner,
+            scan_tag__time=body["scan_tag"]["time"]).first()
+    if not scan_status:
+        yield from []
+        return
+
+    if message.final:
+        ActiveObjectStatus.objects.filter(
+                scan_status=scan_status, object_key=message.object_key).delete()
+        yield from []
+        return
+
+    now = timezone.now()
+    ActiveObjectStatus.objects.update_or_create(
+            scan_status=scan_status,
+            object_key=message.object_key,
+            defaults={
+                "object_path": message.object_path,
+                "current_path": message.current_path,
+                "items_processed": message.items_processed,
+                "elapsed_seconds": message.elapsed_seconds,
+                "last_heartbeat": now,
+            })
+
+    yield from []
+
+
 _REBROADCAST_INTERVAL_TICKS = 600  # ~60 seconds at 0.1s/tick
 
 
@@ -312,7 +354,10 @@ class StatusCollectorRunner(PikaPipelineThread):
             try:
                 with transaction.atomic():
                     if routing_key == "os2ds_status":
-                        yield from status_message_received_raw(body)
+                        if body.get("type") == "object_progress":
+                            yield from object_progress_received_raw(body)
+                        else:
+                            yield from status_message_received_raw(body)
             except DataError as de:
                 # DataError occurs when something went wrong trying to select
                 # or create/update data in the database. For now, we

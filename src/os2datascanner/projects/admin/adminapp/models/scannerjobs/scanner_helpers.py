@@ -4,6 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from enum import Enum
+from typing import NamedTuple
 import datetime
 from datetime import timedelta
 import structlog
@@ -229,6 +230,13 @@ def inv_linear_func(y, a, b):
     return (y - b)/a if a != 0 else None
 
 
+class ActiveObjectSummary(NamedTuple):
+    """The admin-facing summary of a scan's long-running objects: how many are
+    in flight and how long the oldest has been running."""
+    count: int
+    max_minutes: int
+
+
 class ScanStatus(AbstractScanStatus):
     """A ScanStatus object collects the status messages received from the
     pipeline for a given scan."""
@@ -330,6 +338,18 @@ class ScanStatus(AbstractScanStatus):
         """Returns the start time of this scan."""
         return messages.ScanTagFragment.from_json_object(self.scan_tag).time
     start_time.fget.short_description = _('Start time')
+
+    @property
+    def active_object_summary(self) -> ActiveObjectSummary | None:
+        """Summarises this scan's long-running objects for the admin status
+        view, or None when nothing is in flight."""
+        # Requires prefetch_related("active_objects") to avoid a query per row.
+        rows = list(self.active_objects.all())
+        if not rows:
+            return None
+        return ActiveObjectSummary(
+                count=len(rows),
+                max_minutes=max(row.elapsed_minutes for row in rows))
 
     class Meta:
         verbose_name = _("scan status")
@@ -664,6 +684,63 @@ class HashCache(models.Model):
         ]
         indexes = [
             models.Index(fields=['scan_status', 'content_identifier']),
+        ]
+
+
+class ActiveObjectStatus(models.Model):
+    """Transient objects that represent liveness for a top-level object a worker is
+    currently grinding through in-process.
+
+    These exist only while an object is 'slow' (a deeply nested
+    container, say). They are never part of the scan's ScanStatus counts, they
+    only let the admin module inform of huge-but-progressing things.
+    Upserted from ObjectProgressMessage heartbeats, removed on the object's
+    final heartbeat.
+
+    A worker cannot heartbeat while busy inside a single large object, so heartbeat silence
+    cannot be told apart from genuine progress. A row left
+    behind by a crashed worker is cleaned up when its (unacked) conversion
+    message is redelivered and reprocessed under the same object_key, or with
+    the scan via the CASCADE deletion.
+    Finished scans drop out of the only view that renders these rows,
+    so an orphan is never displayed."""
+
+    scan_status = models.ForeignKey(
+        ScanStatus,
+        on_delete=models.CASCADE,
+        related_name="active_objects",
+    )
+
+    # Sized for a SHA-256 hex digest (64 chars).
+    object_key = models.CharField(max_length=64)
+
+    object_path = models.TextField(blank=True)
+
+    # Presentation of the nested sub-object the worker is currently walking,
+    # so we can see where inside the container the work has reached.
+    current_path = models.TextField(blank=True)
+
+    # TODO: this field is incremented, but currently not shown as its not clear how to do so best.
+    # Consider how to display it, or delete it and its uses.
+    items_processed = models.PositiveIntegerField(default=0)
+
+    elapsed_seconds = models.PositiveIntegerField(default=0)
+
+    last_heartbeat = models.DateTimeField(default=timezone.now)
+
+    @property
+    def elapsed_minutes(self) -> int:
+        return self.elapsed_seconds // 60
+
+    class Meta:
+        # Explicit ordering, so objects stay in the order they're met and don't
+        # swap places in the UI (if multiple) as they're refreshed.
+        ordering = ("pk",)
+        constraints = [
+            models.UniqueConstraint(
+                fields=['scan_status', 'object_key'],
+                name='unique_active_object_per_scan'
+            )
         ]
 
 

@@ -40,8 +40,9 @@ class StatusOverview(StatusBase):
         # That way we avoid manual filtering in the template and only get the data we
         # intend to display.
 
-        return super().get_queryset().order_by("-pk").exclude(ScanStatus._completed_or_cancelled_Q
-                                                              ).prefetch_related("scanner")
+        return super().get_queryset().order_by("-pk").exclude(
+                ScanStatus._completed_or_cancelled_Q
+                ).prefetch_related("scanner", "active_objects")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
