@@ -343,8 +343,6 @@ class TestDiagnosticsCommand:
             assert bool(match) == setting
 
     @pytest.mark.parametrize('setting,value', [
-        ('EXCLUSION_RULES', True),
-        ('EXCLUSION_RULES', False),
         ('ANALYSIS_PAGE', True),
         ('ANALYSIS_PAGE', False),
         ('AUTOMATIC_IMPORT_CLEANUP', True),

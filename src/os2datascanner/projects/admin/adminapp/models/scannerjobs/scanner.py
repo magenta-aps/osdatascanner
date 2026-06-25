@@ -197,13 +197,6 @@ class Scanner(models.Model):
                                             default=INVALID,
                                             verbose_name=_('validation status'))
 
-    exclusion_rule = models.ForeignKey(Rule,
-                                       blank=True,
-                                       null=True,
-                                       verbose_name=_('exclusion rule'),
-                                       related_name='scanners_ex_rule',
-                                       on_delete=models.PROTECT)
-
     supports_rule_preexec = False
 
     def as_subclass(self) -> 'Scanner':
@@ -368,11 +361,6 @@ class Scanner(models.Model):
         return AndRule.make(*prerules, rule)
 
     def _construct_filter_rule(self) -> Rule:
-        try:
-            return self.exclusion_rule.make_engine2_rule()\
-                if self.exclusion_rule else None
-        except ValueError:
-            pass
         return None
 
     def _construct_scan_spec_template(self, user, force: bool) -> (

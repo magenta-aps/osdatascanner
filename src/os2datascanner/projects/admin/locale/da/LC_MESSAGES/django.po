@@ -176,10 +176,6 @@ msgid "Rule"
 msgstr "Regel"
 
 #: adminapp/forms/shared.py
-msgid "Exclusion rule"
-msgstr "Udelukkelsesregel"
-
-#: adminapp/forms/shared.py
 msgid "Set a max size for PDF files (MB)"
 msgstr "Angiv en max størrelse for PDF-filer (MB)"
 
@@ -750,10 +746,6 @@ msgstr "Gyldig"
 #: adminapp/models/scannerjobs/scanner.py
 msgid "validation status"
 msgstr "valideringstatus"
-
-#: adminapp/models/scannerjobs/scanner.py
-msgid "exclusion rule"
-msgstr "udelukkelsesregel"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "The scanner job could not be started because it has no assigned rules."
@@ -5012,21 +5004,3 @@ msgid ""
 msgstr ""
 "Outlook kategorisering kræver at en MSGraph bevilling er synkroniseret til "
 "rapport modulet."
-
-#~ msgid "sensitivity"
-#~ msgstr "følsomhed"
-
-#~ msgid "Critical"
-#~ msgstr "Kritisk"
-
-#~ msgid "Problem"
-#~ msgstr "Problem"
-
-#~ msgid "Warning"
-#~ msgstr "Advarsel"
-
-#~ msgid "Notification"
-#~ msgstr "Notifikation"
-
-#~ msgid "Assess the sensitivity of the rule"
-#~ msgstr "Vurder reglens følsomhed"
