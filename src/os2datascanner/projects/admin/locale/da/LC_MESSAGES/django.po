@@ -176,14 +176,16 @@ msgid "Rule"
 msgstr "Regel"
 
 #: adminapp/forms/shared.py
-msgid "Set a max size for PDF files (MB)"
-msgstr "Angiv en max størrelse for PDF-filer (MB)"
+msgid "Set a max size for files (MB)"
+msgstr "Angiv en max størrelse for filer (MB)"
 
 #: adminapp/forms/shared.py
 msgid ""
-"Set a size limit for PDF files that the scanner will process (in megabytes)."
+"Set a size limit for files that the scanner will process (in megabytes). "
+"(Only works for files where size is available.)"
 msgstr ""
-"Angiv en størrelsesbegrænsning for PDF-filer som scanneren skal behandle."
+"Angiv en størrelsesbegrænsning for filer som scanneren skal behandle. "
+"(Virker kun for filer, hvor størrelsen er tilgængelig.)"
 
 #: adminapp/forms/shared.py
 msgid "E.g. 10"
@@ -721,15 +723,16 @@ msgstr ""
 "matchede kilder."
 
 #: adminapp/models/scannerjobs/scanner.py
-msgid "maximum PDF size (MB)"
-msgstr "maksimum PDF størrelse (MB)"
+msgid "maximum file size (MB)"
+msgstr "maksimum filstørrelse (MB)"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid ""
-"The maximum size of PDF files to scan, in megabytes. Set to 0 for no limit."
+"The maximum size of files to scan, in megabytes. Set to 0 for no limit. "
+"(Only works for files where size is available.)"
 msgstr ""
-"Den maksimale størrelse af PDF-filer der skal scannes, i megabytes. Sæt til "
-"0 for ingen begrænsning."
+"Den maksimale størrelse af filer der skal scannes, i megabytes. Sæt til 0 "
+"for ingen begrænsning. (Virker kun for filer, hvor størrelsen er tilgængelig.)"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "rule"

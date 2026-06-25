@@ -71,7 +71,7 @@ class Groups:
         _("File settings"),
         [
             "do_ocr",
-            "max_pdf_size",
+            "max_file_size",
         ],
     )
 
@@ -237,9 +237,10 @@ class ScannerForm(GroupingModelForm):
                         "hx-swap-oob": "true"
                     }))
 
-    max_pdf_size = forms.IntegerField(
-        label=_("Set a max size for PDF files (MB)"),
-        help_text=_("Set a size limit for PDF files that the scanner will process (in megabytes)."),
+    max_file_size = forms.IntegerField(
+        label=_("Set a max size for files (MB)"),
+        help_text=_("Set a size limit for files that the scanner will process (in megabytes). "
+                    "(Only works for files where size is available.)"),
         required=False,
         min_value=0,
         widget=ScanMaxFileSizeWidget(
