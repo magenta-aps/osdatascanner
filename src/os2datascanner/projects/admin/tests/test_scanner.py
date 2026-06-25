@@ -351,9 +351,15 @@ class TestScanners:
         assert web_scanner._construct_rule(force=True) == expected
 
     def test_construct_rule_size_only(self, web_scanner):
-        """A max PDF size alone prepends a size check to the configured rule."""
+        """A max file size alone prepends a size check to the configured rule."""
         web_scanner.max_file_size = 10
         expected = _size_check(10)
+        assert web_scanner._construct_filter_rule() == expected
+
+    def test_no_max_file_size(self, web_scanner):
+        """A max file size of 0, should result in no filter rule."""
+        web_scanner.max_file_size = 0
+        expected = None
         assert web_scanner._construct_filter_rule() == expected
 
     def test_construct_rule_subject_and_ocr(self, msgraph_mailscanner):
