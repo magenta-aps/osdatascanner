@@ -225,7 +225,7 @@ msgstr "{name} (i {place})"
 #: engine2/locale/../model/derived/pdf.py
 #, python-brace-format
 msgid "{name} (on {place})"
-msgstr "{name} (på {place})"
+msgstr "{name} (i {place})"
 
 #: engine2/locale/../model/derived/pdf.py
 #, python-brace-format

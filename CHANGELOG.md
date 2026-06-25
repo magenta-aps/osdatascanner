@@ -8,6 +8,10 @@
 
 - Add support for using other aliases in the SBSYS user filter
 
+- Workers now emit more information about what they are doing, for the running scanners to show.
+  F.e. what page of a PDF file we're at and for how long the top-level object has been processing
+  for. (By default, emitted if current top-level object has been processing for over a minute.)
+
 ### General improvements
 
 - Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase.

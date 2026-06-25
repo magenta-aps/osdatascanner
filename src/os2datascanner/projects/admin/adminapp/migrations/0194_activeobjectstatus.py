@@ -8,7 +8,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0192_sbsysdbscanner_owner_field'),
+        ('os2datascanner', '0193_coveredaccount_status_is_error'),
     ]
 
     operations = [
