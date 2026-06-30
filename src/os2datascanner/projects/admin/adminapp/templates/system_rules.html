@@ -47,10 +47,10 @@
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
+                    {# djlint:off #}
                     <option value="{{ category.identifier }}"
-                            {% if category in selected_categories %}selected{% endif %}>
-                      {{ category.name|capfirst }}
-                    </option>
+                            {% if category in selected_categories %}selected{% endif %}>{{ category.name|capfirst }}</option>
+                    {# djlint:on #}
                   {% endfor %}
                 </select>
               </div>
