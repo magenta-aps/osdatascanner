@@ -22,7 +22,7 @@ from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
-    UserArchiveView, RemediatorArchiveView, UndistributedArchiveView)
+    UserHandledView, RemediatorHandledView, UndistributedHandledView)
 from ..organizations.models import Account
 
 from importlib import reload, import_module
@@ -41,8 +41,8 @@ def reload_urlconf(urlconf=None):
 
 
 @pytest.fixture(autouse=True)
-def override_archive_tab_feature_flag():
-    settings.ARCHIVE_TAB = True
+def override_handled_tab_feature_flag():
+    settings.HANDLED_TAB = True
 
 
 @pytest.mark.django_db
@@ -722,7 +722,7 @@ class TestUndistributedView:
                 Permission.objects.get(codename="handle_withheld_results"))
 
         client.force_login(egon_account.user)
-        response = client.get(reverse_lazy("reports:undistributed"))
+        response = client.get(reverse_lazy("results:undistributed"))
 
         assert response.status_code == 200
         assert response.context_data["allow_handle"] == has_permission
@@ -734,7 +734,7 @@ class TestUndistributedView:
             Permission.objects.get(codename="distribute_withheld_results"))
 
         client.force_login(egon_account.user)
-        response = client.get(reverse_lazy("reports:undistributed"))
+        response = client.get(reverse_lazy("results:undistributed"))
 
         assert response.status_code == 200
         assert b"distribute-results-modal" in response.content
@@ -745,7 +745,7 @@ class TestUndistributedView:
             Permission.objects.get(codename="view_withheld_results"))
 
         client.force_login(egon_account.user)
-        response = client.get(reverse_lazy("reports:undistributed"))
+        response = client.get(reverse_lazy("results:undistributed"))
 
         assert response.status_code == 200
         assert b"distribute-results-modal" not in response.content
@@ -762,14 +762,14 @@ class TestUndistributedView:
 
 
 @pytest.mark.django_db
-class TestUserArchiveView:
+class TestUserHandledView:
 
-    def test_userarchiveview_as_default_role_with_no_matches(self, rf, egon_account):
+    def test_userhandledview_as_default_role_with_no_matches(self, rf, egon_account):
         qs = self.userreport_get_queryset(rf, egon_account)
         assert qs.exists() is False
 
     @pytest.mark.parametrize('num', [0, 1, 10])
-    def test_userarchiveview_as_default_role_with_matches(
+    def test_userhandledview_as_default_role_with_matches(
             self, egon_account, rf, egon_email_alias, num):
 
         create_reports_for(egon_email_alias, num=num)
@@ -793,7 +793,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_multiple_aliases(
+    def test_userhandledview_as_default_role_with_matches_multiple_aliases(
             self, email_num, sid_num, rf, egon_account, egon_sid_alias, egon_email_alias):
         create_reports_for(egon_sid_alias, num=sid_num)
         create_reports_for(egon_email_alias, num=email_num)
@@ -816,7 +816,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_filter_by_scannerjob(
+    def test_userhandledview_as_default_role_with_matches_filter_by_scannerjob(
             self, num1, num2, rf, egon_account, egon_email_alias):
         # Arrange
         params = '?scannerjob=2'
@@ -838,7 +838,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_filter_by_sensitivity(
+    def test_userhandledview_as_default_role_with_matches_filter_by_sensitivity(
             self, num750, num1000, rf, egon_account, egon_email_alias):
         # Arrange
         params = '?sensitivities=1000'
@@ -860,7 +860,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_filter_by_scannerjob_and_sensitivity(
+    def test_userhandledview_as_default_role_with_matches_filter_by_scannerjob_and_sensitivity(
             self,
             num_2_1000,
             other_num,
@@ -909,7 +909,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_filter_by_datasource_age_true(
+    def test_userhandledview_as_default_role_with_matches_filter_by_datasource_age_true(
             self,
             num_new,
             num_old,
@@ -946,7 +946,7 @@ class TestUserArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_userarchiveview_as_default_role_with_matches_filter_by_datasource_age_false(
+    def test_userhandledview_as_default_role_with_matches_filter_by_datasource_age_false(
             self,
             num_new,
             num_old,
@@ -995,7 +995,7 @@ class TestUserArchiveView:
         ('false', 0, 10),
         ('false', 10, 10),
     ])
-    def test_userarchiveview_personal_and_shared_aliases(
+    def test_userhandledview_personal_and_shared_aliases(
             self,
             include_shared,
             unshared_num,
@@ -1021,7 +1021,7 @@ class TestUserArchiveView:
         else:
             assert qs.count() == unshared_num
 
-    def test_double_relation_archive_resolution_filter(
+    def test_double_relation_handled_resolution_filter(
             self,
             egon_account,
             egon_email_alias,
@@ -1033,7 +1033,7 @@ class TestUserArchiveView:
         create_alias_and_match_relations(egon_upn_alias)
 
         # Act
-        response = self.get_archive_response(rf, egon_account)
+        response = self.get_handled_response(rf, egon_account)
         resolution_status_choice = response.context_data.get('resolution_status_choices')[0]
 
         # Assert
@@ -1042,55 +1042,55 @@ class TestUserArchiveView:
     # Helper methods
 
     def userreport_get_queryset(self, rf, account, params=''):
-        request = rf.get('/archive/reports' + params)
+        request = rf.get('/handled/reports' + params)
         request.user = account.user
-        view = UserArchiveView()
+        view = UserHandledView()
         view.setup(request)
         qs = view.get_queryset()
         return qs
 
-    def get_archive_response(self, rf, account, params='', **kwargs):
+    def get_handled_response(self, rf, account, params='', **kwargs):
         request = rf.get('/' + params)
         request.user = account.user
-        return UserArchiveView.as_view()(request, **kwargs)
+        return UserHandledView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db
-class TestRemediatorArchiveView:
+class TestRemediatorHandledView:
 
-    def test_remediatorarchiveview_not_enabled(self, rf, egon_account, egon_remediator_alias):
+    def test_remediatorhandledview_not_enabled(self, rf, egon_account, egon_remediator_alias):
         """If the archive tab is not enabled in the configurations, the view
         should redirect the user, even if they are a remediator."""
-        settings.ARCHIVE_TAB = False
+        settings.HANDLED_TAB = False
 
-        request = rf.get('/archive/remediator/')
+        request = rf.get('/handled/remediator/')
         request.user = egon_account.user
-        response = RemediatorArchiveView.as_view()(request)
+        response = RemediatorHandledView.as_view()(request)
         assert response.status_code == 302
 
-    @override_settings(ARCHIVE_TAB=True)
-    def test_remediatorarchiveview_as_non_remediator(self, rf, egon_account):
+    @override_settings(HANDLED_TAB=True)
+    def test_remediatorhandledview_as_non_remediator(self, rf, egon_account):
         """Accessing the RemediatorView with no role should redirect the user
         to the main page."""
 
-        request = rf.get('/archive/remediator/')
+        request = rf.get('/handled/remediator/')
         request.user = egon_account.user
-        response = RemediatorArchiveView.as_view()(request)
+        response = RemediatorHandledView.as_view()(request)
         assert response.status_code == 302
 
-    @override_settings(ARCHIVE_TAB=True)
-    def test_remediatorarchiveview_as_remediator(
+    @override_settings(HANDLED_TAB=True)
+    def test_remediatorhandledview_as_remediator(
             self,
             rf,
             egon_account,
             egon_remediator_alias):
         """Remediators should be able to access the remediator archive tab."""
-        request = rf.get('/archive/remediator/')
+        request = rf.get('/handled/remediator/')
         request.user = egon_account.user
-        response = RemediatorArchiveView.as_view()(request)
+        response = RemediatorHandledView.as_view()(request)
         assert response.status_code == 200
 
-    @override_settings(ARCHIVE_TAB=True)
+    @override_settings(HANDLED_TAB=True)
     @pytest.mark.parametrize('personal_num,remediator_num', [
         (0, 0),
         (1, 0),
@@ -1100,7 +1100,7 @@ class TestRemediatorArchiveView:
         (0, 10),
         (10, 10),
     ])
-    def test_remediatorarchiveview_queryset(
+    def test_remediatorhandledview_queryset(
             self,
             personal_num,
             remediator_num,
@@ -1125,7 +1125,7 @@ class TestRemediatorArchiveView:
         # But now they should!
         assert qs.count() == remediator_num
 
-    @override_settings(ARCHIVE_TAB=True)
+    @override_settings(HANDLED_TAB=True)
     def test_remediatorview_as_superuser_but_not_remediator(
             self, superuser_account, rf, egon_remediator_alias):
         """Accessing the RemediatorView as a superuser is allowed, but
@@ -1147,43 +1147,43 @@ class TestRemediatorArchiveView:
 #     # Helper functions
 
     def remediator_get_queryset(self, rf, account, params=''):
-        request = rf.get('/archive/remediator' + params)
+        request = rf.get('/handled/remediator' + params)
         request.user = account.user
-        view = RemediatorArchiveView()
+        view = RemediatorHandledView()
         view.setup(request)
         qs = view.get_queryset()
         return qs
 
 
 @pytest.mark.django_db
-class TestUndistibutedArchiveView:
+class TestUndistributedHandledView:
 
-    def test_undistributedarchiveview_without_permission(self, rf, egon_account):
+    def test_undistributedhandledview_without_permission(self, rf, egon_account):
         """A user without the correct permission should not be allowed access."""
-        request = rf.get('/archive/undistributed')
+        request = rf.get('/handled/undistributed')
         request.user = egon_account.user
         with pytest.raises(PermissionDenied):
-            UndistributedArchiveView.as_view()(request)
+            UndistributedHandledView.as_view()(request)
 
-    def test_undistributedarchiveview_with_permission(self, rf, egon_account):
+    def test_undistributedhandledview_with_permission(self, rf, egon_account):
         """A user with the correct permission should be allowed access."""
         egon_account.user.user_permissions.add(Permission.objects.get(
             codename="view_withheld_results"))
-        request = rf.get('/archive/undistributed')
+        request = rf.get('/handled/undistributed')
         request.user = egon_account.user
-        response = UndistributedArchiveView.as_view()(request)
+        response = UndistributedHandledView.as_view()(request)
         assert response.status_code == 200
 
-    def test_undistributedarchiveview_as_superuser(self, rf, superuser_account):
+    def test_undistributedhandledview_as_superuser(self, rf, superuser_account):
         """Superusers should be able to access the undistributed archive tab."""
 
-        request = rf.get('/archive/undistributed')
+        request = rf.get('/handled/undistributed')
         request.user = superuser_account.user
-        response = UndistributedArchiveView.as_view()(request)
+        response = UndistributedHandledView.as_view()(request)
         assert response.status_code == 200
 
     @pytest.mark.parametrize('num', [0, 1, 10])
-    def test_undistributedarchiveview_queryset(self, rf, superuser_account, egon_email_alias, num):
+    def test_undistributedhandledview_queryset(self, rf, superuser_account, egon_email_alias, num):
 
         create_reports_for(egon_email_alias, num=num, only_notify_superadmin=True)
 
@@ -1200,9 +1200,9 @@ class TestUndistibutedArchiveView:
 #     # Helper functions
 
     def remediator_get_queryset(self, rf, account, params=''):
-        request = rf.get('/archive/undistributed' + params)
+        request = rf.get('/handled/undistributed' + params)
         request.user = account.user
-        view = UndistributedArchiveView()
+        view = UndistributedHandledView()
         view.setup(request)
         qs = view.get_queryset()
         return qs
@@ -1363,7 +1363,7 @@ class TestHandleMatchView:
     def test_revert_single_report(self, client, egon_account, egon_email_alias):
         create_reports_for(egon_email_alias,
                            resolution_status=DocumentReport.ResolutionChoices.REMOVED)
-        report = egon_account.get_report(Account.ReportType.RAW, archived=True).first()
+        report = egon_account.get_report(Account.ReportType.RAW, handled=True).first()
 
         url = reverse_lazy("handle-match", kwargs={"pk": report.pk})
         data = {}
@@ -1372,7 +1372,7 @@ class TestHandleMatchView:
         response = client.post(url, data=data, **self.htmx_header)
 
         report.refresh_from_db()
-        reports = egon_account.get_report(Account.ReportType.RAW, archived=True)
+        reports = egon_account.get_report(Account.ReportType.RAW, handled=True)
 
         assert response.status_code == 200
         assert report not in reports

@@ -98,7 +98,7 @@
         {{ document_report.datasource_creation_time|naturalday:"j. M Y"|default_if_none:unknown_label|capfirst }}
       </td>
 
-      {% if is_archive %}
+      {% if is_handled %}
         <td class="column--resolution-status">
           <div class="status">
             <div class="status__wrapper"
@@ -111,7 +111,7 @@
  
       <td class="column--actions">
         <div class="button-group text-align-right">
-          {% if is_archive %}
+          {% if is_handled %}
             <button class="revert-handle button button--icon-text-button"
                     type="button"
                     title="{% trans "Revert handle status and return this result to the result overview" %}"

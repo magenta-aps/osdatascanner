@@ -282,6 +282,8 @@ msgid "No longer relevant"
 msgstr "Ikke længere relevant"
 
 #: reportapp/models/documentreport.py
+#: reportapp/templates/components/navigation/navigation.html
+#: reportapp/templates/manual.html
 msgid "Handled"
 msgstr "Håndteret"
 
@@ -592,13 +594,15 @@ msgid "Employees"
 msgstr "Medarbejdere"
 
 #: reportapp/templates/components/navigation/navigation.html
-msgid "Report"
-msgstr "Rapport"
-
-#: reportapp/templates/components/navigation/navigation.html
-#: reportapp/templates/manual.html
-msgid "Archive"
-msgstr "Arkiv"
+#: reportapp/templates/leader_statistics_template.html
+#: reportapp/templates/report_content--personal.html
+#: reportapp/templates/report_content--personal_sbsys.html
+#: reportapp/templates/report_content--remediator.html
+#: reportapp/templates/report_content--remediator_sbsys.html
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Results"
+msgstr "Resultater"
 
 #: reportapp/templates/components/navigation/navigation.html
 #: reportapp/templates/leader_statistics_template.html
@@ -932,10 +936,10 @@ msgstr "Fortryd"
 #: reportapp/templates/components/report_table/report_table--row.html
 msgid ""
 "Revert the selected handling status for this result. This will remove the "
-"result from the archive and return it to the report overview."
+"result from the handled tab and return it to the result overview."
 msgstr ""
 "Fortryd den valgte håndteringsstatus for dette resultat. Dette vil fjerne "
-"resultatet fra arkivet og returnere det til rapport overblikket."
+"resultatet fra håndteret-fanen og returnere det til resultat overblikket."
 
 #: reportapp/templates/components/report_table/report_table--row.html
 #: reportapp/templates/components/report_table/report_table--row_sbsys.html
@@ -1523,16 +1527,6 @@ msgid "Employee"
 msgstr "Medarbejder"
 
 #: reportapp/templates/leader_statistics_template.html
-#: reportapp/templates/report_content--personal.html
-#: reportapp/templates/report_content--personal_sbsys.html
-#: reportapp/templates/report_content--remediator.html
-#: reportapp/templates/report_content--remediator_sbsys.html
-#: reportapp/templates/report_content--undistributed.html
-#: reportapp/templates/report_content--undistributed_sbsys.html
-msgid "Results"
-msgstr "Resultater"
-
-#: reportapp/templates/leader_statistics_template.html
 #, python-format
 msgid "Over %(retention_days)s days"
 msgstr "Over %(retention_days)s dage"
@@ -1781,7 +1775,7 @@ msgstr ""
 
 #: reportapp/templates/manual.html
 msgid ""
-"On the archive tab all already handled matches are displayed. It's possible "
+"On the handled tab all already handled matches are displayed. It's possible "
 "to revert a match marked as handled, in case of a mistake."
 msgstr ""
 "På “arkiv”-fanen kan du tilgå tidligere håndterede matches. Her kan status "
@@ -1789,8 +1783,8 @@ msgstr ""
 "matches."
 
 #: reportapp/templates/manual.html
-msgid "Figure 24: Archive - Report module"
-msgstr "Figur 24: Arkiv - Rapportmodul"
+msgid "Figure 24: Handled - Report module"
+msgstr "Figur 24: Håndteret - Rapportmodul"
 
 #: reportapp/templates/manual.html
 msgid "On my overview, the amount of unhandled matches per week is displayed."

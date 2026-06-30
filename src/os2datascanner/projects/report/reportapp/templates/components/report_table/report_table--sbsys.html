@@ -31,13 +31,13 @@
           <col class="column column--case-number">
           <col class="column column--datasource_last_modified">
           <col class="column column--datasource_creation_time">
-          {% if is_archive %}<col class="column column--resolution-status">{% endif %}
-          <col class="column column--actions{% if not is_archive %} false-positive{% endif %}">
+          {% if is_handled %}<col class="column column--resolution-status">{% endif %}
+          <col class="column column--actions{% if not is_handled %} false-positive{% endif %}">
         </colgroup>
  
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if is_archive %}8{% else %}7{% endif %}">
+            <th colspan="{% if is_handled %}8{% else %}7{% endif %}">
               <div class="table-toolbar">
                 {% include "components/report_table/report_table--toolbar.html" %}
 
@@ -130,7 +130,7 @@
             </th>
 
  
-            {% if is_archive %}
+            {% if is_handled %}
               <th class="column--resolution-status">
                 <div class="th__flex-container">
                   <label for="status-caret">{% trans "status"|capfirst %}</label>
@@ -166,7 +166,7 @@
         </tbody>
  
         <tfoot>
-          {% if is_archive %}
+          {% if is_handled %}
             {% with colspan=8 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
