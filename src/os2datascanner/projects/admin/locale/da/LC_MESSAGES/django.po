@@ -929,6 +929,10 @@ msgid "Excel workbook (.xls)"
 msgstr "Excel-projektmappe (.xls)"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "Outlook message (.msg)"
+msgstr "Outlook-besked (.msg)"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
 msgid "Excel add-in (.xlam)"
 msgstr "Excel-tilføjelsesprogram (.xlam)"
 
