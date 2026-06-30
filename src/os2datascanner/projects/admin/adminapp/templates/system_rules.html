@@ -47,7 +47,11 @@
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
-                    {# #68512: option text must be inline — whitespace in textContent breaks Select2 backspace #}
+                    {# #68512: the text must sit directly against >…</option> with no surrounding whitespace.
+                       djlint would move it to its own indented line, and Select2 then copies the raw
+                       textContent — newlines and leading spaces included — into its search field when
+                       the user presses backspace, making them delete phantom whitespace instead of
+                       their search term. #}
                     {# djlint:off #}
                     <option value="{{ category.identifier }}"
                             {% if category in selected_categories %}selected{% endif %}>{{ category.name|capfirst }}</option>
