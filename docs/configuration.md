@@ -51,7 +51,7 @@ AMQP_PWD = "<amqp user password>"
 These settings are not mandatory for running the admin module, but can be used to enable LDAP import of users and hierarchy.
 
 A prerequisite for this functionality is running and configuring a Keycloak instance.
-OS2datascanner contains a Keycloak installation that can be used, but using an external installation is also possible.
+OSdatascanner contains a Keycloak installation that can be used, but using an external installation is also possible.
 
 To configure the admin module's Keycloak functionality the following settings must be set.
 ```toml

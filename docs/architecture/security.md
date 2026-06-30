@@ -1,17 +1,17 @@
 # Architecture and Security
 
-OS2datascanner is a system designed to help organisations to follow the EU's
-General Data Protection Regulation (GDPR). OS2datascanner is designed to find
+OSdatascanner is a system designed to help organisations to follow the EU's
+General Data Protection Regulation (GDPR). OSdatascanner is designed to find
 personally-sensitive information without copying it: only references to its
 findings are saved. The system's underlying architecture is also built
-according to this principle, to make sure that OS2datascanner does not itself
+according to this principle, to make sure that OSdatascanner does not itself
 make personal information available to unauthorised parties.
 
 
 ## The system's architecture
 
-OS2datascanner is built around several key security principles, the most
-important of which is isolation. OS2datascanner is broken up into three main
+OSdatascanner is built around several key security principles, the most
+important of which is isolation. OSdatascanner is broken up into three main
 modules, each of which has a specific responsibility:
 
 1. The administration system is a web application used by system administrators
@@ -45,14 +45,14 @@ subcomponent can live on its own server or container.
 
 ## Recommendation: local network
 
-It is strongly recommended to install OS2datascanner on a private network
+It is strongly recommended to install OSdatascanner on a private network
 alongside the data sources to be scanned. In this way, sensitive information
 will never leave the organisation's control.
 
 
 ## Security
 
-OS2datascanner must be granted read access to data sources in order to be able
+OSdatascanner must be granted read access to data sources in order to be able
 to function. When this is granted through a special service user account, the
 account's details are encrypted before being saved to the database. The system
 uses symmetric AES cryptography in CTR mode. (At the time of writing, no

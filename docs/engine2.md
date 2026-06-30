@@ -1,10 +1,10 @@
-# Extending OS2datascanner
+# Extending OSdatascanner
 
 This document is a short guide to adding new sources of data to
-OS2datascanner's scanner engine, `engine2`.
+OSdatascanner's scanner engine, `engine2`.
 
 > `engine2` is so called because it's the second major version of the
-> OS2datascanner engine. The first, used from 2014 to 2020, was built on the
+> OSdatascanner engine. The first, used from 2014 to 2020, was built on the
 > *Scrapy* web crawling framework.
 >
 > Most of the advanced functionality of the scanner engine is used by the
@@ -260,7 +260,7 @@ objects:
 That is, a censored `Source` is supposed to be *presentationally* equivalent to
 the original one, but nothing more: it carries enough information to be able to
 point a user at the right website or network drive, but not enough to actually
-give access to any objects.)
+give access to any objects.
 
 
 ### Serialisation
@@ -345,7 +345,7 @@ def presentation(self):
 ```
 
 Because `engine2` objects can get quite complicated, the `Handle` API is also
-used by the user interface components of OS2datascanner to compute names for
+used by the user interface components of OSdatascanner to compute names for
 things. This is the job of the `Handle.presentation` method: it should return
 something that the user recognises as a name.
 
@@ -432,7 +432,7 @@ def make_stream(self):
 
 Here are the two methods at the heart of `FileResource`: `get_size`, which
 retrieves a metadata property, and `make_stream`, which makes the file's
-content available to the rest of the OS2datascanner system.
+content available to the rest of the OSdatascanner system.
 
 ```python
 @contextmanager
