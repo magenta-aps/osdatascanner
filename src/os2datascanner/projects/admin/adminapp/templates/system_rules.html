@@ -47,6 +47,7 @@
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
+                    {# #68512: option text must be inline — whitespace in textContent breaks Select2 backspace #}
                     {# djlint:off #}
                     <option value="{{ category.identifier }}"
                             {% if category in selected_categories %}selected{% endif %}>{{ category.name|capfirst }}</option>
