@@ -19,6 +19,9 @@
 
 ### Bugfixes
 
+- Fixed a bug where pressing backspace in the rule category Select2 widget would delete phantom
+  whitespace instead of the typed search term.
+
 - Narrowed status_collector's query for corresponding ScanStatus to avoid message loss on schema
   changes.
 

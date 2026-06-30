@@ -47,7 +47,7 @@
               <div class="form-widget__input-wrapper">
                 <select id="categories_select2" name="categories" multiple>
                   {% for category in categories %}
-                    {# #68512: keep inline — djlint's indentation leaks into textContent, which Select2 injects into its search field on backspace #}
+                    {# #68512: keep inline — indentation leaks into dropdown values when djlint lints the >< #}
                     {# djlint:off #}
                     <option value="{{ category.identifier }}"
                             {% if category in selected_categories %}selected{% endif %}>{{ category.name|capfirst }}</option>
