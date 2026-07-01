@@ -445,7 +445,8 @@ class SBSYSDBSources:
 
         required_columns = (
                 "ID", "Nummer", "Titel", "Kommentar",
-                "Behandler.UserPrincipalName", "LastChanged", "Created",
+                "Behandler.UserPrincipalName", "Behandler.ObjectSid",
+                "Behandler.LogonID", "LastChanged", "Created",
                 "Ansaettelsessted.Navn",)
 
         def _generate_state(self, sm: SourceManager):
@@ -522,7 +523,7 @@ class SBSYSDBSources:
         def fetch(self, sm: SourceManager):
             return {"Navn": self.handle._name}
 
-        def handles(self, sm: SourceManager):
+        def handles(self, sm: SourceManager, **kwargs):
             if self.handle._name:
                 # Yield the document name as a field
                 yield SBSYSDBHandles.Field(self, "Navn")
