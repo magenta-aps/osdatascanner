@@ -22,12 +22,12 @@
                  hx-trigger="click"
                  hx-include="[id='dropdown_options'], [id='errormessage_filters'], [id='orgunit_filters'], [id='account_filters'], [id='hidden-orgunits_filters']"
                  hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'>
-                <i id="chevron_left" class="material-icons">chevron_left</i>
+                <i id="chevron_left" class="material-symbols">chevron_left</i>
                 {% trans "Previous" %}
               </a>
             {% else %}
               <a class="link--pre disabled flex">
-                <i id="chevron_left" class="material-icons">chevron_left</i>
+                <i id="chevron_left" class="material-symbols">chevron_left</i>
                 {% trans "Previous" %}
               </a>
             {% endif %}
@@ -93,12 +93,12 @@
                  hx-include="[id='dropdown_options'], [id='errormessage_filters'], [id='orgunit_filters'], [id='account_filters'], [id='hidden-orgunits_filters']"
                  hx-vals='{"page": "{{ page_obj.next_page_number|unlocalize }}"}'>
                 {% trans "Next" %}
-                <i id="chevron_right" class="material-icons">chevron_right</i>
+                <i id="chevron_right" class="material-symbols">chevron_right</i>
               </a>
             {% else %}
               <a class="link--next disabled flex">
                 {% trans "Next" %}
-                <i id="chevron_right" class="material-icons">chevron_right</i>
+                <i id="chevron_right" class="material-symbols">chevron_right</i>
               </a>
             {% endif %}
           </div>

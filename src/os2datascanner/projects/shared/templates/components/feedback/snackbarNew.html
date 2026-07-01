@@ -5,7 +5,7 @@
   {% for message in messages %}
     <div class="snackbar snackbar--{{ message.tags }}">
       <div class="snackbar__content">
-        <span class="snackbar__icon material-icons">
+        <span class="snackbar__icon material-symbols">
           <!-- Sets the icon depending on the message type -->
           {% if 'success' in message.tags %}
             check_circle
@@ -25,7 +25,7 @@
                 {% url 'track_notification' as track_url %}
                 {% if 'track_notification' in message.tags and track_url %} hx-post="{{ track_url }}" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' hx-swap="none" hx-vals='{"message": "{{ message }}" }' hx-on:htmx:after-request="closeNewSnackBar(this)" {% else %} onclick="closeNewSnackBar(this)" {% endif %}
                 title="Close">
-          <span class="material-icons">close</span>
+          <span class="material-symbols">close</span>
         </button>
       </div>
     </div>

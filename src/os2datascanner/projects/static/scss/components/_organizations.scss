@@ -1,19 +1,3 @@
-.blue-box {
-  display: flex;
-  align-items: center;
-  background-color: #dbe9ef;
-  width: 4.5rem;
-  height: 4.5rem;
-  border-radius: var(--border-radius-default);
-  margin-right: 2rem;
-  padding-left: 0.75rem;
-
-  .material-icons {
-    color: #21759c;
-    font-size: 3rem;
-  }
-}
-
 .flex-input {
   flex-wrap: row;
   flex-grow: 1;
@@ -55,7 +39,12 @@
       color: var(--color-alert-warning-accent);
     }
 
-    &--waiting {
+    &--waiting .material-symbols {
+      $icon-size: 1.25rem;
+
+      font-size: $icon-size;
+      width: $icon-size;
+
       color: inherit;
       animation:
         spin,
@@ -65,7 +54,7 @@
       animation-iteration-count: infinite;
     }
 
-    .material-icons {
+    .material-symbols {
       font-size: 1.25rem;
     }
   }

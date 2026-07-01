@@ -20,7 +20,7 @@
                hx-swap="{{ swap_type }}"
                hx-vals='{"page": "{{ page_obj.previous_page_number|unlocalize }}"}'
                hx-indicator="#report-page-indicator">
-              <i id="chevron_left" class="material-icons">chevron_left</i>
+              <i id="chevron_left" class="material-symbols">chevron_left</i>
 
               {% trans "Previous" %}
             </a>
@@ -28,7 +28,7 @@
           {% else %}
 
             <a class="link--pre disabled flex">
-              <i id="chevron_left" class="material-icons">chevron_left</i>
+              <i id="chevron_left" class="material-symbols">chevron_left</i>
               {% trans "Previous" %}
             </a>
           {% endif %}
@@ -96,13 +96,13 @@
                hx-vals='{"page": "{{ page_obj.next_page_number|unlocalize }}"}'
                hx-indicator="#report-page-indicator">
               {% trans "Next" %}
-              <i id="chevron_right" class="material-icons">chevron_right</i>
+              <i id="chevron_right" class="material-symbols">chevron_right</i>
             </a>
 
           {% else %}
             <a class="link--next disabled flex">
               {% trans "Next" %}
-              <i id="chevron_right" class="material-icons">chevron_right</i>
+              <i id="chevron_right" class="material-symbols">chevron_right</i>
             </a>
 
           {% endif %}

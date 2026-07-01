@@ -123,7 +123,9 @@
                     hx-push-url="false"
                     {% if not allow_handle %}disabled{% endif %}
                     name="revert-match">
-              <i id="archive" class="material-icons text-secondary" aria-hidden="true">archive</i>
+              <i id="archive"
+                 class="material-symbols text-secondary"
+                 aria-hidden="true">archive</i>
 
               <span>{% trans "Revert" %}</span>
             </button>
@@ -145,7 +147,7 @@
                     {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file.{% endblocktrans %}" {% endif %}
                     {% if not allow_handle %}disabled{% endif %}
                     name="handle-match">
-              <i class="material-icons text-secondary" aria-hidden="true">archive</i>
+              <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
               <span>{% trans "Handle" %}</span>
             </button>
  

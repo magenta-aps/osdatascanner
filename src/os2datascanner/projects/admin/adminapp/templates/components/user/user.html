@@ -8,20 +8,20 @@
 {% if request.user.is_authenticated %}
   <div class="user">
     <span class="user__avatar">
-      <i id="account_circle" class="material-icons">account_circle</i>
+      <i id="account_circle" class="material-symbols">account_circle</i>
     </span>
 
     <div class="user_menu">
       <button class="dropbtn" onclick="dropMenu()">
         <span class="user__name">{{ request.user }}</span>
         <span class="arrow">
-          <i id="arrow_drop_down" class="material-icons">arrow_drop_down</i>
+          <i id="arrow_drop_down" class="material-symbols">arrow_drop_down</i>
         </span>
       </button>
       <div class="user-content" id="userMenu">
         <a href="{% url "my-user" %}">
           <span class="user__avatar_big">
-            <i id="account_circle" class="material-icons">account_circle</i>
+            <i id="account_circle" class="material-symbols">account_circle</i>
           </span>
           <span class="user__name--bold">{{ request.user }}</span>
         </a>

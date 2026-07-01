@@ -16,30 +16,30 @@
                 hx-swap="outerHTML"
                 hx-target="closest div.response"
                 hx-trigger="click">
-          <i class="material-icons">sync_disabled</i>
+          <i class="material-symbols">sync_disabled</i>
         </button>
       {% endif %}
       <div class="response__status-container">
         {% if exec_state_value == "finished" %}
           <span class="response-icon response-icon--success">
-            <i class="material-icons">check</i>
+            <i class="material-symbols">check</i>
           </span>
         {% elif exec_state_value == "failed" %}
           <span class="response-icon response-icon--error">
-            <i class="material-icons">error</i>
+            <i class="material-symbols">error</i>
           </span>
         {% elif exec_state_value in "waiting running cancelling" %}
           <span class="response-icon response-icon--waiting">
-            <i class="material-icons">hourglass_top</i>
+            <i class="material-symbols">hourglass_top</i>
           </span>
         {% elif exec_state_value == "cancelled" %}
           <span class="response-icon response-icon--cancelled">
-            <i class="material-icons">block</i>
+            <i class="material-symbols">block</i>
           </span>
         {% else %}
           <span class="response-icon response-icon--warning popoverTrigger popover__trigger-element"
                 data-popover-id="popover-{{ job.pk }}">
-            <i class="material-icons">warning</i>
+            <i class="material-symbols">warning</i>
           </span>
           <div id="popover-{{ job.pk }}" class="popover popover--yellow">
             <div id="popover-{{ popover_data.id }}" class="popover__wrapper">

@@ -107,7 +107,7 @@
                               class="button button--icon-button"
                               aria-label="{% trans "cancel running scanner job"|capfirst %}"
                               title="{% trans "cancel running scanner job"|capfirst %}">
-                        <i id="cancel" class="material-icons">close</i>
+                        <i id="cancel" class="material-symbols">close</i>
                       </button>
                     </form>
                   {% endif %}
@@ -122,7 +122,7 @@
                               onclick="return confirm(interpolate('{{ r_u_sure|escapejs }}', {'scanner_name': '{{ status.scanner.name|escapejs }}'}, true))"
                               aria-label="{% trans 'Delete' %} {% trans 'status for running scanner' %}"
                               title="{% trans 'Delete' %} {% trans 'status for running scanner' %}">
-                        <i id="delete_forever" class="material-icons">delete_forever</i>
+                        <i id="delete_forever" class="material-symbols">delete_forever</i>
                       </button>
                     </form>
                   {% endif %}
@@ -130,7 +130,7 @@
                           aria-label="{% trans 'Show/hide timeline' %}"
                           title="{% trans 'Show/hide timeline' %}"
                           type="button">
-                    <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                    <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                   </button>
                 </div>
               </td>

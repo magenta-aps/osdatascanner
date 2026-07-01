@@ -99,7 +99,7 @@
   .button-caret {
     background-color: transparent;
 
-    .material-icons {
+    .material-symbols {
       pointer-events: none;
       color: #aaa;
       transition: var(--transition-default);
@@ -107,7 +107,7 @@
 
     &:hover,
     &:focus {
-      .material-icons {
+      .material-symbols {
         color: var(--color-primary-dark);
       }
 
@@ -116,7 +116,7 @@
     }
 
     &.up {
-      .material-icons {
+      .material-symbols {
         transform: rotate(180deg);
       }
     }

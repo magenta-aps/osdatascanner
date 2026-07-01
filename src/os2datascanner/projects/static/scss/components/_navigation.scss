@@ -240,6 +240,10 @@
     }
   }
 
+  #key:has(+ .width) {
+    width: 2rem;
+  }
+
   .width {
     margin-left: 1rem;
   }

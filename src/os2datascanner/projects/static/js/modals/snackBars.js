@@ -32,10 +32,10 @@ function showSnackBar(message, type) {
   snackbar.classList.add("snackbar", type, "snackbar--auto_close");
   snackbar.innerHTML = `
     <div class="snackbar__content">
-      <span class="snackbar__icon material-icons">${icon}</span>
+      <span class="snackbar__icon material-symbols">${icon}</span>
       <p class="snackbar__text">${message}</p>
       <button type="button" class="close-modal button button--modal-close snackbar__close-button" onclick="closeNewSnackBar(this)" title="Close">
-        <span class="material-icons">close</span>
+        <span class="material-symbols">close</span>
       </button>
     </div>
   `;

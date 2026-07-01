@@ -108,66 +108,6 @@
         {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.other total=total_by_source.other progress=other_monthly_progress %}
       </div>
     </div>
-
-    {# NOTE: this was added in #56797 and removed in #58836. #}
-    {% comment %} This block is removed for the time being. It is causing
-    considerable issues in production environments, due to unforeseen 
-    organizational structure. {% endcomment %}
-    {% comment %} <div class="statistic_wrapper">
-    <!-- bar chart - matches per org unit -->
-    {% if request.GET.orgunit == undefined %}
-      <div class="statistic data_box large horizontal">
-        <div class="statistic_header">
-          <div>
-            <h1 class="page-title__sub">{% trans "Organizational unit distribution" %}</h1>
-            <p class="chart_description" data-chartid="org_unit_highest_unhandled">
-              {% trans "Top ten organizational units with highest number of unhandled matches" %}
-            </p>
-            <p class="hidden chart_description" data-chartid="org_unit_highest_handled">
-              {% trans "Top ten organizational units with highest number of handled matches" %}
-            </p>
-            <p class="hidden chart_description" data-chartid="org_unit_highest_total">
-              {% trans "Top ten organizational units with highest number of total matches" %}
-            </p>
-          </div>
-          <div class="statistic_header_nav">
-            <div>
-              <button class="graph-zoom-info expand">
-                <i class="material-icons" aria-hidden="true">search</i>
-              </button>
-              <div class="dropdown-container">
-                <div class="graph-zoom-info-dropdown">
-                  {% trans "Hold and drag your mouse to zoom in on part of the graph. Hold shift while using the mouse wheel to manually zoom. Use the reset button to return the graph to normal." %}
-                </div>
-              </div>
-            </div>
-            <div>
-              <button class="sorting-options" onclick="resetZoomHighest()">
-                <span>{% trans "Reset" %}</span>
-              </button>
-            </div>
-            <div class="dropdown">
-              <select>
-                <option value="org_unit_highest_unhandled">{% trans "Highest unhandled" %}</option>
-                <option value="org_unit_highest_handled">{% trans "Highest handled" %}</option>
-                <option value="org_unit_highest_total">{% trans "Highest total" %}</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <div class="chart_container canvas_size bar_chart_horizontal" data-chartid="org_unit_highest_unhandled">
-          <canvas class="bar_chart" id="bar_chart_org_unit_highest_unhandled"></canvas>
-        </div>
-        <div class="hidden chart_container canvas_size bar_chart_horizontal" data-chartid="org_unit_highest_handled">
-          <canvas class="bar_chart" id="bar_chart_org_unit_highest_handled"></canvas>
-        </div>
-        <div class="hidden chart_container canvas_size bar_chart_horizontal" data-chartid="org_unit_highest_total">
-          <canvas class="bar_chart" id="bar_chart_org_unit_highest_total"></canvas>
-        </div>
-      </div>
-    {% endif %}
-    </div> {% endcomment %}
  
     {##### DPO body content container #####}
     <div class="statistics statistics--dpo">
