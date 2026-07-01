@@ -248,7 +248,10 @@ class CPRRule(RegexRule):
         pre = " ".join(content[max(low-50, 0):low].split()[-n_words:])
         post = " ".join(content[high:high+50].split()[:n_words])
 
-        word_regex = r"(\w+(?:[-\./]\w*)*)"
+        # a colon between two digits keeps a time (e.g. "13:20") as one word,
+        # like "-", "." and "/" already do. Requiring digits on both sides
+        # avoids swallowing a label's colon, e.g. in "Account:1234567890" (#60766)
+        word_regex = r"(\w+(?:[-\./]\w*|(?<=\d):\d\w*)*)"
         symbol_regex = r"([^\w\s\.\"])"
         # split in two capture groups: (word, symbol)
         # Ex: 'The brown, fox' ->
