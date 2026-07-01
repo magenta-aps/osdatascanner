@@ -44,6 +44,11 @@
       $('.contacts_select2').select2();
     })
   })(jQuery);
+  htmx.onLoad(function(element) {
+    (function($) {
+      $(element).find('select.select2').select2();
+    })(jQuery);
+  });
 
   // Get file name - input[type="file"]
   {% if form.sitemap.name %}
