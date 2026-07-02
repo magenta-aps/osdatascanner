@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 3.xx.x, xx xxxx 2026
+
+""
+
+### General improvements
+
+- Updated all old uses of Material Icons to Material Symbols, so some icons nay seem a little bit
+  smarter looking.
+
+### Bugfixes
+
+- Removed Material Icons from the project. 
+
 ## Version 3.32.2, 23rd June 2026
 
 "We've had one, yes. But what about a second heat wave?"
