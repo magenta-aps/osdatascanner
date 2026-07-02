@@ -6,6 +6,7 @@
 import pytest
 import os.path
 
+import os2datascanner.engine2.rules.cpr as cpr_module
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
@@ -75,6 +76,39 @@ class TestCPRRule:
                 CPRRule().match(text)) == expected
         assert self.simplify_matches(
                 CPRRule(examine_context=False).match(text)) == expected
+
+    def test_context_check_number_check_does_not_split_times_on_colon(self, monkeypatch):
+        """#60766: "13:20" must stay one word, not split into a trailing "20"
+        that dismisses the next row's CPR as a neighbouring number."""
+        monkeypatch.setattr(cpr_module, "CONTEXT_NUMBER_CHECK", True)
+        text = (
+            "CPRnr,Adresse,Dato\n"
+            "230500-0003,Ledetvej 308,07-05-2024 13:20\n"
+            "240501-0006,Langkildevej 506,07-05-2024 13:20"
+        )
+        assert self.simplify_matches(
+                CPRRule().match(text)) == ["2305XXXXXX", "2405XXXXXX"]
+
+    def test_context_check_number_check_still_catches_split_numbers(self, monkeypatch):
+        """A reference number split by a stray space must still be rejected,
+        i.e. the NUMBER check must still work once colons merge into words."""
+        monkeypatch.setattr(cpr_module, "CONTEXT_NUMBER_CHECK", True)
+        text = "Reference 141266-1636 4470118 skal betales inden fredag"
+        assert self.simplify_matches(CPRRule().match(text)) == []
+
+    def test_surrounding_exceptions_word_with_trailing_colon(self):
+        """"Account:" (space before the number) must still match the
+        surrounding_exceptions word "account" exactly."""
+        text = "Account: 220599-5008"
+        assert self.simplify_matches(
+                CPRRule(surrounding_exceptions=["account"]).match(text)) == []
+
+    def test_surrounding_exceptions_word_with_colon_and_digit(self):
+        """"Account:1234" (no space, digit right after the colon) must not
+        glue into "account:1234", or it stops matching "account" exactly."""
+        text = "Account:1234, Personnummer 220599-5008"
+        assert self.simplify_matches(
+                CPRRule(surrounding_exceptions=["account"]).match(text)) == []
 
     @pytest.mark.parametrize(
             "text,potential",

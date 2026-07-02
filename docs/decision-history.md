@@ -187,6 +187,23 @@ This check has been removed. It may result in more false positives if we're deal
 coincidentally valid numbers in random data such as log files, but until further field-testing
 has been conducted, the false negative potential outweighs.
 
+--
+
+The above check was in fact only made toggleable (`CPRRULE_CONTEXT_NUMBER_CHECK`),
+not removed outright: on by default, off in dev./test, pending field-testing.
+
+Investigating a related tabular-data false negative (#60766) found the actual
+cause: the surrounding-word extraction split times like "13:20" on the colon,
+so a trailing minute number could look like an unrelated number next to a CPR
+candidate in the next csv row. A colon between two digits is now kept as part
+of the word, same as "-", "." and "/". This is narrower than those three,
+which glue onto a word regardless of what's on either side: a colon only
+merges when there's a digit on each side of it (so "8:30am" keeps the "am"
+too, since it's still attached to that second digit), while a label's colon
+(e.g. "Account:") still splits off as before, keeping the check's original
+purpose intact - catching a lone CPR-shaped fragment of a longer reference
+number split by a stray space, which the bin check can't catch on its own.
+
 
 #### Exceptions
 

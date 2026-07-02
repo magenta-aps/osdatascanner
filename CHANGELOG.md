@@ -13,6 +13,9 @@
 
 - Removed Material Icons from the project. 
 
+- Fixed a bug where CPRRule ignored CPR-numbers in a csv/spreadsheet row that followed
+  a timestamp, since "13:20" was split into two "words" around the colon.
+
 ## Version 3.32.2, 23rd June 2026
 
 "We've had one, yes. But what about a second heat wave?"
