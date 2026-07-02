@@ -68,7 +68,7 @@
                                 hx-target=".content"
                                 hx-select=".content"
                                 hx-confirm="{% trans 'You are about to delete' %} {{ page_obj.paginator.count }}{% trans ' scan status data. This action cannot be reverted. Are you sure?' %}">
-                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                          <i id="delete_forever" class="material-symbols">delete_forever</i>
                           <span>{% trans "Delete all" %}</span>
                         </button>
                       {% endif %}
@@ -77,7 +77,7 @@
                            class="button button--icon-text-button"
                            aria-label="{% trans 'Export to CSV' %}"
                            title="{% trans 'Export to CSV' %}">
-                          <i id="file_download" class="material-icons" aria-hidden="true">file_download</i>
+                          <i id="download" class="material-symbols" aria-hidden="true">download</i>
                           <span>{% trans "Export to CSV" %}</span>
                         </a>
                       {% endif %}
@@ -198,14 +198,14 @@
                                 hx-vals='{"pk": "{{ status.pk|unlocalize }}"}'
                                 hx-indicator="closest tr"
                                 hx-select=".content">
-                          <i id="delete_forever" class="material-icons">delete_forever</i>
+                          <i id="delete_forever" class="material-symbols">delete_forever</i>
                         </button>
                       {% endif %}
                       <button class="timelines-expand toggleInfoRow button button--caret-button"
                               aria-label="{% trans 'Show/hide timeline' %}"
                               title="{% trans 'Show/hide timeline' %}"
                               type="button">
-                        <i id="expand_more" class="material-icons" aria-hidden="true">expand_more</i>
+                        <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                       </button>
                     </div>
                   </td>

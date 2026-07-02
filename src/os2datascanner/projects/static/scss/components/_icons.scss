@@ -107,14 +107,12 @@ Single-colored icons can be modified like so:
     fill: $icon-color;
   }
 
-  .material-icons,
   .material-symbols,
   .material-symbols-outlined {
     color: $icon-color;
   }
 
   svg,
-  .material-icons,
   .material-symbols,
   .material-symbols-outlined {
     height: 1em;

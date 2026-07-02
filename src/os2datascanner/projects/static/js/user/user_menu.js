@@ -7,7 +7,7 @@ function dropMenu() {
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function (e) {
-  if (!e.target.matches('.dropbtn, .user__name, .material-icons')) {
+  if (!e.target.matches('.dropbtn, .user__name, .material-symbols')) {
     var dropdown = document.getElementById("userMenu");
     if (dropdown.classList.contains('show')) {
       dropdown.classList.remove('show');

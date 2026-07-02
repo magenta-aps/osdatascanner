@@ -160,7 +160,6 @@
     background-color: transparent !important;
     height: 24px; // This needs to be redone after the table refactoring
 
-    .material-icons,
     .material-symbols,
     .material-symbols-outlined {
       &#expand_more {
@@ -175,7 +174,6 @@
     }
 
     &.up {
-      .material-icons,
       .material-symbols,
       .material-symbols-outlined {
         &#expand_more {
@@ -296,13 +294,6 @@
     max-height: 2.125rem; // future proofing for when someone inevitably adds an icon that's too big
     max-width: 2.125rem; // ^ see above ^
 
-    .material-icons {
-      color: currentColor !important;
-      font-size: 1.5rem;
-      vertical-align: bottom;
-      pointer-events: none;
-    }
-
     svg {
       // Currently this applies to (../components/svg-icons/org.svg), (../components/svg-icons/people.svg), and (/static/svg/symbol-defs.svg#icon-plus)
       fill: currentColor;
@@ -350,11 +341,6 @@
       margin-left: -0.25rem;
     }
 
-    .material-icons#delete_forever {
-      // Corrects "empty" space on buttons with this specific "slim" icon
-      margin-left: -0.125rem;
-    }
-
     > :last-child {
       margin-left: 0.25rem;
     }
@@ -372,7 +358,7 @@
   }
 
   // ***** Icon specific code *****
-  .material-icons#play_arrow {
+  .material-symbols#play_arrow {
     transform: translateX(
       -0.063rem
     ); // adjusts the perceived optical balance of the play icon
@@ -459,7 +445,7 @@
   &::before {
     color: #aaa;
     font-weight: bold;
-    font-family: "Material Icons";
+    font-family: "Material Symbols";
     width: 2.25em;
     height: 1em;
   }

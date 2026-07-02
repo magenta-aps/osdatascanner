@@ -45,7 +45,7 @@ This is especially helpful for those less familiar with your code, as it priorit
         <!-- other attributes -->
         >
     <span>your button text</span>
-    <i id="icon_name" class="material-icons">icon_name</i>
+    <i id="icon_name" class="material-symbols">icon_name</i>
 </button>
 ``` 
 
@@ -57,7 +57,7 @@ This is especially helpful for those less familiar with your code, as it priorit
    <!-- other attributes -->
    >
     <span>your button text</span>
-    <i id="icon_name" class="material-icons">icon_name</i>
+    <i id="icon_name" class="material-symbols">icon_name</i>
 </a>
 ``` 
 
@@ -123,7 +123,7 @@ Place them inside a `<div>` container (if they're not already) and give it the c
        title="toolhint"
        <!-- other attributes -->
        >
-        <i id="icon_name" class="material-icons">icon_name</i>
+        <i id="icon_name" class="material-symbols">icon_name</i>
     </a>
     <button type="button"
             class="button button--icon-button"
@@ -131,7 +131,7 @@ Place them inside a `<div>` container (if they're not already) and give it the c
             title="toolhint"
             <!-- other attributes -->
             >
-        <i id="icon_name" class="material-icons">icon_name</i>
+        <i id="icon_name" class="material-symbols">icon_name</i>
     </button>
 
     <!-- Additional buttons can be added similarly -->

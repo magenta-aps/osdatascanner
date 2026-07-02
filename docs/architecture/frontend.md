@@ -79,7 +79,7 @@ Admin and Report app use the "Inter" font.
 
 ## Icons
 
-Admin and Report app use [Google's Material Icons](https://fonts.google.com/icons?icon.set=Material+Icons) and in some cases custom SVG icons. 
+Admin and Report app use [Google's Material Symbols](https://fonts.google.com/icons) and in some cases custom SVG icons. 
 For more info see the icon guide [here](../frontend/icons.md)
 
 

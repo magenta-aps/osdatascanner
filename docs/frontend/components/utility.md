@@ -62,7 +62,7 @@ context["popover_data"] = popover_data
 
     
 ``` html
-<i class="material-icons popover__trigger-element" data-popover-id="popover-example">info</i>
+<i class="material-symbols popover__trigger-element" data-popover-id="popover-example">info</i>
 <div id="popover-example" class="popover popover--[modifier]">
     {% include "components/modals/popover_component.html" with popover_data=popover_data %}
 </div>

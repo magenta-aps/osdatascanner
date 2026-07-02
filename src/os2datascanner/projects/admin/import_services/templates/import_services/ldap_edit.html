@@ -54,19 +54,19 @@
                 hx-target="#test-connection-response"
                 hx-select="#test-connection-response"
                 hx-swap="innerHTML">
-          <i id="sync" class="material-icons">sync</i>
+          <i id="sync" class="material-symbols">sync</i>
           <span class="con-text">{% trans "test connection"|capfirst %}</span>
         </button>
         <div class="response" id="test-connection-response">
           <span class="response-icon response-icon--success"
                 style="display: {% if connection_established %} block {% else %} none {% endif %}"
                 id="responseSuccessCon">
-            <i id="check" class="material-icons">check</i>
+            <i id="check" class="material-symbols">check</i>
           </span>
           <span class="response-icon response-icon--error"
                 style="display: {% if connection_established == False %} block {% else %} none {% endif %}"
                 id="responseErrorCon">
-            <i id="error" class="material-icons">error</i>
+            <i id="error" class="material-symbols">error</i>
           </span>
           <span class="response-text" id="responseConnection">
             {% if connection_established == True %}
@@ -96,19 +96,19 @@
                 hx-select="#test-auth-response"
                 hx-swap="innerHTML"
                 {% if ldapconfig %}hx-vals='{"ldap_config": "{{ ldapconfig.pk }}" }'{% endif %}>
-          <i id="sync" class="material-icons">sync</i>
+          <i id="sync" class="material-symbols">sync</i>
           <span class="con-text">{% trans "test authentication"|capfirst %}</span>
         </button>
         <div class="response" id="test-auth-response">
           <span class="response-icon response-icon--success"
                 style="display: {% if auth_established %} block {% else %} none {% endif %}"
                 id="responseSuccessAuth">
-            <i id="check" class="material-icons">check</i>
+            <i id="check" class="material-symbols">check</i>
           </span>
           <span class="response-icon response-icon--error"
                 style="display: {% if auth_established == False %} block {% else %} none {% endif %}"
                 id="responseErrorAuth">
-            <i id="error" class="material-icons">error</i>
+            <i id="error" class="material-symbols">error</i>
           </span>
           <span class="response-text" id="responseAuth">
             {% if auth_established == True %}
@@ -146,7 +146,7 @@
                 class="button button--icon-text-button"
                 aria-label="{% trans 'user attributes'|capfirst %}"
                 title="{% trans 'user attributes'|capfirst %}">
-          <i id="add" class="material-icons">add</i>
+          <i id="add" class="material-symbols">add</i>
           <span>{% trans "add user attributes"|capfirst %}</span>
         </button>
       </div>
