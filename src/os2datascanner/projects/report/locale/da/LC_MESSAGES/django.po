@@ -289,7 +289,7 @@ msgid "number of matches"
 msgstr "antal matches"
 
 #: reportapp/models/documentreport.py
-#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
+#: reportapp/templates/components/statistics/results_statistics/charts/pie_distribution.html
 msgid "resolution status"
 msgstr "håndteringsstatus"
 
@@ -628,7 +628,7 @@ msgstr "pr. side"
 
 #: reportapp/templates/components/pagination/pagination.html
 #: reportapp/templates/components/report_table/report_table--toolbar.html
-#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html
+#: reportapp/templates/components/statistics/results_statistics/charts/doughnut_handled.html
 msgid "of"
 msgstr "af"
 
@@ -749,7 +749,6 @@ msgid "Scan"
 msgstr "Scan"
 
 #: reportapp/templates/components/report_table/report_table--filters.html
-#: reportapp/templates/dpo_statistics_template.html
 msgid "All scannerjobs"
 msgstr "Alle scannerjobs"
 
@@ -1152,48 +1151,6 @@ msgstr "kilde"
 msgid "Sort the results by path name."
 msgstr "Sortér resultaterne efter sti navn."
 
-#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
-msgid "distribution of results"
-msgstr "resultatfordeling"
-
-#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
-msgid "the distribution of results based on data sources"
-msgstr "resultatfordeling baseret på datakilde"
-
-#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
-msgid "data source"
-msgstr "datakilde"
-
-#: reportapp/templates/components/statistics/dpo_results-distribution_pie-chart.html
-msgid "the distribution of results based on resolution status"
-msgstr "resultatfordeling baseret på håndteringsstatus"
-
-#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html
-msgid "result handling"
-msgstr "resultathåndtering"
-
-#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html
-msgid "the percentage of handled results for the selected filtering"
-msgstr "procentvis andel af håndterede resultater for den valgte filtrering"
-
-#: reportapp/templates/components/statistics/dpo_results-handled_doughnut-chart.html
-msgid "handled results"
-msgstr "håndterede resultater"
-
-#: reportapp/templates/components/statistics/dpo_results-new_bar-chart.html
-#: reportapp/templates/components/statistics/dpo_results-unhandled_line-chart.html
-#: reportapp/templates/user_statistics_template.html
-msgid "Development overview"
-msgstr "Udviklingsoverblik"
-
-#: reportapp/templates/components/statistics/dpo_results-new_bar-chart.html
-msgid "New results by month"
-msgstr "Antal nye resultater per måned"
-
-#: reportapp/templates/components/statistics/dpo_results-unhandled_line-chart.html
-msgid "Accumulated unhandled results by month"
-msgstr "Akkumulerede uhåndterede resultater per måned"
-
 #: reportapp/templates/components/statistics/employee_template.html
 msgid "The user's false positive rate is unusually high:"
 msgstr "Brugerens andel af falske positive resultater er ualmindeligt høj:"
@@ -1210,19 +1167,105 @@ msgstr "Send påmindelse"
 msgid "Show/hide overview"
 msgstr "Vis/skjul overblik"
 
-#: reportapp/templates/components/statistics/total_source_count.html
+#: reportapp/templates/components/statistics/results_statistics/charts/bar_new.html
+#: reportapp/templates/components/statistics/results_statistics/charts/line_unhandled.html
+#: reportapp/templates/user_statistics_template.html
+msgid "Development overview"
+msgstr "Udviklingsoverblik"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/bar_new.html
+msgid "New results by month"
+msgstr "Antal nye resultater per måned"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/doughnut_handled.html
+msgid "result handling"
+msgstr "resultathåndtering"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/doughnut_handled.html
+msgid "the percentage of handled results for the selected filtering"
+msgstr "procentvis andel af håndterede resultater for den valgte filtrering"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/doughnut_handled.html
+msgid "handled results"
+msgstr "håndterede resultater"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/line_unhandled.html
+msgid "Accumulated unhandled results by month"
+msgstr "Akkumulerede uhåndterede resultater per måned"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/pie_distribution.html
+msgid "distribution of results"
+msgstr "resultatfordeling"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/pie_distribution.html
+msgid "the distribution of results based on data sources"
+msgstr "resultatfordeling baseret på datakilde"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/pie_distribution.html
+msgid "data source"
+msgstr "datakilde"
+
+#: reportapp/templates/components/statistics/results_statistics/charts/pie_distribution.html
+msgid "the distribution of results based on resolution status"
+msgstr "resultatfordeling baseret på håndteringsstatus"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+#: reportapp/templates/leader_statistics_template.html
+msgid "organizational unit"
+msgstr "organisatorisk enhed"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+#: reportapp/templates/leader_statistics_template.html
+msgid "all"
+msgstr "alle"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+#: reportapp/templates/leader_statistics_template.html
+msgid "scanner job"
+msgstr "scannerjob"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "all scanner jobs"
+msgstr "alle scannerjobs"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "Reset selected filters in the overview"
+msgstr "Nulstil valgte filtre på overblikket"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "Remove selected filters and refresh the overview"
+msgstr "Fjern valgte filtre og opdatér overblikket"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "reset"
+msgstr "nulstil"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "Export CSV of the shown data"
+msgstr "Eksportér CSV fra det viste data"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+msgid "Export the shown data as a CSV file"
+msgstr "Eksportér det viste data som en CSV-fil"
+
+#: reportapp/templates/components/statistics/results_statistics/header.html
+#: reportapp/templates/leader_statistics_template.html
+msgid "Export CSV"
+msgstr "Eksportér CSV"
+
+#: reportapp/templates/components/statistics/results_statistics/total_source_count.html
 msgid "Unhandled results from"
 msgstr "Uhåndterede resultater fra"
 
-#: reportapp/templates/components/statistics/total_source_count.html
+#: reportapp/templates/components/statistics/results_statistics/total_source_count.html
 msgid "Current total number of unhandled matches from"
 msgstr "Nuværende antal af uhåndterede matches fra"
 
-#: reportapp/templates/components/statistics/total_source_count.html
+#: reportapp/templates/components/statistics/results_statistics/total_source_count.html
 msgid "Total number of unhandled matches from"
 msgstr "Antal af matches fra"
 
-#: reportapp/templates/components/statistics/total_source_count.html
+#: reportapp/templates/components/statistics/results_statistics/total_source_count.html
 msgid " the last 30 days"
 msgstr " de sidste 30 dage"
 
@@ -1364,47 +1407,6 @@ msgstr "Du er nu logget ud."
 msgid "DPO statistics"
 msgstr "DPO-statistik"
 
-#: reportapp/templates/dpo_statistics_template.html
-#: reportapp/templates/leader_statistics_template.html
-msgid "organizational unit"
-msgstr "Organisatorisk enhed"
-
-#: reportapp/templates/dpo_statistics_template.html
-#: reportapp/templates/leader_statistics_template.html
-msgid "all"
-msgstr "Alle"
-
-#: reportapp/templates/dpo_statistics_template.html
-#: reportapp/templates/leader_statistics_template.html
-msgid "scanner job"
-msgstr "scannerjob"
-
-#: reportapp/templates/dpo_statistics_template.html
-msgid "Reset the DPO overview"
-msgstr "Nulstil DPO-overblikket"
-
-#: reportapp/templates/dpo_statistics_template.html
-msgid "Click here to reset the DPO overview"
-msgstr "Klik her for at nulstille DPO-overblikket"
-
-#: reportapp/templates/dpo_statistics_template.html
-#: reportapp/templates/leader_statistics_template.html
-msgid "Reset"
-msgstr "Nulstil"
-
-#: reportapp/templates/dpo_statistics_template.html
-msgid "Export DPO data as a csv-file"
-msgstr "Eksportér DPO-data som en csv-fil"
-
-#: reportapp/templates/dpo_statistics_template.html
-msgid "Click here to export DPO data as a csv-file"
-msgstr "Klik her for at eksportere DPO-data som en csv-fil"
-
-#: reportapp/templates/dpo_statistics_template.html
-#: reportapp/templates/leader_statistics_template.html
-msgid "Export CSV"
-msgstr "Eksportér CSV"
-
 #: reportapp/templates/error_pages/no-units-error.html
 msgid "No organizational units associated with account"
 msgstr "Ingen organisatoriske enheder er forbundet til brugeren"
@@ -1494,6 +1496,10 @@ msgstr "Nulstil DPO-overblikket"
 #: reportapp/templates/leader_statistics_template.html
 msgid "Click here to reset the leader overview"
 msgstr "Klik her for at nulstille DPO-overblikket"
+
+#: reportapp/templates/leader_statistics_template.html
+msgid "Reset"
+msgstr "Nulstil"
 
 #: reportapp/templates/leader_statistics_template.html
 msgid "Export leader data as a csv-file"
@@ -2390,15 +2396,6 @@ msgstr ""
 "på nuværende tidspunkt."
 
 #: reportapp/views/statistics_views.py
-msgid "The user does not have an account."
-msgstr "Brugeren har ikke en konto."
-
-#: reportapp/views/statistics_views.py
-#, python-brace-format
-msgid "An organizational unit with the UUID '{0}' was not found."
-msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
-
-#: reportapp/views/statistics_views.py
 msgid "handled"
 msgstr "håndteret"
 
@@ -2433,6 +2430,15 @@ msgstr "SBSYS-scan"
 #: reportapp/views/statistics_views.py
 msgid "calendar scan"
 msgstr "Kalender scan"
+
+#: reportapp/views/statistics_views.py
+msgid "The user does not have an account."
+msgstr "Brugeren har ikke en konto."
+
+#: reportapp/views/statistics_views.py
+#, python-brace-format
+msgid "An organizational unit with the UUID '{0}' was not found."
+msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
 
 #: reportapp/views/statistics_views.py
 msgid "Handled/Unhandled"
