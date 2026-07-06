@@ -1,148 +1,14 @@
 {% extends "components/statistics/statistics.html" %}
 {% load handle_extras %}
 {% load i18n %}
-{% load l10n %}
-{% load static %}
 
 {% block body %}
   <div class="content content--maxwidth" hx-push-url="true">
-    <div class="content-header">
-      <h1 class="page-title">{% trans "DPO statistics" %}</h1>
+    {% trans "DPO statistics" as page_title %}
+    {% url "statistics-dpo" as filter_url %}
+    {% url "statistics-dpo-export" as csv_export_url %}
 
-      <svg class="page-indicator"
-           id="report-page-indicator"
-           viewbox="0 0 100 100">
-        <circle id="circle" cx="50" cy="50" r="45"></circle>
-      </svg>
-
-      <!-- Scannerjob chart data selection -->
-      <form name="stat_form"
-            class="stat_form"
-            hx-get="{% url 'statistics-dpo' %}"
-            hx-target=".content"
-            hx-select=".content"
-            hx-swap="outerHTML"
-            hx-trigger="change"
-            hx-indicator="#report-page-indicator">
-        <!-- Org unit chart data selection -->
-        <div class="dropdown stats_dropdown">
-          <label for="orgunits">{% trans "organizational unit"|capfirst %}</label>
-          <select name="orgunit" id="orgunits" data-compareto="all" autocomplete="off">
-            <option value="all"
-                    {% if chosen_orgunit == "all" %}selected="selected"{% endif %}>{% trans "all"|capfirst %}</option>
-            {% for unit in orgunit_choices %}
-              <option value="{{ unit.uuid }}"
-                      {% if chosen_orgunit == unit.uuid|stringformat:"s" %}selected="selected"{% endif %}>
-                {{ unit.name }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-        <div class="dropdown stats_dropdown">
-          <label for="scannerjobs">{% trans "scanner job"|capfirst %}</label>
-          <select name="scannerjob"
-                  id="scannerjobs"
-                  data-compareto="all"
-                  autocomplete="off">
-            <option value="all"
-                    {% if chosen_scannerjob == "all" %}selected="selected"{% endif %}>
-              {% trans "All scannerjobs" %}
-            </option>
-            {% for scan in scannerjob_choices %}
-              <option value="{{ scan.scanner_pk|unlocalize }}"
-                      {% if chosen_scannerjob == scan.scanner_pk|stringformat:"i" %}selected="selected"{% endif %}>
-                {{ scan.scanner_name }}
-              </option>
-            {% endfor %}
-          </select>
-        </div>
-        <!-- Clear button -->
-        <div class="form__buttons">
-          <div class="button-group">
-            <button type="button"
-                    class="button button--transparent-button"
-                    aria-label="{% trans 'Reset the DPO overview' %}"
-                    title="{% trans 'Click here to reset the DPO overview' %}"
-                    name="clear_scannerjob"
-                    hx-trigger="click"
-                    hx-get="{{ request.path }}"
-                    hx-swap="outerHTML"
-                    hx-target=".content"
-                    hx-select=".content"
-                    hx-include="[id='filter_form'], [id='dropdown_options']"
-                    hx-params="not scannerjob"
-                    hx-indicator="#report-page-indicator">{% trans "Reset" %}</button>
-            {% if settings.DPO_CSV_EXPORT %}
-              <hr class="button-group__divider">
-              <a href="{% url 'statistics-dpo-export' %}?{{ request.GET.urlencode }}"
-                 class="button button--transparent-button"
-                 aria-label="{% trans 'Export DPO data as a csv-file' %}"
-                 title="{% trans 'Click here to export DPO data as a csv-file' %}">{% trans "Export CSV" %}</a>
-            {% endif %}
-          </div>
-        </div>
-      </form>
-    </div>
-
-    <div class="statistics_wrapper">
-      <div class="statistic_total_container">
-        <!-- Total matches - mail results -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.mailscan total=total_by_source.mailscan progress=mailscan_monthly_progress %}
-
-        <!-- Total matches - file results -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.filescan total=total_by_source.filescan progress=filescan_monthly_progress %}
-
-        <!-- Total matches - website -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.webscan total=total_by_source.webscan progress=webscan_monthly_progress %}
-
-        <!-- Total matches - Teams -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.teamsscan total=total_by_source.teamsscan progress=teamsscan_monthly_progress %}
-
-        <!-- Total matches - Calendar -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.calendarscan total=total_by_source.calendarscan progress=calendarscan_monthly_progress %}
-
-        <!-- Total matches - SBSYS -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.sbsys_db total=total_by_source.sbsys_db progress=sbsys_db_monthly_progress %}
-
-        <!-- Total matches - other sources -->
-        {% include "components/statistics/total_source_count.html" with source=unhandled_by_source.other total=total_by_source.other progress=other_monthly_progress %}
-      </div>
-    </div>
- 
-    {##### DPO body content container #####}
-    <div class="statistics statistics--dpo">
-      {# NOTE: This is a WIP. I'll be moving each preexisting "card" into this div - section by section. #}
- 
-      {# NEW CARDS - START #}
-      <section class="statistics__section">
-        <div class="section__body circle-charts">
-          {% comment %} Doughnut chart {% endcomment %}
-          {% include "components/statistics/dpo_results-handled_doughnut-chart.html" %}
- 
-          {% comment %} Pie chart {% endcomment %}
-          {% include "components/statistics/dpo_results-distribution_pie-chart.html" %}
-        </div>
-      </section>
- 
-      <section class="statistics__section">
-        <div class="section__body development-overview">
-          {# Line chart - unhandled matches #}
-          {% include "components/statistics/dpo_results-unhandled_line-chart.html" %}
-        </div>
-      </section>
- 
-      <section class="statistics__section">
-        <div class="section__body development-overview">
-          {# Bar chart - new matches #}
-          {% include "components/statistics/dpo_results-new_bar-chart.html" %}
-        </div>
-      </section>
- 
-      {# NEW CARDS - END #}
-    </div>
-
-
-
+    {% include "components/statistics/results_statistics.html" with page_title=page_title filter_url=filter_url csv_export_enabled=settings.DPO_CSV_EXPORT csv_export_url=csv_export_url %}
 
     {{ total_by_source|json_script:"total_by_source" }}
     {{ new_matches_by_month|json_script:"new_matches_by_month" }}
@@ -153,10 +19,4 @@
     {{ matches_by_org_unit_total|json_script:"matches_by_org_unit_total" }}
     {{ match_data|json_script:"match_data" }}
   </div>
-
 {% endblock body %}
-
-{% block scripts %}
-  {{ block.super }}
-  <script src="{% static 'js/charts/chartHelpers.js' %}"></script>
-{% endblock scripts %}
