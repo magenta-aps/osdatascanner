@@ -50,98 +50,9 @@ def month_delta(series_start: date, here: date):
     return _months(here) - _months(series_start)
 
 
-class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
-    context_object_name = "matches"  # object_list renamed to something more relevant
-    template_name = "dpo_statistics_template.html"
-    model = DocumentReport
-    scannerjob_filters = None
-
-    # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
-
-    @staticmethod
-    def base_query():
-        placeholder_time = timezone.make_aware(timezone.datetime(1970, 1, 1))
-        today = timezone.now()
-        a_month_ago = today - timedelta(days=30)
-
-        return DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
-            created_recently=Case(
-                When(
-                    created_timestamp__gte=a_month_ago,
-                    then=True
-                ),
-                default=False
-            ),
-            handled_recently=Case(
-                When(
-                    resolution_time__gte=a_month_ago,
-                    resolution_status__isnull=False,
-                    then=True,
-                ),
-                default=False
-            ),
-            created_month=TruncMonth(
-                        # If created_timestamp isn't set on a DocumentReport
-                        # the timestamp is set to a default time value.
-                        Coalesce('created_timestamp', placeholder_time),
-                        output_field=DateField()),
-            resolved_month=TruncMonth(
-                        # If resolution_time isn't set on a report that has been
-                        # handled, then assume it was handled in the same month it
-                        # was created
-                        Coalesce('resolution_time', 'created_timestamp'),
-                        output_field=DateField())).values(
-                            'resolution_status',
-                            'source_type',
-                            'created_month',
-                            'resolved_month',
-                            'created_recently',
-                            'handled_recently',
-                        ).annotate(count=Count('pk', distinct=True)).order_by()
-
-    def _check_access(self, request):
-        if self.request.user.account:
-
-            if self.request.user.is_superuser:
-                self.user_units = OrganizationalUnit.objects.all().order_by("name")
-            else:
-                # Only allow the user to see reports and units from their own
-                # organization
-                org = request.user.account.organization
-                self.kwargs["org"] = org
-                self.matches = self.matches.filter(scanner_job__organization=org)
-                if self.request.user.account.is_universal_dpo:
-                    self.user_units = OrganizationalUnit.objects.filter(
-                        organization=self.request.user.account.organization).order_by("name")
-                else:
-                    self.user_units = self.request.user.account.get_dpo_units().order_by("name")
-
-        else:
-            raise Account.DoesNotExist(_("The user does not have an account."))
-
-    @staticmethod
-    def filter_by_unit(reports, unit: OrganizationalUnit):
-        descendant_units = unit.get_descendants(include_self=True)
-        positions = Position.employees.filter(unit__in=descendant_units)
-        accounts = Account.objects.filter(positions__in=positions).distinct()
-
-        return (
-            reports.annotate(
-                total_relations=Count(
-                    'alias_relations',
-                    distinct=True
-                ),
-                shared_relations=Count(
-                    'alias_relations',
-                    filter=Q(alias_relations__shared=True),
-                    distinct=True
-                )
-            )
-            # Ensure at least one relation is to these accounts
-            .filter(alias_relations__account__in=accounts)
-            # Keep only if not all relations are shared (i.e., at least one is not shared)
-            .filter(~Q(total_relations=F('shared_relations')))
-        )
+class ResultsStatisticsMixin:
+    """Shared data-shaping helpers for views that present result/match
+    statistics as totals-by-source and month-by-month chart series."""
 
     @staticmethod
     def source_type_progress(source_type_data: dict):
@@ -161,89 +72,6 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                 'label': values['label'], 'count': values['unhandled']}
 
         return progress_dict
-
-    def get(self, request, *args, **kwargs):
-        self.matches = self.base_query()
-
-        self._check_access(request)
-
-        response = super().get(request, *args, **kwargs)
-
-        return response
-
-    def get_context_data(self, number_of_months=12, **kwargs):
-        context = super().get_context_data(**kwargs)
-        today = timezone.now()
-
-        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
-            self.matches = self.matches.filter(
-                scanner_job__scanner_pk=scannerjob)
-
-        if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
-            confirmed_dpo = (self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
-                             or self.request.user.account.is_universal_dpo)
-            if (self.request.user.is_superuser or confirmed_dpo):
-                selected_unit = self.user_units.get(uuid=orgunit)
-                self.matches = self.filter_by_unit(self.matches, selected_unit)
-            else:
-                raise OrganizationalUnit.DoesNotExist(
-                    _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
-
-        if self.scannerjob_filters is None:
-            self.scannerjob_filters = ScannerReference.objects.all()
-            if org := self.kwargs.get("org"):
-                self.scannerjob_filters = org.scanners.all()
-
-        (context['match_data'],
-         source_type_data,
-         context['resolution_status'],
-         created_month,
-         resolved_month) = self.make_data_structures(self.matches)
-
-        context['unhandled_matches_by_month'] = \
-            self.count_unhandled_matches_by_month(self.matches, created_month,
-                                                  resolved_month, current_date=today,
-                                                  num_months=number_of_months)
-
-        context['new_matches_by_month'] = \
-            self.count_new_matches_by_month(self.matches, created_month,
-                                            current_date=today, num_months=number_of_months)
-
-        # This is removed, until we make some structural changes, which should
-        # prevent clients from having stupid amounts of organizational data.
-        # if self.request.GET.get('orgunit') is None:
-        #     highest_unhandled_ou, highest_handled_ou, highest_total_ou = (
-        #         self.count_match_status_by_org_unit())
-
-        #     context['matches_by_org_unit_unhandled'] = highest_unhandled_ou
-        #     context['matches_by_org_unit_handled'] = highest_handled_ou
-        #     context['matches_by_org_unit_total'] = highest_total_ou
-
-        context = context | self.source_type_progress(source_type_data)
-
-        context['scannerjob_choices'] = self.scannerjob_filters
-        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
-
-        allowed_orgunits = self.user_units.filter(hidden=False)
-
-        context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
-        context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
-
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-
-        response = super().dispatch(request, *args, **kwargs)
-
-        try:
-            # Allow the user access, if they are a superuser or has a DPO relation
-            # to at least one organizational unit.
-            if request.user.is_superuser or request.user.account.is_dpo:
-                return response
-        except Exception as e:
-            logger.warning("Exception raised while trying to dispatch to user "
-                           f"{request.user}: {e}")
-        return redirect(reverse_lazy('index'))
 
     @staticmethod
     def make_data_structures(matches):  # noqa C901, CCR001
@@ -427,6 +255,183 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                                         for month, total in matches_by_month.items())
 
         return labelled_values_by_month[-num_months:]
+
+
+class DPOStatisticsPageView(ResultsStatisticsMixin, LoginRequiredMixin, TemplateView):
+    context_object_name = "matches"  # object_list renamed to something more relevant
+    template_name = "dpo_statistics_template.html"
+    model = DocumentReport
+    scannerjob_filters = None
+
+    # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
+
+    @staticmethod
+    def base_query():
+        placeholder_time = timezone.make_aware(timezone.datetime(1970, 1, 1))
+        today = timezone.now()
+        a_month_ago = today - timedelta(days=30)
+
+        return DocumentReport.objects.filter(number_of_matches__gte=1).annotate(
+            created_recently=Case(
+                When(
+                    created_timestamp__gte=a_month_ago,
+                    then=True
+                ),
+                default=False
+            ),
+            handled_recently=Case(
+                When(
+                    resolution_time__gte=a_month_ago,
+                    resolution_status__isnull=False,
+                    then=True,
+                ),
+                default=False
+            ),
+            created_month=TruncMonth(
+                        # If created_timestamp isn't set on a DocumentReport
+                        # the timestamp is set to a default time value.
+                        Coalesce('created_timestamp', placeholder_time),
+                        output_field=DateField()),
+            resolved_month=TruncMonth(
+                        # If resolution_time isn't set on a report that has been
+                        # handled, then assume it was handled in the same month it
+                        # was created
+                        Coalesce('resolution_time', 'created_timestamp'),
+                        output_field=DateField())).values(
+                            'resolution_status',
+                            'source_type',
+                            'created_month',
+                            'resolved_month',
+                            'created_recently',
+                            'handled_recently',
+                        ).annotate(count=Count('pk', distinct=True)).order_by()
+
+    def _check_access(self, request):
+        if self.request.user.account:
+
+            if self.request.user.is_superuser:
+                self.user_units = OrganizationalUnit.objects.all().order_by("name")
+            else:
+                # Only allow the user to see reports and units from their own
+                # organization
+                org = request.user.account.organization
+                self.kwargs["org"] = org
+                self.matches = self.matches.filter(scanner_job__organization=org)
+                if self.request.user.account.is_universal_dpo:
+                    self.user_units = OrganizationalUnit.objects.filter(
+                        organization=self.request.user.account.organization).order_by("name")
+                else:
+                    self.user_units = self.request.user.account.get_dpo_units().order_by("name")
+
+        else:
+            raise Account.DoesNotExist(_("The user does not have an account."))
+
+    @staticmethod
+    def filter_by_unit(reports, unit: OrganizationalUnit):
+        descendant_units = unit.get_descendants(include_self=True)
+        positions = Position.employees.filter(unit__in=descendant_units)
+        accounts = Account.objects.filter(positions__in=positions).distinct()
+
+        return (
+            reports.annotate(
+                total_relations=Count(
+                    'alias_relations',
+                    distinct=True
+                ),
+                shared_relations=Count(
+                    'alias_relations',
+                    filter=Q(alias_relations__shared=True),
+                    distinct=True
+                )
+            )
+            # Ensure at least one relation is to these accounts
+            .filter(alias_relations__account__in=accounts)
+            # Keep only if not all relations are shared (i.e., at least one is not shared)
+            .filter(~Q(total_relations=F('shared_relations')))
+        )
+
+    def get(self, request, *args, **kwargs):
+        self.matches = self.base_query()
+
+        self._check_access(request)
+
+        response = super().get(request, *args, **kwargs)
+
+        return response
+
+    def get_context_data(self, number_of_months=12, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now()
+
+        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
+            self.matches = self.matches.filter(
+                scanner_job__scanner_pk=scannerjob)
+
+        if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
+            confirmed_dpo = (self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
+                             or self.request.user.account.is_universal_dpo)
+            if (self.request.user.is_superuser or confirmed_dpo):
+                selected_unit = self.user_units.get(uuid=orgunit)
+                self.matches = self.filter_by_unit(self.matches, selected_unit)
+            else:
+                raise OrganizationalUnit.DoesNotExist(
+                    _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
+
+        if self.scannerjob_filters is None:
+            self.scannerjob_filters = ScannerReference.objects.all()
+            if org := self.kwargs.get("org"):
+                self.scannerjob_filters = org.scanners.all()
+
+        (context['match_data'],
+         source_type_data,
+         context['resolution_status'],
+         created_month,
+         resolved_month) = self.make_data_structures(self.matches)
+
+        context['unhandled_matches_by_month'] = \
+            self.count_unhandled_matches_by_month(self.matches, created_month,
+                                                  resolved_month, current_date=today,
+                                                  num_months=number_of_months)
+
+        context['new_matches_by_month'] = \
+            self.count_new_matches_by_month(self.matches, created_month,
+                                            current_date=today, num_months=number_of_months)
+
+        # This is removed, until we make some structural changes, which should
+        # prevent clients from having stupid amounts of organizational data.
+        # if self.request.GET.get('orgunit') is None:
+        #     highest_unhandled_ou, highest_handled_ou, highest_total_ou = (
+        #         self.count_match_status_by_org_unit())
+
+        #     context['matches_by_org_unit_unhandled'] = highest_unhandled_ou
+        #     context['matches_by_org_unit_handled'] = highest_handled_ou
+        #     context['matches_by_org_unit_total'] = highest_total_ou
+
+        context = context | self.source_type_progress(source_type_data)
+
+        context['scannerjob_choices'] = self.scannerjob_filters
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
+
+        allowed_orgunits = self.user_units.filter(hidden=False)
+
+        context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
+        context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
+
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+
+        response = super().dispatch(request, *args, **kwargs)
+
+        try:
+            # Allow the user access, if they are a superuser or has a DPO relation
+            # to at least one organizational unit.
+            if request.user.is_superuser or request.user.account.is_dpo:
+                return response
+        except Exception as e:
+            logger.warning("Exception raised while trying to dispatch to user "
+                           f"{request.user}: {e}")
+        return redirect(reverse_lazy('index'))
 
     def count_match_status_by_org_unit(self):
 
