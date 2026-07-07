@@ -107,17 +107,31 @@ Single-colored icons can be modified like so:
     fill: $icon-color;
   }
 
-  .material-symbols,
-  .material-symbols-outlined {
+  .material-symbols {
     color: $icon-color;
   }
 
   svg,
-  .material-symbols,
-  .material-symbols-outlined {
-    height: 1em;
-    width: 1em;
+  .material-symbols {
+    $icon-size: 1rem; // 16px
+    height: $icon-size;
+    width: $icon-size;
     vertical-align: text-top;
+  }
+
+  .material-symbols#help {
+    $icon-size: 1.25rem; // 20px — matches the opsz value below
+    width: $icon-size;
+    height: $icon-size;
+    color: var(--color-primary-dark);
+    opacity: 50%;
+    font-size: $icon-size;
+    vertical-align: middle;
+    font-variation-settings:
+      "FILL" 1,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 20;
   }
 
   @media (min-width: $break-lg) {

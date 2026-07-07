@@ -900,8 +900,7 @@ $font-size_subtitle: 0.875rem;
         margin-top: calc(#{$text-size} * 0.115);
       }
 
-      &__icon.material-symbols,
-      &__icon.material-symbols-outlined {
+      &__icon.material-symbols {
         color: var(--color-primary);
         font-size: $icon-size;
         width: $icon-size;
@@ -912,8 +911,7 @@ $font-size_subtitle: 0.875rem;
       &--none {
         opacity: 50%;
 
-        .material-symbols,
-        .material-symbols-outlined {
+        .material-symbols {
           color: var(--color-text-secondary);
         }
       }
@@ -927,26 +925,6 @@ $font-size_subtitle: 0.875rem;
         display: flex;
         align-items: center;
         gap: 4px;
-      }
-
-      .help-tooltip {
-        $icon-size: 1.25rem; // Local var setting a fixed size for this element.
-
-        vertical-align: middle;
-        width: $icon-size;
-        height: $icon-size;
-
-        .material-symbols#help,
-        .material-symbols-outlined#help {
-          color: var(--color-primary-dark);
-          opacity: 50%;
-          font-size: $icon-size;
-          font-variation-settings:
-            "FILL" 1,
-            "wght" 400,
-            "GRAD" 0,
-            "opsz" 20;
-        }
       }
     }
 
@@ -1239,24 +1217,12 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     @include flex-center;
     height: $font-size;
 
-    .material-symbols,
-    .material-symbols-outlined {
+    .material-symbols {
       $icon-size: 1.25rem; // 20px
       font-size: $icon-size;
       width: $icon-size;
-    }
-
-    .material-symbols {
       font-variation-settings:
         "FILL" 1,
-        "wght" 400,
-        "GRAD" 0,
-        "opsz" 20;
-    }
-
-    .material-symbols-outlined {
-      font-variation-settings:
-        "FILL" 0,
         "wght" 400,
         "GRAD" 0,
         "opsz" 20;
@@ -1313,8 +1279,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           line-height: $text-size;
         }
 
-        .material-symbols,
-        .material-symbols-outlined {
+        .material-symbols {
           color: var(--color-primary);
           font-size: $icon-size;
           width: $icon-size;
@@ -1651,19 +1616,15 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         align-items: center;
         gap: $uniform_icon-label_gap-size;
 
-        &__icon {
-          &.material-symbols,
-          &.material-symbols-outlined {
-            font-variation-settings: "wght" 300;
-            color: var(--color-text-secondary);
-          }
+        &__icon.material-symbols {
+          font-variation-settings: "wght" 300;
+          color: var(--color-text-secondary);
         }
 
         &__label {
           $font-size: 1rem;
           font-size: $font-size;
           margin-top: calc(#{$font-size} * 0.115);
-
           color: var(--color-text-main);
         }
       }
@@ -1679,30 +1640,17 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         flex-wrap: nowrap;
 
         .button:not(:has(#expand_more)) {
-          .material-symbols,
-          .material-symbols-outlined {
+          .material-symbols {
             color: var(--color-primary-dark);
           }
 
           &:hover {
             background-color: var(--color-primary-dark) !important;
 
-            .material-symbols,
-            .material-symbols-outlined {
-              color: var(--color-text-white);
-            }
-
             .material-symbols {
+              color: var(--color-text-white);
               font-variation-settings:
                 "FILL" 1,
-                "wght" 500,
-                "GRAD" -25,
-                "opsz" 24 !important;
-            }
-
-            .material-symbols-outlined {
-              font-variation-settings:
-                "FILL" 0,
                 "wght" 500,
                 "GRAD" -25,
                 "opsz" 24 !important;

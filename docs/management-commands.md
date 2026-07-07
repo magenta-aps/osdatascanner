@@ -330,3 +330,39 @@ the scan. However, the tool is not able to distinguish results stemming from
 OneDrive or Sharepoint, and will create CoveredAccounts not only for the
 accounts covered through the related organizational units, but also for the
 accounts with results from Sharepoint.
+
+
+## Shared commands
+
+These commands operate on concepts that aren't specific to either the admin
+or report module, and live once in `projects/utils/`. Some (like
+`makemessages`/`compilemessages` — see
+[Translations](development_environment/translations.md)) are symlinked into
+both apps' `management/commands` directories, because each app has its own
+per-app content (translation catalogs) to act on. Others operate on a single
+piece of genuinely shared content, and are deliberately symlinked into only
+one app, so there's exactly one way to run them — matching the existing
+convention of always using `admin` for the other truly-shared apps (`grants`,
+`shared`, `core_organizational_structure`) in the translations doc above.
+
+### `compileicons`
+
+Regenerates the self-hosted Material Symbols icon font from
+`static/fonts/materialsymbols/icons.json`, using Google's icon-name and
+axis-instancing subsetting
+([docs](https://developers.google.com/fonts/docs/material_symbols)), so that
+only the icons actually used by the project (and only the
+`font-variation-settings` values they need) get shipped, instead of the full
+multi-megabyte icon set. The icon font is one shared static asset, not
+per-app content, so this command is only registered under `admin`.
+
+Run this after adding a new icon (or a new `font-variation-settings` value
+outside the currently declared ranges) to `icons.json`:
+
+`docker compose exec -u 0 admin python manage.py compileicons`
+
+!!! note "Note on `-u 0`"
+    The command writes the regenerated font file into
+    `static/fonts/materialsymbols/`, which the container's regular app user doesn't
+    have write access to on a bind-mounted checkout. This is the same situation as
+    `performance_measurement` above.

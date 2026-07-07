@@ -160,26 +160,18 @@
     background-color: transparent !important;
     height: 24px; // This needs to be redone after the table refactoring
 
-    .material-symbols,
-    .material-symbols-outlined {
-      &#expand_more {
-        pointer-events: none;
-        transition: var(--transition-default);
-        color: #aaa;
+    .material-symbols#expand_more {
+      pointer-events: none;
+      transition: var(--transition-default);
+      color: #aaa;
 
-        &.active {
-          color: var(--color-primary);
-        }
+      &.active {
+        color: var(--color-primary);
       }
     }
 
-    &.up {
-      .material-symbols,
-      .material-symbols-outlined {
-        &#expand_more {
-          transform: rotate(180deg);
-        }
-      }
+    &.up .material-symbols#expand_more {
+      transform: rotate(180deg);
     }
 
     &:disabled {
@@ -201,8 +193,7 @@
     background-color: transparent;
     border: var(--btn-border-default) transparent;
 
-    .material-symbols,
-    .material-symbols-outlined {
+    .material-symbols {
       color: var(--color-primary-dark);
     }
 
@@ -216,8 +207,7 @@
       // Box Model
       border: var(--btn-border-default) transparent;
 
-      .material-symbols,
-      .material-symbols-outlined {
+      .material-symbols {
         color: var(--color-btn-neutral);
       }
     }
@@ -228,24 +218,12 @@
       background-color: var(--color-primary-dark) !important;
 
       .material-symbols {
+        color: var(--color-text-white);
         font-variation-settings:
           "FILL" 1,
           "wght" 500,
           "GRAD" -25,
           "opsz" 24 !important;
-      }
-
-      .material-symbols-outlined {
-        font-variation-settings:
-          "FILL" 0,
-          "wght" 500,
-          "GRAD" -25,
-          "opsz" 24 !important;
-      }
-
-      .material-symbols,
-      .material-symbols-outlined {
-        color: var(--color-text-white);
       }
     }
   }
@@ -262,8 +240,9 @@
     gap: 4px;
 
     .material-symbols {
-      font-size: 14px;
-      width: 14px;
+      $icon-size: 0.875rem; //14px
+      font-size: $icon-size;
+      width: $icon-size;
       font-variation-settings:
         "FILL" 1,
         "wght" 400,
