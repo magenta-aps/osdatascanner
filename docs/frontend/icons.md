@@ -1,6 +1,6 @@
 # Icon Guide
 
-Types of icons used in OSdatascanner:
+We currently use two types of icons in OSdatascanner:
 
 - [Google's Material Symbols] [1] - *primary library*
 - Custom SVG icons
@@ -11,47 +11,57 @@ Types of icons used in OSdatascanner:
 
 ### Overview
 
-Material Symbols is a comprehensive and open-source icon library created by Google. These icons are integrated into OSdatascanner to provide a visually consistent and scalable way to use icons across the platform.
+Material Symbols is a comprehensive and open-source icon library created by Google. It comes in three font families (outlined, rounded, sharp) whereof we only use "outlined". The other two font families are respectively too "hard/sharp" and too "rounded/cute" —> which is why we've landed on "outlined" as our Goldilock icon style. Not too sharp, and not too cute, but just right. 
+
+We primarily use the "filled" version of "outlined". It may sound a bit contradictory, but Google named the font types, not us.
+
+In niche cases an icon is deliberately rendered unfilled instead (e.g. `chat_error`, `visibility_off`) where it improves visual balance against surrounding icons. There is no separate `-outlined` CSS class for this. Unfilled rendering is applied via a per-icon `font-variation-settings` override in the SCSS, not something you opt into when adding an icon.
+
+!!! Warning "Please check in with UX"
+    Icon selection should happen in collaboration with UX, unless the icon is for a similar use case or behaviour to something that already exists elsewhere in the project — in that case, follow the existing precedent instead.
 
 ### Location:
 
-The `Material <Symbols>` library is self-hosted within the OSdatascanner project. You can find the necessary font files and styles here: 
+The Material Symbols library is self-hosted within the OSdatascanner project. You can find the font file and styles here: `/src/os2datascanner/projects/static/fonts/materialsymbols/`
 
-* `/src/os2datascanner/projects/static/fonts/materialsymbols/`
+The font file here is **not** the full Material Symbols library. It's a curated subset including only the icons and style ranges the project actually uses. The subset is generated from `icons.json` in the same directory, which is the actual source of truth for what's available. 
+
+!!! Note "Can't find the icon you need?"
+    If the icon you want isn't already in use somewhere in the project, it almost certainly isn't in the font yet. See [Adding a new icon](#adding-a-new-icon).
 
 ### Usage
 
-#### Identifying and Formatting Icon IDs
+#### Implementing icons in HTML templates
 
-To utilize a specific Google icon in OSdatascanner, first identify its name from the official [library] [1] . Then, format the name for use within OSdatascanner by converting spaces to underscores `_`. For instance:
+Icons are primarily incorporated templates using an `<i>` tag, the `.material-symbols` class, and the name of the icon. Here's how:
 
-- Original Name from Google: example icon
-- Formatted ID for OSdatascanner: example_icon
-
-#### Implementing Icons in HTML
-
-Once you have the formatted ID, incorporate the icon into your HTML using an `<i>` tag. Here's how:
-
-``` html
-<!-- Material Symbols -->
-<i id="formatted_icon_id" class="material-symbols">formatted_icon_id</i>
+```html
+<i class="material-symbols">icon_name</i>
 ```
 
-In this snippet, replace `formatted_icon_id` with the actual ID of the icon you wish to use. This ID corresponds to the formatted name of the icon.
 
-**Example:**
+**Example:** You want to use the "search" icon from Material Symbols, so you're first checking if it's included in the current list of available icons in `icons.json`. If it is, you can implement it in your template right away:
 
-If you want to use the "search" icon from Material Symbols, you would first check its name in the Material Symbols library, (note that it's a single word so no formatting is needed), and then implement it as follows:
-
-``` html
-<i id="search" class="material-symbols">search</i>
+```html
+<i class="material-symbols">search</i>
 ```
 
-This approach ensures that you can easily find, format, and implement any Google Icon in your OSdatascanner project, maintaining a consistent and professional UI.
+**If it isn't**, you'll have to [add it](#adding-a-new-icon) yourself.
 
-### Note
+#### Adding a new icon
 
-Given the extensive range of the Material Symbols library, developers are encouraged to explore and utilize the range of icons available for enhancing UI/UX in OSdatascanner. However, for any custom icon requirements not met by this library, refer to the Custom SVG Icons section.
+Because the font is a subset, using an icon name that isn't already registered will render the string value itself as raw text (not even a fallback glyph, just a weird text blob).
+
+Before using a new icon:
+
+1. Add its name to the `icons` list in `static/fonts/materialsymbols/icons.json`.
+2. If the icon needs a `font-variation-settings` value outside the currently supported ranges (`FILL 0..1`, `wght 300..500`, `GRAD -25..0`, `opsz 20..48`), widen the corresponding entry in that same file's `axes` object.
+3. Regenerate the font using this [management command](../management-commands.md):
+   `docker compose exec -u 0 admin python manage.py compileicons`
+4. Commit the regenerated font file along with your `icons.json` change.
+
+!!! Note "Try it locally"
+    Because the icon set is a hand-maintained subset rather than the full library, always check `icons.json` (or just try it locally) before assuming an icon is available. Don't rely on the icon simply existing just because you can see it in Google's online catalog.
 
 ***
 
