@@ -254,6 +254,7 @@ class TestUpdateOrganizationViews:
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
             'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'leader_snapshot_interval': 24,
             'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
@@ -316,6 +317,7 @@ class TestUpdateOrganizationViews:
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
             'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'leader_snapshot_interval': 24,
             'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
@@ -344,6 +346,7 @@ class TestUpdateOrganizationViews:
             'onedrive_delete_permission': False,
             'synchronization_time': "17:00",
             'leadertab_config': LeaderTabConfigChoices.BOTH,
+            'leader_snapshot_interval': 24,
             'sbsystab_access': SBSYSTabConfigChoices.NONE
         })
 
@@ -381,6 +384,7 @@ def _update_org_payload(**overrides):
         'onedrive_delete_permission': False,
         'synchronization_time': "17:00",
         'leadertab_config': LeaderTabConfigChoices.BOTH,
+        'leader_snapshot_interval': 24,
         'sbsystab_access': SBSYSTabConfigChoices.NONE,
     } | overrides
 

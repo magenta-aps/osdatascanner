@@ -189,7 +189,8 @@ class Organization(models.Model):
         help_text=_(
             "How many hours may pass before the leader statistics snapshot is "
             "regenerated. The leader overview is served from the most recent "
-            "snapshot rather than computed live on every page load."
+            "snapshot rather than computed live on every page load. Set to 0 to "
+            "disable snapshotting and always compute the overview live."
         )
     )
 

@@ -15,8 +15,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
 from django.db.models import (Q, Count, DateField, When, Case, CharField, Value, F,
-                               Subquery, OuterRef, Sum, IntegerField, FloatField,
-                               ExpressionWrapper)
+                              Subquery, OuterRef, Sum, IntegerField, FloatField,
+                              ExpressionWrapper)
 from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import gettext_lazy as _
@@ -613,17 +613,27 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         account's counts to its own organization, which matters when a superuser
         views accounts across several organizations).
 
-        The (account, scanner_job, source_type) buckets matching the current
-        scannerjob/source_type filter are summed per account, and 'handle_status'
-        and 'fp_ratio' are recomputed from those sums."""
-        detail = AccountResultSnapshot.objects.filter(
-            snapshot_id__in=snapshot_ids, account=OuterRef("pk"))
-        if scanner_pk and scanner_pk != "all":
-            detail = detail.filter(scanner_job__scanner_pk=scanner_pk)
-        if source_type and source_type != "all":
-            detail = detail.filter(source_type=source_type)
+        Known limitation: an account whose organization has no snapshot in
+        @snapshot_ids (a brand-new organization not yet reached by the cron, or
+        one with snapshotting disabled) sums to zero here. This only surfaces for
+        a superuser viewing accounts across organizations; an ordinary leader
+        sees a single organization, which either has a snapshot (all its accounts
+        are covered) or falls back to the live aggregation in get_context_data.
 
-        def summed(field):
+        The result counts (unhandled/withheld/old) are summed over the buckets
+        matching the current scannerjob/source_type filter, mirroring the live
+        with_result_stats(reports=...). 'handle_status' and 'fp_ratio' are summed
+        over ALL of the account's buckets, mirroring the live with_status() and
+        with_fp_ratio(), which are never scoped to the filter."""
+        all_detail = AccountResultSnapshot.objects.filter(
+            snapshot_id__in=snapshot_ids, account=OuterRef("pk"))
+        filtered_detail = all_detail
+        if scanner_pk and scanner_pk != "all":
+            filtered_detail = filtered_detail.filter(scanner_job__scanner_pk=scanner_pk)
+        if source_type and source_type != "all":
+            filtered_detail = filtered_detail.filter(source_type=source_type)
+
+        def summed(detail, field):
             return Coalesce(
                 Subquery(
                     detail.values("account").annotate(_s=Sum(field)).values("_s")[:1],
@@ -631,17 +641,18 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
                 0)
 
         qs = qs.annotate(
-            unhandled_results=summed("unhandled_results"),
-            withheld_results=summed("withheld_results"),
-            old_results=summed("old_results"),
-            _handled_recent=summed("handled_recent"),
-            _new_recent=summed("new_recent"),
-            _handled_total=summed("handled_total"),
-            _fp_total=summed("fp_total"),
+            unhandled_results=summed(filtered_detail, "unhandled_results"),
+            withheld_results=summed(filtered_detail, "withheld_results"),
+            old_results=summed(filtered_detail, "old_results"),
+            _unhandled_all=summed(all_detail, "unhandled_results"),
+            _handled_recent=summed(all_detail, "handled_recent"),
+            _new_recent=summed(all_detail, "new_recent"),
+            _handled_total=summed(all_detail, "handled_total"),
+            _fp_total=summed(all_detail, "fp_total"),
         )
         qs = qs.annotate(
             handle_status=Case(
-                When(unhandled_results=0, then=Value(StatusChoices.GOOD)),
+                When(_unhandled_all=0, then=Value(StatusChoices.GOOD)),
                 When(_handled_recent=0, then=Value(StatusChoices.BAD)),
                 When(Q(_new_recent__gt=0)
                      & Q(_handled_recent__lt=F("_new_recent") * 0.75),
@@ -676,7 +687,7 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
                 .filter(snapshot_id__in=snapshot_ids, account__in=base_qs)
                 .values_list("scanner_job_id", flat=True).distinct())
 
-    def get_context_data(self, **kwargs):
+    def get_context_data(self, **kwargs):  # noqa CCR001
         context = super().get_context_data(**kwargs)
         base_qs = self.get_account_queryset()
 
@@ -690,11 +701,14 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
             reports = DocumentReport.objects.all()
 
         # Serve the leader overview from the most recent snapshot; fall back to
-        # the (much slower) live aggregation only until the first snapshot for
-        # this organization exists. self.snapshot_ids is exposed for the
-        # subclasses' scannerjob dropdowns; None signals the live fallback.
-        snapshot = LeaderStatisticSnapshot.objects.filter(
-            organization=self.org).order_by('-created_at').first()
+        # the (much slower) live aggregation when the organization has disabled
+        # snapshotting (interval 0) or has no snapshot yet. self.snapshot_ids is
+        # exposed for the subclasses' scannerjob dropdowns; None signals the
+        # live fallback.
+        snapshot = None
+        if self.org.leader_snapshot_interval:
+            snapshot = LeaderStatisticSnapshot.objects.filter(
+                organization=self.org).order_by('-created_at').first()
         self.snapshot_ids = self.latest_snapshot_ids() if snapshot is not None else None
 
         if self.snapshot_ids is not None:
@@ -1004,14 +1018,16 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
             reports = DocumentReport.objects.all()
 
         source_type = self.request.GET.get('source_type', 'all')
-        if source_type != 'all':
+        if source_type and source_type != 'all':
             reports = reports.filter(source_type=source_type)
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
         account_qs = self.get_account_queryset()
 
-        snapshot = LeaderStatisticSnapshot.objects.filter(
-            organization=self.org).order_by('-created_at').first()
+        snapshot = None
+        if self.org.leader_snapshot_interval:
+            snapshot = LeaderStatisticSnapshot.objects.filter(
+                organization=self.org).order_by('-created_at').first()
         if snapshot is not None:
             account_qs = LeaderStatisticsPageView.annotate_account_queryset_from_snapshot(
                 account_qs, LeaderStatisticsPageView.latest_snapshot_ids(),

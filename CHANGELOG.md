@@ -14,12 +14,10 @@
 
 - The leader overview is now served from a periodically regenerated snapshot instead of computing
   its per-account aggregates live on every page load, giving stable and fast load times even for
-  very large organizations (previously up to several hours). The snapshot is refreshed by the new
-  `snapshot_leader_stats` management command (run hourly via cron); how often each organization's
+  very large organizations. The snapshot is refreshed by the new
+  `snapshot_leader_stats` management command (run via cron); how often each organization's
   snapshot is regenerated is controlled by the new "Leader statistics snapshot interval" setting in
-  the admin module. The page shows how old the displayed data is. Note: the false-positive ratio is
-  now computed from distinct reports, correcting a slight inflation that could occur when an account
-  reached the same report through multiple aliases.
+  the admin module.
 
 - Updated all old uses of Material Icons to Material Symbols, so some icons nay seem a little bit
   smarter looking.

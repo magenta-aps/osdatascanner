@@ -565,12 +565,21 @@ class TestLeaderStatisticsSnapshot:
 
     def test_snapshot_matches_live_aggregation(self, rf, egon_account, benny_account,
                                                benny_email_alias):
-        """Snapshot-derived values equal the live aggregation for a mix of
-        unhandled, withheld and handled reports."""
+        """Snapshot-derived values equal the live aggregation across several
+        scanners and source types, and for unhandled, withheld and handled
+        reports — i.e. the per-bucket sums reconstruct the live totals."""
         self._manage(egon_account, benny_account)
-        create_reports_for(benny_email_alias, num=6, source_type="fake")
-        create_reports_for(benny_email_alias, num=2, source_type="fake", offset=100,
-                           only_notify_superadmin=True)
+        # Spread reports across two scanners and two source types, and include
+        # withheld and handled reports, so the snapshot must sum several buckets.
+        create_reports_for(benny_email_alias, num=6, scanner_job_pk=1, source_type="fake")
+        create_reports_for(benny_email_alias, num=3, scanner_job_pk=1, source_type="web",
+                           offset=100)
+        create_reports_for(benny_email_alias, num=4, scanner_job_pk=2, source_type="fake",
+                           offset=200)
+        create_reports_for(benny_email_alias, num=2, scanner_job_pk=2, source_type="fake",
+                           offset=300, only_notify_superadmin=True)
+        create_reports_for(benny_email_alias, num=5, scanner_job_pk=1, source_type="fake",
+                           offset=400, resolution_status=0)
 
         base = Account.objects.filter(pk=benny_account.pk)
         live = LeaderStatisticsPageView.annotate_account_queryset(base, None, None)
@@ -584,6 +593,8 @@ class TestLeaderStatisticsSnapshot:
             'unhandled_results', 'withheld_results', 'handle_status').get()
 
         assert snap_row == live_row
+        assert snap_row['unhandled_results'] == 13
+        assert snap_row['withheld_results'] == 2
 
     def test_snapshot_reads_each_accounts_own_organization(
             self, egon_account, benny_account, benny_email_alias,
@@ -608,6 +619,44 @@ class TestLeaderStatisticsSnapshot:
 
         assert results[benny_account.pk] == 4
         assert results[hulk_account.pk] == 6
+
+    def test_snapshot_status_ignores_source_type_filter(self, rf, egon_account,
+                                                        benny_account, benny_email_alias):
+        """handle_status is computed over all of an account's reports, not just
+        the filtered scanner/source, mirroring the live with_status()."""
+        self._manage(egon_account, benny_account)
+        # Unhandled matches only in 'fake'; a lone handled match in 'web' so that
+        # 'web' is a selectable source_type.
+        create_reports_for(benny_email_alias, num=5, source_type="fake")
+        create_reports_for(benny_email_alias, num=1, source_type="web", offset=100,
+                           resolution_status=0)
+
+        call_command('snapshot_leader_stats', '--force')
+
+        # Filtering to 'web' leaves 0 unhandled results for benny, but the status
+        # must still reflect the (unfiltered) unhandled matches in 'fake'.
+        response = self.get_leader_statisticspage_response(
+            rf, egon_account, params='?source_type=web')
+        employee = self._employee(response, benny_account)
+        assert employee.unhandled_results == 0
+        assert employee.handle_status != StatusChoices.GOOD
+
+    def test_interval_zero_forces_live(self, rf, egon_account, benny_account,
+                                       benny_email_alias):
+        """An interval of 0 disables snapshot serving: the page is computed live
+        even when a snapshot exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=3)
+        call_command('snapshot_leader_stats', '--force')
+
+        benny_account.organization.leader_snapshot_interval = 0
+        benny_account.organization.save()
+        # A report created after the snapshot is only visible on the live path.
+        create_reports_for(benny_email_alias, num=4, offset=100)
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        assert response.context_data['snapshot_created_at'] is None
+        assert self._employee(response, benny_account).unhandled_results == 7
 
     def test_snapshot_scannerjob_choices(self, rf, egon_account, benny_account,
                                          benny_email_alias):

@@ -305,6 +305,14 @@ msgstr "begrundelse"
 msgid "document reports"
 msgstr "dokument rapporter"
 
+#: reportapp/models/leader_statistic_snapshot.py
+msgid "organization"
+msgstr "organisation"
+
+#: reportapp/models/leader_statistic_snapshot.py
+msgid "created at"
+msgstr "oprettelsesdato"
+
 #: reportapp/templates/400.html
 msgid "Bad Request"
 msgstr "Dårlig Forespørgsel"
@@ -1469,6 +1477,11 @@ msgstr "Lederoverblik for:"
 #: reportapp/templates/leader_statistics_template.html
 msgid "employees"
 msgstr "medarbejdere"
+
+#: reportapp/templates/leader_statistics_template.html
+#, python-format
+msgid "Data from %(age)s ago"
+msgstr "Data opdateret for %(age)s siden"
 
 #: reportapp/templates/leader_statistics_template.html
 msgid "All"
