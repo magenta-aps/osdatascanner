@@ -8,6 +8,7 @@
             hx-get=" {{ request.path }}"
             hx-target="#{{ field.name }}-form-container"
             hx-select="#{{ field.name }}-form-container"
+            hx-swap="outerHTML"
             hx-trigger="click"
             hx-include="#hidden_organization, #id_organization"
             hx-vals='{"grant_type": "{{ field.name }}" }'>

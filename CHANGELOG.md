@@ -27,6 +27,9 @@
 - Fixed a bug where CPRRule ignored CPR-numbers in a csv/spreadsheet row that followed
   a timestamp, since "13:20" was split into two "words" around the colon.
 
+- Fixed a bug where the contacts dropdown in the inline grant creation form showed as a plain list
+  instead of a Select2 dropdown.
+
 ## Version 3.32.2, 23rd June 2026
 
 "We've had one, yes. But what about a second heat wave?"
