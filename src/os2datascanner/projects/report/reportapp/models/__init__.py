@@ -4,3 +4,4 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from . import documentreport  # noqa
+from . import leader_statistic_snapshot  # noqa

@@ -183,6 +183,15 @@ class Organization(models.Model):
         default=LeaderTabConfigChoices.UNITS,
         verbose_name=_("Leader tab configuration")
     )
+    leader_snapshot_interval = models.PositiveIntegerField(
+        default=24,
+        verbose_name=_("Leader statistics snapshot interval"),
+        help_text=_(
+            "How many hours may pass before the leader statistics snapshot is "
+            "regenerated. The leader overview is served from the most recent "
+            "snapshot rather than computed live on every page load."
+        )
+    )
 
     # Grant prioritization configuration
     prioritize_graphgrant = models.BooleanField(
@@ -314,4 +323,5 @@ class OrganizationSerializer(BaseSerializer):
             'retention_policy',
             'retention_days',
             'prioritize_graphgrant',
-            'leadertab_config']
+            'leadertab_config',
+            'leader_snapshot_interval']

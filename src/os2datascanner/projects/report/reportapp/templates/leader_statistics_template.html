@@ -33,6 +33,12 @@
         {% endif %}
         {% trans "employees" %}
       </p>
+
+      {% if snapshot_created_at %}
+        <p class="snapshot-age-text">
+          {% blocktrans with age=snapshot_created_at|timesince %}Data from {{ age }} ago{% endblocktrans %}
+        </p>
+      {% endif %}
     </div>
 
     <div class="content-body">
