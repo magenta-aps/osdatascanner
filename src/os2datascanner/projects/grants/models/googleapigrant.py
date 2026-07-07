@@ -30,7 +30,7 @@ class GoogleApiGrant(Grant):
         verbose_name = _("Google Api Grant")
 
     def __str__(self):
-        return self.account_name
+        return self.account_name or str(_("(no service account)"))
 
     def clean(self):
         super().clean()
@@ -50,10 +50,14 @@ class GoogleApiGrant(Grant):
 
     @property
     def account_name(self):
+        if not self.service_account:
+            return None
         return json.loads(self.service_account).get("client_email").split("@")[0]
 
     @property
     def service_account_dict(self):
+        if not self.service_account:
+            return None
         try:
             return json.loads(self.service_account)
         except json.JSONDecodeError:
