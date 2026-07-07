@@ -668,6 +668,14 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
             .distinct("organization_id")
             .values_list("pk", flat=True))
 
+    @staticmethod
+    def snapshot_scanner_ids(snapshot_ids, base_qs):
+        """The scanner_job ids that produced matches for @base_qs accounts,
+        read from the snapshot instead of joining through every report."""
+        return (AccountResultSnapshot.objects
+                .filter(snapshot_id__in=snapshot_ids, account__in=base_qs)
+                .values_list("scanner_job_id", flat=True).distinct())
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         base_qs = self.get_account_queryset()
@@ -681,11 +689,28 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         else:
             reports = DocumentReport.objects.all()
 
-        source_type_choices = reports.filter(
-            alias_relations__account__in=base_qs,
-            alias_relations__shared=False,
-            number_of_matches__gte=1,
-        ).order_by('source_type').values('source_type').distinct()
+        # Serve the leader overview from the most recent snapshot; fall back to
+        # the (much slower) live aggregation only until the first snapshot for
+        # this organization exists. self.snapshot_ids is exposed for the
+        # subclasses' scannerjob dropdowns; None signals the live fallback.
+        snapshot = LeaderStatisticSnapshot.objects.filter(
+            organization=self.org).order_by('-created_at').first()
+        self.snapshot_ids = self.latest_snapshot_ids() if snapshot is not None else None
+
+        if self.snapshot_ids is not None:
+            snapshot_buckets = AccountResultSnapshot.objects.filter(
+                snapshot_id__in=self.snapshot_ids, account__in=base_qs)
+            if scanner_pk_filter:
+                snapshot_buckets = snapshot_buckets.filter(
+                    scanner_job__scanner_pk=scanner_pk_filter)
+            source_type_choices = snapshot_buckets.order_by(
+                'source_type').values('source_type').distinct()
+        else:
+            source_type_choices = reports.filter(
+                alias_relations__account__in=base_qs,
+                alias_relations__shared=False,
+                number_of_matches__gte=1,
+            ).order_by('source_type').values('source_type').distinct()
         context['source_type_choices'] = source_type_choices
 
         source_type = self.request.GET.get('source_type', 'all')
@@ -697,14 +722,9 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
 
-        # Serve the leader overview from the most recent snapshot; fall back to
-        # the (much slower) live aggregation only until the first snapshot for
-        # this organization exists.
-        snapshot = LeaderStatisticSnapshot.objects.filter(
-            organization=self.org).order_by('-created_at').first()
-        if snapshot is not None:
+        if self.snapshot_ids is not None:
             qs = self.annotate_account_queryset_from_snapshot(
-                base_qs, self.latest_snapshot_ids(),
+                base_qs, self.snapshot_ids,
                 scanner_pk=scanner_pk_filter, source_type=source_type)
         else:
             qs = self.annotate_account_queryset(base_qs, reports, retention_days)
@@ -783,11 +803,15 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["active_tab"] = "accounts"
         context["view_url"] = reverse_lazy("statistics-leader-accounts")
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
-        scannerjobs = self.org.scanners.filter(
-            document_reports__number_of_matches__gte=1,
-            document_reports__alias_relations__account__in=context['base_qs'],
-            document_reports__alias_relations__shared=False,
-        ).distinct()
+        if self.snapshot_ids is not None:
+            scannerjobs = self.org.scanners.filter(
+                pk__in=self.snapshot_scanner_ids(self.snapshot_ids, context['base_qs']))
+        else:
+            scannerjobs = self.org.scanners.filter(
+                document_reports__number_of_matches__gte=1,
+                document_reports__alias_relations__account__in=context['base_qs'],
+                document_reports__alias_relations__shared=False,
+            ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(
@@ -856,14 +880,20 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         context["view_url"] = reverse_lazy("statistics-leader-units")
         context["export_url"] = reverse_lazy("statistics-leader-units-export")
 
-        scannerjobs = self.org.scanners.filter(
-            Q(org_units__in=self.descendant_units)
-            | Q(
-                document_reports__number_of_matches__gte=1,
-                document_reports__alias_relations__account__in=context['base_qs'],
-                document_reports__alias_relations__shared=False,
-            )
-        ).distinct()
+        if self.snapshot_ids is not None:
+            scannerjobs = self.org.scanners.filter(
+                Q(org_units__in=self.descendant_units)
+                | Q(pk__in=self.snapshot_scanner_ids(self.snapshot_ids, context['base_qs']))
+            ).distinct()
+        else:
+            scannerjobs = self.org.scanners.filter(
+                Q(org_units__in=self.descendant_units)
+                | Q(
+                    document_reports__number_of_matches__gte=1,
+                    document_reports__alias_relations__account__in=context['base_qs'],
+                    document_reports__alias_relations__shared=False,
+                )
+            ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(

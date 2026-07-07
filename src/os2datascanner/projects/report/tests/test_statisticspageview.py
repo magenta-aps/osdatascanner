@@ -609,6 +609,34 @@ class TestLeaderStatisticsSnapshot:
         assert results[benny_account.pk] == 4
         assert results[hulk_account.pk] == 6
 
+    def test_snapshot_scannerjob_choices(self, rf, egon_account, benny_account,
+                                         benny_email_alias):
+        """The scannerjob dropdown is derived from the snapshot when one exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, scanner_job_pk=1)
+        create_reports_for(benny_email_alias, scanner_job_pk=2, offset=100)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        choices = response.context_data['scannerjob_choices']
+        assert choices.filter(scanner_pk=1).exists()
+        assert choices.filter(scanner_pk=2).exists()
+
+    def test_snapshot_source_type_choices(self, rf, egon_account, benny_account,
+                                          benny_email_alias):
+        """The source_type dropdown is derived from the snapshot when one exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, source_type="fake")
+        create_reports_for(benny_email_alias, source_type="web", offset=100)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        source_types = {c['source_type']
+                        for c in response.context_data['source_type_choices']}
+        assert source_types == {"fake", "web"}
+
     def test_snapshot_handle_status_bad(self, rf, egon_account, benny_account,
                                         benny_email_alias):
         """An account with unhandled matches and no recently handled matches gets
