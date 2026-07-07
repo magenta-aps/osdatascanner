@@ -1862,8 +1862,8 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
       &.column {
         &--numeral {
-          width: max(10vw, 140px);
-          // Min-width is 140px unless 10vw > 140px
+          width: max(10vw, 142px);
+          // Min-width is 142px unless 10vw > 142px
         }
       }
     }
@@ -1965,7 +1965,7 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
 
       &.false-positive {
-        --false-positive_width: 2.5rem; // 40px
+        --false-positive_width: 8.875rem; // 142px
       }
 
       // Computed width:
@@ -1975,6 +1975,21 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
       .button-group {
         flex-wrap: nowrap;
+      }
+
+      .material-symbols {
+        font-size: 20px;
+        width: 20px;
+      }
+
+      #false-positive-button {
+        .material-symbols {
+          font-variation-settings:
+            "FILL" 1,
+            "wght" 500,
+            "GRAD" -25,
+            "opsz" 20;
+        }
       }
     }
   }

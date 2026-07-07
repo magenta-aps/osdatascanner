@@ -4,6 +4,12 @@
 
 ""
 
+## New in this release
+
+- The false positive button has been updated to match findings from UX tests: 
+  - The icon is now "block" instead of "flag.
+  - The button now has a label with "false positive".
+
 ### General improvements
 
 - Updated all old uses of Material Icons to Material Symbols, so some icons nay seem a little bit
