@@ -9,6 +9,11 @@
 - Updated all old uses of Material Icons to Material Symbols, so some icons nay seem a little bit
   smarter looking.
 
+- Shaved down the size of the hosted Material Symbols library by:
+  - Adding a management command to compile/update the available icons after they've been added to
+    the list in `icons.json`
+  - Only supporting a limited varieties of the font (described in `icons.json`)
+
 ### Bugfixes
 
 - Removed Material Icons from the project. 
