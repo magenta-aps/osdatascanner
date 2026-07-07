@@ -744,6 +744,23 @@ class TestLeaderUnitsStatisticsPageView:
                                                            params="?org_unit=all")
         assert response.context_data.get("employees").count() == 4
 
+    def test_leader_statisticspage_org_unit_all_includes_descendants(
+            self,
+            rf,
+            egon_account,
+            egon_manager_position,
+            olsenbanden_ou,
+            kjelds_hus,
+            olsenbanden_ou_positions,
+            kjelds_hus_ou_positions):
+        # org_unit=all, should be 4 employees: olsenbanden OU + 1 employee in Kjelds hus.
+        response = self.get_leader_statisticspage_response(
+            rf,
+            egon_account,
+            params="?org_unit=all",
+        )
+        assert response.context_data.get("employees").count() == 4
+
     def test_leader_statisticspage_scanner_filter(
                 self,
                 rf,
