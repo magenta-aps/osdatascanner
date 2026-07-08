@@ -66,8 +66,8 @@ class AccountResultSnapshot(models.Model):
     )
     source_type = models.CharField(max_length=2000)
 
-    # Unhandled, not withheld, not from a shared or remediator alias. Doubles as
-    # the '_unhandled_count' used when deriving handle_status.
+    # Unhandled, not withheld, not from a shared or remediator alias. Also the
+    # unhandled count behind the "no unhandled matches" case of handle_status.
     unhandled_results = models.PositiveIntegerField(default=0)
     # As unhandled_results, but withheld (only_notify_superadmin=True).
     withheld_results = models.PositiveIntegerField(default=0)
