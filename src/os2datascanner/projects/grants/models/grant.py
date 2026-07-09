@@ -93,15 +93,28 @@ class Grant(models.Model):
 def wrap_encrypted_field(field_name: str):
     """Returns a property object that transparently manages an encrypted field:
     trying to read from it will decrypt the value, and trying to assign to it
-    will first encrypt the value."""
+    will first encrypt the value.
 
-    def _get(self) -> str:
-        iv, ciphertext = [bytes.fromhex(c) for c in getattr(self, field_name)]
+    Encrypted fields are allowed to be empty (this happens, for example, while
+    a Grant is still being created); reading an empty value returns None
+    instead of raising an error."""
+
+    def _get(self) -> str | None:
+        raw = getattr(self, field_name)
+        if not raw:
+            return None
+        iv, ciphertext = [bytes.fromhex(c) for c in raw]
         return aes.decrypt(iv, ciphertext, settings.DECRYPTION_HEX)
 
-    def _set(self, secret: str):
+    def _set(self, secret: str | None):
+        if not secret and self._meta.get_field(field_name).null:
+            # Only fields that actually allow NULL in the database can be
+            # cleared this way; other fields keep representing "no secret"
+            # as an encrypted empty string, as before.
+            setattr(self, field_name, None)
+            return
         iv, ciphertext = tuple(
-                c.hex() for c in aes.encrypt(secret, settings.DECRYPTION_HEX))
+                c.hex() for c in aes.encrypt(secret or "", settings.DECRYPTION_HEX))
         setattr(self, field_name, [iv, ciphertext])
 
     return property(_get, _set)

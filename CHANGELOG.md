@@ -30,6 +30,10 @@
 - Fixed a bug where the contacts dropdown in the inline grant creation form showed as a plain list
   instead of a Select2 dropdown.
 
+- Fixed a bug where an empty encrypted field on a Grant (e.g. a GoogleApiGrant without a service
+  account) would raise an exception when read, breaking validation of unrelated Grants in the
+  same organization.
+
 ## Version 3.32.2, 23rd June 2026
 
 "We've had one, yes. But what about a second heat wave?"
