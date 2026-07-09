@@ -10,7 +10,6 @@ from itertools import chain
 from enum import Enum, unique
 import structlog
 
-from .. import settings as engine2_settings
 from .rule import Rule, Sensitivity
 from .regex import RegexRule
 from .logical import oxford_comma
@@ -19,8 +18,6 @@ from .utilities.cpr_probability import modulus11_check, CprProbabilityCalculator
 from .utilities.properties import RuleProperties, RulePrecedence
 
 logger = structlog.get_logger("engine2")
-
-CONTEXT_NUMBER_CHECK = getattr(engine2_settings, "CPRRULE_CONTEXT_NUMBER_CHECK", True)
 
 cpr_regex = r"\b(\d{6})(?:[ \-/\.\t]|[ ]\-[ ])?(\d{4})\b"
 calculator = CprProbabilityCalculator()
@@ -43,7 +40,7 @@ class Context(Enum):
     WHITELIST = 1
     # UNBALANCED = 2 is no longer treated as a problem
     # WRONG_CASE = 3 is no longer treated as a problem
-    NUMBER = 4
+    # NUMBER = 4 is no longer treated as a problem
     # SYMBOL = 5 is no longer treated as a problem
     BLACKLIST = 6
     PROBABILITY_CALC = 7
@@ -220,17 +217,6 @@ class CPRRule(RegexRule):
                     ctype.append((Context.BLACKLIST, cw))
                     return 0.0, ctype
 
-        # TODO: Reevaluate this and potentially remove it, after testing running with it off.
-        # only do context checking on surrounding words
-        if CONTEXT_NUMBER_CHECK:
-            for w in [words_or_syms["pre"][-1], words_or_syms["post"][0]]:
-                if not w.word or self._compiled_expression.match(w.word):
-                    continue
-                # test if surrounding word is a number (and not looks like a cpr)
-                elif w.word and is_number(w.word):
-                    probability = 0.0
-                    ctype.append((Context.NUMBER, w.word))
-
         return probability, ctype
 
     def extract_surrounding_words(
@@ -323,15 +309,6 @@ class CPRRule(RegexRule):
             surrounding_exceptions=obj.get("surrounding_exceptions").split(",") if isinstance(
                     obj.get("surrounding_exceptions"), str)
             else obj.get("surrounding_exceptions"))
-
-
-# TODO: Remove function CONTEXT_NUMBER_CHECK is out-phased.
-def is_number(s: str) -> bool:
-    """Return True if the string is a int/float"""
-
-    # this is the faster than try: float or re.match
-    # https://stackoverflow.com/a/23639915
-    return s.replace(".", "", 1).replace(",", "", 1).isdigit()
 
 
 def match_to_cpr(match: Match[str]):
