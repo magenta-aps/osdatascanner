@@ -55,6 +55,25 @@ class TestMsgSource:
 
         assert any(r["match"] == "2105XXXXXX" for r in results)
 
+    def test_cpr_found_in_non_utf8_html_body(self):
+        """A .msg file whose HTML body is not UTF-8 encoded (e.g. windows-1252,
+        as written by some Outlook clients) is still scanned correctly instead
+        of crashing with a UnicodeDecodeError."""
+        handle = FilesystemHandle.make_handle(
+            str(DATA_DIR / "non-utf8-html-body.msg"))
+        source = MsgSource(handle)
+        rule = CPRRule(modulus_11=False, ignore_irrelevant=False)
+
+        with SourceManager() as sm:
+            results = []
+            for h in source.handles(sm):
+                resource = h.follow(sm)
+                rep = convert(resource, rule.operates_on)
+                if rep:
+                    results.extend(rule.match(rep))
+
+        assert any(r["match"] == "1111XXXXXX" for r in results)
+
     def test_non_email_msg_raises_clearly(self):
         """Non-email .msg types (contacts, appointments, tasks) raise UnsupportedMsgClassError."""
         mock_msg = MagicMock(spec=["classType", "close", "__enter__", "__exit__"])
