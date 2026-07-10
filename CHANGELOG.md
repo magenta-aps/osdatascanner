@@ -20,6 +20,8 @@
     the list in `icons.json`
   - Only supporting a limited varieties of the font (described in `icons.json`)
 
+- Added support for scanning Outlook .msg files.
+
 ### Bugfixes
 
 - Removed Material Icons from the project. 

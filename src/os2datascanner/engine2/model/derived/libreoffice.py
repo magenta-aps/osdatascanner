@@ -16,6 +16,7 @@ from ...utilities.i18n import gettext as _
 from ..core import Handle, Source
 from ..file import FilesystemResource
 from .derived import DerivedSource
+from .msg import MsgSource
 from .utilities import office_metadata
 from .utilities.extraction import TinyImageFilter
 
@@ -121,6 +122,12 @@ class UnrecognisedFormatError(LookupError):
     pass
 
 
+class _MsgFileDetected(Exception):
+    """Raised by LibreOfficeSource._generate_state when the file is identified
+    as application/vnd.ms-outlook so handles() can delegate to MsgSource."""
+    pass
+
+
 @Source.mime_handler(
         "application/CDFV2",
         "application/x-ole-storage",
@@ -156,6 +163,8 @@ class LibreOfficeSource(DerivedSource):
                         mime_guess, (None, None, None))
 
             if filter_name is None:
+                if best_mime_guess == "application/vnd.ms-outlook":
+                    raise _MsgFileDetected()
                 raise UnrecognisedFormatError(
                         str(self.handle), best_mime_guess)
 
@@ -171,7 +180,12 @@ class LibreOfficeSource(DerivedSource):
                 yield TinyImageFilter.apply(outputdir)
 
     def handles(self, sm, **kwargs):
-        for name in listdir(sm.open(self)):
+        try:
+            state = sm.open(self)
+        except _MsgFileDetected:
+            yield from MsgSource(self.handle).handles(sm, **kwargs)
+            return
+        for name in listdir(state):
             yield LibreOfficeObjectHandle(self, name)
 
 

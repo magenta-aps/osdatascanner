@@ -440,6 +440,7 @@ mime_to_file_map = {
     "application/msword": _("Word document (.doc)"),
     "application/octet-stream": pgettext_lazy("MIME type", "unknown file type"),
     "application/vnd.ms-excel": _("Excel workbook (.xls)"),
+    "application/vnd.ms-outlook": _("Outlook message (.msg)"),
     "application/vnd.ms-excel.addin.macroEnabled.12": _("Excel add-in (.xlam)"),
     "application/vnd.ms-excel.sheet.binary.macroEnabled.12": _("Excel binary workbook (.xlsb)"),
     "application/vnd.ms-excel.sheet.macroEnabled.12": _("Excel macro-enabled workbook (.xlsm)"),

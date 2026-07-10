@@ -30,6 +30,7 @@ exchangelib==5.4.0  # Brittle API; do /not/ bump without checking for changes!
 lxml
 odfpy
 olefile
+extract-msg
 openpyxl
 pandas
 Pillow
