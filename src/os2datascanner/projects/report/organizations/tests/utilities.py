@@ -74,7 +74,6 @@ raw_matches_json_matched = json.loads('''
           "cpr"
         ],
         "modulus_11": true,
-        "sensitivity": 1000,
         "ignore_irrelevant": true
       },
       "matches": [
@@ -83,7 +82,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 1,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 1
         },
         {
@@ -91,7 +89,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 22,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 22
         },
         {
@@ -99,7 +96,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 33,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 33
         },
         {
@@ -107,7 +103,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 48,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 48
         },
         {
@@ -115,7 +110,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 63,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 50
         }
       ]
@@ -148,7 +142,6 @@ raw_matches_json_matched = json.loads('''
         "cpr"
       ],
       "modulus_11": true,
-      "sensitivity": 1000,
       "ignore_irrelevant": true
     },
     "source": {

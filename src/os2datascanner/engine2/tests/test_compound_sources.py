@@ -45,7 +45,6 @@ class TestEngine2CompoundSource:
                                   "match": "1310XXXXXX",
                                   "context": "131016-9996",
                                   "context_offset": offset,
-                                  "sensitivity": None,
                                   "probability": 1.0
                               }
                           ]

@@ -165,18 +165,15 @@ class TestPostprocessMatchRealRules:
                      [{"offset": 10,
                        "match": "is",
                        "context": "Hi boss ThXX XX the cpr: 1111111118 SXXcerely",
-                       "context_offset": 10,
-                       "sensitivity": None},
+                       "context_offset": 10},
                       {"offset": 13,
                        "match": "is",
                        "context": "Hi boss ThXX XX the cpr: 1111111118 SXXcerely",
-                       "context_offset": 13,
-                       "sensitivity": None},
+                       "context_offset": 13},
                       {"offset": 37,
                        "match": "in",
                        "context": "Hi boss ThXX XX the cpr: 1111111118 SXXcerely",
-                       "context_offset": 37,
-                       "sensitivity": None}])]
+                       "context_offset": 37}])]
 
         assert responses == expected
 
@@ -189,7 +186,6 @@ class TestPostprocessMatchRealRules:
                        "match": "1111XXXXXX",
                        "context": "Hi boss This is the cpr: XXXXXXXXXX Sincerely",
                        "context_offset": 25,
-                       "sensitivity": None,
                        "probability": 1.0}])]
 
         assert responses == expected
@@ -203,25 +199,21 @@ class TestPostprocessMatchRealRules:
                      [{"offset": 10,
                        "match": "is",
                        "context": "Hi boss ThXX XX the cpr: XXXXXXXXXX SXXcerely",
-                       "context_offset": 10,
-                       "sensitivity": None},
+                       "context_offset": 10},
                       {"offset": 13,
                        "match": "is",
                        "context": "Hi boss ThXX XX the cpr: XXXXXXXXXX SXXcerely",
-                       "context_offset": 13,
-                       "sensitivity": None},
+                       "context_offset": 13},
                       {"offset": 37,
                        "match": "in",
                        "context": "Hi boss ThXX XX the cpr: XXXXXXXXXX SXXcerely",
-                       "context_offset": 37,
-                       "sensitivity": None}
+                       "context_offset": 37}
                       ]),
                     (cpr_rule,
                      [{"offset": 25,
                        "match": "1111XXXXXX",
                        "context": "Hi boss ThXX XX the cpr: XXXXXXXXXX SXXcerely",
                        "context_offset": 25,
-                       "sensitivity": None,
                        "probability": 1.0}]
                      )]
 

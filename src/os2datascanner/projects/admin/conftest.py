@@ -27,7 +27,7 @@ from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.projects.admin.adminapp.models.rules import Rule, Sensitivity
+from os2datascanner.projects.admin.adminapp.models.rules import Rule
 from os2datascanner.core_organizational_structure.models.position import Role
 from os2datascanner.projects.admin.organizations.models import (
     Organization, OrganizationalUnit, Account, Position, Alias)
@@ -140,7 +140,6 @@ def org_rule(test_org):
         name="org_rule",
         description="org_rule",
         organization=test_org,
-        sensitivity=Sensitivity.CRITICAL,
         raw_rule=RegexRule(r"[A-Z]{10}").to_json_object(),
     )
 

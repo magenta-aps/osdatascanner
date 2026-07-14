@@ -14,10 +14,7 @@ from django.utils.translation import gettext_lazy as _
 from django.dispatch import receiver
 from model_utils.managers import InheritanceManager
 
-from .sensitivity_level import Sensitivity
-
 from os2datascanner.engine2.rules.rule import Rule as E2Rule
-from os2datascanner.engine2.rules.rule import Sensitivity as E2Sensitivity
 
 
 logger = structlog.get_logger("adminapp")
@@ -84,14 +81,6 @@ class RuleCategory(models.Model):
         return self.name
 
 
-_sensitivity_mapping = {
-    Sensitivity.OK: E2Sensitivity.NOTICE,
-    Sensitivity.LOW: E2Sensitivity.WARNING,
-    Sensitivity.HIGH: E2Sensitivity.PROBLEM,
-    Sensitivity.CRITICAL: E2Sensitivity.CRITICAL
-}
-
-
 class Rule(models.Model):
     objects = InheritanceManager()
 
@@ -113,12 +102,6 @@ class Rule(models.Model):
 
     description = models.TextField(
         verbose_name=_('description')
-    )
-
-    sensitivity = models.IntegerField(
-        choices=Sensitivity.choices,
-        default=Sensitivity.HIGH,
-        verbose_name=_('sensitivity'),
     )
 
     raw_rule = models.JSONField(
@@ -149,16 +132,7 @@ class Rule(models.Model):
         r = E2Rule.from_json_object(self.raw_rule)
         if not r._name:
             r._name = self.name
-        r._sensitivity = E2Sensitivity(max(
-                # Technically speaking Sensitivity.INFORMATION is the lowest
-                # value, but it's not possible to specify that in the UI
-                r._sensitivity.value
-                if r._sensitivity else E2Sensitivity.NOTICE.value,
-                self.make_engine2_sensitivity().value))
         return r
-
-    def make_engine2_sensitivity(self) -> E2Sensitivity:
-        return _sensitivity_mapping[self.sensitivity]
 
     @receiver(pre_save)
     def patch_references(sender, instance, *args, **kwargs):

@@ -8,7 +8,6 @@ import random
 from dateutil.tz import gettz
 from randomtimestamp import randomtimestamp
 
-from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
 from os2datascanner.engine2.pipeline import messages
@@ -39,43 +38,39 @@ def get_different_filesystemhandle(file_ending, folder_level):
     )
 
 
-def get_regex_rule(regex, sensitivity):
-    return RegexRule(regex,
-                     sensitivity=sensitivity)
+def get_regex_rule(regex):
+    return RegexRule(regex)
 
 
 def get_common_scan_spec():
     return messages.ScanSpecMessage(
         scan_tag=get_different_scan_tag(),
         source=get_different_filesystemhandle('.txt', 3).source,
-        rule=get_regex_rule("Vores hemmelige adgangskode er",
-                            Sensitivity.WARNING),
+        rule=get_regex_rule("Vores hemmelige adgangskode er"),
         configuration={},
         filter_rule=None,
         progress=None)
 
 
-def get_positive_match_with_probability_and_sensitivity():
+def get_positive_match_with_probability():
     return messages.MatchesMessage(
         scan_spec=get_common_scan_spec(),
         handle=get_different_filesystemhandle('.txt', 3),
         matched=True,
         matches=[
-            get_matches_with_sensitivity_and_probability(),
             get_dimension_rule_match()
         ])
 
 
-def get_matches_with_sensitivity_and_probability():
+def get_matches_with_probability():
     return messages.MatchFragment(
-        rule=get_regex_rule("Vores hemmelige adgangskode er",
-                            Sensitivity.CRITICAL),
+        rule=get_regex_rule("Vores hemmelige adgangskode er"),
         matches=[{"dummy": "match object",
-                  "probability": 0.6, "sensitivity": 750},
+                  "probability": 0.6},
                  {"dummy1": "match object",
-                  "probability": 0.0, "sensitivity": 1000},
+                  "probability": 0.0},
                  {"dummy2": "match object",
-                  "probability": 1.0, "sensitivity": 500}])
+                  "probability": 1.0}])
 
 
 def get_dimension_rule_match():

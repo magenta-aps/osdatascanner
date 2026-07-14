@@ -6,7 +6,7 @@
 from abc import abstractmethod
 from typing import Sequence
 from functools import reduce
-from .rule import Rule, Sensitivity
+from .rule import Rule
 
 
 def oxford_comma(parts: Sequence, conjunction: str, *, key=lambda c: str(c)) -> str:
@@ -42,12 +42,6 @@ class CompoundRule(Rule):
     @property
     def components(self) -> list[Rule]:
         return self._components
-
-    # It might have been nice to have a special implementation of
-    # Rule.sensitivity here that finds the component with the highest
-    # sensitivity and returns that, but that doesn't actually make sense: the
-    # sensitivity of a CompoundRule is a function of the *matched* components,
-    # not of all components considered out of context
 
     @classmethod
     @abstractmethod
@@ -144,7 +138,6 @@ class AllRule(CompoundRule):
     def from_json_object(obj):
         return AllRule(
             *[Rule.from_json_object(o) for o in obj["components"]],
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj["name"] if "name" in obj else None,
             satisfied=obj.get("satisfied", False)
         )
@@ -173,7 +166,6 @@ class AndRule(CompoundRule):
     def from_json_object(obj):
         return AndRule(
             *[Rule.from_json_object(o) for o in obj["components"]],
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj["name"] if "name" in obj else None,
         )
 
@@ -201,7 +193,6 @@ class OrRule(CompoundRule):
     def from_json_object(obj):
         return OrRule(
             *[Rule.from_json_object(o) for o in obj["components"]],
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj["name"] if "name" in obj else None,
         )
 
@@ -250,7 +241,6 @@ class NotRule(Rule):
     def from_json_object(obj):
         return NotRule(
             Rule.from_json_object(obj["rule"]),
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj["name"] if "name" in obj else None,
         )
 

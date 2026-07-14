@@ -8,7 +8,7 @@ import structlog
 
 from ...conversions.types import OutputType
 # from os2ds_rules import CPRDetector
-from ..rule import Rule, SimpleRule, Sensitivity
+from ..rule import Rule, SimpleRule
 from ..cpr import CPRRule
 
 
@@ -53,6 +53,5 @@ class TurboCPRRule(SimpleRule):
         return TurboCPRRule(
             modulus_11=obj.get("modulus_11", True),
             examine_context=obj.get("examine_context", False),
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj.get("name"),
         )

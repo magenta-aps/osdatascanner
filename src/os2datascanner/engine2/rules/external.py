@@ -81,7 +81,6 @@ class ExternallyExecutedRegexRule(RegexRule):
             if confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
-                    "sensitivity": self.sensitivity.value if self.sensitivity else None,
                     "context": censored_sentence,
                     "confidence": confidence,
                 }
@@ -145,7 +144,6 @@ class ExternallyExecutedWordlistRule(OrderedWordlistRule):
             if confidence >= self.confidence_cutoff:
                 yield {
                     "match": self.censor_token,
-                    "sensitivity": self.sensitivity.value if self.sensitivity else None,
                     "context": censored_sentence,
                     "confidence": confidence,
                 }

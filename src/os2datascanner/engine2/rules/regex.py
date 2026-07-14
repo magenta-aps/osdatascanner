@@ -37,11 +37,6 @@ class RegexRule(SimpleTextRule):
             yield {
                 "match": match.string[match.start(): match.end()],
                 **make_context(match, content),
-
-                "sensitivity": (
-                    self.sensitivity.value
-                    if self.sensitivity else None
-                ),
             }
 
     def get_censor_intervals(self, context):

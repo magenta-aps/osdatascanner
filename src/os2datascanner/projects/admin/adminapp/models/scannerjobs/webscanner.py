@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy as _, pgettext_lazy
 
 from os2datascanner.engine2.model.http import WebSource
 from os2datascanner.engine2.rules.links_follow import LinksFollowRule
-from os2datascanner.engine2.rules.rule import Sensitivity
 
 from .scanner import Scanner
 from ...utils import upload_path_webscan_sitemap
@@ -108,7 +107,7 @@ class WebScanner(Scanner):
 
     def local_all_rules(self) -> list:
         if self.do_link_check:
-            rule = LinksFollowRule(sensitivity=Sensitivity.INFORMATION)
+            rule = LinksFollowRule()
             return [
                 rule,
             ]

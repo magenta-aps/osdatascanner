@@ -5,7 +5,7 @@
 
 from typing import List
 from ..conversions.types import Link, OutputType
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 from .. import settings as engine2_settings
 
 import requests
@@ -39,11 +39,6 @@ class LinksFollowRule(SimpleRule):
                 yield {
                     "match": OutputType.Links.encode_json_object(link),
                     "context": context,
-                    "sensitivity": (
-                        self.sensitivity.value
-                        if self.sensitivity
-                        else self.sensitivity
-                    ),
                 }
 
     def to_json_object(self):
@@ -53,7 +48,6 @@ class LinksFollowRule(SimpleRule):
     @Rule.json_handler(type_label)
     def from_json_object(obj):
         return LinksFollowRule(
-                sensitivity=Sensitivity.make_from_dict(obj),
                 name=obj["name"] if "name" in obj else None)
 
 

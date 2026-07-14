@@ -40,7 +40,6 @@ class TestCountMatchesDocumentReport:
                 "offset": 420,
                 "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
                 "probability": 1.0,
-                "sensitivity": 1000,
                 "context_offset": 50
             }
         )
@@ -86,7 +85,6 @@ class TestCountMatchesDocumentReport:
                 "offset": 420,
                 "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
                 "probability": 1.0,
-                "sensitivity": 1000,
                 "context_offset": 50
             }
         )

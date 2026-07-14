@@ -66,7 +66,6 @@ class TestCPRRule:
              'offset': 0,
              'context': '1111119990',
              'context_offset': 0,
-             'sensitivity': None,
              'probability': 0.1}
             ]),
         ("1111119991", False, [
@@ -74,7 +73,6 @@ class TestCPRRule:
              'offset': 0,
              'context': '1111119991',
              'context_offset': 0,
-             'sensitivity': None,
              'probability': 0.1}
             ]),
         ("1111119992", False, [
@@ -82,7 +80,6 @@ class TestCPRRule:
              'offset': 0,
              'context': '1111119992',
              'context_offset': 0,
-             'sensitivity': None,
              'probability': 0.1}
             ]),
     ])

@@ -19,7 +19,6 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView
 
 from os2datascanner.utils.system_utilities import time_now
-from os2datascanner.engine2.rules.rule import Sensitivity
 
 from .base_views import HTMXEndpointView, BaseMassView
 from .utilities.document_report_utilities import handle_report, get_deviations
@@ -114,9 +113,6 @@ class ReportView(LoginRequiredMixin, ListView):
                 case "scannerjob":
                     reports = reports.filter(
                         scanner_job__scanner_pk=int(value))
-                case "sensitivities":
-                    reports = reports.filter(
-                        sensitivity=int(value))
                 case "resolution_status":
                     reports = reports.filter(
                         resolution_status=int(value))
@@ -250,14 +246,8 @@ class ReportView(LoginRequiredMixin, ListView):
         return context
 
     def add_form_context(self, context):
-        sensitivity_filter = Q(sensitivity=self.request.GET.get('sensitivities')
-                               ) if self.request.GET.get('sensitivities') not in \
-            ['all', None] else Q()
         scannerjob_filter = Q(scanner_job__scanner_pk=self.request.GET.get('scannerjob')
                               ) if self.request.GET.get('scannerjob') not in \
-            ['all', None] else Q()
-        resolution_status_filter = Q(resolution_status=self.request.GET.get(
-            'resolution_status')) if self.request.GET.get('resolution_status') not in \
             ['all', None] else Q()
 
         # Aggregate counts from DocumentReport queryset.
@@ -295,28 +285,17 @@ class ReportView(LoginRequiredMixin, ListView):
 
         context['retention'] = self.request.GET.get('retention', 'false')
 
-        sensitivities = self.object_list.values(
-                'sensitivity').annotate(
-                total=Count('pk',
-                            distinct=True, filter=scannerjob_filter & resolution_status_filter)
-            ).values(
-                'sensitivity', 'total'
-            ).order_by(
-                '-sensitivity')
-        context['sensitivity_choices'] = ((Sensitivity(s["sensitivity"]), s["total"]) for s in
-                                          sensitivities)
-        context['chosen_sensitivity'] = self.request.GET.get('sensitivities', 'all')
         context['source_type_choices'] = self.object_list.order_by("source_type").values(
             "source_type"
         ).annotate(
-            total=Count("pk", filter=sensitivity_filter & scannerjob_filter, distinct=True),
+            total=Count("pk", filter=scannerjob_filter, distinct=True),
         ).values("source_type", "total")
         context['chosen_source_type'] = self.request.GET.get('source_type', 'all')
 
         resolution_status = self.object_list.values(
                 'resolution_status').annotate(
                 total=Count('pk', distinct=True,
-                            filter=sensitivity_filter & scannerjob_filter),
+                            filter=scannerjob_filter),
                 ).values('resolution_status', 'total',
                          ).order_by(
                 'resolution_status')

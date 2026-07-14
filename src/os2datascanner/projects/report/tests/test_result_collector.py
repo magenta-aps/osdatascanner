@@ -154,7 +154,7 @@ def positive_match_corrupt(common_scan_spec_corrupt, scan_tag0, common_handle_co
 
 
 @pytest.fixture
-def positive_match_with_dimension_rule_probability_and_sensitivity(
+def positive_match_with_dimension_rule_probability(
         common_scan_spec, scan_tag0, common_handle, common_rule, dimension_rule):
     return messages.MatchesMessage(
         scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
@@ -164,11 +164,11 @@ def positive_match_with_dimension_rule_probability_and_sensitivity(
             messages.MatchFragment(
                 rule=common_rule,
                 matches=[{"dummy": "match object",
-                          "probability": 0.6, "sensitivity": 750},
+                          "probability": 0.6},
                          {"dummy1": "match object",
-                          "probability": 0.0, "sensitivity": 1000},
+                          "probability": 0.0},
                          {"dummy2": "match object",
-                          "probability": 1.0, "sensitivity": 500}]),
+                          "probability": 1.0}]),
             messages.MatchFragment(
                 rule=dimension_rule,
                 matches=[{"match": [2496, 3508]}])
@@ -569,7 +569,7 @@ class TestPipelineCollector:
             common_handle,
             common_rule,
             dimension_rule,
-            positive_match_with_dimension_rule_probability_and_sensitivity):
+            positive_match_with_dimension_rule_probability):
         match_to_match = messages.MatchesMessage(
             scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
             handle=common_handle,
@@ -578,18 +578,18 @@ class TestPipelineCollector:
                 messages.MatchFragment(
                     rule=common_rule,
                     matches=[{"dummy2": "match object",
-                              "probability": 1.0, "sensitivity": 500},
+                              "probability": 1.0},
                              {"dummy": "match object",
-                              "probability": 0.6, "sensitivity": 750},
+                              "probability": 0.6},
                              {"dummy1": "match object",
-                              "probability": 0.0, "sensitivity": 1000}]),
+                              "probability": 0.0}]),
                 messages.MatchFragment(
                     rule=dimension_rule,
                     matches=[{"match": [2496, 3508]}])
             ])
 
         assert result_collector.sort_matches_by_probability(
-                positive_match_with_dimension_rule_probability_and_sensitivity.to_json_object()
+                positive_match_with_dimension_rule_probability.to_json_object()
             )["matches"] == match_to_match.to_json_object()["matches"]
 
     @pytest.mark.filterwarnings("ignore:stripping illegal surrogates for PostgreSQL compatibility")
@@ -598,12 +598,12 @@ class TestPipelineCollector:
             self,
             positive_match,
             positive_match_corrupt,
-            positive_match_with_dimension_rule_probability_and_sensitivity):
+            positive_match_with_dimension_rule_probability):
         """Check that recording the matches correctly crunches the handles
         to the `path`-field."""
         pos_match = record_match(positive_match)
         cor_match = record_match(positive_match_corrupt)
-        dps_match = record_match(positive_match_with_dimension_rule_probability_and_sensitivity)
+        dps_match = record_match(positive_match_with_dimension_rule_probability)
 
         assert pos_match.path == hashlib.sha512(
             "FilesystemHandle(_source=(FilesystemSource(_path=/mnt/fs01.magenta.dk/brugere/af));"

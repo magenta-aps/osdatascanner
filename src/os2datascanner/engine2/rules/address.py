@@ -6,7 +6,7 @@
 import regex
 import structlog
 
-from .rule import Rule, SimpleTextRule, Sensitivity
+from .rule import Rule, SimpleTextRule
 from .datasets.loader import common as common_loader
 
 logger = structlog.get_logger("engine2")
@@ -75,13 +75,7 @@ def match_full_address(text):
 class AddressRule(SimpleTextRule):
     """Represents a rule which scans for addresses in text.
 
-    The rule loads a list of addresses and matches against them to determine the
-    sensitivity level of the matches.
-
-    If both a street and number is found or the street, the sensitivity is
-    `CRITICAL`. If only a street is found(matched against the street list), the
-    sensitivity is `PROBLEM`
-
+    The rule loads a list of addresses and matches against them.
     """
     type_label = "address"
     eq_properties = ("_whitelist", "_blacklist", "_whitelist_address")
@@ -133,16 +127,11 @@ class AddressRule(SimpleTextRule):
             elif f"{street_name} {house_number}".upper() in self._whitelist_address:
                 logger.info("Specific address in whitelist address, no match")
                 continue
-            elif (street_match and house_number) or is_blacklisted:
-                sensitivity = Sensitivity.CRITICAL
-            elif street_match:
-                sensitivity = Sensitivity.PROBLEM
-            else:
+            elif not (street_match or is_blacklisted):
                 continue
 
             yield {
                 "match": matched_text,
-                "sensitivity": sensitivity.value
             }
 
     def to_json_object(self):
@@ -167,5 +156,4 @@ class AddressRule(SimpleTextRule):
             whitelist=[address.strip() for address in obj.get("whitelist", [])],
             whitelist_address=[address.strip() for address in obj.get("whitelist_address", [])],
             blacklist=frozenset(obj.get("blacklist", [])),
-            sensitivity=Sensitivity.make_from_dict(obj)
         )

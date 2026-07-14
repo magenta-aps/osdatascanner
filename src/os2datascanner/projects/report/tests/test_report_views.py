@@ -60,18 +60,15 @@ class TestUserReportView:
 
         # Act
         response = self.get_userreport_response(rf,
-                                                egon_account,
-                                                params='&sensitivity_checkbox=on')
+                                                egon_account)
 
         scanner_job_choice = response.context_data.get('scannerjob_choices')[0]
         source_type_choice = response.context_data.get('source_type_choices')[0]
         # This is a generator that returns tuples.
-        sensitivity_choice = next(response.context_data.get("sensitivity_choices"))
 
         # Assert
         assert scanner_job_choice.total == 10
         assert source_type_choice.get("total") == 10
-        assert sensitivity_choice[1] == 10
 
     @pytest.mark.parametrize('num', [0, 1, 10])
     def test_userreportview_as_default_role_with_matches(
@@ -127,57 +124,6 @@ class TestUserReportView:
 
         # Assert
         assert qs.count() == num2
-
-    @pytest.mark.parametrize('num750,num1000', [
-        (0, 0),
-        (1, 0),
-        (0, 1),
-        (1, 1),
-        (10, 0),
-        (0, 10),
-        (10, 10),
-    ])
-    def test_userreportview_as_default_role_with_matches_filter_by_sensitivity(
-            self, num750, num1000, rf, egon_account, egon_email_alias):
-        # Arrange
-        params = '?sensitivities=1000'
-        create_reports_for(egon_email_alias, num=num750, sensitivity=750)
-        create_reports_for(egon_email_alias, num=num1000, sensitivity=1000)
-
-        # Act
-        qs = self.userreport_get_queryset(rf, egon_account, params=params)
-
-        # Assert
-        assert qs.count() == num1000
-
-    @pytest.mark.parametrize('num_2_1000,other_num', [
-        (0, 0),
-        (1, 0),
-        (0, 1),
-        (1, 1),
-        (10, 0),
-        (0, 10),
-        (10, 10),
-    ])
-    def test_userreportview_as_default_role_with_matches_filter_by_scannerjob_and_sensitivity(
-            self,
-            num_2_1000,
-            other_num,
-            rf,
-            egon_account,
-            egon_email_alias):
-        # Arrange
-        params = '?scannerjob=2&sensitivities=1000'
-        create_reports_for(egon_email_alias, num=other_num, scanner_job_pk=1, sensitivity=750)
-        create_reports_for(egon_email_alias, num=other_num, scanner_job_pk=1, sensitivity=1000)
-        create_reports_for(egon_email_alias, num=other_num, scanner_job_pk=2, sensitivity=750)
-        create_reports_for(egon_email_alias, num=num_2_1000, scanner_job_pk=2, sensitivity=1000)
-
-        # Act
-        qs = self.userreport_get_queryset(rf, egon_account, params=params)
-
-        # Assert
-        assert qs.count() == num_2_1000
 
     @pytest.mark.parametrize('num_new,num_old', [
         (0, 0),
@@ -355,8 +301,7 @@ class TestUserReportView:
             only_notify_superadmin=scan_olsenbanden_org_withheld.only_notify_superadmin)
         # Act
         response = self.get_userreport_response(rf,
-                                                egon_account,
-                                                params='&sensitivity_checkbox=on')
+                                                egon_account)
         choices = list(response.context_data.get('scannerjob_choices'))
 
         # Assert
@@ -705,7 +650,6 @@ class TestUndistributedView:
         create_reports_for(
             egon_email_alias,
             problem=1,
-            sensitivity=None,
             matched=False,
             only_notify_superadmin=True)
 
@@ -828,77 +772,6 @@ class TestUserHandledView:
 
         # Assert
         assert qs.count() == num2
-
-    @pytest.mark.parametrize('num750,num1000', [
-        (0, 0),
-        (1, 0),
-        (0, 1),
-        (1, 1),
-        (10, 0),
-        (0, 10),
-        (10, 10),
-    ])
-    def test_userhandledview_as_default_role_with_matches_filter_by_sensitivity(
-            self, num750, num1000, rf, egon_account, egon_email_alias):
-        # Arrange
-        params = '?sensitivities=1000'
-        create_reports_for(egon_email_alias, num=num750, sensitivity=750, resolution_status=0)
-        create_reports_for(egon_email_alias, num=num1000, sensitivity=1000, resolution_status=0)
-
-        # Act
-        qs = self.userreport_get_queryset(rf, egon_account, params=params)
-
-        # Assert
-        assert qs.count() == num1000
-
-    @pytest.mark.parametrize('num_2_1000,other_num', [
-        (0, 0),
-        (1, 0),
-        (0, 1),
-        (1, 1),
-        (10, 0),
-        (0, 10),
-        (10, 10),
-    ])
-    def test_userhandledview_as_default_role_with_matches_filter_by_scannerjob_and_sensitivity(
-            self,
-            num_2_1000,
-            other_num,
-            rf,
-            egon_account,
-            egon_email_alias):
-        # Arrange
-        params = '?scannerjob=2&sensitivities=1000'
-        create_reports_for(
-            egon_email_alias,
-            num=other_num,
-            scanner_job_pk=1,
-            sensitivity=750,
-            resolution_status=0)
-        create_reports_for(
-            egon_email_alias,
-            num=other_num,
-            scanner_job_pk=1,
-            sensitivity=1000,
-            resolution_status=0)
-        create_reports_for(
-            egon_email_alias,
-            num=other_num,
-            scanner_job_pk=2,
-            sensitivity=750,
-            resolution_status=0)
-        create_reports_for(
-            egon_email_alias,
-            num=num_2_1000,
-            scanner_job_pk=2,
-            sensitivity=1000,
-            resolution_status=0)
-
-        # Act
-        qs = self.userreport_get_queryset(rf, egon_account, params=params)
-
-        # Assert
-        assert qs.count() == num_2_1000
 
     @pytest.mark.parametrize('num_new,num_old', [
         (0, 0),

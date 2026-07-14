@@ -30,7 +30,6 @@ class TestUtils:
         these tests are still in place."""
         create_reports_for(egon_email_alias, num=1)
         assert get_max_sens_prop_value(DocumentReport.objects.first(), 'probability') == 1.0
-        assert get_max_sens_prop_value(DocumentReport.objects.first(), 'sensitivity').value == 1000
 
     @pytest.mark.filterwarnings("ignore::UnicodeWarning")
     def test_json_null_bytes(self):

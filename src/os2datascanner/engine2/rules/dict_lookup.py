@@ -3,7 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from .rule import Rule, SimpleRule, Sensitivity
+from .rule import Rule, SimpleRule
 from ..conversions.types import OutputType
 from .utilities.properties import RuleProperties, RulePrecedence
 
@@ -49,7 +49,6 @@ class DictLookupRule(SimpleRule):
                 prop=obj["property"],
                 rule=Rule.from_json_object(obj["rule"]),
 
-                sensitivity=Sensitivity.make_from_dict(obj),
                 name=obj["name"] if "name" in obj else None)
 
 

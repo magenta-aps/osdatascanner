@@ -84,7 +84,6 @@
               <col class="column" />
               <col class="column" />
               <col class="column" />
-              <col class="column column--sensitivity" />
             </colgroup>
 
             <thead>
@@ -93,7 +92,6 @@
                 <th class="column column--name">{% trans "name"|capfirst %}</th>
                 <th class="column column--categories">{% trans "categories"|capfirst %}</th>
                 <th class="column column--info">{% trans "description"|capfirst %}</th>
-                <th class="column column--sensitivity column--attribute">{% trans "sensitivity"|capfirst %}</th>
               </tr>
             </thead>
 
@@ -133,21 +131,12 @@
                       </td>
 
                       <td class="column column--info">{{ rule.description }}</td>
-
-                      <td class="column column--sensitivity">
-                        <div class="status">
-                          <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
-                            <span class="status__icon">{% include "components/rules/sensitivity_icon.html" %}</span>
-                            <span class="status__label">{{ rule.get_sensitivity_display }}</span>
-                          </div>
-                        </div>
-                      </td>
                     </tr>
                   {% endfor %}
 
                 {% else %}
                   <tr class="datatablex__row" tabindex="0">
-                    <td class="nothing_found_row" colspan="5">{% trans "No rules match the selected categories." %}</td>
+                    <td class="nothing_found_row" colspan="4">{% trans "No rules match the selected categories." %}</td>
                   </tr>
                 {% endif %}
               </tbody>

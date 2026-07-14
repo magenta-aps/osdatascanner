@@ -35,8 +35,7 @@ from .models.MSGraphSharePointSite import MSGraphSharePointSite
 
 
 class RuleAdmin(admin.ModelAdmin):
-    list_filter = ('sensitivity',)
-    list_display = ('name', 'organization', 'sensitivity')
+    list_display = ('name', 'organization')
 
 
 # Used to create custom field for customrule in django-changeform
@@ -51,8 +50,7 @@ class CustomRuleWidget(forms.widgets.Widget):
 
 
 class CustomRuleForm(forms.ModelForm):
-    list_filter = ('sensitivity',)
-    list_display = ('name', 'organization', 'sensitivity')
+    list_display = ('name', 'organization')
 
     class Meta:
         model = Rule

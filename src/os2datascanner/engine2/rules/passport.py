@@ -9,7 +9,7 @@ from itertools import pairwise
 
 from .regex import RegexRule
 from .utilities.context import make_context
-from .rule import Rule, Sensitivity
+from .rule import Rule
 from ..conversions.types import OutputType
 
 logger = structlog.get_logger("engine2")
@@ -82,10 +82,6 @@ class PassportRule(RegexRule):
             yield {
                 "match": f"Passport number {passport_number} (issued by {country_issued})",
                 **make_context(match, content),
-                "sensitivity": (
-                    self.sensitivity.value
-                    if self.sensitivity else None
-                ),
             }
 
     def to_json_object(self):
@@ -95,7 +91,6 @@ class PassportRule(RegexRule):
     @Rule.json_handler(type_label)
     def from_json_object(obj: dict):
         return PassportRule(
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj["name"] if "name" in obj else None,
         )
 

@@ -290,7 +290,7 @@ paths:
                     content:
                         application/jsonl:
                             example: >
-                                {"scan_spec": {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "source": {"type": "data", "content": "VGhpcyBpcyBvbmx5IGEgdGVzdA==", "mime": "text/plain"}, "rule": {"type": "regex", "sensitivity": null, "name": null, "expression": "[Tt]est"}, "configuration": {}, "progress": null}, "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "matched": true, "matches": [{"rule": {"type": "regex", "sensitivity": null, "name": null, "expression": "[Tt]est"}, "matches": [{"offset": 15, "match": "test"}]}], "origin": "os2ds_matches"}
+                                {"scan_spec": {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "source": {"type": "data", "content": "VGhpcyBpcyBvbmx5IGEgdGVzdA==", "mime": "text/plain"}, "rule": {"type": "regex", "name": null, "expression": "[Tt]est"}, "configuration": {}, "progress": null}, "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "matched": true, "matches": [{"rule": {"type": "regex", "name": null, "expression": "[Tt]est"}, "matches": [{"offset": 15, "match": "test"}]}], "origin": "os2ds_matches"}
                                 {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "metadata": {}, "origin": "os2ds_metadata"}
     /scan-handle/1:
         post:
@@ -324,7 +324,7 @@ paths:
                     content:
                         application/jsonl:
                             example: >
-                                {"scan_spec": {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "source": {"type": "data", "content": "VGhpcyBpcyBvbmx5IGEgdGVzdA==", "mime": "text/plain"}, "rule": {"type": "regex", "sensitivity": null, "name": null, "expression": "[Tt]est"}, "configuration": {}, "progress": null}, "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "matched": true, "matches": [{"rule": {"type": "regex", "sensitivity": null, "name": null, "expression": "[Tt]est"}, "matches": [{"offset": 15, "match": "test"}]}], "origin": "os2ds_matches"}
+                                {"scan_spec": {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "source": {"type": "data", "content": "VGhpcyBpcyBvbmx5IGEgdGVzdA==", "mime": "text/plain"}, "rule": {"type": "regex", "name": null, "expression": "[Tt]est"}, "configuration": {}, "progress": null}, "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "matched": true, "matches": [{"rule": {"type": "regex", "name": null, "expression": "[Tt]est"}, "matches": [{"offset": 15, "match": "test"}]}], "origin": "os2ds_matches"}
                                 {"scan_tag": "395c1473-0868-443b-bff4-ff058a52a81e", "handle": {"type": "data", "source": {"type": "data", "content": None, "mime": "text/plain", "name": "test.txt"}, "path": "test.txt"}, "metadata": {}, "origin": "os2ds_metadata"}
     /parse-url/1:
         post:

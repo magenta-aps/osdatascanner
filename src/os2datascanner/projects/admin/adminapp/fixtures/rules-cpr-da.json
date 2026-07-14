@@ -18,7 +18,6 @@
             "name": "CPR regel",
             "organization": null,
             "description": "Denne regel finder alle gyldige CPR-numre.",
-            "sensitivity": 3,
             "raw_rule": {
                 "type": "cpr",
                 "modulus_11": true,
