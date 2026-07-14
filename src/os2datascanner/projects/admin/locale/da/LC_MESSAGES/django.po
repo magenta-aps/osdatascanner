@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-06-18 13:12+0200\n"
+"POT-Creation-Date: 2026-07-14 10:47+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -369,11 +369,6 @@ msgstr "navn"
 #: adminapp/templates/system_rules.html
 msgid "description"
 msgstr "beskrivelse"
-
-#: adminapp/models/rules.py adminapp/templates/rules.html
-#: adminapp/templates/system_rules.html
-msgid "sensitivity"
-msgstr "følsomhed"
 
 #: adminapp/models/rules.py adminapp/templates/system_rules.html
 msgid "categories"
@@ -1242,22 +1237,6 @@ msgstr "sider"
 msgid "Web scanner"
 msgstr "Webscanner"
 
-#: adminapp/models/sensitivity_level.py
-msgid "Critical"
-msgstr "Kritisk"
-
-#: adminapp/models/sensitivity_level.py
-msgid "Problem"
-msgstr "Problem"
-
-#: adminapp/models/sensitivity_level.py
-msgid "Warning"
-msgstr "Advarsel"
-
-#: adminapp/models/sensitivity_level.py
-msgid "Notification"
-msgstr "Notifikation"
-
 #: adminapp/models/usererrorlog.py
 msgid ""
 "Folder at the path is using outdated encoding. Please rename the folder."
@@ -1780,12 +1759,6 @@ msgstr "Navn"
 #: adminapp/templates/components/rules/regexrule_form.html
 msgid "Name of rule"
 msgstr "Navn på regel"
-
-#: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
-#: adminapp/templates/components/rules/customrule_form.html
-#: adminapp/templates/components/rules/regexrule_form.html
-msgid "Assess the sensitivity of the rule"
-msgstr "Vurder reglens følsomhed"
 
 #: adminapp/templates/components/miniscanner/miniscanner_customrule_form.html
 #: adminapp/templates/components/rules/customrule_form.html
@@ -5037,4 +5010,23 @@ msgid ""
 "Outlook categorization requires a Microsoft Graph grant that is synchronized "
 "to the report module."
 msgstr ""
-"Outlook kategorisering kræver at en MSGraph bevilling er synkroniseret til rapport modulet."
+"Outlook kategorisering kræver at en MSGraph bevilling er synkroniseret til "
+"rapport modulet."
+
+#~ msgid "sensitivity"
+#~ msgstr "følsomhed"
+
+#~ msgid "Critical"
+#~ msgstr "Kritisk"
+
+#~ msgid "Problem"
+#~ msgstr "Problem"
+
+#~ msgid "Warning"
+#~ msgstr "Advarsel"
+
+#~ msgid "Notification"
+#~ msgstr "Notifikation"
+
+#~ msgid "Assess the sensitivity of the rule"
+#~ msgstr "Vurder reglens følsomhed"
