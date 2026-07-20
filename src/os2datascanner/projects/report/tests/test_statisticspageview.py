@@ -8,6 +8,7 @@ import csv
 from datetime import datetime, timedelta
 
 from django.core.exceptions import PermissionDenied
+from django.core.management import call_command
 from django.test import override_settings
 from django.utils import timezone
 from django.urls import reverse
@@ -17,8 +18,10 @@ from django.http import Http404
 
 from os2datascanner.projects.report.organizations.models.organizational_unit import (
     OrganizationalUnit)
-from os2datascanner.projects.report.organizations.models.account import Account
+from os2datascanner.projects.report.organizations.models.account import Account, StatusChoices
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
+from ..reportapp.models.leader_statistic_snapshot import (
+    LeaderStatisticSnapshot, AccountResultSnapshot)
 
 from os2datascanner.projects.report.organizations.models.aliases import Alias, AliasType
 from ..reportapp.models.documentreport import DocumentReport
@@ -27,7 +30,7 @@ from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView, LeaderAccountsStatisticsCSVView,
-        LeaderAccountsStatisticsPageView)
+        LeaderAccountsStatisticsPageView, LeaderStatisticsPageView)
 from ....core_organizational_structure.models.organization import LeaderTabConfigChoices
 
 
@@ -458,6 +461,242 @@ class TestLeaderAccountsStatisticsPageView:
         request = rf.get(reverse('statistics-leader-accounts-export') + params)
         request.user = account.user
         return LeaderAccountsStatisticsCSVView.as_view()(request, **kwargs)
+
+
+@pytest.mark.django_db
+class TestLeaderStatisticsSnapshot:
+    """The leader overview is served from a pre-computed snapshot instead of the
+    (very expensive) live aggregation. These tests cover the snapshot command
+    and the snapshot-backed view path."""
+
+    def _employee(self, response, account):
+        return next(e for e in response.context_data['employees'] if e.pk == account.pk)
+
+    def _manage(self, egon_account, *accounts):
+        for account in accounts:
+            account.manager = egon_account
+            account.save()
+        egon_account.refresh_from_db()
+
+    def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-accounts') + params)
+        request.user = account.user
+        return LeaderAccountsStatisticsPageView.as_view()(request, **kwargs)
+
+    def test_command_builds_snapshot_rows(self, egon_account, benny_account, benny_email_alias):
+        """The command creates a snapshot with one bucket per
+        (account, scanner_job, source_type) that carries counts."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=5, scanner_job_pk=1, source_type="fake")
+
+        call_command('snapshot_leader_stats', '--force')
+
+        snapshot = LeaderStatisticSnapshot.objects.get(
+            organization=benny_account.organization)
+        rows = AccountResultSnapshot.objects.filter(
+            snapshot=snapshot, account=benny_account)
+        assert rows.count() == 1
+        assert rows.first().unhandled_results == 5
+
+    def test_page_serves_snapshot_values(self, rf, egon_account, benny_account,
+                                         benny_email_alias):
+        """A manager's overview shows the counts captured in the snapshot."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=7)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        assert response.context_data['snapshot_created_at'] is not None
+        assert self._employee(response, benny_account).unhandled_results == 7
+
+    def test_page_snapshot_is_stale(self, rf, egon_account, benny_account,
+                                    benny_email_alias):
+        """Reports created after the snapshot are not reflected until the next
+        snapshot is generated."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=3)
+        call_command('snapshot_leader_stats', '--force')
+
+        create_reports_for(benny_email_alias, num=7, offset=100)
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        assert self._employee(response, benny_account).unhandled_results == 3
+
+    def test_page_live_fallback_without_snapshot(self, rf, egon_account, benny_account,
+                                                 benny_email_alias):
+        """Before the first snapshot exists, the page falls back to the live
+        aggregation so no data is missing."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=4)
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        assert response.context_data['snapshot_created_at'] is None
+        assert self._employee(response, benny_account).unhandled_results == 4
+
+    def test_snapshot_regeneration_supersedes_old(self, egon_account, benny_account,
+                                                  benny_email_alias):
+        """Regenerating keeps only the newest snapshot for the organization."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=2)
+
+        call_command('snapshot_leader_stats', '--force')
+        call_command('snapshot_leader_stats', '--force')
+
+        assert LeaderStatisticSnapshot.objects.filter(
+            organization=benny_account.organization).count() == 1
+
+    def test_page_snapshot_source_type_filter(self, rf, egon_account, benny_account,
+                                              benny_email_alias):
+        """Filtering by source_type sums only the matching snapshot buckets."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=2, source_type="fake")
+        create_reports_for(benny_email_alias, num=3, source_type="web", offset=100)
+
+        call_command('snapshot_leader_stats', '--force')
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        assert self._employee(response, benny_account).unhandled_results == 5
+
+        filtered = self.get_leader_statisticspage_response(
+            rf, egon_account, params='?source_type=web')
+        assert self._employee(filtered, benny_account).unhandled_results == 3
+
+    def test_snapshot_matches_live_aggregation(self, rf, egon_account, benny_account,
+                                               benny_email_alias):
+        """Snapshot-derived values equal the live aggregation across several
+        scanners and source types, and for unhandled, withheld and handled
+        reports — i.e. the per-bucket sums reconstruct the live totals."""
+        self._manage(egon_account, benny_account)
+        # Spread reports across two scanners and two source types, and include
+        # withheld and handled reports, so the snapshot must sum several buckets.
+        create_reports_for(benny_email_alias, num=6, scanner_job_pk=1, source_type="fake")
+        create_reports_for(benny_email_alias, num=3, scanner_job_pk=1, source_type="web",
+                           offset=100)
+        create_reports_for(benny_email_alias, num=4, scanner_job_pk=2, source_type="fake",
+                           offset=200)
+        create_reports_for(benny_email_alias, num=2, scanner_job_pk=2, source_type="fake",
+                           offset=300, only_notify_superadmin=True)
+        create_reports_for(benny_email_alias, num=5, scanner_job_pk=1, source_type="fake",
+                           offset=400, resolution_status=0)
+
+        base = Account.objects.filter(pk=benny_account.pk)
+        live = LeaderStatisticsPageView.annotate_account_queryset(base, None, None)
+        live_row = live.values(
+            'unhandled_results', 'withheld_results', 'handle_status').get()
+
+        call_command('snapshot_leader_stats', '--force')
+        snap = LeaderStatisticsPageView.annotate_account_queryset_from_snapshot(
+            base, LeaderStatisticsPageView.latest_snapshot_ids())
+        snap_row = snap.values(
+            'unhandled_results', 'withheld_results', 'handle_status').get()
+
+        assert snap_row == live_row
+        assert snap_row['unhandled_results'] == 13
+        assert snap_row['withheld_results'] == 2
+
+    def test_snapshot_reads_each_accounts_own_organization(
+            self, egon_account, benny_account, benny_email_alias,
+            hulk_account, hulk_email_alias):
+        """When a queryset spans several organizations (e.g. a superuser viewing
+        all units), each account is summed from its own organization's snapshot,
+        not just one organization's."""
+        self._manage(egon_account, benny_account)
+        # Distinct scanner_job_pk per org: create_reports_for get_or_creates a
+        # ScannerReference keyed only on scanner_pk, so reusing a pk would place
+        # both orgs' reports under the same (single-org) scanner.
+        create_reports_for(benny_email_alias, num=4, scanner_job_pk=1)
+        create_reports_for(hulk_email_alias, num=6, scanner_job_pk=2)
+
+        call_command('snapshot_leader_stats', '--force')
+
+        base = Account.objects.filter(pk__in=[benny_account.pk, hulk_account.pk])
+        qs = LeaderStatisticsPageView.annotate_account_queryset_from_snapshot(
+            base, LeaderStatisticsPageView.latest_snapshot_ids())
+        results = {r['pk']: r['unhandled_results']
+                   for r in qs.values('pk', 'unhandled_results')}
+
+        assert results[benny_account.pk] == 4
+        assert results[hulk_account.pk] == 6
+
+    def test_snapshot_status_ignores_source_type_filter(self, rf, egon_account,
+                                                        benny_account, benny_email_alias):
+        """handle_status is computed over all of an account's reports, not just
+        the filtered scanner/source, mirroring the live with_status()."""
+        self._manage(egon_account, benny_account)
+        # Unhandled matches only in 'fake'; a lone handled match in 'web' so that
+        # 'web' is a selectable source_type.
+        create_reports_for(benny_email_alias, num=5, source_type="fake")
+        create_reports_for(benny_email_alias, num=1, source_type="web", offset=100,
+                           resolution_status=0)
+
+        call_command('snapshot_leader_stats', '--force')
+
+        # Filtering to 'web' leaves 0 unhandled results for benny, but the status
+        # must still reflect the (unfiltered) unhandled matches in 'fake'.
+        response = self.get_leader_statisticspage_response(
+            rf, egon_account, params='?source_type=web')
+        employee = self._employee(response, benny_account)
+        assert employee.unhandled_results == 0
+        assert employee.handle_status != StatusChoices.GOOD
+
+    def test_interval_zero_forces_live(self, rf, egon_account, benny_account,
+                                       benny_email_alias):
+        """An interval of 0 disables snapshot serving: the page is computed live
+        even when a snapshot exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=3)
+        call_command('snapshot_leader_stats', '--force')
+
+        benny_account.organization.leader_snapshot_interval = 0
+        benny_account.organization.save()
+        # A report created after the snapshot is only visible on the live path.
+        create_reports_for(benny_email_alias, num=4, offset=100)
+
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+        assert response.context_data['snapshot_created_at'] is None
+        assert self._employee(response, benny_account).unhandled_results == 7
+
+    def test_snapshot_scannerjob_choices(self, rf, egon_account, benny_account,
+                                         benny_email_alias):
+        """The scannerjob dropdown is derived from the snapshot when one exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, scanner_job_pk=1)
+        create_reports_for(benny_email_alias, scanner_job_pk=2, offset=100)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        choices = response.context_data['scannerjob_choices']
+        assert choices.filter(scanner_pk=1).exists()
+        assert choices.filter(scanner_pk=2).exists()
+
+    def test_snapshot_source_type_choices(self, rf, egon_account, benny_account,
+                                          benny_email_alias):
+        """The source_type dropdown is derived from the snapshot when one exists."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, source_type="fake")
+        create_reports_for(benny_email_alias, source_type="web", offset=100)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        source_types = {c['source_type']
+                        for c in response.context_data['source_type_choices']}
+        assert source_types == {"fake", "web"}
+
+    def test_snapshot_handle_status_bad(self, rf, egon_account, benny_account,
+                                        benny_email_alias):
+        """An account with unhandled matches and no recently handled matches gets
+        the 'not accepted' status when recomputed from the snapshot."""
+        self._manage(egon_account, benny_account)
+        create_reports_for(benny_email_alias, num=5)
+
+        call_command('snapshot_leader_stats', '--force')
+        response = self.get_leader_statisticspage_response(rf, egon_account)
+
+        assert self._employee(response, benny_account).handle_status == StatusChoices.BAD
 
 
 @pytest.mark.django_db

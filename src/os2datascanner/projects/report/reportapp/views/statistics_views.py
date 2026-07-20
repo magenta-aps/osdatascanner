@@ -14,7 +14,9 @@ from dateutil.relativedelta import relativedelta
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.aggregates import StringAgg
 from django.core.exceptions import PermissionDenied
-from django.db.models import Q, Count, DateField, When, Case, CharField, Value, F
+from django.db.models import (Q, Count, DateField, When, Case, CharField, Value, F,
+                              Subquery, OuterRef, Sum, IntegerField, FloatField,
+                              ExpressionWrapper)
 from django.db.models.functions import Coalesce, TruncMonth
 from django.http import HttpResponseForbidden, Http404
 from django.utils.translation import gettext_lazy as _
@@ -26,6 +28,8 @@ from django.conf import settings
 
 from ..models.documentreport import DocumentReport
 from ..models.scanner_reference import ScannerReference
+from ..models.leader_statistic_snapshot import (
+    LeaderStatisticSnapshot, AccountResultSnapshot)
 from ...organizations.models.account import Account, StatusChoices
 from ...organizations.models.position import Position
 from ...organizations.models.organizational_unit import OrganizationalUnit
@@ -595,22 +599,132 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
 
         return qs
 
-    def get_context_data(self, **kwargs):
+    @staticmethod
+    def annotate_account_queryset_from_snapshot(qs, snapshot_ids, scanner_pk=None,
+                                                source_type=None):
+        """Annotates an account queryset with the same fields as
+        annotate_account_queryset, but reads the pre-aggregated
+        AccountResultSnapshot rows of @snapshot_ids instead of computing the
+        aggregates live.
+
+        @snapshot_ids is the set of snapshots to read from — normally the latest
+        snapshot per organization, so each account is summed from its own
+        organization's snapshot (the live aggregation likewise scopes each
+        account's counts to its own organization, which matters when a superuser
+        views accounts across several organizations).
+
+        Known limitation: an account whose organization has no snapshot in
+        @snapshot_ids (a brand-new organization not yet reached by the cron, or
+        one with snapshotting disabled) sums to zero here. This only surfaces for
+        a superuser viewing accounts across organizations; an ordinary leader
+        sees a single organization, which either has a snapshot (all its accounts
+        are covered) or falls back to the live aggregation in get_context_data.
+
+        The result counts (unhandled/withheld/old) are summed over the buckets
+        matching the current scannerjob/source_type filter, mirroring the live
+        with_result_stats(reports=...). 'handle_status' and 'fp_ratio' are summed
+        over ALL of the account's buckets, mirroring the live with_status() and
+        with_fp_ratio(), which are never scoped to the filter."""
+        all_detail = AccountResultSnapshot.objects.filter(
+            snapshot_id__in=snapshot_ids, account=OuterRef("pk"))
+        filtered_detail = all_detail
+        if scanner_pk and scanner_pk != "all":
+            filtered_detail = filtered_detail.filter(scanner_job__scanner_pk=scanner_pk)
+        if source_type and source_type != "all":
+            filtered_detail = filtered_detail.filter(source_type=source_type)
+
+        def summed(detail, field):
+            return Coalesce(
+                Subquery(
+                    detail.values("account").annotate(_s=Sum(field)).values("_s")[:1],
+                    output_field=IntegerField()),
+                0)
+
+        qs = qs.annotate(
+            unhandled_results=summed(filtered_detail, "unhandled_results"),
+            withheld_results=summed(filtered_detail, "withheld_results"),
+            old_results=summed(filtered_detail, "old_results"),
+            _unhandled_all=summed(all_detail, "unhandled_results"),
+            _handled_recent=summed(all_detail, "handled_recent"),
+            _new_recent=summed(all_detail, "new_recent"),
+            _handled_total=summed(all_detail, "handled_total"),
+            _fp_total=summed(all_detail, "fp_total"),
+        )
+        qs = qs.annotate(
+            handle_status=Case(
+                When(_unhandled_all=0, then=Value(StatusChoices.GOOD)),
+                When(_handled_recent=0, then=Value(StatusChoices.BAD)),
+                When(Q(_new_recent__gt=0)
+                     & Q(_handled_recent__lt=F("_new_recent") * 0.75),
+                     then=Value(StatusChoices.BAD)),
+                default=Value(StatusChoices.OK),
+                output_field=IntegerField()),
+            fp_ratio=Case(
+                When(_handled_total__gt=0,
+                     then=F("_fp_total") * 1.0 / F("_handled_total")),
+                default=0.0,
+                output_field=FloatField()),
+        )
+        return qs.annotate(
+            fp_percentage=ExpressionWrapper(
+                F("fp_ratio") * 100, output_field=FloatField()))
+
+    @staticmethod
+    def latest_snapshot_ids():
+        """The primary key of the most recent snapshot of each organization, so
+        every account can be read from its own organization's snapshot."""
+        return list(
+            LeaderStatisticSnapshot.objects
+            .order_by("organization_id", "-created_at")
+            .distinct("organization_id")
+            .values_list("pk", flat=True))
+
+    @staticmethod
+    def snapshot_scanner_ids(snapshot_ids, base_qs):
+        """The scanner_job ids that produced matches for @base_qs accounts,
+        read from the snapshot instead of joining through every report."""
+        return (AccountResultSnapshot.objects
+                .filter(snapshot_id__in=snapshot_ids, account__in=base_qs)
+                .values_list("scanner_job_id", flat=True).distinct())
+
+    def get_context_data(self, **kwargs):  # noqa CCR001
         context = super().get_context_data(**kwargs)
         base_qs = self.get_account_queryset()
 
+        scanner_pk_filter = None
         if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
                 (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
             sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
             reports = sr.document_reports.all()
+            scanner_pk_filter = scanner_pk
         else:
             reports = DocumentReport.objects.all()
 
-        source_type_choices = reports.filter(
-            alias_relations__account__in=base_qs,
-            alias_relations__shared=False,
-            number_of_matches__gte=1,
-        ).order_by('source_type').values('source_type').distinct()
+        # Serve the leader overview from the most recent snapshot; fall back to
+        # the (much slower) live aggregation when the organization has disabled
+        # snapshotting (interval 0) or has no snapshot yet. self.snapshot_ids is
+        # exposed for the subclasses' scannerjob dropdowns; None signals the
+        # live fallback.
+        snapshot = None
+        if self.org.leader_snapshot_interval:
+            snapshot = LeaderStatisticSnapshot.objects.filter(
+                organization=self.org).order_by('-created_at').first()
+        self.snapshot_ids = self.latest_snapshot_ids() if snapshot is not None else None
+
+        if self.snapshot_ids is not None:
+            snapshot_buckets = AccountResultSnapshot.objects.filter(
+                snapshot_id__in=self.snapshot_ids, account__in=base_qs)
+            if scanner_pk_filter:
+                snapshot_buckets = snapshot_buckets.filter(
+                    scanner_job__scanner_pk=scanner_pk_filter)
+            source_type_choices = snapshot_buckets.order_by(
+                'source_type').values('source_type').distinct()
+        else:
+            source_type_choices = reports.filter(
+                alias_relations__account__in=base_qs,
+                alias_relations__shared=False,
+                number_of_matches__gte=1,
+            ).order_by('source_type').values('source_type').distinct()
         context['source_type_choices'] = source_type_choices
 
         source_type = self.request.GET.get('source_type', 'all')
@@ -622,7 +736,13 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
 
-        qs = self.annotate_account_queryset(base_qs, reports, retention_days)
+        if self.snapshot_ids is not None:
+            qs = self.annotate_account_queryset_from_snapshot(
+                base_qs, self.snapshot_ids,
+                scanner_pk=scanner_pk_filter, source_type=source_type)
+        else:
+            qs = self.annotate_account_queryset(base_qs, reports, retention_days)
+        context['snapshot_created_at'] = snapshot.created_at if snapshot else None
 
         if self.request.GET.get('only_with_results'):
             qs = qs.filter(unhandled_results__gt=0)
@@ -697,11 +817,15 @@ class LeaderAccountsStatisticsPageView(LeaderStatisticsPageView):
         context["active_tab"] = "accounts"
         context["view_url"] = reverse_lazy("statistics-leader-accounts")
         context["export_url"] = reverse_lazy("statistics-leader-accounts-export")
-        scannerjobs = self.org.scanners.filter(
-            document_reports__number_of_matches__gte=1,
-            document_reports__alias_relations__account__in=context['base_qs'],
-            document_reports__alias_relations__shared=False,
-        ).distinct()
+        if self.snapshot_ids is not None:
+            scannerjobs = self.org.scanners.filter(
+                pk__in=self.snapshot_scanner_ids(self.snapshot_ids, context['base_qs']))
+        else:
+            scannerjobs = self.org.scanners.filter(
+                document_reports__number_of_matches__gte=1,
+                document_reports__alias_relations__account__in=context['base_qs'],
+                document_reports__alias_relations__shared=False,
+            ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(
@@ -770,14 +894,20 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
         context["view_url"] = reverse_lazy("statistics-leader-units")
         context["export_url"] = reverse_lazy("statistics-leader-units-export")
 
-        scannerjobs = self.org.scanners.filter(
-            Q(org_units__in=self.descendant_units)
-            | Q(
-                document_reports__number_of_matches__gte=1,
-                document_reports__alias_relations__account__in=context['base_qs'],
-                document_reports__alias_relations__shared=False,
-            )
-        ).distinct()
+        if self.snapshot_ids is not None:
+            scannerjobs = self.org.scanners.filter(
+                Q(org_units__in=self.descendant_units)
+                | Q(pk__in=self.snapshot_scanner_ids(self.snapshot_ids, context['base_qs']))
+            ).distinct()
+        else:
+            scannerjobs = self.org.scanners.filter(
+                Q(org_units__in=self.descendant_units)
+                | Q(
+                    document_reports__number_of_matches__gte=1,
+                    document_reports__alias_relations__account__in=context['base_qs'],
+                    document_reports__alias_relations__shared=False,
+                )
+            ).distinct()
         if not self.request.user.has_perm(
                 "organizations.view_withheld_results"):
             scannerjobs = scannerjobs.exclude(only_notify_superadmin=True).exclude(
@@ -878,21 +1008,34 @@ class LeaderStatisticsCSVMixin(CSVExportMixin):
         # Since this isn't a ListView, there's no get_queryset method.
         # So CSVExportMixin.get_rows is overwritten
 
+        scanner_pk_filter = None
         if (self.request.user.has_perm('organizations.filter_scannerjob_leader_overview') and
                 (scanner_pk := self.request.GET.get('scannerjob')) and scanner_pk != "all"):
             sr = get_object_or_404(ScannerReference, scanner_pk=scanner_pk)
             reports = sr.document_reports.all()
+            scanner_pk_filter = scanner_pk
         else:
             reports = DocumentReport.objects.all()
 
-        if (source_type := self.request.GET.get('source_type')) and source_type != 'all':
+        source_type = self.request.GET.get('source_type', 'all')
+        if source_type and source_type != 'all':
             reports = reports.filter(source_type=source_type)
 
         retention_days = self.org.retention_days if self.org.retention_policy else None
         account_qs = self.get_account_queryset()
-        account_qs = LeaderStatisticsPageView.annotate_account_queryset(
-            qs=account_qs, reports=reports, retention_days=retention_days
-        )
+
+        snapshot = None
+        if self.org.leader_snapshot_interval:
+            snapshot = LeaderStatisticSnapshot.objects.filter(
+                organization=self.org).order_by('-created_at').first()
+        if snapshot is not None:
+            account_qs = LeaderStatisticsPageView.annotate_account_queryset_from_snapshot(
+                account_qs, LeaderStatisticsPageView.latest_snapshot_ids(),
+                scanner_pk=scanner_pk_filter, source_type=source_type)
+        else:
+            account_qs = LeaderStatisticsPageView.annotate_account_queryset(
+                qs=account_qs, reports=reports, retention_days=retention_days
+            )
 
         if self.request.GET.get('only_with_results'):
             account_qs = account_qs.filter(unhandled_results__gt=0)

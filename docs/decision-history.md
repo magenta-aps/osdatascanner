@@ -347,6 +347,44 @@ actually being able to cancel a scan in milliseconds.
 
 For configuration details, see [RabbitMQ](./architecture/rabbitmq.md).
 
+## Leader statistics snapshots
+
+The leader overview (`LeaderStatisticsPageView`) shows, per employee, their
+number of unhandled, withheld and old results and a handle status. Originally
+these figures were computed live on every page load:
+`annotate_account_queryset` chained `with_result_stats`, `with_status` and
+`with_fp_ratio` into a single `SELECT` with a fistful of
+`COUNT(DISTINCT …) FILTER(…)` aggregates over the `aliases__reports` fan-out.
+Those aggregates were evaluated for the leader's *entire* managed population
+before the `[:200]` slice could prune anything (ordering on an annotated column
+defeats the `LIMIT`). For a leader near the top of a large organisation this
+meant joining across millions of results on every request giving us painfully
+long load times.
+
+Leaders do not need up-to-the-second figures; data that is a day, or even
+several days, old is perfectly workable for this overview. So rather than
+making the live query faster, we stopped running it on the request path. A
+management command, `snapshot_leader_stats`, pre-computes the figures into a
+snapshot, and the page reads the snapshot instead. The page shows how old
+the snapshot is, so the staleness is transparent.
+
+The snapshot is stored per account rather than per leader - the figures are
+properties of the account, so one organisation-wide snapshot serves every
+leader, who each restrict it to the accounts they manage. Each row is broken
+down by scanner job and source type, so a filtered view is answered by *summing*
+the matching buckets for an account instead of re-running the join; handle
+status and false-positive ratio are recomputed from those sums. Each account is
+read from its own organisation's latest snapshot, mirroring the way the live
+query scoped every account to its own organisation.
+
+Regeneration is configured per organisation via `leader_snapshot_interval`
+(hours, default 24; `0` disables snapshotting and always serves live), set in the
+admin module and synchronised to the report module. The command rebuilds in a
+transaction and atomically replaces the previous snapshot, and the view falls
+back to the live query whenever an organisation has no snapshot yet, so nothing
+column and the three-week window behind the handle status, are only as fresh as
+the last run.
+
 [1]: https://cpr.dk/media/12066/personnummeret-i-cpr.pdf "Method for performing a modulus-11 check."
 
 [2]: https://cpr.dk/cpr-systemet/personnumre-uden-kontrolciffer-modulus-11-kontrol "CPR-numbers exempt from modulus-11 check."

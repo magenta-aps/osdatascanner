@@ -12,3 +12,4 @@
 
 0 6 * * * ./manage.py send_notifications
 0 3 * * * ./manage.py push_db_metrics
+0 * * * * ./manage.py snapshot_leader_stats

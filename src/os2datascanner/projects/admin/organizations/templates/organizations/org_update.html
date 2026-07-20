@@ -180,6 +180,13 @@
             {{ form.leadertab_config }}
             {% if form.leadertab_config.errors %}{{ form.leadertab_config.errors }}{% endif %}
           </div>
+
+          <div class="form__row__item {% if form.leader_snapshot_interval.errors %}has-error{% endif %}">
+            <label for="{{ form.leader_snapshot_interval.id_for_label }}">{{ form.leader_snapshot_interval.label }}</label>
+            <span class="secondary_text">{{ form.leader_snapshot_interval.help_text }}</span>
+            {{ form.leader_snapshot_interval }}
+            {% if form.leader_snapshot_interval.errors %}{{ form.leader_snapshot_interval.errors }}{% endif %}
+          </div>
         </div>
 
         {% if form.prioritize_graphgrant %}
