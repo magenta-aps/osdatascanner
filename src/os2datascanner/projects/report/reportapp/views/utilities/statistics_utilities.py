@@ -6,13 +6,14 @@
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
-from django.db.models import Case, Count, DateField, F, Q, When
+from django.db.models import Case, Count, DateField, Exists, OuterRef, When
 from django.db.models.functions import Coalesce, TruncMonth
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 from ...models.documentreport import DocumentReport
 from ....organizations.models.account import Account
+from ....organizations.models.aliases import Alias
 from ....organizations.models.organizational_unit import OrganizationalUnit
 from ....organizations.models.position import Position
 
@@ -74,7 +75,7 @@ def base_query():
                         'resolved_month',
                         'created_recently',
                         'handled_recently',
-                    ).annotate(count=Count('pk', distinct=True)).order_by()
+                    ).annotate(count=Count('pk')).order_by()
 
 
 def filter_by_unit(reports, unit: OrganizationalUnit):
@@ -82,22 +83,14 @@ def filter_by_unit(reports, unit: OrganizationalUnit):
     positions = Position.employees.filter(unit__in=descendant_units)
     accounts = Account.objects.filter(positions__in=positions).distinct()
 
-    return (
-        reports.annotate(
-            total_relations=Count(
-                'alias_relations',
-                distinct=True
-            ),
-            shared_relations=Count(
-                'alias_relations',
-                filter=Q(alias_relations__shared=True),
-                distinct=True
-            )
-        )
-        # Ensure at least one relation is to these accounts
-        .filter(alias_relations__account__in=accounts)
-        # Keep only if not all relations are shared (i.e., at least one is not shared)
-        .filter(~Q(total_relations=F('shared_relations')))
+    # Both conditions are EXISTS semi-joins rather than joins on the
+    # multi-valued alias_relations, so a report is never multiplied into the
+    # aggregation - which is what lets base_query count without DISTINCT.
+    return reports.filter(
+        # Related to at least one account in the unit.
+        Exists(Alias.objects.filter(reports=OuterRef('pk'), account__in=accounts)),
+        # Not related only through shared aliases (has a non-shared relation).
+        Exists(Alias.objects.filter(reports=OuterRef('pk'), shared=False)),
     )
 
 

@@ -18,6 +18,8 @@
 
 - The scanner setting for limiting file size, now works for additional file types.
 
+- Improved performance on DPO page.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the
