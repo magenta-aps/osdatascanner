@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-06 15:34+0200\n"
+"POT-Creation-Date: 2026-07-23 13:37+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -188,6 +188,7 @@ msgstr "match"
 
 #: organizations/models/account_outlook_setting.py
 #: reportapp/templates/components/report_table/report_table--row.html
+#: reportapp/templates/components/report_table/report_table--row_sbsys.html
 msgid "false positive"
 msgstr "falsk positiv"
 
@@ -2396,42 +2397,6 @@ msgstr ""
 "på nuværende tidspunkt."
 
 #: reportapp/views/statistics_views.py
-msgid "handled"
-msgstr "håndteret"
-
-#: reportapp/views/statistics_views.py
-msgid "unhandled"
-msgstr "ikke håndteret"
-
-#: reportapp/views/statistics_views.py
-msgid "other source"
-msgstr "Datakilder"
-
-#: reportapp/views/statistics_views.py
-msgid "web scan"
-msgstr "Webscan"
-
-#: reportapp/views/statistics_views.py
-msgid "file scan"
-msgstr "Filscan"
-
-#: reportapp/views/statistics_views.py
-msgid "mail scan"
-msgstr "Mailscan"
-
-#: reportapp/views/statistics_views.py
-msgid "Teams scan"
-msgstr "Teams-scan"
-
-#: reportapp/views/statistics_views.py
-msgid "SBSYS scan"
-msgstr "SBSYS-scan"
-
-#: reportapp/views/statistics_views.py
-msgid "calendar scan"
-msgstr "Kalender scan"
-
-#: reportapp/views/statistics_views.py
 msgid "The user does not have an account."
 msgstr "Brugeren har ikke en konto."
 
@@ -2495,54 +2460,6 @@ msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
-
-#: reportapp/views/statistics_views.py
-msgid "Jan"
-msgstr "Jan"
-
-#: reportapp/views/statistics_views.py
-msgid "Feb"
-msgstr "Feb"
-
-#: reportapp/views/statistics_views.py
-msgid "Mar"
-msgstr "Mar"
-
-#: reportapp/views/statistics_views.py
-msgid "Apr"
-msgstr "Apr"
-
-#: reportapp/views/statistics_views.py
-msgid "May"
-msgstr "Maj"
-
-#: reportapp/views/statistics_views.py
-msgid "Jun"
-msgstr "Jun"
-
-#: reportapp/views/statistics_views.py
-msgid "Jul"
-msgstr "Jul"
-
-#: reportapp/views/statistics_views.py
-msgid "Aug"
-msgstr "Aug"
-
-#: reportapp/views/statistics_views.py
-msgid "Sep"
-msgstr "Sep"
-
-#: reportapp/views/statistics_views.py
-msgid "Oct"
-msgstr "Okt"
-
-#: reportapp/views/statistics_views.py
-msgid "Nov"
-msgstr "Nov"
-
-#: reportapp/views/statistics_views.py
-msgid "Dec"
-msgstr "Dec"
 
 #: reportapp/views/user_views.py
 msgid "match category colour"
@@ -2616,3 +2533,87 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #: reportapp/views/utilities/smb_utilities.py
 msgid "Target file is not on a Windows network drive"
 msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Jan"
+msgstr "Jan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Feb"
+msgstr "Feb"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Mar"
+msgstr "Mar"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Apr"
+msgstr "Apr"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "May"
+msgstr "Maj"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Jun"
+msgstr "Jun"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Jul"
+msgstr "Jul"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Aug"
+msgstr "Aug"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Sep"
+msgstr "Sep"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Oct"
+msgstr "Okt"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Nov"
+msgstr "Nov"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Dec"
+msgstr "Dec"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "handled"
+msgstr "håndteret"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "unhandled"
+msgstr "ikke håndteret"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "other source"
+msgstr "Datakilder"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "web scan"
+msgstr "Webscan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "file scan"
+msgstr "Filscan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "mail scan"
+msgstr "Mailscan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "Teams scan"
+msgstr "Teams-scan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "SBSYS scan"
+msgstr "SBSYS-scan"
+
+#: reportapp/views/utilities/statistics_utilities.py
+msgid "calendar scan"
+msgstr "Kalender scan"
