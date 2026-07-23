@@ -151,7 +151,7 @@
               <span>{% trans "Handle" %}</span>
             </button>
  
-            <button class="matches-handle button button--icon-button"
+            <button class="matches-handle button button--icon-text-button"
                     type="button"
                     title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"
                     hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
@@ -164,7 +164,8 @@
                     {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result by marking it as a false positive. This action does not change the file, that the result is about.{% endblocktrans %}" {% endif %}
                     {% if not allow_handle %}disabled{% endif %}
                     name="handle-match-false-positive">
-              <i class="material-symbols" aria-hidden="true">flag</i>
+              <i class="material-symbols" aria-hidden="true">block</i>
+              <span>{% trans "false positive"|capfirst %}</span>
             </button>
           {% endif %}
         </div>
