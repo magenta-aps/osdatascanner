@@ -31,6 +31,9 @@ from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView, LeaderAccountsStatisticsCSVView,
         LeaderAccountsStatisticsPageView, LeaderStatisticsPageView)
+from ..reportapp.views.utilities.statistics_utilities import (
+        base_query, make_data_structures, count_unhandled_matches_by_month,
+        count_new_matches_by_month)
 from ....core_organizational_structure.models.organization import LeaderTabConfigChoices
 
 
@@ -1389,8 +1392,7 @@ class TestDPOStatisticsPageView:
 
         create_reports_for(egon_email_alias, num=1)
 
-        view = self.get_dpo_statisticspage_object()
-        matches = view.base_query()
+        matches = base_query()
         created_timestamp = matches[0].get('created_month')
         now = timezone.now().date()
 
@@ -1439,14 +1441,12 @@ class TestDPOStatisticsPageView:
             date = timezone.make_aware(test_date) - timedelta(days=(31*(11-i)))
             create_reports_for(egon_email_alias, num=month, created_at=date)
 
-        view = self.get_dpo_statisticspage_object()
+        matches = base_query()
 
-        matches = view.base_query()
+        _, _, _, created_month, _ = make_data_structures(matches)
 
-        _, _, _, created_month, _ = view.make_data_structures(matches)
-
-        new_matches_by_month = view.count_new_matches_by_month(matches, created_month,
-                                                               current_date=test_date)
+        new_matches_by_month = count_new_matches_by_month(matches, created_month,
+                                                          current_date=test_date)
 
         if month_matches == (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
             assert len(new_matches_by_month) == 0
@@ -1486,15 +1486,13 @@ class TestDPOStatisticsPageView:
                     resolution_status=DocumentReport.ResolutionChoices.OTHER,
                     resolution_time=date)
 
-        view = self.get_dpo_statisticspage_object()
+        matches = base_query()
 
-        matches = view.base_query()
+        _, _, _, created_month, resolved_month = make_data_structures(matches)
 
-        _, _, _, created_month, resolved_month = view.make_data_structures(matches)
-
-        unhandled_by_month = view.count_unhandled_matches_by_month(matches, created_month,
-                                                                   resolved_month,
-                                                                   current_date=test_date)
+        unhandled_by_month = count_unhandled_matches_by_month(matches, created_month,
+                                                              resolved_month,
+                                                              current_date=test_date)
 
         if month_unhandled == (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0):
             assert len(unhandled_by_month) == 0
@@ -2098,14 +2096,6 @@ class TestDPOStatisticsPageView:
         assert response_ctx['unhandled_by_source']['other']['count'] == 4
         assert response_ctx['total_by_source']['other']['count'] == 9
         assert response_ctx['other_monthly_progress'] == 4
-
-    # StatisticsPageView()
-    def get_dpo_statisticspage_object(self):
-        # XXX: we don't use request for anything! Is this deliberate?
-        # request = self.factory.get('/statistics')
-        # request.user = self.kjeld
-        view = DPOStatisticsPageView()
-        return view
 
     def get_dpo_statisticspage_response(self, rf, account, params='', **kwargs):
         request = rf.get(reverse('statistics-dpo') + params)

@@ -1,7 +1,14 @@
 function drawUserChart(content) {
 
-  const matchesByWeek = JSON.parse(content.querySelector('#matches_by_week').textContent);
-  const accountUuid = JSON.parse(content.querySelector('#uuid').textContent);
+  const matchesByWeekElement = content.querySelector('#matches_by_week');
+  const accountUuidElement = content.querySelector('#uuid');
+
+  if (!matchesByWeekElement || !accountUuidElement) {
+    return;
+  }
+
+  const matchesByWeek = JSON.parse(matchesByWeekElement.textContent);
+  const accountUuid = JSON.parse(accountUuidElement.textContent);
 
   let weeknums = [];
   let matches = [];

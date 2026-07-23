@@ -19,9 +19,12 @@ var avoidZero = function (a, b) {
 function drawCharts() {
   // json_script solution - Safe from in-page script execution
 
-  const sourceTypes = JSON.parse(
-    document.getElementById("total_by_source").textContent
-  );
+  const totalBySourceElement = document.getElementById("total_by_source");
+  if (!totalBySourceElement) {
+    return;
+  }
+
+  const sourceTypes = JSON.parse(totalBySourceElement.textContent);
 
   const resolutionStatus = JSON.parse(
     document.getElementById("resolution_status").textContent

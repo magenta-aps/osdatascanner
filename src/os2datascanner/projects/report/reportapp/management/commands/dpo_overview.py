@@ -15,7 +15,9 @@ from django.db.models import Q
 from os2datascanner.projects.report.organizations.models import (
     Organization, OrganizationalUnit)
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
-from os2datascanner.projects.report.reportapp.views.statistics_views import DPOStatisticsPageView
+from os2datascanner.projects.report.reportapp.views.utilities.statistics_utilities import (
+    base_query, filter_by_unit, make_data_structures, source_type_progress,
+    count_unhandled_matches_by_month, count_new_matches_by_month)
 
 
 def boolean_symbol(boolean):
@@ -72,11 +74,11 @@ class Command(BaseCommand):
         print("===DPO Overview===")
         print("Organization:", org)
 
-        reports = DPOStatisticsPageView.base_query().filter(scanner_job__organization=org)
+        reports = base_query().filter(scanner_job__organization=org)
 
         if unit:
             org_unit = OrganizationalUnit.objects.get(organization=org, pk=unit)
-            reports = DPOStatisticsPageView.filter_by_unit(reports, org_unit)
+            reports = filter_by_unit(reports, org_unit)
             print("Organizational unit:", org_unit)
         if scanner:
             scannerjob = ScannerReference.objects.get(organization=org, scanner_pk=scanner)
@@ -84,8 +86,8 @@ class Command(BaseCommand):
             print("Scanner:", scannerjob)
 
         match_data, source_type_data, resolution_status, created_month, resolved_month = \
-            DPOStatisticsPageView.make_data_structures(reports)
-        progress_dict = DPOStatisticsPageView.source_type_progress(source_type_data)
+            make_data_structures(reports)
+        progress_dict = source_type_progress(source_type_data)
 
         # Source type table
         src_type_table = [
@@ -141,8 +143,8 @@ class Command(BaseCommand):
         # Development overview -- accumulated unhandled results per month
         print("\nAccumulated unhandled results per month")
         unhandled_matches_by_month = \
-            DPOStatisticsPageView.count_unhandled_matches_by_month(reports, created_month,
-                                                                   resolved_month)
+            count_unhandled_matches_by_month(reports, created_month,
+                                             resolved_month)
         if unhandled_matches_by_month:
             x_data, y_data = (
                 [i for i in range(len(unhandled_matches_by_month))],
@@ -155,8 +157,7 @@ class Command(BaseCommand):
 
         # Development overview -- new results per month
         print("\nNew results per month")
-        new_matches_by_month = DPOStatisticsPageView.count_new_matches_by_month(reports,
-                                                                                created_month)
+        new_matches_by_month = count_new_matches_by_month(reports, created_month)
         if new_matches_by_month:
             x_data, y_data = (
                 [data_point[1] for data_point in new_matches_by_month],

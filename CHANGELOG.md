@@ -29,6 +29,8 @@
 
 - Added support for scanning Outlook .msg files.
 
+- Made the dashboard + content filtering from the DPO overview into reusable components.
+
 ### Bugfixes
 
 - Removed Material Icons from the project. 
