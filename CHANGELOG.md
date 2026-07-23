@@ -1,8 +1,8 @@
 # Changelog
 
-## Version 3.xx.x, xx xxxx 2026
+## Version 3.32.3, 23rd July 2026
 
-""
+"1000km"
 
 ## New in this release
 
