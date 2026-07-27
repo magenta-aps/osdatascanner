@@ -77,6 +77,39 @@ class TestPipelineCollector:
         assert scan_status.scanned_objects == 1, "ScanStatus wasn't updated!"
         assert scan_status.scanned_size == 100
 
+    def test_scanned_objects_survives_dataerror_in_stats_write(
+            self, basic_scanner, basic_scan_tag):
+        """A DataError raised while writing duplication stats (e.g. an
+        overlong content_identifier) must not roll back the scanned_objects
+        increment that already succeeded for the same message - the two
+        shouldn't share a transaction/fate."""
+        status_message = messages.StatusMessage(
+            scan_tag=basic_scan_tag,
+            message="status_message_with_overlong_content_identifier",
+            status_is_error=False,
+            object_type="message/rfc822",
+            object_size=100,
+            process_time_worker=1.0,
+            content_identifier="x" * 300,
+        )
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=status_message.scan_tag.to_json_object(),
+                total_sources=1)
+        body = status_message.to_json_object()
+
+        # This mirrors StatusCollectorRunner.handle_message()'s exact
+        # transaction wrapping.
+        try:
+            with transaction.atomic():
+                [s for s in status_message_received_raw(body)]
+        except DataError:
+            pass
+
+        scan_status = ScanStatus.objects.get(scan_tag=body["scan_tag"])
+        assert scan_status.scanned_objects == 1
+        assert scan_status.scanned_size == 100
+
     def test_surrogate_errors_are_caught(self, positive_corrupt_match_message):
         """How to test an exception is caught?
         We expect that no object is created if a DataError occurs. Reason being

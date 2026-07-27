@@ -15,6 +15,8 @@
 
 - Explores are now able to immediately report to the admin module when a sub-source is found,
   adressing an issue where conversions queue could be deleted prematurely.
+- Fixed a bug where a scan could stop updating its progress forever, without any error shown,
+  if a mail's Message-ID was too long to store.
 
 ## Version 3.32.3, 23rd July 2026
 

@@ -122,37 +122,48 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                     )
 
         if message.content_identifier:
+            # This whole block gets its own savepoint, so a DataError here
+            # (e.g. an overlong content_identifier or mime_type) can't roll
+            # back the scan-progress counters already updated above - the
+            # two shouldn't share a transaction/fate.
             try:
                 with transaction.atomic():
-                    # Try to store the hash in the cache.
-                    HashCache.objects.create(
-                        scan_status=scan_status,
-                        content_identifier=message.content_identifier,
-                        file_size=message.object_size,
-                        mime_type=message.object_type
-                    )
-            except IntegrityError:
-                try:
-                    with transaction.atomic():
-                        # If the hash was not created, it's a duplicate.
-                        DuplicationStat.objects.create(
-                            scan_status=scan_status,
-                            content_identifier=message.content_identifier,
-                            file_size=message.object_size,
-                            mime_type=message.object_type,
-                            occurrences=2,
-                            process_time=timedelta(seconds=message.process_time_worker)
-                        )
-                except IntegrityError:
-                    # The duplication was already recorded. Increment the occurrence count.
-                    DuplicationStat.objects.filter(
-                        scan_status=scan_status,
-                        content_identifier=message.content_identifier,
-                        file_size=message.object_size,
-                        mime_type=message.object_type
-                    ).update(occurrences=F('occurrences') + 1,
-                             process_time=F('process_time') + timedelta(
-                                 seconds=message.process_time_worker))
+                    try:
+                        with transaction.atomic():
+                            # Try to store the hash in the cache.
+                            HashCache.objects.create(
+                                scan_status=scan_status,
+                                content_identifier=message.content_identifier,
+                                file_size=message.object_size,
+                                mime_type=message.object_type
+                            )
+                    except IntegrityError:
+                        try:
+                            with transaction.atomic():
+                                # If the hash was not created, it's a duplicate.
+                                DuplicationStat.objects.create(
+                                    scan_status=scan_status,
+                                    content_identifier=message.content_identifier,
+                                    file_size=message.object_size,
+                                    mime_type=message.object_type,
+                                    occurrences=2,
+                                    process_time=timedelta(seconds=message.process_time_worker)
+                                )
+                        except IntegrityError:
+                            # The duplication was already recorded. Increment the occurrence
+                            # count.
+                            DuplicationStat.objects.filter(
+                                scan_status=scan_status,
+                                content_identifier=message.content_identifier,
+                                file_size=message.object_size,
+                                mime_type=message.object_type
+                            ).update(occurrences=F('occurrences') + 1,
+                                     process_time=F('process_time') + timedelta(
+                                         seconds=message.process_time_worker))
+            except DataError as de:
+                logger.error(
+                    "Could not record duplication stats, due to DataError",
+                    error=de)
 
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()
