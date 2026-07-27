@@ -3,7 +3,10 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from os2datascanner.engine2.model.msgraph.mail import MSGraphMailAccountSource
+from unittest.mock import MagicMock, patch
+
+from os2datascanner.engine2.model.msgraph.mail import (
+    MSGraphMailAccountSource, MSGraphMailMessageResource)
 from os2datascanner.engine2.model.core.utilities import SourceManager
 
 
@@ -82,3 +85,22 @@ class TestMSGraphMailAccountSource:
         assert query == ("users/osdatascanner@microsoft.cloud/messages?$select=id,subject,webLink,"
                          "parentFolderId&$top=1&$filter=parentFolderId "
                          "ne 'a_very_real_folder_id'")
+
+
+class TestMSGraphMailMessageResource:
+    def _make_resource(self):
+        return MSGraphMailMessageResource(MagicMock(), MagicMock())
+
+    def test_compute_content_identifier_is_bounded(self):
+        # A Microsoft-generated notification (e.g. an AddMember event routed
+        # through odspnotify) can carry a Message-ID far longer than an
+        # ordinary email's, and the database column is only varchar(256).
+        overlong_message_id = "<" + "x" * 300 + "@odspnotify>"
+
+        resource = self._make_resource()
+        with patch.object(
+                resource, "get_message_metadata",
+                return_value={"internetMessageId": overlong_message_id}):
+            identifier = resource.compute_content_identifier()
+
+        assert len(identifier) <= 256

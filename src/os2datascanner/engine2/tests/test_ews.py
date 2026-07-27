@@ -3,10 +3,13 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from unittest.mock import MagicMock, patch
+
 import pytest
 from exchangelib import (Identity, Credentials, OAuth2Credentials)
 
 from os2datascanner.engine2.model import ews
+from os2datascanner.engine2.model.ews import EWSMailResource
 
 
 sources_and_credentials = [
@@ -53,3 +56,23 @@ class TestEWS:
         (old_and_busted, _), (new_hotness, _) = sources_and_credentials
         assert old_and_busted != new_hotness
         assert old_and_busted.censor() == new_hotness.censor()
+
+
+class TestEWSMailResource:
+    def _make_resource(self):
+        handle = MagicMock()
+        handle.relative_path = "folder_id.mail_id"
+        return EWSMailResource(handle, MagicMock())
+
+    def test_compute_content_identifier_is_bounded(self):
+        # A Microsoft-generated notification can carry a Message-ID far
+        # longer than an ordinary email's, and the database column is only
+        # varchar(256).
+        mock_message = MagicMock()
+        mock_message.message_id = "<" + "x" * 300 + "@odspnotify>"
+
+        resource = self._make_resource()
+        with patch.object(resource, "get_message_object", return_value=mock_message):
+            identifier = resource.compute_content_identifier()
+
+        assert len(identifier) <= 256
