@@ -670,7 +670,31 @@ class StatusMessage:
 
     new_sources: Optional[int] = None
     """The number of new data sources produced and enqueued during an
-    exploration pass."""
+    exploration pass.
+
+    Explorers report each new data source as they find it, in a message that
+    carries nothing else, and then repeat the total here when the pass ends.
+    The repetition is for admin systems that pre 3.32.4 they only read this field from
+    messages that also carry total_objects, so the closing message is the only one they can learn
+    anything from.
+
+    Readers that understand sources_reported_individually must not count this
+    value when that flag is set. It has already been counted."""
+
+    sources_reported_individually: bool = False
+    """Indicates that every data source counted by new_sources was also
+    reported on its own as it was found.
+
+    # TODO
+    This exists so that the engine and the admin system can be
+    upgraded in either order (past 3.32.4), and it can only be retired in one order: an
+    explorer must stop repeating the new_sources total before a collector
+    stops checking this flag. Both mistakes are silent. Reversing that order
+    counts every data source twice, so total_sources outruns
+    explored_sources and no scan ever completes. Dropping the total while an
+    admin system pre 3.32.4 leaves its total_sources frozen at the value the scanner started
+    with, so every scan of an expanding source appears to finish within
+    seconds of starting."""
 
     # Emitted by workers
     object_size: Optional[int] = None
@@ -706,6 +730,7 @@ class StatusMessage:
 
             "total_objects": self.total_objects,
             "new_sources": self.new_sources,
+            "sources_reported_individually": self.sources_reported_individually,
             "matches_found": self.matches_found,
             "skipped_by_last_modified": self.skipped_by_last_modified,
 
@@ -725,6 +750,8 @@ class StatusMessage:
                 status_is_error=obj.get("status_is_error", False),
                 total_objects=obj.get("total_objects"),
                 new_sources=obj.get("new_sources"),
+                sources_reported_individually=obj.get(
+                        "sources_reported_individually", False),
                 matches_found=obj.get("matches_found"),
                 skipped_by_last_modified=obj.get("skipped_by_last_modified"),
                 object_size=obj.get("object_size"),

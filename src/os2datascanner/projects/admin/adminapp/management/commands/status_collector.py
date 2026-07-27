@@ -63,7 +63,6 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 last_modified=timezone.now(),
                 status_is_error=message.status_is_error,
                 total_objects=F('total_objects') + message.total_objects,
-                total_sources=F('total_sources') + (message.new_sources or 0),
                 explored_sources=F('explored_sources') + 1)
 
     elif message.object_size is not None and message.object_type is not None:
@@ -74,6 +73,18 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 status_is_error=message.status_is_error,
                 scanned_size=F('scanned_size') + message.object_size,
                 scanned_objects=F('scanned_objects') + 1)
+
+    if message.new_sources and not message.sources_reported_individually:
+        # An explorer has discovered one or more independent Sources. This is
+        # its own clause rather than part of the branch above because
+        # explorers report Sources as they find them, in messages that carry
+        # nothing else. Pre 3.32.4, they report the total when they finish, in a
+        # message that also carries total_objects. Both must count, but the
+        # terminal message of a current explorer repeats the total for the
+        # backwards compatability with older admin versions, and we must not count that.
+        locked_qs.update(
+                last_modified=timezone.now(),
+                total_sources=F('total_sources') + message.new_sources)
 
     if message.skipped_by_last_modified:
         locked_qs.update(skipped_by_last_modified=F("skipped_by_last_modified") +
