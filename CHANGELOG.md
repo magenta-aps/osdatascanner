@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 3.32.4, 2026
+
+""
+
+## New in this release
+
+### General improvements
+
+- Removed the `CPRRULE_CONTEXT_NUMBER_CHECK` setting and the CPRRule surrounding-number
+  context check it controlled.
+
+### Bugfixes
+
 ## Version 3.32.3, 23rd July 2026
 
 "1000km"

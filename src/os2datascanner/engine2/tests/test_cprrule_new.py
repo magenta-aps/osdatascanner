@@ -6,7 +6,6 @@
 import pytest
 import os.path
 
-import os2datascanner.engine2.rules.cpr as cpr_module
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
@@ -61,40 +60,16 @@ class TestCPRRule:
         assert self.simplify_matches(CPRRule().match(text)) == expected
 
     @pytest.mark.parametrize(
-            "text,expected",
+            "text,potential",
             [
-                # A valid CPR followed by a few unrelated numbers is not
-                # dismissed by the context check. A single numeric neighbour is
-                # too weak a signal. cpr_bin_check governs dense numeric soup instead
-                # (see test_bin_check.py::test_cpr_rule_with_bin_check). This
-                # sparse run has a high CPR/number ratio, so it's kept.
+                # CPR numbers next to other, non-CPR numbers are no longer
+                # dismissed by the context check (#70914).
                 ("6742132882 1412661636 9424 1505642917 377377244444",
                  ["1412XXXXXX", "1505XXXXXX"]),
             ])
-    def test_context_check(self, text, expected):
+    def test_context_check(self, text, potential):
         assert self.simplify_matches(
-                CPRRule().match(text)) == expected
-        assert self.simplify_matches(
-                CPRRule(examine_context=False).match(text)) == expected
-
-    def test_context_check_number_check_does_not_split_times_on_colon(self, monkeypatch):
-        """#60766: "13:20" must stay one word, not split into a trailing "20"
-        that dismisses the next row's CPR as a neighbouring number."""
-        monkeypatch.setattr(cpr_module, "CONTEXT_NUMBER_CHECK", True)
-        text = (
-            "CPRnr,Adresse,Dato\n"
-            "230500-0003,Ledetvej 308,07-05-2024 13:20\n"
-            "240501-0006,Langkildevej 506,07-05-2024 13:20"
-        )
-        assert self.simplify_matches(
-                CPRRule().match(text)) == ["2305XXXXXX", "2405XXXXXX"]
-
-    def test_context_check_number_check_still_catches_split_numbers(self, monkeypatch):
-        """A reference number split by a stray space must still be rejected,
-        i.e. the NUMBER check must still work once colons merge into words."""
-        monkeypatch.setattr(cpr_module, "CONTEXT_NUMBER_CHECK", True)
-        text = "Reference 141266-1636 4470118 skal betales inden fredag"
-        assert self.simplify_matches(CPRRule().match(text)) == []
+                CPRRule().match(text)) == potential
 
     def test_surrounding_exceptions_word_with_trailing_colon(self):
         """"Account:" (space before the number) must still match the

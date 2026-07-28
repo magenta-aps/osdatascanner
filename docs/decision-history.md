@@ -204,6 +204,13 @@ too, since it's still attached to that second digit), while a label's colon
 purpose intact - catching a lone CPR-shaped fragment of a longer reference
 number split by a stray space, which the bin check can't catch on its own.
 
+--
+
+The field-test period for the toggle passed without customers reporting a
+surge in false positives after the check was turned off, so
+`CPRRULE_CONTEXT_NUMBER_CHECK` and the check itself have now been removed
+outright. All clients get the fix for the false negatives described above.
+
 
 #### Exceptions
 
