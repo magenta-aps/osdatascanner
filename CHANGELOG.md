@@ -13,6 +13,9 @@
 
 ### Bugfixes
 
+- Explores are now able to immediately report to the admin module when a sub-source is found,
+  adressing an issue where conversions queue could be deleted prematurely.
+
 ## Version 3.32.3, 23rd July 2026
 
 "1000km"
