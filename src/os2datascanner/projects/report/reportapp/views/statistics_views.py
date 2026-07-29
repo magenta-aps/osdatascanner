@@ -584,7 +584,7 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
 
     def filter_positions(self, qs):
         if self.request.GET.get("org_unit") == 'all':
-            self.descendant_units = self.user_units
+            self.descendant_units = self.user_units.get_descendants()
             qs = qs.filter(unit__in=self.descendant_units)
         elif self.org_unit:
             # Note that AL_Node.get_descendants returns a list _not_ a queryset.

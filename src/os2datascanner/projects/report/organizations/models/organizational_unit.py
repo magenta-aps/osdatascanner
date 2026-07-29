@@ -3,9 +3,10 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from treebeard.al_tree import AL_NodeManager
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnit as Core_OrganizationalUnit
+from os2datascanner.core_organizational_structure.models import \
+    OrganizationalUnitManager as Core_OrganizationalUnitManager
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnitSerializer as Core_OrganizationalUnitSerializer
 
@@ -16,7 +17,7 @@ from os2datascanner.core_organizational_structure.serializer import (BaseBulkSer
 from django.db.models import Count, Q, F
 
 
-class OrganizationlUnitManager(AL_NodeManager):
+class OrganizationlUnitManager(Core_OrganizationalUnitManager):
     def with_match_counts(self):
         return self.annotate(
             total_ou_matches=Count(
