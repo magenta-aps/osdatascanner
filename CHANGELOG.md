@@ -15,11 +15,16 @@
 
 - Explores are now able to immediately report to the admin module when a sub-source is found,
   adressing an issue where conversions queue could be deleted prematurely.
+
 - Fixed a bug where a scan could stop updating its progress forever, without any error shown,
   if a mail's Message-ID was too long to store.
 
 - Fixed a bug where logged-in users without organization admin rights got a server error when
   visiting the scan status pages.
+
+- Fixed a bug where an organization admin without the "Can resolve scan statuses" permission
+  could still resolve scan statuses by sending a request directly, bypassing the button being
+  hidden in the interface.
 
 ## Version 3.32.3, 23rd July 2026
 

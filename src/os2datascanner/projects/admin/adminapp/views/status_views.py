@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.db.models import Q, Max, Min
 from django.contrib.auth.mixins import PermissionRequiredMixin
@@ -114,6 +115,12 @@ class StatusCompletedView(StatusBase):
         return self.request.GET.get('paginate_by', self.paginate_by)
 
     def post(self, request, *args, **kwargs):
+        # The template only hides the resolve controls for users without this
+        # permission - it must also be enforced here, or a crafted request
+        # can resolve scan statuses regardless of what the UI shows.
+        if not request.user.has_perm("os2datascanner.resolve_scanstatus"):
+            raise PermissionDenied
+
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
         htmx_trigger = self.request.headers.get('HX-Trigger-Name')
         self.object_list = self.get_queryset()

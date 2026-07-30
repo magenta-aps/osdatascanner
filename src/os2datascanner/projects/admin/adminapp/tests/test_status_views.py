@@ -89,6 +89,15 @@ class TestStatusCompletedView:
             resolved=True)
 
     @pytest.fixture
+    def resolving_admin(self, user_admin):
+        """An org admin who has also been granted the separate, explicit
+        permission required to resolve scan statuses. Being an org
+        Administrator only scopes *which* organization's data is visible -
+        it does not by itself grant the ability to resolve statuses."""
+        user_admin.user_permissions.add(Permission.objects.get(codename='resolve_scanstatus'))
+        return user_admin
+
+    @pytest.fixture
     def unfinished_status(self, basic_scanner):
         """A scan status that is neither completed nor cancelled - should be excluded."""
         return ScanStatus.objects.create(
@@ -252,8 +261,9 @@ class TestStatusCompletedView:
 
         assert response.status_code == 404
 
-    def test_post_status_resolved(self, client, user_admin, completed_status, cancelled_status):
-        client.force_login(user_admin)
+    def test_post_status_resolved(
+            self, client, resolving_admin, completed_status, cancelled_status):
+        client.force_login(resolving_admin)
         response = client.post(
             self.url,
             data={"pk": completed_status.pk},
@@ -267,8 +277,8 @@ class TestStatusCompletedView:
         assert cancelled_status.resolved is False
 
     def test_post_status_resolved_selected(
-            self, client, user_admin, completed_status, cancelled_status):
-        client.force_login(user_admin)
+            self, client, resolving_admin, completed_status, cancelled_status):
+        client.force_login(resolving_admin)
         response = client.post(
             self.url,
             data={"table-checkbox": [completed_status.pk, cancelled_status.pk]},
@@ -282,8 +292,8 @@ class TestStatusCompletedView:
         assert cancelled_status.resolved is True
 
     def test_post_status_resolved_all(
-            self, client, user_admin, completed_status, cancelled_status):
-        client.force_login(user_admin)
+            self, client, resolving_admin, completed_status, cancelled_status):
+        client.force_login(resolving_admin)
         response = client.post(
             self.url,
             data={},
@@ -297,7 +307,7 @@ class TestStatusCompletedView:
         assert cancelled_status.resolved is True
 
     def test_post_status_resolved_all_scoped_to_own_organization(
-            self, client, user_admin, completed_status, basic_scanner2):
+            self, client, resolving_admin, completed_status, basic_scanner2):
         other_org_status = ScanStatus.objects.create(
             scanner=basic_scanner2,
             scan_tag=self._scan_tag(basic_scanner2, "other-org"),
@@ -306,7 +316,7 @@ class TestStatusCompletedView:
             explored_sources=1,
             total_sources=1)
 
-        client.force_login(user_admin)
+        client.force_login(resolving_admin)
         client.post(
             self.url,
             data={},
@@ -318,10 +328,28 @@ class TestStatusCompletedView:
         assert completed_status.resolved is True
         assert other_org_status.resolved is False
 
-    def test_post_without_htmx_header_does_not_resolve(self, client, user_admin, completed_status):
-        client.force_login(user_admin)
+    def test_post_without_htmx_header_does_not_resolve(
+            self, client, resolving_admin, completed_status):
+        client.force_login(resolving_admin)
         response = client.post(self.url, data={"pk": completed_status.pk})
 
         assert response.status_code == 200
+        completed_status.refresh_from_db()
+        assert completed_status.resolved is False
+
+    def test_post_without_resolve_permission_is_forbidden(
+            self, client, user_admin, completed_status):
+        """Being an org Administrator alone must not be enough to resolve scan
+        statuses - the template hides the resolve controls without
+        resolve_scanstatus, and the view must enforce that server-side too,
+        or a crafted request bypasses the UI entirely."""
+        client.force_login(user_admin)
+        response = client.post(
+            self.url,
+            data={"pk": completed_status.pk},
+            **self.headers,
+            HTTP_HX_Trigger_Name="status-resolved")
+
+        assert response.status_code == 403
         completed_status.refresh_from_db()
         assert completed_status.resolved is False
