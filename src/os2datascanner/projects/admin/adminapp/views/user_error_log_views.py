@@ -23,9 +23,11 @@ def count_new_errors(user) -> int:
     usererrorlog = None
     if user.has_perm("core.view_client"):
         usererrorlog = UserErrorLog.objects.all()
-    else:
+    elif hasattr(user, "administrator_for"):
         user_orgs = user.administrator_for.client.organizations.all()
         usererrorlog = UserErrorLog.objects.filter(organization__in=user_orgs)
+    else:
+        usererrorlog = UserErrorLog.objects.none()
     return usererrorlog.filter(is_new=True).count()
 
 
