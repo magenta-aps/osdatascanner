@@ -18,6 +18,9 @@
 - Fixed a bug where a scan could stop updating its progress forever, without any error shown,
   if a mail's Message-ID was too long to store.
 
+- Fixed a bug where logged-in users without organization admin rights got a server error when
+  visiting the scan status pages.
+
 ## Version 3.32.3, 23rd July 2026
 
 "1000km"
