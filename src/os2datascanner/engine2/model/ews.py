@@ -3,6 +3,7 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import hashlib
 from io import BytesIO
 from typing import Iterator, Optional
 from urllib.parse import urlsplit, quote
@@ -324,7 +325,14 @@ class EWSMailResource(FileResource):
         return "message/rfc822"
 
     def compute_content_identifier(self):
-        return self.get_message_object().message_id.strip("<>")
+        # The Message-ID is normally short, but some system-generated
+        # notifications can produce ones far longer than the database
+        # column (varchar(256)) allows, so hash it instead of using it raw.
+        # Hashing still lets a forwarded copy of an email resolve to the
+        # same identifier as the original (ticket #68590), since the
+        # Message-ID itself is preserved on forwarding.
+        message_id = self.get_message_object().message_id.strip("<>")
+        return hashlib.blake2b(message_id.encode()).hexdigest()
 
 
 class EWSMailHandle(Handle):
