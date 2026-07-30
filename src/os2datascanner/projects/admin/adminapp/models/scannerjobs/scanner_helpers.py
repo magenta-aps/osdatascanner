@@ -160,7 +160,19 @@ class AbstractScanStatus(models.Model):
 
     @property
     def finished(self) -> bool:
-        return self.fraction_explored == 1.0 and self.fraction_scanned == 1.0
+        """The Python counterpart of _completed_Q, and required to stay exactly
+        equivalent to it: the collector branches on this, the re-broadcast
+        filters on the Q, and a scan that satisfies one but not the other gets
+        cleaned up while still being advertised to workers. See
+        test_finished_agrees_with_completed_q.
+
+        Deliberately not expressed in terms of fraction_explored and
+        fraction_scanned. Those are clamped for display purposes, so they can't
+        tell "every Source is explored" apart from "Sources have been explored
+        that total_sources has never heard of", and the latter is proof that
+        exploration is still going on."""
+        return (0 < self.total_objects <= self.scanned_objects
+                and self.explored_sources == self.total_sources)
 
     @property
     def is_running(self) -> bool:

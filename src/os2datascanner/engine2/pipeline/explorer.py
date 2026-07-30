@@ -98,8 +98,14 @@ def message_received(  # noqa: CCR001
                 handle_count += 1
             else:
                 # This Handle is a thin wrapper around an independent Source.
-                # Construct that Source and enqueue it for further exploration
+                # Construct that Source and enqueue it for further exploration.
+                # Report the Source before enqueueing it: another explorer can
+                # pick it up and finish it long before we're done here, and if
+                # the ScanStatus hasn't heard of it by then, explored_sources
+                # overtakes total_sources and the scan looks complete.
                 new_source = Source.from_handle(handle)
+                yield messages.StatusMessage(
+                        scan_tag=message.scan_tag, new_sources=1)
                 yield messages.replace(message, source=new_source)
                 source_count = (source_count or 0) + 1
 
@@ -141,9 +147,14 @@ def message_received(  # noqa: CCR001
         # good form to clean up
         if hasattr(handle_iterator, "close"):
             handle_iterator.close()
+        # Sub-Sources were reported one by one as they were discovered, so
+        # new_sources here is only for admin systems pre 3.32.4 which don't
+        # understand those reports. sources_reported_individually tells newer
+        # ones to disregard it
         yield messages.StatusMessage(
                 scan_tag=message.scan_tag,
                 total_objects=handle_count, new_sources=source_count,
+                sources_reported_individually=True,
                 message=exception_message,
                 status_is_error=exception_message != "")
 
