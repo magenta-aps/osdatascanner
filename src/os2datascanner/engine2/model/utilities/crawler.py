@@ -204,6 +204,13 @@ class WebCrawler(Crawler):
             if response.status_code == 200:
                 ct = response.headers.get(
                         "Content-Type", "application/octet-stream")
+
+                if (cl := response.headers.get("Content-Length")) is not None:
+                    try:
+                        hints["size"] = int(cl)
+                    except ValueError:
+                        pass
+
                 if simplify_mime_type(ct).lower() == "text/html":
                     if not response.content:
                         response = self.get(url)
