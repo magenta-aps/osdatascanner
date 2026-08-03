@@ -17,7 +17,8 @@ from ..adminapp.management.commands.checkup_collector import (
     create_usererrorlog, checkup_message_received_raw)
 from ..adminapp.management.commands.status_collector import status_message_received_raw
 from ..adminapp.models.usererrorlog import UserErrorLog
-from ..adminapp.models.scannerjobs.scanner import ScanStatus, ScheduledCheckup
+from ..adminapp.models.scannerjobs.scanner import (
+    ScanStatus, ScanStatusSnapshot, ScheduledCheckup)
 
 
 @pytest.mark.django_db
@@ -52,6 +53,47 @@ class TestPipelineCollector:
         assert scan_status.status_is_error == expected_is_error
         assert scan_status.scanned_objects == expected_scanned_objects
         assert scan_status.scanned_size == expected_scanned_size
+
+    def test_source_discovery_does_not_snapshot(self, basic_scanner, basic_scan_tag):
+        """Explorer messages that only announce newly discovered Sources must
+        not produce ScanStatusSnapshots. They carry no scanning progress, so
+        every one of them would record an identical row."""
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scan_tag.to_json_object(),
+                total_sources=1,
+                total_objects=10,
+                scanned_objects=0,
+                scanned_size=0)
+        discovery_message = messages.StatusMessage(
+                scan_tag=basic_scan_tag,
+                message="discovered a Source",
+                new_sources=1)
+
+        for _ in range(50):
+            [_ for _ in status_message_received_raw(
+                    discovery_message.to_json_object())]
+
+        assert ScanStatusSnapshot.objects.count() == 0
+
+    def test_scanned_objects_still_snapshot(self, basic_scanner, basic_scan_tag,
+                                            status_message_with_object_size):
+        """Worker messages that advance scanned_objects must produce
+        ScanStatusSnapshots, one per object at this (small) total_objects."""
+        ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scan_tag.to_json_object(),
+                total_sources=1,
+                total_objects=10,
+                scanned_objects=0,
+                scanned_size=0)
+
+        for _ in range(3):
+            [_ for _ in status_message_received_raw(
+                    status_message_with_object_size.to_json_object())]
+
+        assert list(ScanStatusSnapshot.objects.order_by(
+                "time_stamp").values_list("scanned_objects", flat=True)) == [1, 2, 3]
 
     def test_scan_tag_schema_change_shouldnt_drop_messages(
             self, basic_scanner, status_message_with_object_size):
