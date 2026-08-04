@@ -15,6 +15,7 @@ WORKDIR /code/requirements
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# hadolint ignore=DL3066
 USER nobody:nogroup
 
 # Just for debugging:
