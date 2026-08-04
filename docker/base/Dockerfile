@@ -15,6 +15,7 @@ RUN npm ci --prefix static; \
 # NB! Doesn't start a webserver, only bundles files!
     npm run prod --prefix static
 
+# hadolint ignore=DL3066
 USER node
 
 # Build development bundle
@@ -97,7 +98,8 @@ RUN groupadd -g 63030 -r os2ds_engine \
 
 COPY docker/engine/docker-entrypoint.sh /docker/entrypoint.sh
 
-# Set up to run given command as the new user
+# Set up to run given command as the new user:
+# hadolint ignore=DL3066
 USER os2ds_engine:os2ds_engine
 
 EXPOSE 9091
@@ -124,6 +126,7 @@ COPY docker/api/docker-settings.toml /docker/settings/server-system.toml
 COPY docker/api/gunicorn-settings.py /docker/settings/server-gunicorn.py
 
 WORKDIR /code/src/os2datascanner/server
+# hadolint ignore=DL3066
 USER os2ds_api:os2ds_api
 EXPOSE 5000
 
@@ -178,6 +181,7 @@ WORKDIR /code/src/os2datascanner/projects/admin
 # insecure settings file after `collectstatic`.
 RUN chown -R os2ds_admin:os2ds_admin /docker
 
+# hadolint ignore=DL3066
 USER os2ds_admin:os2ds_admin
 
 # Unfortunately, `manage.py` requires all settings to be set. We include a set
@@ -234,6 +238,7 @@ WORKDIR /code/src/os2datascanner/projects/report
 # insecure settings file after `collectstatic`.
 RUN chown -R os2ds_report:os2ds_report /docker
 
+# hadolint ignore=DL3066
 USER os2ds_report:os2ds_report
 
 # Unfortunately, `manage.py` requires all settings to be set. We include a set
@@ -251,6 +256,7 @@ CMD ["gunicorn", "--config", "/docker/settings/report-gunicorn.py", "asgi", "os2
 
 FROM base AS sbsys-init
 
+# hadolint ignore=DL3064
 ENV ACCEPT_EULA=Y \
     MSSQL_COLLATION=SQL_Danish_Pref_CP1_CI_AS \
     SBSYS_HOST=SBSYS_DB \
