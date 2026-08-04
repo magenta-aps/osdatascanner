@@ -56,6 +56,8 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     # Queryset is evaluated immediately with .first() to lock the database entry.
     scan_status = locked_qs.first()
 
+    object_scanned = message.object_size is not None and message.object_type is not None
+
     if message.total_objects is not None:
         # An explorer has finished exploring a Source
         locked_qs.update(
@@ -65,7 +67,7 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 total_objects=F('total_objects') + message.total_objects,
                 explored_sources=F('explored_sources') + 1)
 
-    elif message.object_size is not None and message.object_type is not None:
+    elif object_scanned:
         # A worker has finished processing a Handle
         locked_qs.update(
                 message=message.message,
@@ -167,8 +169,13 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
 
         # We've just updated using locked_qs, refresh our saved instance before proceeding.
         scan_status.refresh_from_db()
+
+        # Snapshots are a scanned_objects time series, so only a message that
+        # advanced scanned_objects can add a point to it. An explorer
+        # announcing Sources one by one sends many messages before the
+        # first object is scanned, we don't want those to count.
         n_total = scan_status.total_objects
-        if n_total and n_total > 0:
+        if object_scanned and n_total and n_total > 0:
             # Calculate a frequency for how often to take a snapshot.
             # n_total must be at least 2 for this to work.
             frequency = n_total * math.log(snapshot_param, max(n_total, 2))
