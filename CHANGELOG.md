@@ -4,12 +4,15 @@
 
 ""
 
-## New in this release
+### New in this release
 
 ### General improvements
 
 - Removed the `CPRRULE_CONTEXT_NUMBER_CHECK` setting and the CPRRule surrounding-number
   context check it controlled.
+
+- `OrganizationalUnit` now uses treebeards `AL_Node` as a base model,
+  instead of the unsupported `MPTTreeNode`.
 
 ### Bugfixes
 
@@ -29,6 +32,9 @@
 - Fixed a bug where an organization admin without the "Can resolve scan statuses" permission
   could still resolve scan statuses by sending a request directly, bypassing the button being
   hidden in the interface.
+
+- Fixed a bug where indirect employees weren't included in the leader overview,
+  when choosing to view "all" organizational units.
 
 ## Version 3.32.3, 23rd July 2026
 
