@@ -14,11 +14,10 @@ class OrganizationalUnitSerializer(serializers.ModelSerializer):
         fields = (
             'uuid',
             'name',
-            'tree_id',
-            'level',
             'parent',
             'organization',
-            'scanners')
+            'scanners',
+        )
 
 
 class SharePointSiteSerializer(serializers.ModelSerializer):

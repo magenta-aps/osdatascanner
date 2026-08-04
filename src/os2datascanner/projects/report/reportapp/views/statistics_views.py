@@ -584,23 +584,10 @@ class LeaderUnitsStatisticsPageView(LeaderStatisticsPageView):
 
     def filter_positions(self, qs):
         if self.request.GET.get("org_unit") == 'all':
-            # Determine what units are "root nodes", we'll only want to call
-            # get_descendants on units that won't be retrieved by get_descendants() on a
-            # "higher" up node.
-            roots = self.user_units.exclude(
-                parent__in=self.user_units.values('pk')
-            )
-
-            if roots.count() == self.user_units.count():
-                # This means the hierarchy is completely flat: Every OU in our qs is a root.
-                # It's cheaper to ask for counts and skip a huge descendants evaluation for
-                # XX amount of root nodes, that we can tell in advance will have none.
-                self.descendant_units = roots
-            else:
-                self.descendant_units = roots.get_descendants(include_self=True)
-
+            self.descendant_units = self.user_units.get_descendants()
             qs = qs.filter(unit__in=self.descendant_units)
         elif self.org_unit:
+            # Note that AL_Node.get_descendants returns a list _not_ a queryset.
             self.descendant_units = self.org_unit.get_descendants(include_self=True)
             qs = qs.filter(unit__in=self.descendant_units)
         else:

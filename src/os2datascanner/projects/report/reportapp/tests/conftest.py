@@ -25,60 +25,36 @@ def create_message():
                     'name': 'addev',
                     'parent': None,
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 1,
-                    'rght': 12,
-                    'tree_id': 1,
-                    'level': 0
                 },
                 {
                     'pk': 'f40cfa85-1c5d-472c-bca0-e874c939aae3',
                     'name': 'ad',
                     'parent': '7f433229-a194-4778-8c50-289cc4d32df2',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 2,
-                    'rght': 11,
-                    'tree_id': 1,
-                    'level': 1
                 },
                 {
                     'pk': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'name': 'OSdatascanner',
                     'parent': 'f40cfa85-1c5d-472c-bca0-e874c939aae3',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 3,
-                    'rght': 10,
-                    'tree_id': 1,
-                    'level': 2
                 },
                 {
                     'pk': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'name': 'Magenta',
                     'parent': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 4,
-                    'rght': 9,
-                    'tree_id': 1,
-                    'level': 3
                 },
                 {
                     'pk': '93f62bd8-c042-4652-b1eb-7cd9e79f5502',
                     'name': 'Vejstrand',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 5,
-                    'rght': 6,
-                    'tree_id': 1,
-                    'level': 4
                 },
                 {
                     'pk': '8b030967-c1f6-4006-982e-ad61c365ca15',
                     'name': 'Users',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 7,
-                    'rght': 8,
-                    'tree_id': 1,
-                    'level': 4
                 }
             ],
             'Account': [
@@ -285,60 +261,36 @@ def update_message_in_order():
                     'name': 'addev',
                     'parent': None,
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 1,
-                    'rght': 12,
-                    'tree_id': 1,
-                    'level': 0
                 },
                 {
                     'pk': 'f40cfa85-1c5d-472c-bca0-e874c939aae3',
                     'name': 'ad',
                     'parent': '7f433229-a194-4778-8c50-289cc4d32df2',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 2,
-                    'rght': 11,
-                    'tree_id': 1,
-                    'level': 1
                 },
                 {
                     'pk': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'name': 'OSdatascanner',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 3,
-                    'rght': 10,
-                    'tree_id': 1,
-                    'level': 2
                 },
                 {
                     'pk': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'name': 'Magenta',
                     'parent': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 4,
-                    'rght': 9,
-                    'tree_id': 1,
-                    'level': 3
                 },
                 {
                     'pk': '93f62bd8-c042-4652-b1eb-7cd9e79f5502',
                     'name': 'Strand',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 5,
-                    'rght': 6,
-                    'tree_id': 1,
-                    'level': 4
                 },
                 {
                     'pk': '8b030967-c1f6-4006-982e-ad61c365ca15',
                     'name': 'Brugere',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 7,
-                    'rght': 8,
-                    'tree_id': 1,
-                    'level': 4
                 }
             ],
             'Account': [
@@ -503,60 +455,36 @@ def update_message_not_in_order():
                     'name': 'addev',
                     'parent': None,
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 1,
-                    'rght': 12,
-                    'tree_id': 1,
-                    'level': 0
                 },
                 {
                     'pk': '8b030967-c1f6-4006-982e-ad61c365ca15',
                     'name': 'Brugere',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 7,
-                    'rght': 8,
-                    'tree_id': 1,
-                    'level': 4
                 },
                 {
                     'pk': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'name': 'Magenta',
                     'parent': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 4,
-                    'rght': 9,
-                    'tree_id': 1,
-                    'level': 3
                 },
                 {
                     'pk': '93f62bd8-c042-4652-b1eb-7cd9e79f5502',
                     'name': 'Strand',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 5,
-                    'rght': 6,
-                    'tree_id': 1,
-                    'level': 4
                 },
                 {
                     'pk': 'f40cfa85-1c5d-472c-bca0-e874c939aae3',
                     'name': 'ad',
                     'parent': '7f433229-a194-4778-8c50-289cc4d32df2',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 2,
-                    'rght': 11,
-                    'tree_id': 1,
-                    'level': 1
                 },
                 {
                     'pk': 'ca1d1555-1afe-478f-adba-65d4ce706453',
                     'name': 'OSdatascanner',
                     'parent': '1fa5e11e-7661-4c9e-88f7-0b24bdd5d5ab',
                     'organization': '0c4bab1f-1c54-4533-93c7-33cc0a5d4af1',
-                    'lft': 3,
-                    'rght': 10,
-                    'tree_id': 1,
-                    'level': 2
                 },
 
             ],

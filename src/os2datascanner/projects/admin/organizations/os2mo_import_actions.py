@@ -87,7 +87,6 @@ def perform_os2mo_import(org_unit_list: list,  # noqa: CCR001, C901 too high cog
                 imported=True,
                 last_import=now,
                 last_import_requested=now,
-                lft=0, rght=0, tree_id=0, level=0
             )
             to_add.append(org_unit)
 

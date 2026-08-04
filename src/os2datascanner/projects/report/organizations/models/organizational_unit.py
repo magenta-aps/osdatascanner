@@ -3,9 +3,10 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from mptt.managers import TreeManager
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnit as Core_OrganizationalUnit
+from os2datascanner.core_organizational_structure.models import \
+    OrganizationalUnitManager as Core_OrganizationalUnitManager
 from os2datascanner.core_organizational_structure.models import \
     OrganizationalUnitSerializer as Core_OrganizationalUnitSerializer
 
@@ -16,7 +17,7 @@ from os2datascanner.core_organizational_structure.serializer import (BaseBulkSer
 from django.db.models import Count, Q, F
 
 
-class OrganizationlUnitManager(TreeManager):
+class OrganizationlUnitManager(Core_OrganizationalUnitManager):
     def with_match_counts(self):
         return self.annotate(
             total_ou_matches=Count(
@@ -55,12 +56,8 @@ class OrganizationalUnitBulkSerializer(BaseBulkSerializer):
 
 class OrganizationalUnitSerializer(Core_OrganizationalUnitSerializer):
     pk = serializers.UUIDField(read_only=False)
-    lft = serializers.IntegerField(read_only=False)
-    rght = serializers.IntegerField(read_only=False)
-    tree_id = serializers.IntegerField(read_only=False)
-    level = serializers.IntegerField(read_only=False)
 
-    parent = SelfRelatingField(queryset=OrganizationalUnit.objects.all(), many=False,
+    parent = SelfRelatingField(queryset=OrganizationalUnit.objects, many=False,
                                allow_null=True)
 
     from ..models.organization import Organization

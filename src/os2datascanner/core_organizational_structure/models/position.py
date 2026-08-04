@@ -7,7 +7,6 @@ from abc import ABC
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from mptt.models import TreeForeignKey
 from ..serializer import BaseSerializer
 
 
@@ -86,7 +85,7 @@ class Position(models.Model):
         related_name='positions',
         verbose_name=_('account'),
     )
-    unit = TreeForeignKey(
+    unit = models.ForeignKey(
         'OrganizationalUnit',
         on_delete=models.CASCADE,
         verbose_name=_('organizational unit'),

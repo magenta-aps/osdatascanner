@@ -74,6 +74,7 @@ django==5.2.1
     #   django-settings-export
     #   django-storages
     #   django-structlog
+    #   django-treebeard
     #   djangorestframework
     #   drf-extra-fields
     #   mozilla-django-oidc
@@ -98,6 +99,8 @@ django-settings-export==1.2.1
 django-storages[google]==1.13.1
     # via -r requirements-all.in
 django-structlog==8.0.0
+    # via -r requirements-all.in
+django-treebeard==5.3.0
     # via -r requirements-all.in
 djangorestframework==3.14.0
     # via
@@ -260,7 +263,9 @@ pika==1.2.0
 pillow==11.3.0
     # via -r requirements-all.in
 pluggy==1.6.0
-    # via pytest
+    # via
+    #   pytest
+    #   pytest-cov
 prometheus-client==0.15.0
     # via
     #   -r requirements-all.in
@@ -309,6 +314,7 @@ pygments==2.13.0
     #   exchangelib
     #   ipython
     #   ipython-pygments-lexers
+    #   pytest
     #   rich
 pymssql==2.3.7
     # via -r requirements-all.in
@@ -331,6 +337,7 @@ pytest==9.0.3
     # via
     #   -r requirements-all.in
     #   pytest-benchmark
+    #   pytest-cov
     #   pytest-django
     #   pytest-xdist
 pytest-benchmark==5.2.3
@@ -434,8 +441,6 @@ termtables==0.2.4
     # via -r requirements-all.in
 toml==0.10.2
     # via -r requirements-all.in
-tomli==2.0.1
-    # via pytest
 traitlets==5.14.3
     # via
     #   ipython

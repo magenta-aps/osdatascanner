@@ -86,9 +86,6 @@ class GoogleWorkspaceImportJob(BackgroundJob):
             all_imported_ids
         )
 
-        # Rebuild MPTT tree after creating OUs
-        OrganizationalUnit.objects.rebuild()
-
         # PHASE 2: Set OU parent relationships + save positions and aliases
         self.status = "Processing relationships and memberships..."
         self.save(update_fields=["status"])
@@ -191,7 +188,6 @@ class GoogleWorkspaceImportJob(BackgroundJob):
                     imported=True,
                     last_import=now,
                     last_import_requested=now,
-                    lft=0, rght=0, tree_id=0, level=0,
                 )
                 to_add.append(org_unit)
                 ou_map[imported_id] = org_unit
@@ -407,9 +403,6 @@ class GoogleWorkspaceImportJob(BackgroundJob):
             to_update=ous_to_update + positions_to_update + aliases_to_update,
             to_delete=[],
         )
-
-        # Rebuild MPTT after parent updates
-        OrganizationalUnit.objects.rebuild()
 
         return {
             "ou_positions": len(ou_positions),

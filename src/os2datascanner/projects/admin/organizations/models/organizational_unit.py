@@ -47,7 +47,7 @@ class OrganizationalUnitSerializer(Core_OrganizationalUnitSerializer):
         pk_field=UUIDField(format='hex_verbose'))
 
     parent = serializers.PrimaryKeyRelatedField(
-        queryset=OrganizationalUnit.objects.all(),
+        queryset=OrganizationalUnit.objects,
         required=False,
         allow_null=True,
         # This will properly serialize uuid.UUID to str:

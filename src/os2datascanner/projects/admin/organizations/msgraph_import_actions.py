@@ -65,7 +65,6 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                 imported=True,
                 last_import=now,
                 last_import_requested=now,
-                lft=0, rght=0, tree_id=0, level=0
             )
             to_add.append(org_unit)
 

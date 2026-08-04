@@ -34,7 +34,6 @@ from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 import os2datascanner.engine2.pipeline.messages as messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.conversions.types import OutputType
-from mptt.models import TreeManyToManyField
 from os2datascanner.projects.admin.adminapp.utils import CleanProblemMessage
 from os2datascanner.projects.admin.organizations.models.broadcasted_mixin import Broadcasted
 from os2datascanner.projects.admin.organizations.models.organization import Organization
@@ -108,7 +107,7 @@ class Scanner(models.Model):
         help_text=_("The users who should be notified on completed scans.")
     )
 
-    org_units = TreeManyToManyField(
+    org_units = models.ManyToManyField(
         "organizations.OrganizationalUnit",
         related_name="scanners",
         blank=True,
