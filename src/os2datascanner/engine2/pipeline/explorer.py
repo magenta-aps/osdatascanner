@@ -2,7 +2,6 @@
 # This Source Code Form is subject to the terms of the Mozilla Public License,
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
-
 from collections.abc import Generator
 import structlog
 
@@ -96,6 +95,13 @@ def message_received(  # noqa: CCR001
                         handle=handle,
                         progress=progress)
                 handle_count += 1
+                # Count it now that it is out, and never before. This message is
+                # published after the ConversionMessage of the object it counts.
+                # Opposite order would send a count for work that was never
+                # published, which nothing later can retract, and the scanner
+                # would never complete.
+                yield messages.StatusMessage(
+                        scan_tag=message.scan_tag, new_objects=1)
             else:
                 # This Handle is a thin wrapper around an independent Source.
                 # Construct that Source and enqueue it for further exploration.
@@ -147,13 +153,20 @@ def message_received(  # noqa: CCR001
         # good form to clean up
         if hasattr(handle_iterator, "close"):
             handle_iterator.close()
-        # Sub-Sources were reported one by one as they were discovered, so
-        # new_sources here is only for admin systems pre 3.32.4 which don't
-        # understand those reports. sources_reported_individually tells newer
-        # ones to disregard it
+        # Objects and sub-Sources were both reported one by one as they were
+        # found, so the totals here are only for admin systems that don't
+        # understand those reports: pre 3.32.4
+        # The two *_reported_individually flags tell newer ones to disregard them.
+        #
+        # The terminal message must keep carrying total_objects, but for two
+        # separate reasons:
+        # 1. Its value is the back-compat total, ignored by any
+        # collector that understands objects_reported_individually.
+        # 2. Signals that a Source is done being explored, i.e. increments explored_sources.
         yield messages.StatusMessage(
                 scan_tag=message.scan_tag,
                 total_objects=handle_count, new_sources=source_count,
+                objects_reported_individually=True,
                 sources_reported_individually=True,
                 message=exception_message,
                 status_is_error=exception_message != "")

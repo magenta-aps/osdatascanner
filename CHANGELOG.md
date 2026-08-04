@@ -13,8 +13,12 @@
 
 ### Bugfixes
 
-- Explores are now able to immediately report to the admin module when a sub-source is found,
-  adressing an issue where conversions queue could be deleted prematurely.
+- Explorers are now able to immediately report to the admin module when a sub-source is found,
+  addressing an issue where conversions queue could be deleted prematurely.
+
+- Explorers now immediately report to the admin module after a ConversionMessage is sent to the
+  engine. This makes counts more stable if an explorer is restarted mid exploring, and makes it
+  visible that duplicate work might be conducted - but avoids cutting of the tail.
 
 - Fixed a bug where a scan could stop updating its progress forever, without any error shown,
   if a mail's Message-ID was too long to store.
