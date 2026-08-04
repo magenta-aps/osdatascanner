@@ -51,6 +51,10 @@ msgstr "Ingen data"
 #: dist/js/charts/doughnutCharts.js dist/js/charts/pieCharts.js
 #: js/charts/doughnutCharts.js js/charts/pieCharts.js
 msgid "No data"
+msgstr "Ingen data"
+
+#: dist/js/dropdowntree.js js/dropdowntree.js
+msgid "Select one or more organizational units"
 msgstr ""
 
 #: dist/js/forms/clearUploadedFile.js js/forms/clearUploadedFile.js

@@ -6,9 +6,7 @@
 
 {% block body %}
   <div class="content content--maxwidth" hx-push-url="true">
-    {% if show_leader_tabs %}
-      {% include "components/navigation/leader-statistics-tabs.html" with active_tab=active_tab %}
-    {% endif %}
+    {% include "components/navigation/leader-statistics-tabs.html" with active_tab=active_tab %}
     <div class="content-header">
       <h1 class="page-title">
         {% if org_unit %}

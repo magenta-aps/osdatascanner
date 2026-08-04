@@ -30,7 +30,8 @@ from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.statistics_views import (
         UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView, LeaderAccountsStatisticsCSVView,
-        LeaderAccountsStatisticsPageView, LeaderStatisticsPageView)
+        LeaderAccountsStatisticsPageView, LeaderStatisticsPageView,
+        LeaderResultsStatisticsPageView, LeaderResultsStatisticsCSVView)
 from ..reportapp.views.utilities.statistics_utilities import (
         base_query, make_data_structures, count_unhandled_matches_by_month,
         count_new_matches_by_month)
@@ -1389,6 +1390,41 @@ class TestLeaderUnitsStatisticsPageView:
         assert unit_response.status_code == 200
         assert account_response.status_code == 302
 
+    def test_show_units_and_accounts_tab_reflect_leadertab_config(
+            self, rf, superuser_account, olsenbanden_organization):
+        """Each pre-existing subtab's visibility flag must reflect the
+        organization's leadertab_config, independently of one another."""
+        olsenbanden_organization.leadertab_config = LeaderTabConfigChoices.UNITS
+        olsenbanden_organization.save()
+
+        response = self.get_leader_statisticspage_response(
+            rf, superuser_account, params="?org_unit=all")
+
+        assert response.context_data['show_units_tab'] is True
+        assert response.context_data['show_accounts_tab'] is False
+
+    def test_disabled_subtab_link_absent_from_units_page(self, client, superuser_account,
+                                                         olsenbanden_organization):
+        """A disabled subtab's link must not appear at all -- otherwise it's a
+        dead link that bounces the user right back where they came from."""
+        olsenbanden_organization.leadertab_config = LeaderTabConfigChoices.UNITS
+        olsenbanden_organization.save()
+        client.force_login(superuser_account.user)
+
+        response = client.get(reverse("statistics-leader-units") + "?org_unit=all")
+
+        assert reverse("statistics-leader-accounts").encode() not in response.content
+        assert reverse("statistics-leader-results").encode() in response.content
+
+    def test_results_tab_link_present_on_units_page(self, client, superuser_account):
+        """The new Statistik tab's link should appear on the existing units
+        page once the tab bar is shown."""
+        client.force_login(superuser_account.user)
+
+        response = client.get(reverse("statistics-leader-units") + "?org_unit=all")
+
+        assert reverse("statistics-leader-results").encode() in response.content
+
     # Helper functions
 
     def get_leader_statisticspage_response(self, rf, account, params='', **kwargs):
@@ -1400,6 +1436,94 @@ class TestLeaderUnitsStatisticsPageView:
         request = rf.get(reverse('statistics-leader-units-export') + params)
         request.user = account.user
         return LeaderUnitsStatisticsCSVView.as_view()(request, **kwargs)
+
+
+@pytest.mark.django_db
+class TestLeaderResultsStatisticsPageView:
+
+    def test_leader_results_statisticspage_as_manager(
+            self, rf, egon_account, egon_manager_position):
+        """A user with a 'manager'-position to an organizational unit should
+        be able to access the leader results overview page."""
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 200
+
+    def test_leader_results_statisticspage_with_no_privileges(self, egon_account, rf):
+        """A user with no privileges should not be able to access the leader
+        results overview page."""
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+
+        assert response.status_code == 403
+
+    def test_leader_results_statisticspage_default_view_excludes_unmanaged_units(
+            self, rf, kjeld_account, kjeld_manager_position,
+            olsenbanden_ou_positions, kjelds_hus_ou_positions,
+            egon_email_alias, yvonne_email_alias):
+        """The default (no orgunit chosen) view must aggregate only over units
+        the leader actually manages -- never the whole organization. Kjeld
+        manages kjelds_hus (a child of olsenbanden_ou); Egon is an employee of
+        olsenbanden_ou itself, not of kjelds_hus, so Egon's matches must not
+        appear in Kjeld's default view."""
+
+        # Egon: employee of olsenbanden_ou only (via olsenbanden_ou_positions).
+        create_reports_for(egon_email_alias, num=3)
+        # Yvonne: employee of kjelds_hus (via kjelds_hus_ou_positions), which
+        # Kjeld manages.
+        create_reports_for(yvonne_email_alias, num=2)
+
+        response = self.get_leader_results_statisticspage_response(rf, kjeld_account)
+
+        assert response.context_data['match_data']['unhandled']['count'] == 2
+
+    def test_leader_results_statisticspage_explicit_orgunit_filter(
+            self, rf, egon_account, egon_manager_position, egon_email_alias,
+            benny_email_alias, kjeld_email_alias, olsenbanden_ou_positions,
+            olsenbanden_ou):
+        """Choosing a specific managed unit shows only that unit's (and its
+        descendants') matches. filter_by_unit()'s own counting correctness is
+        already covered exhaustively by TestDPOStatisticsPageView -- this only
+        needs to prove our view wires the leader's managed unit into it."""
+
+        create_reports_for(egon_email_alias, num=2)
+        create_reports_for(benny_email_alias, num=3)
+        create_reports_for(kjeld_email_alias, num=5)
+
+        response = self.get_leader_results_statisticspage_response(
+            rf, egon_account, params=f'?orgunit={str(olsenbanden_ou.uuid)}')
+
+        assert response.context_data['match_data']['unhandled']['count'] == 10
+
+    def test_leader_results_export_with_no_privileges(self, egon_account, rf):
+        """A user with no privileges should not be able to export leader
+        results data."""
+
+        response = self.get_leader_results_statistics_csv_response(rf, egon_account)
+
+        assert response.status_code == 403
+
+    @override_settings(LEADER_CSV_EXPORT=False)
+    def test_leader_results_csv_export_feature_flag(self, egon_account, egon_manager_position,
+                                                    rf):
+        """When the feature flag LEADER_CSV_EXPORT is off, a user should be
+        met with PermissionDenied."""
+
+        with pytest.raises(PermissionDenied):
+            self.get_leader_results_statistics_csv_response(rf, egon_account)
+
+    # Helper functions
+
+    def get_leader_results_statisticspage_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-results') + params)
+        request.user = account.user
+        return LeaderResultsStatisticsPageView.as_view()(request, **kwargs)
+
+    def get_leader_results_statistics_csv_response(self, rf, account, params='', **kwargs):
+        request = rf.get(reverse('statistics-leader-results-export') + params)
+        request.user = account.user
+        return LeaderResultsStatisticsCSVView.as_view()(request, **kwargs)
 
 
 @pytest.mark.django_db

@@ -588,6 +588,10 @@ msgstr "Organisatoriske enheder"
 msgid "Employees"
 msgstr "Medarbejdere"
 
+#: reportapp/templates/components/navigation/leader-statistics-tabs.html
+msgid "Statistics"
+msgstr "Statistik"
+
 #: reportapp/templates/components/navigation/navigation.html
 #: reportapp/templates/leader_statistics_template.html
 #: reportapp/templates/report_content--personal.html
@@ -1398,6 +1402,10 @@ msgstr "Du er nu logget ud."
 #: reportapp/templates/dpo_statistics_template.html
 msgid "DPO statistics"
 msgstr "DPO-statistik"
+
+#: reportapp/templates/leader_results_statistics_template.html
+msgid "Leader statistics"
+msgstr "Lederstatistik"
 
 #: reportapp/templates/error_pages/no-units-error.html
 msgid "No organizational units associated with account"

@@ -26,6 +26,9 @@
   reference and all related reports in the report module. Removing (hiding) a scanner job is
   unaffected.
 
+- Added a new subtab on the leader overview showing the same statistics as the
+  DPO overview, scoped to the departments a leader manages.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the

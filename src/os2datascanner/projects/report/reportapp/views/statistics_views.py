@@ -22,7 +22,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
 
-from .utilities.statistics_utilities import (base_query, filter_by_unit,
+from .utilities.statistics_utilities import (base_query, filter_by_unit, filter_by_units,
                                              make_data_structures, source_type_progress,
                                              count_unhandled_matches_by_month,
                                              count_new_matches_by_month)
@@ -480,7 +480,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context['show_withheld_column'] = self.request.user.has_perm(
             "organizations.view_withheld_results")
         context['retention_days'] = self.org.retention_days
-        context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
+        context['show_units_tab'] = self.org.leadertab_config in [
+            LeaderTabConfigChoices.UNITS, LeaderTabConfigChoices.BOTH]
+        context['show_accounts_tab'] = self.org.leadertab_config in [
+            LeaderTabConfigChoices.ACCOUNTS, LeaderTabConfigChoices.BOTH]
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
         context['chosen_source_type'] = source_type
         context['only_with_results'] = self.request.GET.get('only_with_results')
@@ -819,6 +822,183 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
     def get(self, request, *args, **kwargs):
         self.set_user_units_and_org_unit(request)
         return super().get(request, *args, **kwargs)
+
+
+class LeaderResultsStatisticsPageView(LoginRequiredMixin, TemplateView):
+    context_object_name = "matches"
+    template_name = "leader_results_statistics_template.html"
+    model = DocumentReport
+    scannerjob_filters = None
+
+    def _check_access(self, request):
+        if self.request.user.account:
+            if self.request.user.is_superuser:
+                self.user_units = OrganizationalUnit.objects.all().order_by("name")
+            else:
+                org = request.user.account.organization
+                self.kwargs["org"] = org
+                self.matches = self.matches.filter(scanner_job__organization=org)
+                self.user_units = request.user.account.get_managed_units().order_by("name")
+        else:
+            raise Account.DoesNotExist(_("The user does not have an account."))
+
+    def get(self, request, *args, **kwargs):
+        self.matches = base_query()
+
+        self._check_access(request)
+
+        response = super().get(request, *args, **kwargs)
+
+        return response
+
+    def get_context_data(self, number_of_months=12, **kwargs):
+        context = super().get_context_data(**kwargs)
+        today = timezone.now()
+
+        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
+            self.matches = self.matches.filter(
+                scanner_job__scanner_pk=scannerjob)
+
+        if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
+            if self.request.user.is_superuser or self.user_units.filter(uuid=orgunit).exists():
+                selected_unit = self.user_units.get(uuid=orgunit)
+                self.matches = filter_by_unit(self.matches, selected_unit)
+            else:
+                raise OrganizationalUnit.DoesNotExist(
+                    _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
+        elif not self.request.user.is_superuser:
+            # No specific unit chosen: aggregate over every unit this leader
+            # manages, never the whole organization.
+            self.matches = filter_by_units(self.matches, self.user_units)
+
+        if self.scannerjob_filters is None:
+            self.scannerjob_filters = ScannerReference.objects.all()
+            if org := self.kwargs.get("org"):
+                self.scannerjob_filters = org.scanners.all()
+
+        (context['match_data'],
+         source_type_data,
+         context['resolution_status'],
+         created_month,
+         resolved_month) = make_data_structures(self.matches)
+
+        context['unhandled_matches_by_month'] = \
+            count_unhandled_matches_by_month(self.matches, created_month,
+                                             resolved_month, current_date=today,
+                                             num_months=number_of_months)
+
+        context['new_matches_by_month'] = \
+            count_new_matches_by_month(self.matches, created_month,
+                                       current_date=today, num_months=number_of_months)
+
+        context = context | source_type_progress(source_type_data)
+
+        context['scannerjob_choices'] = self.scannerjob_filters
+        context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
+
+        allowed_orgunits = self.user_units.filter(hidden=False)
+
+        context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
+        context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
+
+        org = self.request.user.account.organization
+        context['show_units_tab'] = org.leadertab_config in [
+            LeaderTabConfigChoices.UNITS, LeaderTabConfigChoices.BOTH]
+        context['show_accounts_tab'] = org.leadertab_config in [
+            LeaderTabConfigChoices.ACCOUNTS, LeaderTabConfigChoices.BOTH]
+        context['active_tab'] = "results"
+
+        return context
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if not request.user.is_superuser and not request.user.account.is_manager:
+                return HttpResponseForbidden(
+                    "Only managers and superusers have access to this page.")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class LeaderResultsStatisticsCSVView(CSVExportMixin, LeaderResultsStatisticsPageView):
+    exported_filename = 'osdatascanner_leader_results_statistics'
+
+    def get(self, request, *args, **kwargs):
+        if not settings.LEADER_CSV_EXPORT:
+            raise PermissionDenied
+
+        self.matches = base_query()
+
+        self._check_access(request)
+
+        scanner = None
+        if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
+            if ScannerReference.objects.filter(scanner_pk=scanner_pk).exists():
+                scanner = ScannerReference.objects.get(scanner_pk=scanner_pk)
+            else:
+                logger.debug("Scanner doesn't exists", scanner_pk=scanner_pk)
+        self.exported_filename += f"_scannerjob_{scanner.scanner_name}" if scanner else ''
+
+        orgunit = None
+        if (orgunit_id := request.GET.get('orgunit')) and orgunit_id != 'all':
+            orgunit = self.user_units.get(uuid=orgunit_id)
+        self.exported_filename += f"_orgunit_{orgunit.name}" if orgunit else ''
+
+        response = super().get(request)
+
+        return response
+
+    def stream_queryset(self, rows):
+        self.prepare_stream()
+
+        for row in rows:
+            yield self.writer.writerow(row)
+
+    def unpack_context_data(self):
+        context_data = self.get_context_data(number_of_months=100)
+
+        match_data = [[values["label"], values["count"]]
+                      for (_key, values) in context_data["match_data"].items()]
+        source_types = [[values["label"], values["count"]]
+                        for (_source, values) in context_data["total_by_source"].items()]
+        resolution_status = [[values["label"], values["count"]]
+                             for (_status, values) in context_data["resolution_status"].items()]
+
+        monthly = []
+        earlier_month = False
+        for ([month_new, count_new], [month_unhandled, count_unhandled]) in zip(
+                context_data["new_matches_by_month"], context_data["unhandled_matches_by_month"]):
+            if (month_new != month_unhandled):
+                logger.warning(
+                    f"Unbalanced months in leader-results-statisticsdata: "
+                    f"{month_new} != {month_unhandled}")
+                break
+
+            if earlier_month or count_unhandled or count_new:
+                earlier_month = True
+                monthly.append([month_new, count_unhandled, count_new])
+
+        return match_data, source_types, resolution_status, monthly
+
+    def get_rows(self, qs=None):
+        match_data, source_types, resolutions, monthly = self.unpack_context_data()
+
+        rows = []
+        row_i = -1
+        row = [_("Handled/Unhandled"), _("Matches by Handled/Unhandled"), _("Source Type"),
+               _("Matches by Source Type"), _("Resolution Status"),
+               _("Matches by Resolution Status"), _("Month"), _("Unhandled Matches by Month"),
+               _("New Matches by Month")]
+
+        while any(value != "" for value in row):
+            rows.append(row)
+            row_i += 1
+            row = []
+
+            row.extend(match_data[row_i]) if row_i < len(match_data) else row.extend(["", ""])
+            row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
+            row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
+            row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
+
+        return rows
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):

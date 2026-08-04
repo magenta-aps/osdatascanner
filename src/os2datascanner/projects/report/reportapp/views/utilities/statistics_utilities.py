@@ -94,6 +94,28 @@ def filter_by_unit(reports, unit: OrganizationalUnit):
     )
 
 
+def filter_by_units(reports, units):
+    descendant_units = units.get_descendants()
+    positions = Position.employees.filter(unit__in=descendant_units)
+    accounts = Account.objects.filter(positions__in=positions).distinct()
+
+    return (
+        reports.annotate(
+            total_relations=Count(
+                'alias_relations',
+                distinct=True
+            ),
+            shared_relations=Count(
+                'alias_relations',
+                filter=Q(alias_relations__shared=True),
+                distinct=True
+            )
+        )
+        .filter(alias_relations__account__in=accounts)
+        .filter(~Q(total_relations=F('shared_relations')))
+    )
+
+
 def make_data_structures(matches):  # noqa C901, CCR001
     """To avoid making multiple separate queries to the DocumentReport
     table, we instead use the one call defined previously, then packages
