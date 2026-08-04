@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 14:35+0200\n"
+"POT-Creation-Date: 2026-08-04 15:00+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -268,6 +268,21 @@ msgstr "SBSYS-fane adgang"
 #: models/organization.py
 msgid "Leader tab configuration"
 msgstr "Lederfane konfiguration"
+
+#: models/organization.py
+msgid "Leader statistics snapshot interval"
+msgstr "Lederstatistik snapshot interval"
+
+#: models/organization.py
+msgid ""
+"How many hours may pass before the leader statistics snapshot is "
+"regenerated. The leader overview is served from the most recent snapshot "
+"rather than computed live on every page load. Set to 0 to disable "
+"snapshotting and always compute the overview live."
+msgstr ""
+"Hvor mange timer der må gå mellem opdatering af lederstatistik snapshot."
+"Lederoverblikket viser data fra nyeste snapshot, fremfor at genberegne data ved hver indlæsning."
+"Sæt til 0 for at slå snapshots fra og dermed altid beregne data ved indlæsning af overblikket."
 
 #: models/organization.py
 msgid "Prioritize MSGraph grant"

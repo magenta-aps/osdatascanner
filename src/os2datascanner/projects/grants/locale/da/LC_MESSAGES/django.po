@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-14 09:15+0200\n"
+"POT-Creation-Date: 2026-08-04 14:59+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -54,6 +54,10 @@ msgid "Google Api Grant"
 msgstr "Google Api Bevilling"
 
 #: models/googleapigrant.py
+msgid "(no service account)"
+msgstr "(ingen servicekonto)"
+
+#: models/googleapigrant.py
 msgid "A grant using this service account already exists."
 msgstr "En bevilling, der bruger denne service account, eksisterer allerede."
 
@@ -62,12 +66,12 @@ msgid "Service account is required"
 msgstr "Service account er påkrævet"
 
 #: models/googleapigrant.py
-msgid "Service account must be in JSON format"
-msgstr "Service account skal være i JSON format"
-
-#: models/googleapigrant.py
 msgid "Invalid service account"
 msgstr "Ugyldig service account"
+
+#: models/googleapigrant.py
+msgid "Service account must be in JSON format"
+msgstr "Service account skal være i JSON format"
 
 #: models/grant.py
 msgid "UUID"
@@ -112,6 +116,14 @@ msgstr "udløbsdato"
 #: models/graphgrant.py
 msgid "client secret"
 msgstr "client secret"
+
+#: models/graphgrant.py
+msgid "contacts"
+msgstr "kontakter"
+
+#: models/graphgrant.py
+msgid "last email date"
+msgstr "sidste email dato"
 
 #: models/graphgrant.py
 msgid "A grant for this tenant already exists."
