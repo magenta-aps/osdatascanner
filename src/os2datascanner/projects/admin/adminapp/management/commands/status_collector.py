@@ -59,12 +59,15 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
     object_scanned = message.object_size is not None and message.object_type is not None
 
     if message.total_objects is not None:
-        # An explorer has finished exploring a Source
+        # An explorer has finished exploring a Source. The presence of
+        # total_objects is the only signal that says so.
+        already_counted = message.objects_reported_individually
         locked_qs.update(
                 message=message.message,
                 last_modified=timezone.now(),
                 status_is_error=message.status_is_error,
-                total_objects=F('total_objects') + message.total_objects,
+                total_objects=F('total_objects') + (
+                        0 if already_counted else message.total_objects),
                 explored_sources=F('explored_sources') + 1)
 
     elif object_scanned:
@@ -75,6 +78,16 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 status_is_error=message.status_is_error,
                 scanned_size=F('scanned_size') + message.object_size,
                 scanned_objects=F('scanned_objects') + 1)
+
+    if message.new_objects:
+        # An explorer has published one or more objects. Like with new_sources below,
+        # because these messages carry nothing else, an object
+        # having been published says nothing about the walk that published it
+        # being over, and counting one explored Source per object is what
+        # reusing total_objects for this would have done.
+        locked_qs.update(
+                last_modified=timezone.now(),
+                total_objects=F('total_objects') + message.new_objects)
 
     if message.new_sources and not message.sources_reported_individually:
         # An explorer has discovered one or more independent Sources. This is

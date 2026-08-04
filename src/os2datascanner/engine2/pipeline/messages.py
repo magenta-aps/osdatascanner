@@ -696,6 +696,31 @@ class StatusMessage:
     with, so every scan of an expanding source appears to finish within
     seconds of starting."""
 
+    new_objects: Optional[int] = None
+    """The number of objects published during an exploration pass, reported as
+    they are published.
+
+    Explorers count each object immediately after publishing it, never before.
+    The two cannot be made atomic, and counting first would mean that a crash in
+    between increments a count for work that does not exist. An increment carries no
+    identity, so nothing could ever retract it. total_objects would permanently
+    exceed anything scanned_objects can reach and the scan would never complete.
+
+    Readers that understand objects_reported_individually must not also count
+    the total_objects carried by the terminal message when that flag is set."""
+
+    objects_reported_individually: bool = False
+    """Indicates that every object counted by total_objects was also reported on
+    its own as it was published.
+
+    # TODO
+    The same order-locked retirement as sources_reported_individually
+    (see above): an explorer must stop repeating the total in its terminal
+    message before a collector stops checking this flag. Reversing that order
+    counts every object twice, so total_objects can never be reached and no scan
+    ever completes. Dropping the flag too early leaves an older admin system
+    counting nothing but the total, which is what it does today."""
+
     # Emitted by workers
     object_size: Optional[int] = None
     """The size (in bytes) of the object that has been scanned."""
@@ -729,6 +754,8 @@ class StatusMessage:
             "status_is_error": self.status_is_error,
 
             "total_objects": self.total_objects,
+            "new_objects": self.new_objects,
+            "objects_reported_individually": self.objects_reported_individually,
             "new_sources": self.new_sources,
             "sources_reported_individually": self.sources_reported_individually,
             "matches_found": self.matches_found,
@@ -749,6 +776,9 @@ class StatusMessage:
                 message=obj.get("message", ""),
                 status_is_error=obj.get("status_is_error", False),
                 total_objects=obj.get("total_objects"),
+                new_objects=obj.get("new_objects"),
+                objects_reported_individually=obj.get(
+                        "objects_reported_individually", False),
                 new_sources=obj.get("new_sources"),
                 sources_reported_individually=obj.get(
                         "sources_reported_individually", False),
