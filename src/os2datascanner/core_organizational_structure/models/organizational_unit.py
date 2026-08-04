@@ -31,7 +31,8 @@ class OrganizationalUnitQuerySet(models.QuerySet):
 
 
 class OrganizationalUnitManager(AL_NodeManager.from_queryset(OrganizationalUnitQuerySet)):
-    pass
+    def get_queryset(self):
+        return super().get_queryset().order_by(*self.model.node_order_by)
 
 
 class OrganizationalUnit(AL_Node):
