@@ -25,12 +25,13 @@ from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.model._staging.sbsysdb_rule import SBSYSDBRule
 from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.projects.admin.organizations.models import OrganizationalUnit, Alias, Account
+from os2datascanner.engine2.utilities.datetime import parse_datetime
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.sbsysdb import (
     SBSYSDBScanner)
 from os2datascanner.engine2.pipeline import messages
-from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
+from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount, ScanStatus, ScanStage
 
 
 def _image_dimension_check():
@@ -400,6 +401,35 @@ class TestScanners:
                         AndRule.make(_image_dimension_check(), configured_rule)))
         assert scanner._construct_rule(force=False) == expected
 
+    def test_failed_scan_excluded_from_last_successful_run(
+            self, web_scanner):
+        """A scan with status_is_error=True must not be returned by
+        get_last_successful_run_at(), even if it satisfies _completed_Q."""
+
+        good_time = parse_datetime("2025-01-01T00:00:00+00:00")
+        failed_time = parse_datetime("2025-06-01T00:00:00+00:00")
+
+        def _make_tag(t):
+            tag = web_scanner._construct_scan_tag().to_json_object()
+            tag["time"] = t.isoformat()
+            return tag
+
+        ScanStatus.objects.create(
+            scanner=web_scanner,
+            scan_tag=_make_tag(good_time),
+            total_sources=1, explored_sources=1,
+            total_objects=10, scanned_objects=10,
+            status_is_error=False)
+
+        ScanStatus.objects.create(
+            scanner=web_scanner,
+            scan_tag=_make_tag(failed_time),
+            total_sources=1, explored_sources=1,
+            total_objects=10, scanned_objects=10,
+            status_is_error=True)
+
+        assert web_scanner.get_last_successful_run_at() == good_time
+
     def test_construct_rule_last_modified_added_on_rerun(
             self, web_scanner, web_scanner_execution):
         """A non-forced rerun with a previous run adds a LastModifiedRule."""
@@ -550,6 +580,58 @@ def sbsysdb_scanner(test_org, basic_rule):
         organization=test_org,
         rule=basic_rule
     )
+
+
+@pytest.mark.django_db
+class TestScanStatusStage:
+    """The stage property must not report a scan as FAILED while there is
+    still verifiable work in progress elsewhere -- otherwise a single failed
+    Source (e.g. one Account out of many for an MSGraphMailScanner) makes an
+    otherwise healthy, actively-progressing scan look dead."""
+
+    def test_error_with_unexplored_sources_does_not_report_failed(self, basic_scanner):
+        """One Source failed, but others are still awaiting exploration --
+        the scan is not dead, so stage should not be FAILED."""
+        status = ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+                total_sources=5, explored_sources=1,
+                status_is_error=True)
+        assert status.stage != ScanStage.FAILED
+
+    def test_error_with_unscanned_objects_does_not_report_failed(self, basic_scanner):
+        """A worker error was recorded, but objects that were already found
+        are still awaiting scanning -- the scan is not dead."""
+        status = ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+                total_sources=1, explored_sources=1,
+                total_objects=10, scanned_objects=5,
+                status_is_error=True)
+        assert status.stage != ScanStage.FAILED
+
+    def test_total_exploration_failure_reports_failed(self, basic_scanner):
+        """The original catastrophic case: the only Source fails to explore
+        entirely (0 objects found). There is nothing left to do, so stage
+        must still report FAILED."""
+        status = ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+                total_sources=1, explored_sources=1,
+                total_objects=0, scanned_objects=0,
+                status_is_error=True)
+        assert status.stage == ScanStage.FAILED
+
+    def test_error_with_no_pending_work_reports_failed(self, basic_scanner):
+        """Once every Source has been explored and every found object has
+        been scanned, an error is no longer masked by pending work."""
+        status = ScanStatus.objects.create(
+                scanner=basic_scanner,
+                scan_tag=basic_scanner._construct_scan_tag().to_json_object(),
+                total_sources=5, explored_sources=5,
+                total_objects=10, scanned_objects=10,
+                status_is_error=True)
+        assert status.stage == ScanStage.FAILED
 
 
 @pytest.mark.django_db

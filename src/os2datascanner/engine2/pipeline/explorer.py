@@ -140,10 +140,11 @@ def message_received(  # noqa: CCR001
                         "Exploration error: authenticated successfully against"
                         " {server}, but source not found")
 
+        exception_message = exp_fmt.format(**exp_args)
         yield messages.ProblemMessage(
                 scan_tag=message.scan_tag, source=message.source,
                 handle=getattr(message.source, "handle", None),
-                message=exp_fmt.format(**exp_args))
+                message=exception_message)
         log.warning(
                 "finished unsuccessfully",
                 handle_count=handle_count, source_count=source_count,

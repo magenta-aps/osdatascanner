@@ -12,6 +12,10 @@
 
 ### Bugfixes
 
+- Fixed a bug where a scan that failed to explore its source(s) would still advance the
+  last-modified cutoff, causing files modified during the outage to be silently skipped by later
+  scans.
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"

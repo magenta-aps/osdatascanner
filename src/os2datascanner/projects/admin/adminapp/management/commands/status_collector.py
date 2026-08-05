@@ -62,20 +62,24 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
         # An explorer has finished exploring a Source. The presence of
         # total_objects is the only signal that says so.
         already_counted = message.objects_reported_individually
-        locked_qs.update(
+        update = dict(
                 message=message.message,
                 last_modified=timezone.now(),
-                status_is_error=message.status_is_error,
                 total_objects=F('total_objects') + (
                         0 if already_counted else message.total_objects),
                 explored_sources=F('explored_sources') + 1)
+        if message.status_is_error:
+            # Both worker and explorer emit status messages.
+            # Default value is false, and only the explorer may say otherwise.
+            # To avoid unwanted overwriting we only update if the message carries True.
+            update['status_is_error'] = True
+        locked_qs.update(**update)
 
     elif object_scanned:
         # A worker has finished processing a Handle
         locked_qs.update(
                 message=message.message,
                 last_modified=timezone.now(),
-                status_is_error=message.status_is_error,
                 scanned_size=F('scanned_size') + message.object_size,
                 scanned_objects=F('scanned_objects') + 1)
 

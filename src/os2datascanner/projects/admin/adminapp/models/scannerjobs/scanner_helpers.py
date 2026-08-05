@@ -138,9 +138,20 @@ class AbstractScanStatus(models.Model):
     cancelled = models.BooleanField(default=False, verbose_name=_("cancelled"))
 
     @property
+    def _has_pending_work(self) -> bool:
+        """Whether there are still Sources awaiting exploration, or objects
+        that have been found but not yet scanned. A scanner job that covers
+        several Sources (e.g. one per Account) can have one of them fail
+        while the others keep making genuine progress; this is used to avoid
+        reporting such a job as FAILED while it's demonstrably still alive."""
+        return (
+                self.explored_sources < self.total_sources
+                or (self.total_objects > 0 and self.scanned_objects < self.total_objects))
+
+    @property
     def stage(self) -> int:
-        # Something has gone wrong
-        if self.status_is_error:
+        # Something has gone wrong, and there's nothing left to do about it
+        if self.status_is_error and not self._has_pending_work:
             return ScanStage.FAILED
         # Workers have not begun scanning any objects yet
         if self.fraction_scanned is None:

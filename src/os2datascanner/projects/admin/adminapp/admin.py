@@ -244,12 +244,32 @@ class ScanStatusAdmin(admin.ModelAdmin):
     list_display = ('scanner', 'pk', 'start_time', 'resolved')
     list_display_links = ('scanner', 'pk', 'start_time')
     model = ScanStatus
-    readonly_fields = ('fraction_explored', 'fraction_scanned',
-                       'estimated_completion_time', 'start_time', 'last_modified',)
-    fields = ('scan_tag', 'scanner', 'total_sources', 'explored_sources',
-              'fraction_explored', 'total_objects', 'scanned_objects', 'matches_found',
-              'skipped_by_last_modified', 'fraction_scanned', 'scanned_size',
-              'estimated_completion_time', 'start_time', 'last_modified', 'resolved',)
+    readonly_fields = (
+        'fraction_explored',
+        'fraction_scanned',
+        'estimated_completion_time',
+        'start_time',
+        'last_modified',
+        'status_is_error',
+    )
+    fields = (
+        'scan_tag',
+        'scanner',
+        'total_sources',
+        'explored_sources',
+        'fraction_explored',
+        'total_objects',
+        'scanned_objects',
+        'matches_found',
+        'skipped_by_last_modified',
+        'fraction_scanned',
+        'scanned_size',
+        'estimated_completion_time',
+        'start_time',
+        'last_modified',
+        'resolved',
+        'status_is_error',
+    )
 
     actions = ('change_resolvestatus_false', 'change_resolvestatus_true')
 
