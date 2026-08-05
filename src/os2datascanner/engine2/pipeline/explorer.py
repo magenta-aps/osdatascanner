@@ -80,6 +80,7 @@ def message_received(  # noqa: CCR001
                 # that specific Handle) went wrong. Send a problem message
                 yield from process_exploration_error(message, *handle)
                 error_count += 1
+                continue
 
             # Check if the handle should be excluded.
             if not is_handle_relevant(handle, message.filter_rule):
