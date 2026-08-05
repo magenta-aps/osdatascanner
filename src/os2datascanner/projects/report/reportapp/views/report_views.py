@@ -53,7 +53,7 @@ class ReportView(LoginRequiredMixin, ListView):
     paginate_by_options = [10, 20, 50, 100, 250]
 
     report_type: Account.ReportType = None
-    archive: bool = False
+    handled: bool = False
 
     filter_types: list[str] = []
     exclude_types: list[str] = ["sbsys-db"]
@@ -69,7 +69,7 @@ class ReportView(LoginRequiredMixin, ListView):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            reports = acct.get_report(self.report_type, self.archive)
+            reports = acct.get_report(self.report_type, self.handled)
             return self.apply_source_type_filters(reports)
         except Account.DoesNotExist:
             logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
@@ -147,7 +147,7 @@ class ReportView(LoginRequiredMixin, ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context["is_archive"] = self.archive
+        context["is_handled"] = self.handled
 
         context["renderable_rules"] = RENDERABLE_RULES
 
@@ -397,7 +397,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
                 scanner_job__organization=self.org,
                 only_notify_superadmin=True,
                 number_of_matches__gte=1,
-                resolution_status__isnull=not self.archive,
+                resolution_status__isnull=not self.handled,
             )
 
             return self.apply_source_type_filters(reports)
@@ -539,12 +539,12 @@ class SBSYSUndistributedView(SBSYSMixin, UndistributedView):
     permission_required = "organizations.view_withheld_results"
 
 
-class ArchiveMixin:
+class HandledMixin:
     """This mixin is able to overwrite some logic on children of the ReportView-
     class, most notably changing the queryset to query for handled results
     instead of unhandled results."""
 
-    archive = True
+    handled = True
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -563,33 +563,33 @@ class ArchiveMixin:
         return context
 
     def dispatch(self, request, *args, **kwargs):
-        if settings.ARCHIVE_TAB:
+        if settings.HANDLED_TAB:
             return super().dispatch(request, *args, **kwargs)
         else:
             return redirect(reverse_lazy('index'))
 
 
-class UserArchiveView(ArchiveMixin, UserReportView):
+class UserHandledView(HandledMixin, UserReportView):
     """Presents the user with their personal handled results."""
 
 
-class RemediatorArchiveView(ArchiveMixin, RemediatorView):
+class RemediatorHandledView(HandledMixin, RemediatorView):
     """Presents the remediator with all relevant handled results."""
 
 
-class UndistributedArchiveView(ArchiveMixin, UndistributedView):
+class UndistributedHandledView(HandledMixin, UndistributedView):
     """Presents a superuser with all undistributed handled results."""
 
 
-class SBSYSPersonalArchiveView(ArchiveMixin, SBSYSPersonalView):
+class SBSYSPersonalHandledView(HandledMixin, SBSYSPersonalView):
     """Presents the user with their personal handled SBSYS results."""
 
 
-class SBSYSRemediatorArchiveView(ArchiveMixin, SBSYSRemediatorView):
+class SBSYSRemediatorHandledView(HandledMixin, SBSYSRemediatorView):
     """Presents the remediator with all relevant handled SBSYS results."""
 
 
-class SBSYSUndistributedArchiveView(ArchiveMixin, SBSYSUndistributedView):
+class SBSYSUndistributedHandledView(HandledMixin, SBSYSUndistributedView):
     """Presents a superuser with all undistributed handled SBSYS results."""
 
 
@@ -598,7 +598,7 @@ class HandleMatchView(HTMXEndpointView, DetailView):
 
     def get_queryset(self):
         qs = self.account.get_report(Account.ReportType.RAW) | \
-            self.account.get_report(Account.ReportType.RAW, archived=True)
+            self.account.get_report(Account.ReportType.RAW, handled=True)
 
         # Include withheld reports if the user has permission to handle those.
         if self.request.user.has_perm("organizations.handle_withheld_results"):
@@ -639,7 +639,7 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
 
         # Make sure all reports belong to the account -- otherwise raise 404 error
         account_reports = (self.account.get_report(Account.ReportType.RAW) |
-                           self.account.get_report(Account.ReportType.RAW, archived=True))
+                           self.account.get_report(Account.ReportType.RAW, handled=True))
 
         # Exclude all reports we already know "belongs" to the account
         if reports.exclude(pk__in=account_reports.values("pk")):

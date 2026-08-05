@@ -5,18 +5,18 @@
   {% with path=request.resolver_match.namespace name=request.resolver_match.url_name %}
     <ul>
       <li>
-        <a href="{% url "reports:personal" %}"
-           class="{% if path == "reports" or name == "index" or name == "scannerjobs" %}active{% endif %}">
+        <a href="{% url "results:personal" %}"
+           class="{% if path == "results" or name == "index" or name == "scannerjobs" %}active{% endif %}">
           {% include "components/svg-icons/assignment.svg" %}
-          <span class="width">{% trans "Report" %}</span>
+          <span class="width">{% trans "Results" %}</span>
         </a>
       </li>
-      {% if settings.ARCHIVE_TAB %}
+      {% if settings.HANDLED_TAB %}
         <li>
-          <a href="{% url "archive:personal" %}"
-             class="{% if path == "archive" %}active{% endif %}">
+          <a href="{% url "handled:personal" %}"
+             class="{% if path == "handled" %}active{% endif %}">
             {% include "components/svg-icons/icon-smbc.svg" %}
-            <span class="width">{% trans "Archive" %}</span>
+            <span class="width">{% trans "Handled" %}</span>
           </a>
         </li>
       {% endif %}

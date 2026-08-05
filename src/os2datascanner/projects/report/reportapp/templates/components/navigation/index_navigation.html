@@ -7,26 +7,26 @@
   {% with path=request.resolver_match.namespace name=request.resolver_match.url_name %}
 
     {# Personal #}
-    <a href="{% if path == "archive" %}{% url "archive:personal" %}{% else %}{% url "reports:personal" %}{% endif %}"
+    <a href="{% if path == "handled" %}{% url "handled:personal" %}{% else %}{% url "results:personal" %}{% endif %}"
        class="tabs__control{% if name == "personal" or name == "index" %} active{% endif %}"
        id="report">{% trans "Personal" %}</a>
 
     {# Personal - SBSYS #}
     {% if user.account.sbsystab_access %}
-      <a href="{% if path == "archive" %}{% url "archive:sbsys-personal" %}{% else %}{% url "reports:sbsys-personal" %}{% endif %}"
+      <a href="{% if path == "handled" %}{% url "handled:sbsys-personal" %}{% else %}{% url "results:sbsys-personal" %}{% endif %}"
          class="tabs__control{% if name == "sbsys-personal" %} active{% endif %}"
          id="sbsys-personal">{% trans "Personal - SBSYS" %}</a>
     {% endif %}
 
     {# Remediator #}
     {% if user.account.is_remediator or user.is_superuser %}
-      <a href="{% if path == "archive" %}{% url "archive:remediator" %}{% else %}{% url "reports:remediator" %}{% endif %}"
+      <a href="{% if path == "handled" %}{% url "handled:remediator" %}{% else %}{% url "results:remediator" %}{% endif %}"
          class="tabs__control{% if name == "remediator" %} active{% endif %}"
          id="remediator">{% trans "Remediator" %}</a>
 
       {% if user.account.sbsystab_access %}
         {# Remediator - SBSYS #}
-        <a href="{% if path == "archive" %}{% url "archive:sbsys-remediator" %}{% else %}{% url "reports:sbsys-remediator" %}{% endif %}"
+        <a href="{% if path == "handled" %}{% url "handled:sbsys-remediator" %}{% else %}{% url "results:sbsys-remediator" %}{% endif %}"
            class="tabs__control{% if name == "sbsys-remediator" %} active{% endif %}"
            id="sbsys-remediator">{% trans "Remediator - SBSYS" %}</a>
       {% endif %}
@@ -34,13 +34,13 @@
 
     {# Withheld #}
     {% if perms.organizations.view_withheld_results %}
-      <a href="{% if path == "archive" %}{% url "archive:undistributed" %}{% else %}{% url "reports:undistributed" %}{% endif %}"
+      <a href="{% if path == "handled" %}{% url "handled:undistributed" %}{% else %}{% url "results:undistributed" %}{% endif %}"
          class="tabs__control{% if name == "undistributed" %} active{% endif %}"
          id="undistributed">{% trans "Undistributed" %}</a>
 
       {% if user.account.sbsystab_access %}
         {# Withheld - SBSYS #}
-        <a href="{% if path == "archive" %}{% url "archive:sbsys-undistributed" %}{% else %}{% url "reports:sbsys-undistributed" %}{% endif %}"
+        <a href="{% if path == "handled" %}{% url "handled:sbsys-undistributed" %}{% else %}{% url "results:sbsys-undistributed" %}{% endif %}"
            class="tabs__control{% if name == "sbsys-undistributed" %} active{% endif %}"
            id="sbsys-undistributed">{% trans "Undistributed - SBSYS" %}</a>
       {% endif %}
@@ -48,7 +48,7 @@
     {% endif %}
 
     {# Scannerjob list #}
-    {% if perms.organizations.view_scannerjob_list and "/archive" not in request.path %}
+    {% if perms.organizations.view_scannerjob_list and "/handled" not in request.path %}
       <a href="{% url "scannerjobs" %}"
          class="tabs__control{% if name == "scannerjobs" %} active{% endif %}"
          id="scannerjobs_tab">{% trans "Scannerjob" %}</a>

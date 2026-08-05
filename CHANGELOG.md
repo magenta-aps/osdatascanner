@@ -1,5 +1,17 @@
 # Changelog
 
+## Version 3.XX.X, XXth XXX 2026
+
+""
+
+### New in this release
+
+### General improvements
+
+- Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase
+
+### Bugfixes
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"

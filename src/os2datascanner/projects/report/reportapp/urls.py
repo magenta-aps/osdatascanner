@@ -19,12 +19,12 @@ from .views.statistics_views import (
     UserStatisticsPageView, LeaderAccountsStatisticsPageView,
     LeaderAccountsStatisticsCSVView, LeaderUnitsStatisticsCSVView)
 from .views.report_views import (
-    UserReportView, UserArchiveView,
-    RemediatorView, RemediatorArchiveView,
-    UndistributedView, UndistributedArchiveView,
-    SBSYSPersonalView, SBSYSPersonalArchiveView,
-    SBSYSRemediatorView, SBSYSRemediatorArchiveView,
-    SBSYSUndistributedView, SBSYSUndistributedArchiveView)
+    UserReportView, UserHandledView,
+    RemediatorView, RemediatorHandledView,
+    UndistributedView, UndistributedHandledView,
+    SBSYSPersonalView, SBSYSPersonalHandledView,
+    SBSYSRemediatorView, SBSYSRemediatorHandledView,
+    SBSYSUndistributedView, SBSYSUndistributedHandledView)
 from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
@@ -33,8 +33,8 @@ from os2datascanner.projects.shared.egg import EggView
 from os2datascanner.projects.shared.views import CustomPasswordResetView
 
 
-reports_patterns = [
-    # Pages related to unhandled reports:
+results_patterns = [
+    # Pages related to unhandled results:
     path("personal/",            UserReportView.as_view(),         name="personal"),
     path("remediator/",          RemediatorView.as_view(),         name="remediator"),
     path("undistributed/",       UndistributedView.as_view(),      name="undistributed"),
@@ -43,16 +43,16 @@ reports_patterns = [
     path("sbsys-undistributed/", SBSYSUndistributedView.as_view(), name="sbsys-undistributed"),
 ]
 
-archive_patterns = [
-    # Pages related to archived reports:
-    path("personal/",         UserArchiveView.as_view(),            name="personal"),
-    path("remediator/",       RemediatorArchiveView.as_view(),      name="remediator"),
-    path("undistributed/",    UndistributedArchiveView.as_view(),   name="undistributed"),
-    path("sbsys-personal/",   SBSYSPersonalArchiveView.as_view(),   name="sbsys-personal"),
-    path("sbsys-remediator/", SBSYSRemediatorArchiveView.as_view(), name="sbsys-remediator"),
+handled_patterns = [
+    # Pages related to handled results:
+    path("personal/",         UserHandledView.as_view(),            name="personal"),
+    path("remediator/",       RemediatorHandledView.as_view(),      name="remediator"),
+    path("undistributed/",    UndistributedHandledView.as_view(),   name="undistributed"),
+    path("sbsys-personal/",   SBSYSPersonalHandledView.as_view(),   name="sbsys-personal"),
+    path("sbsys-remediator/", SBSYSRemediatorHandledView.as_view(), name="sbsys-remediator"),
     path(
         "sbsys-undistributed/",
-        SBSYSUndistributedArchiveView.as_view(),
+        SBSYSUndistributedHandledView.as_view(),
         name="sbsys-undistributed"
     ),
 ]
@@ -60,42 +60,34 @@ archive_patterns = [
 urlpatterns = [
     # Document Report views
     path("",            UserReportView.as_view(),               name="index"),
-    path("reports/",    include((reports_patterns, "reports"),  namespace="reports")),
-    path("archive/",    include((archive_patterns, "archive"),  namespace="archive")),
+    path("results/",    include((results_patterns, "results"),  namespace="results")),
+    path("handled/",    include((handled_patterns, "handled"),  namespace="handled")),
 
     # LEGACY --> NEW MAPPINGS:
-    # “/reports/” --> /reports/personal/
+    # "/reports/*" --> /results/*/
     re_path(
-        r"^reports/?$",
-        RedirectView.as_view(
-            pattern_name="reports:personal",
-            permanent=True,
-            query_string=True
-        )
+        r"^reports/(?P<path>.*)$",
+        RedirectView.as_view(url="/results/%(path)s", permanent=True, query_string=True)
     ),
-    # “/remediator/” --> /reports/remediator/
+    # "/archive/*" --> /handled/*/
+    re_path(
+        r"^archive/(?P<path>.*)$",
+        RedirectView.as_view(url="/handled/%(path)s", permanent=True, query_string=True)
+    ),
+    # "/remediator/" --> /results/remediator/
     re_path(
         r"^remediator/?$",
         RedirectView.as_view(
-            pattern_name="reports:remediator",
+            pattern_name="results:remediator",
             permanent=True,
             query_string=True
         )
     ),
-    # “/undistributed/” --> /reports/undistributed/
+    # "/undistributed/" --> /results/undistributed/
     re_path(
         r"^undistributed/?$",
         RedirectView.as_view(
-            pattern_name="reports:undistributed",
-            permanent=True,
-            query_string=True
-        )
-    ),
-    # "/archive/reports/" --> /archive/personal/
-    re_path(
-        r"^archive/reports/?$",
-        RedirectView.as_view(
-            pattern_name="archive:personal",
+            pattern_name="results:undistributed",
             permanent=True,
             query_string=True
         )

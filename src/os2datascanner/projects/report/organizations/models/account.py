@@ -399,7 +399,7 @@ class Account(Core_Account):
         """Select matches held back for administrator review, connected through
         any Alias that isn't a remediator role."""
 
-    def get_report(self, type_: ReportType, archived: bool = False):
+    def get_report(self, type_: ReportType, handled: bool = False):
         """Computes one of the standard report types for this Account. If you
         need to retrieve a subset of DocumentReports connected to a person,
         this method is almost invariably what you want."""
@@ -413,7 +413,7 @@ class Account(Core_Account):
         qs = DocumentReport.objects.filter(
             scanner_job__organization=self.organization,
             number_of_matches__gte=1,
-            resolution_status__isnull=not archived,
+            resolution_status__isnull=not handled,
             only_notify_superadmin=select_withheld,
         )
 

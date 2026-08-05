@@ -267,7 +267,7 @@ class Command(BaseCommand):
 
         print("\n# [functionality]")
         print_settings("HANDLE_DROPDOWN", "ALLOW_CONTACT_MAGENTA",
-                       "ARCHIVE_TAB", "DPO_CSV_EXPORT", "LEADER_CSV_EXPORT",
+                       "HANDLED_TAB", "DPO_CSV_EXPORT", "LEADER_CSV_EXPORT",
                        "ALLOW_SHOW_ERRORS")
 
         print("\n# [logging]")

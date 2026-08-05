@@ -25,9 +25,9 @@
         <a href="#handling">
           <li>{% trans "Handling Matches" %}</li>
         </a>
-        {% if settings.ARCHIVE_TAB %}
-          <a href="#archive">
-            <li>{% trans "Archive" %}</li>
+        {% if settings.HANDLED_TAB %}
+          <a href="#handled">
+            <li>{% trans "Handled" %}</li>
           </a>
         {% endif %}
         <a href="#user_overview">
@@ -166,11 +166,11 @@
         {% endblocktrans %}
       </p>
 
-      {% if settings.ARCHIVE_TAB %}
-        <h2 id="archive">{% trans "Archive" %}</h2>
+      {% if settings.HANDLED_TAB %}
+        <h2 id="handled">{% trans "Handled" %}</h2>
         <p>
           {% blocktrans trimmed %}
-            On the archive tab all already handled matches are displayed. It's possible to revert
+            On the handled tab all already handled matches are displayed. It's possible to revert
             a match marked as handled, in case of a mistake.
           {% endblocktrans %}
         </p>
@@ -178,7 +178,7 @@
           <a href="{% static 'manualimages/figur24_' %}{{ lang_code }}.png">
             <img src="{% static 'manualimages/figur24_' %}{{ lang_code }}.png" />
           </a>
-          <p>{% trans "Figure 24: Archive - Report module" %}</p>
+          <p>{% trans "Figure 24: Handled - Report module" %}</p>
         </div>
       {% endif %}
 
