@@ -4,6 +4,10 @@
 
 ""
 
+### Bugfixes
+
+- Fixed a bug where handles carrying an error would break the explorer.
+
 ### New in this release
 
 ### General improvements
