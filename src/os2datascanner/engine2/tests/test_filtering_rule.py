@@ -80,7 +80,7 @@ class FilteringRuleTests(unittest.TestCase):
         source = FilesystemSource("/mnt/fs01.magenta.dk/brugere/af")
         handle = FilesystemHandle(
             source,
-            "OS2datascanner/Dokumenter/Verdensherredømme - plan.txt"
+            "OSdatascanner/Dokumenter/Verdensherredømme - plan.txt"
         )
         handle._hints = {"size": size_hint}
 
