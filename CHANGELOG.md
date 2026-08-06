@@ -12,13 +12,15 @@
 
 ### General improvements
 
-- Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase
+- Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase.
 
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the
   last-modified cutoff, causing files modified during the outage to be silently skipped by later
   scans.
+
+- Fixed org-sbsys fixture by removing obsolete MPTT fields + Client.features field.
 
 ## Version 3.32.4, 4th August 2026
 

@@ -6,7 +6,6 @@
       "name": "Vejstrand Kommune",
       "contact_email": "it@vstkom.internal",
       "contact_phone": "12345678",
-      "features": 2,
       "scans": 0,
       "explorer_delta_queue": "os2ds_scan_specs",
       "explorer_full_queue": "os2ds_scan_specs",
@@ -132,11 +131,7 @@
       "imported": false,
       "imported_id": null,
       "last_import_requested": null,
-      "last_import": null,
-      "lft": 1,
-      "rght": 2,
-      "tree_id": 2,
-      "level": 0
+      "last_import": null
     }
   },
   {
@@ -150,11 +145,7 @@
       "imported": false,
       "imported_id": null,
       "last_import_requested": null,
-      "last_import": null,
-      "lft": 1,
-      "rght": 2,
-      "tree_id": 1,
-      "level": 0
+      "last_import": null
     }
   },
   {
