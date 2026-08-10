@@ -75,7 +75,6 @@ requests-mock
 ipython
 Django==5.2.1
 django-model-utils
-django-mptt
 django-treebeard
 django-prometheus
 django-recurrence

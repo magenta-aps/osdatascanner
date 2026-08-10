@@ -2,7 +2,6 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import mptt.fields
 import uuid
 
 
@@ -53,7 +52,7 @@ class Migration(migrations.Migration):
                 ('tree_id', models.PositiveIntegerField(db_index=True, editable=False)),
                 ('level', models.PositiveIntegerField(editable=False)),
                 ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='organizations.Organization')),
-                ('parent', mptt.fields.TreeForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='organizations.OrganizationalUnit', verbose_name='parent unit')),
+                ('parent', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='organizations.OrganizationalUnit', verbose_name='parent unit')),
             ],
             options={
                 'verbose_name': 'organizational unit',
@@ -66,7 +65,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('role', models.CharField(choices=[('employee', 'Medarbejder'), ('manager', 'Leder'), ('dpo', 'Data protection officer')], db_index=True, default='employee', max_length=30)),
                 ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='positions', to='organizations.Account', verbose_name='account')),
-                ('unit', mptt.fields.TreeForeignKey(on_delete=django.db.models.deletion.CASCADE, to='organizations.OrganizationalUnit', verbose_name='organizational unit')),
+                ('unit', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='organizations.OrganizationalUnit', verbose_name='organizational unit')),
             ],
             options={
                 'verbose_name': 'position',
