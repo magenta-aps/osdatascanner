@@ -7,6 +7,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 from .scannerjobs.scanner import ScanStatus
+from .scannerjobs.scanner_helpers import ScheduledCheckup
 from ...organizations.models.organization import Organization
 
 
@@ -32,6 +33,15 @@ class UserErrorLog(models.Model):
                        ("export_usererrorlog", _("Can export error log to CSV")),
                        ("mark_view_usererrorlog", _("Can mark error log as viewed"))]
 
+    # TODO: CASCADE delete means that UserErrorLogs can disappear, if their checkup is deleted.
+    # Is that always desirable?
+    checkup = models.ForeignKey(
+        ScheduledCheckup,
+        on_delete=models.CASCADE,
+        related_name='usererrorlogs',
+        null=True,
+        blank=True
+    )
     scan_status = models.ForeignKey(
         ScanStatus,
         on_delete=models.CASCADE,

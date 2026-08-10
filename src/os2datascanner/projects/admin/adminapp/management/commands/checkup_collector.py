@@ -34,7 +34,8 @@ SUMMARY = Summary("os2datascanner_checkup_collector_admin",
 
 
 def create_usererrorlog(
-        message: messages.ProblemMessage, ss: ScanStatus):
+        message: messages.ProblemMessage, ss: ScanStatus,
+        checkup: ScheduledCheckup | None = None):
     """Create a UserErrorLog object from a problem message."""
 
     try:
@@ -65,7 +66,8 @@ def create_usererrorlog(
         error_message=error_message,
         path=path,
         organization=scanner.organization,
-        is_new=True
+        is_new=True,
+        checkup=checkup,
     )
 
 
@@ -229,7 +231,7 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
         logger.info(
                 "Problem, transient, creating checkup",
                 handle=str(handle))
-        ScheduledCheckup.objects.update_or_create(
+        checkup, _ = ScheduledCheckup.objects.update_or_create(
                 path=handle.crunch(hash=True),
                 scanner=scanner,
                 defaults={
@@ -238,7 +240,8 @@ def update_scheduled_checkup(  # noqa: CCR001 E501
                     # doesn't make sense to put a cutoff timestamp here
                     "interested_after": None,
                 })
-        create_usererrorlog(message, ss)
+
+        create_usererrorlog(message, ss, checkup)
 
     elif isinstance(message, messages.MatchesMessage) and message.matched:
         logger.info(
