@@ -25,7 +25,7 @@
           hx-push-url="true">
       {% include "components/common/main.html" with active_tab="status" %}
     {% endif %}
-    <div class="content">
+    <div class="content" hx-history-elt>
 
       {% include "components/navigation/scanner_tabs.html" with page="scan-status" %}
 
