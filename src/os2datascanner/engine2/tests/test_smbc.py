@@ -3,6 +3,9 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import pytest
+from smbc import Attribute
+
 from os2datascanner.engine2.model import smbc
 from os2datascanner.engine2.model.core import SourceManager
 
@@ -92,3 +95,26 @@ class TestSMBC:
                 smbc.SMBCHandle(source, "Byr%25C3%25A5det/file123.txt"),
             }
             assert source_handles == expected_handles
+
+
+class TestIncoherentAttributes:
+    """Tests SMBCSource.is_skippable's handling of objects whose Windows
+    attributes are self-contradictory or otherwise impossible.
+    """
+
+    @pytest.mark.parametrize("attr,expected", [
+        (Attribute.ARCHIVE | Attribute(0x10000), True),  # FILE_ATTRIBUTE_VIRTUAL
+        (Attribute.ARCHIVE | Attribute(0x800000), True),  # undefined everywhere
+        (Attribute.ARCHIVE | Attribute(0x40), True),  # FILE_ATTRIBUTE_DEVICE
+        # NORMAL means "no other attributes are set", so it can't be combined
+        (Attribute.NORMAL | Attribute.ARCHIVE, True),
+        (Attribute.NORMAL, False),
+        (Attribute.ARCHIVE, False)])
+    def test_incoherent_attributes_are_skippable(self, attr, expected):
+        assert smbc.SMBCSource.is_skippable("~test-vector", attr) is expected
+
+    def test_incoherent_attributes_need_a_suspicious_name(self):
+        """Incoherent attributes on their own only gives warning, without a
+        leading "~" the object is still explored."""
+        assert not smbc.SMBCSource.is_skippable(
+                "test-vector", Attribute.ARCHIVE | Attribute(0x10000))
