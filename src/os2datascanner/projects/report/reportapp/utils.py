@@ -254,12 +254,12 @@ def iterate_queryset_in_batches(batch_size, queryset):
         total_count = new_total
 
 
-def get_max_sens_prop_value(doc_report_obj, key):
+def get_max_prop_value(doc_report_obj, key):
     """Helper method for migration 0017_documentreport_added_sensitivity_and_probability.
-    This method returns either a Sensitivity object or probability maximum value.
+    This method returns a probability maximum value.
     The method is located in utils as could become handy else where."""
     warnings.warn(
-            ("get_max_sens_prop_value is deprecated;"
+            ("get_max_prop_value is deprecated;"
              " use DocumentReport.matches directly"),
             DeprecationWarning,
             stacklevel=2)
