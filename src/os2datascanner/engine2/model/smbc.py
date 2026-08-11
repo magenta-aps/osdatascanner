@@ -264,8 +264,10 @@ class SMBCSource(Source):
             if ((attr & smbc.Attribute.NORMAL
                     and attr != smbc.Attribute.NORMAL)
                     # ... or if a bit not permitted by the specification is
-                    # set...
-                    or attr & ~smbc.AttributeMask):
+                    # set... (the mask must be inverted as int, since
+                    # Python 3.11, inverting an enum.Flag folds the result back
+                    # into the flag's own bit range.)
+                    or attr & ~int(smbc.AttributeMask)):
                 # ... then something has gone very badly wrong
                 logger.warning("incoherent attributes detected")
                 if name.startswith("~"):
