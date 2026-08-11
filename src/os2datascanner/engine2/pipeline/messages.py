@@ -18,7 +18,7 @@ from dataclasses import Field, replace, dataclass
 from ..utilities.datetime import parse_datetime
 from ..model.core import Handle, Source
 from ..model.core.errors import DeserialisationError
-from ..rules.rule import Rule, SimpleRule, Sensitivity
+from ..rules.rule import Rule, SimpleRule
 
 
 logger = structlog.get_logger("engine2")
@@ -503,43 +503,6 @@ class MatchesMessage:
     matches: Sequence[MatchFragment]
     """All of the intermediary SimpleRules and results produced while scanning
     this object, whether or not the rule as a whole produced a match."""
-
-    @property
-    def sensitivity(self):  # noqa: CCR001, too high cognitive complexity
-        """Computes the overall sensitivity of the matches contained in this
-        message (i.e., the highest sensitivity of any submatch), or None if
-        there are no matches."""
-        if not self.matches:
-            return None
-        else:
-
-            def _cms(fragment):  # noqa: CCR001, E501 too high cognitive complexity
-                """Computes the sensitivity of a set of results returned by a
-                rule, returning (in order of preference) the highest
-                sensitivity (lower than that of the rule) associated with a
-                match, the sensitivity of the rule, or 0."""
-                rule_sensitivity = (
-                    fragment.rule.sensitivity.value
-                    if fragment.rule.sensitivity
-                    else None)
-
-                max_sub = None
-                if (rule_sensitivity is not None
-                        and fragment.matches is not None):
-                    for match_dict in fragment.matches:
-                        if "sensitivity" in match_dict:
-                            sub = match_dict["sensitivity"]
-                            if max_sub is None or sub > max_sub:
-                                max_sub = sub
-                if max_sub is not None:
-                    # Matches can only have a lower sensitivity than their
-                    # rule, never a higher one
-                    return min(rule_sensitivity or 0, max_sub)
-                elif rule_sensitivity is not None:
-                    return rule_sensitivity
-                else:
-                    return 0
-            return Sensitivity(max([_cms(frag) for frag in self.matches]))
 
     def to_json_object(self):
         return {

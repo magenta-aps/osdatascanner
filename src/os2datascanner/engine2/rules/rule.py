@@ -4,54 +4,14 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from abc import abstractmethod
-from enum import Enum
 import json
-from typing import Union, Optional, Tuple, Iterator, Iterable
+from typing import Union, Tuple, Iterator, Iterable
 from itertools import islice
 
 from .utilities.properties import RulePrecedence, RuleProperties
 from ..utilities.json import JSONSerialisable
 from ..utilities.equality import TypePropertyEquality
 from ..conversions.types import OutputType
-
-
-class Sensitivity(Enum):
-    """Rules have an optional property called "sensitivity", whose values are
-    given by the Sensitivity enumeration. This property has no particular
-    significance for the rule engine, but user interfaces might wish to present
-    matches differently based on it."""
-    INFORMATION = 0
-    NOTICE = 250
-    WARNING = 500
-    PROBLEM = 750
-    CRITICAL = 1000
-
-    @staticmethod
-    def make_from_dict(obj):
-        if "sensitivity" in obj and obj["sensitivity"] is not None:
-            return Sensitivity(obj["sensitivity"])
-        else:
-            return None
-
-    @property
-    def presentation(self):
-        """Returns a (perhaps localised) human-readable string representing
-        this Rule, for use in user interfaces."""
-        # XXX: interim hack
-        return sensitivity_labels["da"].get(self, self.name)
-
-
-# XXX: this is a hack that should be replaced by real translation support once
-# we get that sorted out
-sensitivity_labels = {
-    "da": {
-        Sensitivity.INFORMATION: "Information",
-        Sensitivity.NOTICE: "Notifikation",
-        Sensitivity.WARNING: "Advarsel",
-        Sensitivity.PROBLEM: "Problem",
-        Sensitivity.CRITICAL: "Kritisk"
-    }
-}
 
 
 class Rule(TypePropertyEquality, JSONSerialisable):
@@ -70,9 +30,8 @@ class Rule(TypePropertyEquality, JSONSerialisable):
 
     def __init__(
             self, *,
-            sensitivity=None, name=None,
+            name=None,
             synthetic: bool = False):
-        self._sensitivity = sensitivity
         self._name = name
         self._synthetic = synthetic
 
@@ -86,11 +45,6 @@ class Rule(TypePropertyEquality, JSONSerialisable):
     @abstractmethod
     def presentation_raw(self) -> str:
         """Returns a presentation form of this Rule based on its properties."""
-
-    @property
-    def sensitivity(self) -> Optional[Sensitivity]:
-        """Returns the sensitivity value of this Rule, if one was specified."""
-        return self._sensitivity
 
     @property
     def synthetic(self) -> bool:
@@ -168,7 +122,6 @@ class Rule(TypePropertyEquality, JSONSerialisable):
         this Rule."""
         return {
             "type": self.type_label,
-            "sensitivity": self.sensitivity.value if self.sensitivity else None,
             "name": self._name,
             "synthetic": self._synthetic
         }
@@ -182,11 +135,7 @@ class Rule(TypePropertyEquality, JSONSerialisable):
 
     @classmethod
     def _get_constructor_kwargs(cls, obj):
-        s = obj.get("sensitivity", cls._Suppress)
         return super()._get_constructor_kwargs(obj) | {
-            "sensitivity": (Sensitivity(s)
-                            if s not in (cls._Suppress, None)
-                            else cls._Suppress),
             "name": obj.get("name", cls._Suppress),
             "synthetic": obj.get("synthetic", cls._Suppress),
         }

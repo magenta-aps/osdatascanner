@@ -8,7 +8,7 @@ import structlog
 
 from ...conversions.types import OutputType
 from ..wordlists import OrderedWordlistRule
-from ..rule import Rule, SimpleRule, Sensitivity
+from ..rule import Rule, SimpleRule
 # from os2ds_rules.wordlist_rule import WordListRule
 
 logger = structlog.get_logger("engine2")
@@ -46,5 +46,4 @@ class TurboHealthRule(SimpleRule):
     @staticmethod
     @Rule.json_handler(type_label)
     def from_json_object(obj: dict):
-        return TurboHealthRule(
-                sensitivity=Sensitivity.make_from_dict(obj))
+        return TurboHealthRule()

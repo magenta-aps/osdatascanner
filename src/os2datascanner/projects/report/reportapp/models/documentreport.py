@@ -98,8 +98,6 @@ class DocumentReport(models.Model):
     source_type = models.CharField(max_length=2000,
                                    verbose_name=_("source type"), db_index=True)
 
-    sensitivity = models.IntegerField(null=True, verbose_name=_("sensitivity"))
-
     probability = models.FloatField(null=True, verbose_name=_("probability"))
 
     # datasource_last_modified stores when the scanned file/email/element itself,
@@ -242,7 +240,7 @@ class DocumentReport(models.Model):
 
     class Meta:
         verbose_name_plural = _("document reports")
-        ordering = ['-sensitivity', '-probability', 'pk']
+        ordering = ['-probability', 'pk']
         # TODO: Consider if raw_matches__matched index should be removed
         # it's more performant to use number_of_matches
         indexes = [

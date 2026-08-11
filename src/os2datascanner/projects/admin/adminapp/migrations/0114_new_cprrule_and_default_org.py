@@ -3,9 +3,6 @@
 from django.db import migrations
 
 from os2datascanner.engine2.rules.cpr import CPRRule
-from os2datascanner.projects.admin.adminapp.models.sensitivity_level import (
-    Sensitivity,
-)
 
 
 def create_default_cprrule_and_organization(apps, schema_editor):
@@ -26,7 +23,6 @@ def create_default_cprrule_and_organization(apps, schema_editor):
         new_cpr = CustomRule.objects.create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
-            sensitivity=Sensitivity.CRITICAL,
             _rule=CPRRule(
                 modulus_11=True,
                 ignore_irrelevant=True,
@@ -56,7 +52,6 @@ def undo_creation_of_cpr_as_customrule(apps, schema_editor):
         old_cpr = CPRRule.objects.create(
             name="CPR regel",
             description="Denne regel finder alle gyldige CPR numre.",
-            sensitivity=Sensitivity.CRITICAL,
             do_modulus11=True,
             ignore_irrelevant=True,
             examine_context=True,

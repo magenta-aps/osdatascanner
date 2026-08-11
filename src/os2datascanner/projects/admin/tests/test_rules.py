@@ -8,7 +8,7 @@ import pytest
 from os2datascanner.engine2.rules.logical import OrRule
 from os2datascanner.engine2.rules.regex import RegexRule
 
-from ..adminapp.models.rules import Rule, Sensitivity
+from ..adminapp.models.rules import Rule
 
 
 class TestRules:
@@ -34,7 +34,6 @@ class TestRules:
                 name="Hello",
                 description="This is an Elite Space Pirate."
                             "\nElite Space Pirate description 3.",
-                sensitivity=Sensitivity.OK,
                 raw_rule=raw1)
         r1.save()
 
@@ -48,7 +47,6 @@ class TestRules:
         r2 = Rule(
                 name="Goodbye",
                 description="Something",
-                sensitivity=Sensitivity.CRITICAL,
                 raw_rule=raw2)
 
         assert r2.raw_rule == raw2
@@ -73,14 +71,12 @@ class TestRules:
         r = Rule(
             name="Look for names",
             description="A rule that looks for some names",
-            sensitivity=Sensitivity.CRITICAL,
             raw_rule=OrRule.make(*rules).to_json_object(),
             )
 
         e2r = r.make_engine2_rule()
 
         assert e2r._name == r.name
-        assert e2r._sensitivity.value == 1000
 
         for name, rule in zip(names, rules):
             assert [m['match'] for m in rule.match(name)] == [name]
@@ -105,13 +101,10 @@ Kristjan Evil
                     "expansive": False,
                     "whitelist": [],
                     "blacklist": [],
-                    "sensitivity": 1000
-                },
-                sensitivity=Sensitivity.LOW)
+                })
 
         e2r = r.make_engine2_rule()
 
         assert e2r._name == r.name
-        assert e2r._sensitivity.value == 1000
         assert {m["match"] for m in e2r.match(document)} == {"Kristjan Evil", "David Jensen",
                                                              "Jens Davidsen", "Kristjan Evil"}

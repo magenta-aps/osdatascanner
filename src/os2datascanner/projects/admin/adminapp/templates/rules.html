@@ -54,7 +54,6 @@
                 <colgroup>
                   <col class="column" />
                   <col class="column column--info" />
-                  <col class="column column--sensitivity" />
                   <col class="column column--actions" />
                 </colgroup>
 
@@ -62,7 +61,6 @@
                   <tr class="datatablex__row table-topbar">
                     <th class="column column--name">{% trans "name"|capfirst %}</th>
                     <th class="column column--info">{% trans "description"|capfirst %}</th>
-                    <th class="column column--sensitivity">{% trans "sensitivity"|capfirst %}</th>
                     <th class="column column--actions">{% trans "action"|capfirst %}</th>
                   </tr>
                 </thead>
@@ -99,15 +97,6 @@
                           </div>
                         </td>
 
-                        <td class="column column--sensitivity">
-                          <div class="status">
-                            <div class="status__wrapper" data-status="{{ rule.sensitivity }}">
-                              <span class="status__icon">{% include "components/rules/sensitivity_icon.html" %}</span>
-                              <span class="status__label">{{ rule.get_sensitivity_display }}</span>
-                            </div>
-                          </div>
-                        </td>
-
                         <td class="column column--actions">
                           <div class="action-wrapper button-group">
                             <a href="{% url "customrule_update" rule.pk %}"
@@ -137,7 +126,7 @@
 
                   {% else %}
                     <tr class="datatablex__row" tabindex="0">
-                      <td class="nothing_found_row" colspan="4">{% trans "There are currently no user-defined rules to display." %}</td>
+                      <td class="nothing_found_row" colspan="3">{% trans "There are currently no user-defined rules to display." %}</td>
                     </tr>
                   {% endif %}
                 </tbody>

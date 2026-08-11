@@ -5,7 +5,7 @@
 
 import regex
 
-from .rule import Rule, SimpleTextRule, Sensitivity
+from .rule import Rule, SimpleTextRule
 from .datasets.loader import common as common_loader
 from .utilities.context import make_context
 
@@ -191,10 +191,6 @@ class NameRule(SimpleTextRule):
                 "probability": probability,
 
                 **make_context(match, text),
-
-                "sensitivity": (
-                    self.sensitivity.value if self.sensitivity else None
-                ),
             }
         if self._expansive:
             # Full name match done. Now check if there's any standalone names
@@ -212,11 +208,6 @@ class NameRule(SimpleTextRule):
                         # XXX: are the offsets here useful? (unmatched_text is
                         # something we've produced internally...)
                         **make_context(m, unmatched_text),
-
-                        "sensitivity": (
-                            self.sensitivity.value
-                            if self.sensitivity else None
-                        ),
                     }
 
     def get_censor_intervals(self, context):
@@ -237,5 +228,4 @@ class NameRule(SimpleTextRule):
         return NameRule(
                 whitelist=frozenset(obj["whitelist"]),
                 blacklist=frozenset(obj["blacklist"]),
-                expansive=obj.get("expansive", None),
-                sensitivity=Sensitivity.make_from_dict(obj))
+                expansive=obj.get("expansive", None))

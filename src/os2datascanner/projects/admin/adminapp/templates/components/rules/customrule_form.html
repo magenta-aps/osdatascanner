@@ -80,52 +80,6 @@
 
         <section class="data-form">
           <fieldset class="form__fieldset">
-            <h3 class="required-form" for="id_{{ form.sensitivity.name }}">{{ form.sensitivity.label }}</h3>
-            <p class="description">{% trans "Assess the sensitivity of the rule" %}</p>
-            <div id="{{ form.sensitivity.auto_id }}_container"
-                 class="form__group col-sm-12{% if form.sensitivity.errors %} has-error{% endif %}">
-
-              {% if form.sensitivity.help_text %}<span class="form__help-text">{{ form.sensitivity.help_text }}</span>{% endif %}
-
-              <div class="radio-content">
-                {% for value, tag in form.sensitivity.field.choices %}
-                  <label class="radio radio-before">
-                    <span class="radio__input">
-                      {% if value|add:'0' == form.sensitivity.value|add:'0' %}
-                        <input type="radio"
-                               name="{{ form.sensitivity.name }}"
-                               id="id_{{ form.sensitivity.name }}"
-                               value="{{ value }}"
-                               checked="checked" />
-                      {% else %}
-                        <input type="radio"
-                               name="{{ form.sensitivity.name }}"
-                               id="id_{{ form.sensitivity.name }}"
-                               value="{{ value }}" />
-                      {% endif %}
-                      {% if value == 0 %}
-                        <span class="radio__control radio__control--notify"></span>
-                      {% elif value == 1 %}
-                        <span class="radio__control radio__control--warning"></span>
-                      {% elif value == 2 %}
-                        <span class="radio__control radio__control--problem"></span>
-                      {% elif value == 3 %}
-                        <span class="radio__control radio__control--critical"></span>
-                      {% endif %}
-                    </span>
-
-                    <span class="radio__label">{{ tag }}</span>
-                  </label>
-                {% endfor %}
-              </div>
-
-              {% if form.sensitivity.errors %}{{ form.sensitivity.errors }}{% endif %}
-            </div>
-          </fieldset>
-        </section>
-
-        <section class="data-form">
-          <fieldset class="form__fieldset">
             <h3 class="required-form" for="id_{{ form.description.name }}">{{ form.description.label }}</h3>
             <div id="{{ form.description.auto_id }}_container"
                  class="form__group col-sm-12{% if form.description.errors %} has-error{% endif %}">

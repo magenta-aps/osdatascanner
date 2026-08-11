@@ -18,7 +18,6 @@
       "name": "(SBSYS) Default security group fragment",
       "organization": null,
       "description": "(SBSYS) Default security group fragment",
-      "sensitivity": 0,
       "raw_rule": {
         "type": "sbsys-db-fieldrule",
         "field": "SecuritySetID as SecuritySetSikkerhedsgrupper on SecuritySetID.Sikkerhedsgruppe.Navn",
@@ -38,7 +37,6 @@
       "name": "(SBSYS) Sager der muligvis kan afsluttes",
       "organization": null,
       "description": "SBSYS-sager med sagspart og aktiv tilstand, som ikke er blevet opdateret indenfor 6 måneder (for personer) eller 12 måneder (for virksomheder).",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "or",
         "components": [
@@ -109,7 +107,6 @@
       "name": "(SBSYS) Ulåste sager med sagspart",
       "organization": null,
       "description": "SBSYS-sager med sagspart, men som mangler beskyttelse.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -142,7 +139,6 @@
       "name": "(SBSYS) Ulåste sager med sikkerhedsgruppe",
       "organization": null,
       "description": "SBSYS-sager med sikkerhedsgruppe, men som mangler beskyttelse.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -174,7 +170,6 @@
       "name": "(SBSYS) Låste sager uden sikkerhedsgruppe",
       "organization": null,
       "description": "SBSYS-sager med beskyttelse, men som mangler sikkerhedsgruppe.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -204,7 +199,6 @@
       "name": "(SBSYS) Mine aktuelle sager",
       "organization": null,
       "description": "SBSYS-sager i aktiv tilstand.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "sbsys-db-fieldrule",
         "field": "SagsStatus.SagsTilstand.Navn",
@@ -225,7 +219,6 @@
       "name": "(SBSYS) Åbne sager hvor part er afgået ved døden",
       "organization": null,
       "description": "SBSYS-sager med sagspart og aktiv tilstand, men hvor sagsparten er afgået ved døden.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -265,7 +258,6 @@
       "name": "(SBSYS) Åbne sager hvor part er fraflyttet kommune",
       "organization": null,
       "description": "SBSYS-sager med sagspart og aktiv tilstand, men hvor sagsparten er flyttet fra kommunen.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -305,7 +297,6 @@
       "name": "(SBSYS) Sager med Part uden sikkerhed",
       "organization": null,
       "description": "SBSYS-sager med en menneskelig sagspart, men som mangler beskyttelse.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -338,7 +329,6 @@
       "name": "(SBSYS) Dokumenter med CPR uden sikkerhed",
       "organization": null,
       "description": "Aktive SBSYS-sager med vedhæftede dokumenter med CPR-nummer i, som mangler beskyttelse.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -383,7 +373,6 @@
       "name": "(SBSYS) Sager hvor part er fraflyttet kommune",
       "organization": null,
       "description": "SBSYS-sager med sagspart, men hvor sagsparten er flyttet fra kommunen.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -416,7 +405,6 @@
       "name": "(SBSYS) Sager med KLE der bør låses",
       "organization": null,
       "description": "Der er fundet sager, der bør være låst, da de indeholder bestemte KLE-numre.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [
@@ -461,7 +449,6 @@
       "name": "(SBSYS) Sager oprettet uden sagsskabelon",
       "organization": null,
       "description": "SBSYS sager som er oprettet uden sagsskabelon.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "sbsys-db-fieldrule",
         "field": "SkabelonID",
@@ -482,7 +469,6 @@
       "name": "(SBSYS) Aktive sager uden behandler",
       "organization": null,
       "description": "SBSYS-sager som er 'Aktive', men som ikke har en aktiv behandler.",
-      "sensitivity": 3,
       "raw_rule": {
         "type": "and",
         "components": [

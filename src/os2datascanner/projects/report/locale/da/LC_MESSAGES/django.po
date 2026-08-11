@@ -249,11 +249,6 @@ msgid "source type"
 msgstr "kildetype"
 
 #: reportapp/models/documentreport.py
-#: reportapp/templates/components/report_table/report_table--filters.html
-msgid "sensitivity"
-msgstr "følsomhed"
-
-#: reportapp/models/documentreport.py
 msgid "probability"
 msgstr "sandsynlighed"
 
@@ -740,14 +735,6 @@ msgstr "Håndteringsstatus"
 #: reportapp/templates/components/report_table/report_table--filters.html
 msgid "All resolution statuses"
 msgstr "Alle håndteringsstatusser"
-
-#: reportapp/templates/components/report_table/report_table--filters.html
-msgid "Sensitivity"
-msgstr "Følsomhed"
-
-#: reportapp/templates/components/report_table/report_table--filters.html
-msgid "All sensitivities"
-msgstr "Alle følsomheder"
 
 #: reportapp/templates/components/report_table/report_table--filters.html
 msgid "Scan"
@@ -2611,3 +2598,12 @@ msgstr "SBSYS-scan"
 #: reportapp/views/utilities/statistics_utilities.py
 msgid "calendar scan"
 msgstr "Kalender scan"
+
+#~ msgid "sensitivity"
+#~ msgstr "følsomhed"
+
+#~ msgid "Sensitivity"
+#~ msgstr "Følsomhed"
+
+#~ msgid "All sensitivities"
+#~ msgstr "Alle følsomheder"

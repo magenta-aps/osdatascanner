@@ -30,7 +30,6 @@ from os2datascanner.projects.report.reportapp.models.documentreport import Docum
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model import http
 from os2datascanner.engine2.rules.cpr import CPRRule
-from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities import pika
 from .result_collector import result_message_received_raw
@@ -299,14 +298,7 @@ def random_cpr(seed):
 
 
 def make_fake_rule():
-    sensitivity = [
-        Sensitivity.INFORMATION,
-        Sensitivity.NOTICE,
-        Sensitivity.WARNING,
-        Sensitivity.PROBLEM,
-        Sensitivity.CRITICAL,
-    ]
-    rule = CPRRule(sensitivity=random.choice(sensitivity))
+    rule = CPRRule()
     return rule
 
 

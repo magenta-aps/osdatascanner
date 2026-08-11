@@ -12,7 +12,6 @@ import pytest
 from os2datascanner.engine2.commands.utils import DemoSourceUtility as TestSourceUtility
 from os2datascanner.engine2.model.core import SourceManager
 from os2datascanner.engine2.model.file import FilesystemSource
-from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.logical import OrRule
@@ -35,14 +34,13 @@ data_url = "data:text/plain;base64,{0}".format(
 
 rule = OrRule(
         RegexRule("Æthelred the Unready", name="Check for ill-advised kings"),
-        RegexRule("(Scyld) (?:S.*g)", sensitivity=Sensitivity.CRITICAL),
+        RegexRule("(Scyld) (?:S.*g)"),
         RegexRule("Professor James Moriarty"))
 
 expected_matches = [
     {
         "rule": {
             "type": "regex",
-            "sensitivity": None,
             "synthetic": False,
             "name": "Check for ill-advised kings",
             "expression": "Æthelred the Unready"
@@ -52,7 +50,6 @@ expected_matches = [
     {
         "rule": {
             "type": "regex",
-            "sensitivity": Sensitivity.CRITICAL.value,
             "synthetic": False,
             "name": None,
             "expression": "(Scyld) (?:S.*g)"
@@ -68,7 +65,6 @@ expected_matches = [
                     " Scēfing sceaþena þrēatum, monegum mǣgþum meodo-setla"
                     " oftē",
                 "context_offset": 50,
-                "sensitivity": Sensitivity.CRITICAL.value,
             }
         ]
     }

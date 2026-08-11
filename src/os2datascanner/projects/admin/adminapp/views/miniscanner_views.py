@@ -154,7 +154,7 @@ def execute_mini_scan(request):
 class CustomRuleCreateMiniscan(RuleCreate):
     model = Rule
     template_name = "components/miniscanner/miniscanner_customrule_form.html"
-    fields = ['name', 'description', 'sensitivity', 'organization']
+    fields = ['name', 'description', 'organization']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)

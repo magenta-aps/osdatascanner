@@ -18,7 +18,6 @@ from os2datascanner.projects.report.organizations.models.aliases import Alias
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 from os2datascanner.engine2.rules.cpr import CPRRule
 from os2datascanner.engine2.model.file import FilesystemHandle
-from os2datascanner.engine2.rules.rule import Sensitivity
 
 
 class Command(BaseCommand):
@@ -125,7 +124,6 @@ class Command(BaseCommand):
                     created_timestamp=timezone.now(),
                     datasource_last_modified=aware_datetime,
                     source_type='smbc',
-                    sensitivity=random.choice(list(Sensitivity)).value,
                     probability=random.random(),
                     owner=fake.user_name(),
                     raw_matches=raw_matches,

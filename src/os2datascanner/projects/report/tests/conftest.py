@@ -12,7 +12,6 @@ from os2datascanner.engine2.model.file import (
         FilesystemHandle, FilesystemSource)
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.rules.regex import RegexRule
-from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 
 from os2datascanner.projects.report.organizations.models import Organization
@@ -69,8 +68,7 @@ def scan_tag1(time1, org_frag):
 
 @pytest.fixture
 def common_rule():
-    return RegexRule("Vores hemmelige adgangskode er",
-                     sensitivity=Sensitivity.WARNING)
+    return RegexRule("Vores hemmelige adgangskode er")
 
 
 @pytest.fixture

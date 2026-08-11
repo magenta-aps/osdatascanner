@@ -4,15 +4,13 @@
 
 ""
 
-### Bugfixes
-
-- Fixed a bug where handles carrying an error would break the explorer.
-
 ### New in this release
 
 ### General improvements
 
 - Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase.
+
+- Removed the deprecated Sensitivity concept.
 
 ### Bugfixes
 
@@ -22,11 +20,11 @@
 
 - Fixed org-sbsys fixture by removing obsolete MPTT fields + Client.features field.
 
+- Fixed a bug where handles carrying an error would break the explorer.
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"
-
-### New in this release
 
 ### General improvements
 

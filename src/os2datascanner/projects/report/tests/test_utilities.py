@@ -77,7 +77,6 @@ raw_matches_json_matched = json.loads('''
           "cpr"
         ],
         "modulus_11": true,
-        "sensitivity": 1000,
         "ignore_irrelevant": true
       },
       "matches": [
@@ -86,7 +85,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 1,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 1
         },
         {
@@ -94,7 +92,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 22,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 22
         },
         {
@@ -102,7 +99,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 33,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 33
         },
         {
@@ -110,7 +106,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 48,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 48
         },
         {
@@ -118,7 +113,6 @@ raw_matches_json_matched = json.loads('''
           "offset": 63,
           "context": "XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX XXXXXX-XXXX",
           "probability": 1.0,
-          "sensitivity": 1000,
           "context_offset": 50
         }
       ]
@@ -151,7 +145,6 @@ raw_matches_json_matched = json.loads('''
         "cpr"
       ],
       "modulus_11": true,
-      "sensitivity": 1000,
       "ignore_irrelevant": true
     },
     "source": {
@@ -305,7 +298,6 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
                        num=10,
                        scanner_job_pk=1,
                        scanner_job_name="Local nginx",
-                       sensitivity=1000,
                        source_type="fake",
                        datasource_last_modified=timezone.now(),
                        resolution_status=None,
@@ -347,12 +339,11 @@ def create_reports_for(alias,  # noqa: CCR001 Cognitive complexity
         dr = DocumentReport.objects.create(
             owner=alias._value,
             scanner_job=scanner,
-            sensitivity=sensitivity,
             datasource_last_modified=datasource_last_modified,
             source_type=source_type,
             path=(f"report-{i+offset}-{scanner_job_pk}-{alias.account.username}"
                   f"-{'matched' if matched else 'unmatched'}-{alias._alias_type}"
-                  f":{alias._value}-s{sensitivity}-dlm{datasource_last_modified}"
+                  f":{alias._value}-dlm{datasource_last_modified}"
                   f"-st{source_type}"
                   f"-ca{created_at if created_at else 'None'}"
                   f"-prob{problem if problem else 'None'}"

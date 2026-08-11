@@ -51,11 +51,6 @@ class CreditCardRule(RegexRule):
                 yield {
                     "match": num[:4] + "X" * 12,
                     **make_context(number, representation),
-
-                    "sensitivity": (
-                        self.sensitivity.value
-                        if self.sensitivity else None
-                    ),
                 }
 
     def to_json_object(self):

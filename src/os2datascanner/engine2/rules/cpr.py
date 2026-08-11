@@ -10,7 +10,7 @@ from itertools import chain
 from enum import Enum, unique
 import structlog
 
-from .rule import Rule, Sensitivity
+from .rule import Rule
 from .regex import RegexRule
 from .logical import oxford_comma
 from .utilities.context import make_context
@@ -170,10 +170,6 @@ class CPRRule(RegexRule):
 
                 **make_context(m, content),
 
-                "sensitivity": (
-                    self.sensitivity.value if self.sensitivity
-                    else self.sensitivity
-                ),
                 "probability": _probability(m),
             }
 
@@ -297,7 +293,6 @@ class CPRRule(RegexRule):
             examine_context=obj.get(
                 "examine_context",
                 True),
-            sensitivity=Sensitivity.make_from_dict(obj),
             name=obj.get("name"),
             whitelist=whitelist,
             blacklist=blacklist,

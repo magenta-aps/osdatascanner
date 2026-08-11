@@ -57,20 +57,6 @@ function toggleCheckbox(e, checkboxId) { // jshint ignore:line
   checkbox.checked = !checkbox.checked;
 }
 
-function hideOptions(toggleElement) { // jshint ignore:line
-  const options = ["sensitivity"];
-  const toggleElem = document.getElementById(toggleElement);
-
-  for (const option of options) {
-    const checkbox = document.getElementById(option + "_checkbox");
-    const filterElem = document.getElementById(option + "_filter");
-
-    filterElem.hidden = !checkbox.checked;
-  }
-
-  toggleElem.style.display = "none";
-}
-
 function distributeAnyChecked() {
   return !!document.querySelector("input[name='distribute-to']:checked");
 }

@@ -23,7 +23,6 @@ from os2datascanner.engine2.rules.meta import HasConversionRule, SizeRule
 from os2datascanner.engine2.rules.name import NameRule
 from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.rules.wordlists import OrderedWordlistRule
-from os2datascanner.engine2.rules.rule import Sensitivity
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.passport import PassportRule
 
@@ -440,7 +439,6 @@ class TestRules:
         assert rule == back_again
 
     def test_address_rule_matches(self):
-        # user supplied sensitivity is not used
         rule = AddressRule(whitelist=["Tagensvej"], blacklist=["PilÆstræde"])
         in_value = (
             "H.C. Andersens Boul 15, 2. 0006, 1553 København V, Danmark\n"
@@ -456,21 +454,20 @@ class TestRules:
             "Magenta APS, PilÆstræde 43,  3. sal, 1112 København\n"
         )
         expected = {
-            ("H.C. Andersens Boul 15, 2. 0006, 1553 København V",
-             Sensitivity.CRITICAL.value),
-            ("H.C. Andersens Boul, 1553 Kbh. V", Sensitivity.PROBLEM.value),
-            ("10. Februar Vej 75", Sensitivity.CRITICAL.value),
-            ("400-Rtalik", Sensitivity.PROBLEM.value),
-            ("H/F Solpl-Lærkevej", Sensitivity.PROBLEM.value),
-            ("H. H. Hansens Vej", Sensitivity.PROBLEM.value),
-            ("H H Kochs Vej", Sensitivity.PROBLEM.value),
-            ("Øer I Isefjord 15", Sensitivity.CRITICAL.value),
-            ("PilÆstræde", Sensitivity.CRITICAL.value),
-            ("PilÆstræde 43,  3. sal, 1112 København", Sensitivity.CRITICAL.value)
+            "H.C. Andersens Boul 15, 2. 0006, 1553 København V",
+            "H.C. Andersens Boul, 1553 Kbh. V",
+            "10. Februar Vej 75",
+            "400-Rtalik",
+            "H/F Solpl-Lærkevej",
+            "H. H. Hansens Vej",
+            "H H Kochs Vej",
+            "Øer I Isefjord 15",
+            "PilÆstræde",
+            "PilÆstræde 43,  3. sal, 1112 København",
         }
 
         matches = rule.match(in_value)
-        assert {(match["match"], match['sensitivity']) for match in matches} == expected
+        assert {match["match"] for match in matches} == expected
 
     @pytest.mark.parametrize("in_value,expected", [
         (

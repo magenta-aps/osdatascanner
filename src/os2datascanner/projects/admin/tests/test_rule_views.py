@@ -17,7 +17,6 @@ def rule_data(test_org):
     return {
             "name": "dummy rule",
             "description": "this is a dumb dumb dummy rule",
-            "sensitivity": 3,
             "rule": '{"type": "regex", "expression": "dummy"}',
             "organization": str(test_org.uuid)
         }
@@ -42,7 +41,6 @@ def system_rule1(name_category, address_category):
     rule = Rule.objects.create(
         name="system_rule1",
         description="system_rule1",
-        sensitivity=1,
         raw_rule='{"type": "regex", "expression": "dummy"}'
     )
     rule.categories.add(name_category, address_category)
@@ -54,7 +52,6 @@ def system_rule2(name_category):
     rule = Rule.objects.create(
         name="system_rule2",
         description="system_rule2",
-        sensitivity=2,
         raw_rule='{"type": "regex", "expression": "dummy"}'
     )
     rule.categories.add(name_category)
@@ -104,7 +101,6 @@ class TestCustomRuleCreate:
 
         assert created_rule.name == rule_data['name']
         assert created_rule.description == rule_data['description']
-        assert created_rule.sensitivity == rule_data['sensitivity']
         assert str(created_rule.organization.uuid) == rule_data['organization']
         assert json.dumps(created_rule.raw_rule) == rule_data['rule']
 
@@ -226,7 +222,6 @@ class TestCustomRuleUpdate:
 
         assert updated_rule.name == rule_data['name']
         assert updated_rule.description == rule_data['description']
-        assert updated_rule.sensitivity == rule_data['sensitivity']
         assert str(updated_rule.organization.uuid) == rule_data['organization']
         assert json.dumps(updated_rule.raw_rule) == rule_data['rule']
 

@@ -22,7 +22,6 @@ from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDeleteView
 from .validators import customrule_validator
 from ..models.scannerjobs.scanner import Scanner
-from ..models.sensitivity_level import Sensitivity
 from ..models.rules import Rule, RuleCategory
 from ...utilities import UserWrapper
 
@@ -67,7 +66,6 @@ class RuleList(RestrictedListView):
         context["selected_categories"] = self.request.GET.getlist(
             "categories") or RuleCategory.objects.all()
 
-        context["sensitivity"] = Sensitivity
         context["systemrule_list"] = self.get_system_rules(selected_org)
         context["customrule_list"] = self.get_queryset().filter(organization__isnull=False
                                                                 ).prefetch_related("scanners")
@@ -79,7 +77,7 @@ class RuleCreate(RestrictedCreateView):
     """Create a rule view."""
 
     model = Rule
-    fields = ['name', 'description', 'sensitivity', 'organization']
+    fields = ['name', 'description', 'organization']
 
     @staticmethod
     def validate_exceptions_field(rule):
@@ -107,7 +105,6 @@ class RuleCreate(RestrictedCreateView):
     def _save_rule_form(form):
         rule = form.save(commit=False)
         rule.name = form.cleaned_data['name']
-        rule.sensitivity = form.cleaned_data['sensitivity']
         rule.description = form.cleaned_data['description']
 
         if crule := form.cleaned_data.get('rule'):
@@ -152,7 +149,7 @@ class RuleCreate(RestrictedCreateView):
 class CustomRuleCreate(RuleCreate):
     model = Rule
     template_name = "components/rules/customrule_form.html"
-    fields = ['name', 'description', 'sensitivity', 'organization']
+    fields = ['name', 'description', 'organization']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -166,7 +163,7 @@ class RuleUpdate(RestrictedUpdateView):
     """Update a rule view."""
 
     model = Rule
-    fields = ['name', 'description', 'sensitivity', 'organization']
+    fields = ['name', 'description', 'organization']
 
     def get_form(self, form_class=None):
         form = super().get_form(form_class)
@@ -193,7 +190,7 @@ class RuleUpdate(RestrictedUpdateView):
 
 class CustomRuleUpdate(RuleUpdate):
     model = Rule
-    fields = ['name', 'description', 'sensitivity', 'organization']
+    fields = ['name', 'description', 'organization']
     template_name = "components/rules/customrule_form.html"
     edit = True
 
