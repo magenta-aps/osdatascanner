@@ -242,7 +242,7 @@ as far as possible, given the representations that are available:
 True
 >>> rules
 [(CPRRule(), []), (RegexRule("dog"), [{'match': 'dog', 'offset': 18, 'context':
-'Oh, good, I see a dog here', 'context_offset': 18, 'sensitivity': None}])]
+'Oh, good, I see a dog here', 'context_offset': 18}])]
 ```
 
 Note that you also get the results of all the rules that _didn't_ match when
@@ -293,7 +293,7 @@ will only ever evaluate it once:
 >>> r.try_match(representations)
 (True, [(RegexRule("dog"), [{'match': 'dog', 'offset': 12, 'context': 'What a
 good dog this is lorem ipsum lorem ipsum lorem ipsum lorem', 'context_offset':
-12, 'sensitivity': None}])])
+12}])])
 ```
 
 ### Other helper functions
@@ -532,6 +532,5 @@ True
    'context_offset': 17,
    'match': '1111XXXXXX',
    'offset': 17,
-   'probability': 1.0,
-   'sensitivity': None}])]
+   'probability': 1.0}])]
 ```
