@@ -12,6 +12,10 @@
 
 - Removed the deprecated Sensitivity concept.
 
+- UserErrorLog objects can now have a relation to a ScheduledCheckup, which allows for easier
+ tracking and identification and clean-up of UserErrorLog objects if their ScheduledCheckup gets 
+ deleted.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the

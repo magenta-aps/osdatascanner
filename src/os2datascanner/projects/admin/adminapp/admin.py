@@ -178,18 +178,21 @@ class UserErrorLogAdmin(admin.ModelAdmin):
         'scan_status',
         'organization',
         'is_resolved',
-        'is_new'
+        'is_new',
+        'checkup'
     )
     list_display_links = (
         'user_friendly_error_message',
-        'path'
+        'path',
+        'checkup'
     )
     readonly_fields = (
         'path',
         'user_friendly_error_message',
         'error_message',
         'scan_status',
-        'organization',)
+        'organization',
+        'checkup')
     fields = (
         'path',
         'user_friendly_error_message',
@@ -197,7 +200,8 @@ class UserErrorLogAdmin(admin.ModelAdmin):
         'scan_status',
         'organization',
         'is_new',
-        'is_resolved'
+        'is_resolved',
+        'checkup'
     )
 
     @admin.register(MSGraphSharePointSite)
