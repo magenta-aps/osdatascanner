@@ -25,6 +25,8 @@
 - Fixed a bug where SMB objects were no longer recognised as incoherent, 
   meaning hidden objects with a leading `~` in their name were scanned instead of skipped. 
 
+- Using browser's back button on "Completed scans" pages no longer loses side navigation menu.
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"
