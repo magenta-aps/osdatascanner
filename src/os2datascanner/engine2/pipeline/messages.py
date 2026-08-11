@@ -289,6 +289,23 @@ class ScanSpecMessage:
     confusion."""
 
     filter_rule: Optional[Rule]
+    """This optional rule is used to filter handles that shouldn't be scanned by the pipeline,
+    be it because they point to files that are too large, lie within irrelevant directories, etc.
+
+    The rule should be executable in the explorer, meaning it shouldn't require any conversions
+    made by the processor step. Currently the only supported output types are
+    OutputType.Size and OutputType.Presentation.
+
+    The rule is executed on every handle found in the explorer, through the is_handle_relevant
+    utility function. Any handle for which this function returns False is skipped,
+    and isn't processed by the rest of the pipeline.
+
+    # TODO:
+    - Should filter rules also be used on handles found in ScheduledCheckups,
+      which skip the explorer?
+    - Should the admin or report module be notified in case of skipped handles?
+      Fx by a ContentSkippedMessage.
+    """
 
     explorer_queue: str = "os2ds_scan_specs"  # os2ds_scan_specs compatability fallback.
     """The RabbitMQ queue containing sources that should be explored by a
