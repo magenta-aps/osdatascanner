@@ -100,7 +100,6 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
     'django.contrib.postgres',
     'recurrence',
-    'mptt',
     'django_extensions',
     'django_prometheus',
     'rest_framework',
