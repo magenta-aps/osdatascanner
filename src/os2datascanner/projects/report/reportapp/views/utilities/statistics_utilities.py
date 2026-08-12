@@ -78,42 +78,30 @@ def base_query():
                     ).annotate(count=Count('pk')).order_by()
 
 
-def filter_by_unit(reports, unit: OrganizationalUnit):
-    descendant_units = unit.get_descendants(include_self=True)
+def accounts_for_units(units):
+    descendant_units = units.get_descendants()
     positions = Position.employees.filter(unit__in=descendant_units)
-    accounts = Account.objects.filter(positions__in=positions).distinct()
+    return Account.objects.filter(positions__in=positions).distinct()
 
+
+def filter_by_accounts(reports, accounts):
     # Both conditions are EXISTS semi-joins rather than joins on the
     # multi-valued alias_relations, so a report is never multiplied into the
     # aggregation - which is what lets base_query count without DISTINCT.
     return reports.filter(
-        # Related to at least one account in the unit.
+        # Related to at least one account in @accounts.
         Exists(Alias.objects.filter(reports=OuterRef('pk'), account__in=accounts)),
         # Not related only through shared aliases (has a non-shared relation).
         Exists(Alias.objects.filter(reports=OuterRef('pk'), shared=False)),
     )
 
 
-def filter_by_units(reports, units):
-    descendant_units = units.get_descendants()
+def filter_by_unit(reports, unit: OrganizationalUnit):
+    descendant_units = unit.get_descendants(include_self=True)
     positions = Position.employees.filter(unit__in=descendant_units)
     accounts = Account.objects.filter(positions__in=positions).distinct()
 
-    return (
-        reports.annotate(
-            total_relations=Count(
-                'alias_relations',
-                distinct=True
-            ),
-            shared_relations=Count(
-                'alias_relations',
-                filter=Q(alias_relations__shared=True),
-                distinct=True
-            )
-        )
-        .filter(alias_relations__account__in=accounts)
-        .filter(~Q(total_relations=F('shared_relations')))
-    )
+    return filter_by_accounts(reports, accounts)
 
 
 def make_data_structures(matches):  # noqa C901, CCR001

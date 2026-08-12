@@ -1478,6 +1478,59 @@ class TestLeaderResultsStatisticsPageView:
 
         assert response.context_data['match_data']['unhandled']['count'] == 2
 
+    def test_leader_results_statisticspage_default_view_includes_directly_managed_accounts(
+            self, rf, egon_account, benny_account, benny_email_alias):
+        """A leader with no organizational-unit position at all -- only a
+        direct account-manager relation -- must still see that account's
+        matches in the default view, not an empty page."""
+
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        create_reports_for(benny_email_alias, num=3)
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+
+        assert response.context_data['match_data']['unhandled']['count'] == 3
+
+    def test_leader_results_statisticspage_default_view_combines_units_and_direct_accounts(
+            self, rf, egon_account, egon_manager_position, olsenbanden_ou_positions,
+            benny_email_alias, børge_account, børge_email_alias):
+        """A leader who both manages a unit and manages an account directly
+        (outside any unit) must see matches from both sources combined."""
+
+        børge_account.manager = egon_account
+        børge_account.save()
+
+        # Benny: employee of olsenbanden_ou, which Egon manages.
+        create_reports_for(benny_email_alias, num=2)
+        # Børge: managed directly by Egon, no unit position at all.
+        create_reports_for(børge_email_alias, num=3)
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+
+        assert response.context_data['match_data']['unhandled']['count'] == 5
+
+    def test_leader_results_statisticspage_shared_document_counted_once(
+            self, rf, egon_account, egon_manager_position, olsenbanden_ou_positions,
+            benny_account, benny_email_alias, børge_account, børge_email_alias):
+        """A single document owned by two different accounts within the
+        leader's combined scope -- one reached via a managed unit, the other
+        via a direct account-manager relation -- must be counted once, not
+        twice."""
+
+        børge_account.manager = egon_account
+        børge_account.save()
+
+        create_reports_for(benny_email_alias, num=1)
+        # Børge also has a personal, non-shared relation to that same report.
+        report = DocumentReport.objects.get(alias_relations__account=benny_account)
+        report.alias_relations.add(børge_email_alias)
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+
+        assert response.context_data['match_data']['unhandled']['count'] == 1
+
     def test_leader_results_statisticspage_explicit_orgunit_filter(
             self, rf, egon_account, egon_manager_position, egon_email_alias,
             benny_email_alias, kjeld_email_alias, olsenbanden_ou_positions,

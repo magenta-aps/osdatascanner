@@ -22,7 +22,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
 
-from .utilities.statistics_utilities import (base_query, filter_by_unit, filter_by_units,
+from .utilities.statistics_utilities import (base_query, filter_by_unit, filter_by_accounts,
+                                             accounts_for_units,
                                              make_data_structures, source_type_progress,
                                              count_unhandled_matches_by_month,
                                              count_new_matches_by_month)
@@ -868,8 +869,13 @@ class LeaderResultsStatisticsPageView(LoginRequiredMixin, TemplateView):
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
         elif not self.request.user.is_superuser:
             # No specific unit chosen: aggregate over every unit this leader
-            # manages, never the whole organization.
-            self.matches = filter_by_units(self.matches, self.user_units)
+            # manages, plus any accounts they manage directly (leaders with
+            # no organizational-unit position at all rely entirely on this),
+            # but never the whole organization.
+            accounts = Account.objects.filter(
+                Q(pk__in=accounts_for_units(self.user_units))
+                | Q(pk__in=self.request.user.account.managed_accounts.all()))
+            self.matches = filter_by_accounts(self.matches, accounts)
 
         if self.scannerjob_filters is None:
             self.scannerjob_filters = ScannerReference.objects.all()
