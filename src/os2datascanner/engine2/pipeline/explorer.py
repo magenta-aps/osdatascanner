@@ -37,8 +37,7 @@ def process_exploration_error(scan_spec, handle_candidate, ex):
             + ", ".join(str(a) for a in ex.args))
     yield messages.ProblemMessage(
             scan_tag=scan_spec.scan_tag, source=scan_spec.source,
-            handle=handle_candidate, message=exception_message,
-            account_uuid=scan_spec.account_uuid)
+            handle=handle_candidate, message=exception_message)
     logger.info(
             "found problem",
             scan_tag=scan_spec.scan_tag, handle=handle_candidate)

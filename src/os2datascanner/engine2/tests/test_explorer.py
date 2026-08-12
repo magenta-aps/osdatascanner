@@ -55,7 +55,11 @@ def test_exploration_failure_with_no_account_uuid_leaves_it_none():
     assert problems[0].account_uuid is None
 
 
-def test_process_exploration_error_forwards_account_uuid_to_problem_message():
+def test_process_exploration_error_never_sets_account_uuid():
+    """process_exploration_error fires for a single broken object inside a
+    Source that otherwise explored fine - it must never be able to flag a
+    whole account as errored, regardless of the ScanSpecMessage's own
+    account_uuid."""
     spec = _make_spec(account_uuid=ACCOUNT_UUID)
     handle_candidate = DummyHandle(spec.source, "1")
 
@@ -64,7 +68,7 @@ def test_process_exploration_error_forwards_account_uuid_to_problem_message():
 
     assert len(problems) == 1
     assert isinstance(problems[0], messages.ProblemMessage)
-    assert problems[0].account_uuid == ACCOUNT_UUID
+    assert problems[0].account_uuid is None
 
 
 def test_exploration_failure_still_marks_status_message_as_error():

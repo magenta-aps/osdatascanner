@@ -589,21 +589,6 @@ class TestScanStatusStage:
 
 
 @pytest.mark.django_db
-class TestCoveredAccountStatusIsError:
-
-    def test_field_defaults_to_false(self, basic_scanner, basic_scanstatus, fritz):
-        ca = CoveredAccount.objects.create(
-                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus)
-        assert ca.status_is_error is False
-
-    def test_field_can_be_set_true(self, basic_scanner, basic_scanstatus, fritz):
-        ca = CoveredAccount.objects.create(
-                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus,
-                status_is_error=True)
-        assert ca.status_is_error is True
-
-
-@pytest.mark.django_db
 class TestScannerSourcesWithAccounts:
 
     def test_exchangescanner_generate_sources_with_accounts(

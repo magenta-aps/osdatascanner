@@ -122,8 +122,6 @@ def checkup_message_received_raw(body):
         # Just drop this message.
         return
 
-    # Also fires for per-object errors, not just whole-account Source
-    # failures - harmless today since no account-aware scanner yields those.
     if isinstance(message, messages.ProblemMessage) and message.account_uuid:
         CoveredAccount.objects.filter(
                 scanner=scanner, scan_status=ss,
