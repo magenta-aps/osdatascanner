@@ -6,7 +6,7 @@
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
-from django.db.models import Case, Count, DateField, Exists, OuterRef, When
+from django.db.models import Case, Count, DateField, Exists, OuterRef, QuerySet, When
 from django.db.models.functions import Coalesce, TruncMonth
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -78,13 +78,19 @@ def base_query():
                     ).annotate(count=Count('pk')).order_by()
 
 
-def accounts_for_units(units):
+def accounts_under_units(units: QuerySet[OrganizationalUnit]) -> QuerySet[Account]:
+    """Returns the Accounts holding an employee position in any of @units or
+    in any of their descendant units."""
     descendant_units = units.get_descendants()
     positions = Position.employees.filter(unit__in=descendant_units)
     return Account.objects.filter(positions__in=positions).distinct()
 
 
-def filter_by_accounts(reports, accounts):
+def filter_by_accounts(
+        reports: QuerySet[DocumentReport], accounts: QuerySet[Account]) -> QuerySet[DocumentReport]:
+    """Restricts @reports to those with a relation to one of @accounts, but
+    excludes reports whose only relations are shared aliases (e.g. a shared
+    mailbox or universal remediator) -- shared-only isn't a personal match."""
     # Both conditions are EXISTS semi-joins rather than joins on the
     # multi-valued alias_relations, so a report is never multiplied into the
     # aggregation - which is what lets base_query count without DISTINCT.
@@ -96,7 +102,10 @@ def filter_by_accounts(reports, accounts):
     )
 
 
-def filter_by_unit(reports, unit: OrganizationalUnit):
+def filter_by_unit(
+        reports: QuerySet[DocumentReport], unit: OrganizationalUnit) -> QuerySet[DocumentReport]:
+    """Like filter_by_accounts(), but scoped to the Accounts employed in
+    @unit or any of its descendant units."""
     descendant_units = unit.get_descendants(include_self=True)
     positions = Position.employees.filter(unit__in=descendant_units)
     accounts = Account.objects.filter(positions__in=positions).distinct()

@@ -1480,9 +1480,9 @@ class TestLeaderResultsStatisticsPageView:
 
     def test_leader_results_statisticspage_default_view_includes_directly_managed_accounts(
             self, rf, egon_account, benny_account, benny_email_alias):
-        """A leader with no organizational-unit position at all -- only a
-        direct account-manager relation -- must still see that account's
-        matches in the default view, not an empty page."""
+        """A leader with only a direct account-manager relation (no
+        organizational-unit position at all) must see that account's
+        matches, not an empty page."""
 
         benny_account.manager = egon_account
         benny_account.save()
@@ -1496,8 +1496,8 @@ class TestLeaderResultsStatisticsPageView:
     def test_leader_results_statisticspage_default_view_combines_units_and_direct_accounts(
             self, rf, egon_account, egon_manager_position, olsenbanden_ou_positions,
             benny_email_alias, børge_account, børge_email_alias):
-        """A leader who both manages a unit and manages an account directly
-        (outside any unit) must see matches from both sources combined."""
+        """A leader who manages both a unit and an account directly (outside
+        any unit) must see matches from both sources combined."""
 
         børge_account.manager = egon_account
         børge_account.save()
@@ -1514,10 +1514,9 @@ class TestLeaderResultsStatisticsPageView:
     def test_leader_results_statisticspage_shared_document_counted_once(
             self, rf, egon_account, egon_manager_position, olsenbanden_ou_positions,
             benny_account, benny_email_alias, børge_account, børge_email_alias):
-        """A single document owned by two different accounts within the
-        leader's combined scope -- one reached via a managed unit, the other
-        via a direct account-manager relation -- must be counted once, not
-        twice."""
+        """A document owned by two accounts in the leader's combined scope --
+        one via a managed unit, the other via a direct account-manager
+        relation -- must be counted once, not twice."""
 
         børge_account.manager = egon_account
         børge_account.save()
