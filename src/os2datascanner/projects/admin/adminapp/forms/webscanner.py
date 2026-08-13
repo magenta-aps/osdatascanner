@@ -52,7 +52,6 @@ class WebScannerForm(ScannerForm):
             _("Scan settings"),
             [
                 "rule",
-                "exclusion_rule",
                 "do_last_modified_check",
                 Groups.FILE_SETTINGS,
                 (

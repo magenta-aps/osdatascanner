@@ -16,8 +16,7 @@ from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.msgraph import (
         mail as graph_mail, files as graph_files)
 from os2datascanner.engine2.model.derived import mail
-from os2datascanner.engine2.rules.logical import (
-    OrRule, AndRule, NotRule, make_if)
+from os2datascanner.engine2.rules.logical import OrRule, AndRule, make_if
 from os2datascanner.engine2.rules.dict_lookup import EmailHeaderRule
 from os2datascanner.engine2.rules.meta import HasConversionRule, SizeRule
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
@@ -47,10 +46,10 @@ def _image_dimension_check():
             True)
 
 
-def _size_check(max_pdf_size_mb):
-    """The max-PDF-size prerule that _construct_rule adds when max_pdf_size is
+def _size_check(max_file_size_mb):
+    """The max-size explorer rule that _construct_filter_rule adds when max_file_size is
     set."""
-    return NotRule(SizeRule(max_pdf_size_mb * 1024 * 1024))
+    return SizeRule(max_file_size_mb * 1024 * 1024)
 
 
 @pytest.mark.django_db
@@ -352,19 +351,16 @@ class TestScanners:
         assert web_scanner._construct_rule(force=True) == expected
 
     def test_construct_rule_size_only(self, web_scanner):
-        """A max PDF size alone prepends a size check to the configured rule."""
-        web_scanner.max_pdf_size = 10
-        configured_rule = web_scanner.rule.make_engine2_rule()
-        expected = AndRule.make(_size_check(10), configured_rule)
-        assert web_scanner._construct_rule(force=True) == expected
+        """A max file size alone prepends a size check to the configured rule."""
+        web_scanner.max_file_size = 10
+        expected = _size_check(10)
+        assert web_scanner._construct_filter_rule() == expected
 
-    def test_construct_rule_ocr_and_size(self, web_scanner):
-        """OCR and size combine: the size check runs before the OCR gate."""
-        web_scanner.do_ocr = True
-        web_scanner.max_pdf_size = 10
-        configured_rule = web_scanner.rule.make_engine2_rule()
-        expected = AndRule.make(_size_check(10), _image_dimension_check(), configured_rule)
-        assert web_scanner._construct_rule(force=True) == expected
+    def test_no_max_file_size(self, web_scanner):
+        """A max file size of 0, should result in no filter rule."""
+        web_scanner.max_file_size = 0
+        expected = None
+        assert web_scanner._construct_filter_rule() == expected
 
     def test_construct_rule_subject_and_ocr(self, msgraph_mailscanner):
         """Subject scanning and OCR sit as sibling OR branches, so a subject
@@ -375,31 +371,6 @@ class TestScanners:
                 EmailHeaderRule("subject", configured_rule),
                 AndRule.make(_image_dimension_check(), configured_rule))
         assert msgraph_mailscanner._construct_rule(force=False) == expected
-
-    def test_construct_rule_subject_and_size(self, msgraph_mailscanner):
-        """The size check wraps the whole subject-OR-content branch."""
-        msgraph_mailscanner.max_pdf_size = 10
-        configured_rule = msgraph_mailscanner.rule.make_engine2_rule()
-        expected = AndRule.make(
-                _size_check(10),
-                OrRule(EmailHeaderRule("subject", configured_rule), configured_rule))
-        assert msgraph_mailscanner._construct_rule(force=False) == expected
-
-    @pytest.mark.parametrize("scanner_fixture", [
-        "gmail_scanner", "exchange_scanner", "msgraph_mailscanner"])
-    def test_construct_rule_subject_ocr_and_size(self, request, scanner_fixture):
-        """All three gates combine identically across every mail scanner
-        backend: a size check wrapping a subject-OR-(OCR gate) branch."""
-        scanner = request.getfixturevalue(scanner_fixture)
-        scanner.do_ocr = True
-        scanner.max_pdf_size = 10
-        configured_rule = scanner.rule.make_engine2_rule()
-        expected = AndRule.make(
-                _size_check(10),
-                OrRule(
-                        EmailHeaderRule("subject", configured_rule),
-                        AndRule.make(_image_dimension_check(), configured_rule)))
-        assert scanner._construct_rule(force=False) == expected
 
     def test_failed_scan_excluded_from_last_successful_run(
             self, web_scanner):
@@ -441,23 +412,6 @@ class TestScanners:
         """A forced run omits the LastModifiedRule."""
         rule = web_scanner._construct_rule(force=True)
         assert not any(isinstance(r, LastModifiedRule) for r in rule.flatten())
-
-    def test_construct_rule_last_modified_first_without_size(
-            self, web_scanner, web_scanner_execution):
-        """Without a size check, the LastModifiedRule is the first prerule."""
-        web_scanner.max_pdf_size = 0
-        rule = web_scanner._construct_rule(force=False)
-        assert isinstance(rule, AndRule)
-        assert isinstance(rule.components[0], LastModifiedRule)
-
-    def test_construct_rule_size_before_last_modified(
-            self, web_scanner, web_scanner_execution):
-        """Size check is inserted ahead of the LastModifiedRule."""
-        web_scanner.max_pdf_size = 10
-        rule = web_scanner._construct_rule(force=False)
-        assert isinstance(rule, AndRule)
-        assert rule.components[0] == _size_check(10)
-        assert isinstance(rule.components[1], LastModifiedRule)
 
     @pytest.mark.parametrize('true_handle,sources', [
         (

@@ -198,7 +198,8 @@ class WebSource(Source):
         referrer = hints.get("referrer")
 
         new_hints = {k: v for k, v in hints.items() if k in ("last_modified", "content_type",
-                                                             "true_url", "title", "fresh",)}
+                                                             "true_url", "title", "fresh",
+                                                             "size",)}
 
         r = WebHandle.make_handle(referrer, self._url) if referrer else None
         h = WebHandle.make_handle(url, self._url, referrer=r, hints=new_hints or None)
@@ -347,6 +348,9 @@ class WebResource(FileResource):
         if (self.handle.source.has_trusted_sitemap
                 and self.handle.hint("fresh")):
             return 0
+
+        if (size_hint := self.handle.hint("size")) is not None:
+            return size_hint
 
         return int(self.unpack_header(check=True).get("content-length", 0))
 

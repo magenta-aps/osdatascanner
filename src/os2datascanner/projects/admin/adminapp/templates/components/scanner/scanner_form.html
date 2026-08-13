@@ -590,9 +590,9 @@
                   </div>
                 {% endif %}
 
-                {% if form.max_pdf_size %}
+                {% if form.max_file_size %}
                   <div class="input-group form__group">
-                    {% include "components/scanner/scanner_form_input_field.html" with field=form.max_pdf_size %}
+                    {% include "components/scanner/scanner_form_input_field.html" with field=form.max_file_size %}
                   </div>
                 {% endif %}
 
@@ -738,10 +738,6 @@
         </section>
 
         {% include "components/rules/rule_selector.html" with rule=form.rule required="True" selector_id="rule" component_title="Add rule" changed_id="changed_rule" %}
-
-        {% if settings.EXCLUSION_RULES %}
-          {% include "components/rules/rule_selector.html" with rule=form.exclusion_rule selector_id="exclusion_rule" component_title="Add exclusion rule" changed_id="changed_exclusion_rule" %}
-        {% endif %}
 
         <section class="data-form">
           <fieldset class="form__fieldset">

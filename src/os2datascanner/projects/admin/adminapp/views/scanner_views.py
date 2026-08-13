@@ -215,11 +215,10 @@ class ScannerBase(object):
         'do_ocr',
         'do_last_modified_check',
         'keep_false_positives',
-        'max_pdf_size',
+        'max_file_size',
         'only_notify_superadmin',
         'only_notify_remediators',
         'rule',
-        'exclusion_rule',
         'organization',
         'contacts',
     ]
@@ -252,12 +251,6 @@ class ScannerBase(object):
             validators=ModelMultipleChoiceField.default_validators,
         )
 
-        form.fields["exclusion_rule"] = ModelChoiceField(
-            allowed_rules,
-            validators=ModelMultipleChoiceField.default_validators,
-            required=False
-        )
-
         return form
 
     def get_selected_org(self, org_qs):
@@ -279,10 +272,9 @@ class ScannerBase(object):
         return fields
 
     def filter_queryset(self, form, organization):
-        for field_name in ['rule', 'exclusion_rule']:
-            queryset = form.fields[field_name].queryset
-            queryset = queryset.filter(organization=organization)
-            form.fields[field_name].queryset = queryset
+        queryset = form.fields['rule'].queryset
+        queryset = queryset.filter(organization=organization)
+        form.fields['rule'].queryset = queryset
 
     def get_scanner_object(self):
         return self.get_object()

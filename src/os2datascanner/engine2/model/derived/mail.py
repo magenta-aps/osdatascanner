@@ -42,7 +42,7 @@ class MailSource(DerivedSource):
         return filename
 
     def handles(self, sm, **kwargs):  # noqa: CCR001
-        def _process_message(path, part):
+        def _process_message(path, part):  # noqa: CCR001
             if part.is_multipart():
                 st = part.get_content_subtype()
                 parts = part.get_payload()
@@ -66,7 +66,12 @@ class MailSource(DerivedSource):
                     pass
                 else:
                     full_path = "/".join(path + [filename or ''])
-                    yield MailPartHandle(self, full_path, part.get_content_type())
+                    payload = part.get_payload(decode=False) or b""
+                    # Estimate the size of the payload, without decoding it.
+                    # The estimation factor comes from: https://en.wikipedia.org/wiki/Base64
+                    size_estimate = len(payload) * 3 // 4
+                    yield MailPartHandle(self, full_path, part.get_content_type(),
+                                         hints={"size": size_estimate})
         yield from _process_message([], sm.open(self))
 
 
@@ -135,8 +140,8 @@ class MailPartHandle(Handle):
     type_label = "mail-part"
     resource_type = MailPartResource
 
-    def __init__(self, source, path, mime):
-        super().__init__(source, path)
+    def __init__(self, source, path, mime, hints=None):
+        super().__init__(source, path, hints=hints)
         self._mime = mime
 
     @property

@@ -28,7 +28,7 @@ from os2datascanner.utils.ref import Counter
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.engine2.model.core import Source
 from os2datascanner.engine2.rules.meta import HasConversionRule, SizeRule
-from os2datascanner.engine2.rules.logical import OrRule, AndRule, AllRule, make_if, NotRule
+from os2datascanner.engine2.rules.logical import OrRule, AndRule, AllRule, make_if
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 import os2datascanner.engine2.pipeline.messages as messages
@@ -165,13 +165,14 @@ class Scanner(models.Model):
                     'of the current state of the matched sources.')
     )
 
-    max_pdf_size = models.PositiveIntegerField(
+    max_file_size = models.PositiveIntegerField(
         blank=True,
         null=True,
         default=0,
-        verbose_name=_('maximum PDF size (MB)'),
-        help_text=_('The maximum size of PDF files to scan, in megabytes. '
-                    'Set to 0 for no limit.')
+        verbose_name=_('maximum file size (MB)'),
+        help_text=_('The maximum size of files to scan, in megabytes. '
+                    'Set to 0 for no limit. '
+                    '(Only works for files where size is available.)')
     )
 
     columns = models.CharField(validators=[validate_comma_separated_integer_list],
@@ -196,13 +197,6 @@ class Scanner(models.Model):
     validation_status = models.IntegerField(choices=validation_choices,
                                             default=INVALID,
                                             verbose_name=_('validation status'))
-
-    exclusion_rule = models.ForeignKey(Rule,
-                                       blank=True,
-                                       null=True,
-                                       verbose_name=_('exclusion rule'),
-                                       related_name='scanners_ex_rule',
-                                       on_delete=models.PROTECT)
 
     supports_rule_preexec = False
 
@@ -358,22 +352,14 @@ class Scanner(models.Model):
         rule = OrRule.make(*self.local_or_rules(), content_rules)
         rule = AndRule.make(*self.local_and_rules(), rule)
 
-        # Explicitly insert at index 0 to evaluate early to avoid compatibility issues
-        # with other rules that require early execution.
-        if self.max_pdf_size:
-            sr = NotRule(SizeRule(self.max_pdf_size * 1024 * 1024))
-            prerules.insert(0, sr)
-
-        # prerules includes: SizeRule, LastModifiedRule
+        # prerules includes: LastModifiedRule
         return AndRule.make(*prerules, rule)
 
     def _construct_filter_rule(self) -> Rule:
-        try:
-            return self.exclusion_rule.make_engine2_rule()\
-                if self.exclusion_rule else None
-        except ValueError:
-            pass
-        return None
+        if self.max_file_size:
+            return SizeRule(self.max_file_size * 1024 * 1024)
+        else:
+            return None
 
     def _construct_scan_spec_template(self, user, force: bool) -> (
             messages.ScanSpecMessage):

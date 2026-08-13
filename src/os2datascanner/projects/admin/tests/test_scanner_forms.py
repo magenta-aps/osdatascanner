@@ -56,7 +56,7 @@ class TestScanMaxFileSizeWidget:
         return ScanMaxFileSizeWidget()
 
     def _toggle_checked(self, widget, value):
-        ctx = widget.get_context("max_pdf_size", value, {})
+        ctx = widget.get_context("max_file_size", value, {})
         return ctx["toggle"]["attrs"].get("checked", False)
 
     def test_none_is_unchecked(self, widget):
@@ -77,6 +77,6 @@ class TestScanMaxFileSizeWidget:
         assert self._toggle_checked(widget, -1) is True
 
     def test_checkbox_label_is_passed_through(self, widget):
-        widget.checkbox_label = "Limit PDF size"
-        ctx = widget.get_context("max_pdf_size", 5, {})
-        assert ctx["checkbox_label"] == "Limit PDF size"
+        widget.checkbox_label = "Limit file size"
+        ctx = widget.get_context("max_file_size", 5, {})
+        assert ctx["checkbox_label"] == "Limit file size"

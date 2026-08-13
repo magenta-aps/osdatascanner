@@ -16,6 +16,8 @@
  tracking and identification and clean-up of UserErrorLog objects if their ScheduledCheckup gets 
  deleted.
 
+- The scanner setting for limiting file size, now works for additional file types.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the

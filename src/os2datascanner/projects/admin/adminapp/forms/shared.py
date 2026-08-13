@@ -4,7 +4,6 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django import forms
-from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User, Permission
 from django.db.models import Q
@@ -72,7 +71,7 @@ class Groups:
         _("File settings"),
         [
             "do_ocr",
-            "max_pdf_size",
+            "max_file_size",
         ],
     )
 
@@ -238,18 +237,10 @@ class ScannerForm(GroupingModelForm):
                         "hx-swap-oob": "true"
                     }))
 
-    exclusion_rule = forms.ModelChoiceField(
-                    label=_("Exclusion rule"),
-                    queryset=Rule.objects.all(),
-                    required=False,
-                    widget=forms.Select(attrs={
-                        "hx-swap-oob": "true"
-                    })
-                    )
-
-    max_pdf_size = forms.IntegerField(
-        label=_("Set a max size for PDF files (MB)"),
-        help_text=_("Set a size limit for PDF files that the scanner will process (in megabytes)."),
+    max_file_size = forms.IntegerField(
+        label=_("Set a max size for files (MB)"),
+        help_text=_("Set a size limit for files that the scanner will process (in megabytes). "
+                    "(Only works for files where size is available.)"),
         required=False,
         min_value=0,
         widget=ScanMaxFileSizeWidget(
@@ -267,9 +258,6 @@ class ScannerForm(GroupingModelForm):
             if isinstance(field.widget, ScanMaxFileSizeWidget):
                 field.widget.checkbox_label = str(field.label)
                 field.label = ""
-
-        if not settings.EXCLUSION_RULES:
-            self.fields.pop("exclusion_rule", None)
 
         # Make sure changes to the organization field calls the correct view
         self.fields["organization"].widget.attrs["hx-get"] = self.this_url
@@ -321,16 +309,6 @@ class ScannerForm(GroupingModelForm):
             # ... or system rules applied to the organization
             Q(organization=None, organizations__uuid=self.org.uuid)
         )
-
-        # Only render if `EXCLUSION_RULES = true`:
-        if "exclusion_rule" in self.fields:
-            # Only allow the user to choose between exclusion rules related to the organization
-            self.fields["exclusion_rule"].queryset = self.fields["exclusion_rule"].queryset.filter(
-                # Rules belonging to the organization ...
-                Q(organization_id=self.org.uuid) |
-                # ... or system rules applied to the organization
-                Q(organization=None, organizations__uuid=self.org.uuid)
-            )
 
         # Only allow the user to change the validation_status field with the correct permission
         if not self.user.has_perm("os2datascanner.can_validate"):
