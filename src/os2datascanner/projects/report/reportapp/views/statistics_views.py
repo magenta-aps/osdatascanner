@@ -41,7 +41,7 @@ from ....utils.view_mixins import CSVExportMixin
 logger = structlog.get_logger("reportapp")
 
 
-class MatchesStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
+class ResultsStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
     """Shared scaffolding for the DPO and leader-results statistics pages:
     both render aggregate charts over a base_query() queryset, scoped to a
     unit chosen via ?orgunit= (or a subclass-specific default scope
@@ -249,7 +249,7 @@ class StatisticsCSVExportMixin(CSVExportMixin):
         return rows
 
 
-class DPOStatisticsPageView(MatchesStatisticsPageView):
+class DPOStatisticsPageView(ResultsStatisticsPageView):
     template_name = "dpo_statistics_template.html"
 
     # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
@@ -863,7 +863,7 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
         return super().get(request, *args, **kwargs)
 
 
-class LeaderResultsStatisticsPageView(MatchesStatisticsPageView):
+class LeaderResultsStatisticsPageView(ResultsStatisticsPageView):
     template_name = "leader_results_statistics_template.html"
 
     def _get_own_units(self):
