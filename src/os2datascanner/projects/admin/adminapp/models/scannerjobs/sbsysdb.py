@@ -84,7 +84,7 @@ class SBSYSDBScanner(Scanner):
             default=AliasType.USER_PRINCIPAL_NAME.value,
             verbose_name=_("Ownership field"),
             help_text=_(
-                    "The user alias value to use to associate SBSYS cases"
+                    "The database field to use to associate SBSYS cases"
                     " with imported users."))
 
     @property

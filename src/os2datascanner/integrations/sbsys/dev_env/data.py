@@ -302,13 +302,13 @@ SbSysNetDrift["Bruger"] = [
     },
     _BRUGER_BASE | {
         "ID": 3,
-        "LogonID": 3,
+        "LogonID": "INACBO",
         "Navn": "Inactive Bob",
         "FagomraadeID": 1,
         "AdresseID": 1,
         "AnsaettelsesstedID": 1,
         "Status": 0,  # Supposed to mean inactive.
-        "ObjectSID": "S-INAC",
+        "ObjectSid": "S-INAC",
         "UserPrincipalName": "inactivebob@vstkom.internal",
         "BrugerIdentity": "99991057-FA37-9AA9-A79F-D8A5EA999AA9",
     }

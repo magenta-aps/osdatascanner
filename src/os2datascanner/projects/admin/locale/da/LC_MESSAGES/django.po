@@ -653,9 +653,9 @@ msgid "Ownership field"
 msgstr "Ejerskabsfelt"
 
 #: adminapp/models/scannerjobs/sbsysdb.py
-msgid "The user alias value to use to associate SBSYS cases with imported users."
+msgid "The database field to use to associate SBSYS cases with imported users."
 msgstr ""
-"Den aliasværdi, der bruges til at tilknytte SBSYS-sager til importerede "
+"Det databasefelt, der bruges til at tilknytte SBSYS-sager til importerede "
 "brugere."
 
 #: adminapp/models/scannerjobs/sbsysdb.py
