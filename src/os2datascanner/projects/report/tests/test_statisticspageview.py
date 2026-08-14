@@ -1458,6 +1458,25 @@ class TestLeaderResultsStatisticsPageView:
 
         assert response.status_code == 403
 
+    def test_leader_results_statisticspage_scanner_choices_excludes_unmanaged(
+            self, rf, egon_account, benny_account, benny_email_alias, kjeld_email_alias):
+        """The scannerjob dropdown must only offer scanners that actually
+        produced matches for accounts within the leader's own scope -- not
+        every scanner in the organization."""
+
+        benny_account.manager = egon_account
+        benny_account.save()
+
+        create_reports_for(benny_email_alias, scanner_job_pk=1)
+        create_reports_for(kjeld_email_alias, scanner_job_pk=2)
+
+        response = self.get_leader_results_statisticspage_response(rf, egon_account)
+        choices = response.context_data['scannerjob_choices']
+
+        assert choices.count() == 1
+        assert choices.filter(scanner_pk=1).exists()
+        assert not choices.filter(scanner_pk=2).exists()
+
     def test_leader_results_statisticspage_default_view_excludes_unmanaged_units(
             self, rf, kjeld_account, kjeld_manager_position,
             olsenbanden_ou_positions, kjelds_hus_ou_positions,

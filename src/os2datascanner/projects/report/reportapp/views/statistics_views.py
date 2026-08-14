@@ -22,7 +22,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
 
-from .utilities.statistics_utilities import (base_query, filter_by_unit, filter_by_accounts,
+from .utilities.statistics_utilities import (base_query, filter_by_accounts,
                                              accounts_under_units,
                                              make_data_structures, source_type_progress,
                                              count_unhandled_matches_by_month,
@@ -48,8 +48,8 @@ class ResultsStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
     otherwise).
 
     Subclasses implement _get_own_units(); _confirm_orgunit_access(),
-    _default_scope() and _extra_context() are optional overrides for
-    page-specific access rules and context."""
+    _default_scope_accounts(), _extra_context() and _scannerjob_choices()
+    are optional overrides for page-specific access rules and context."""
 
     context_object_name = "matches"  # object_list renamed to something more relevant
     model = DocumentReport
@@ -66,14 +66,21 @@ class ResultsStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         set implies (see DPOStatisticsPageView's universal-DPO case)."""
         return self.user_units.filter(uuid=orgunit_uuid).exists()
 
-    def _default_scope(self, matches):
-        """How to scope @matches when no ?orgunit= is chosen. Defaults to no
-        extra scoping (the whole organization); override to restrict further."""
-        return matches
+    def _default_scope_accounts(self):
+        """The Accounts to scope matches to when no ?orgunit= is chosen, or
+        None for no extra scoping (the whole organization); override to
+        restrict further."""
+        return None
 
     def _extra_context(self, context):
         """Hook for subclass-specific context keys. No-op by default."""
         return context
+
+    def _scannerjob_choices(self, org, accounts):
+        """Scannerjob dropdown options for the current scope (@accounts is
+        None when unscoped). Defaults to every scanner in @org (or every
+        scanner, for a superuser); override to narrow further."""
+        return org.scanners.all() if org else ScannerReference.objects.all()
 
     def _check_access(self, request):
         if not self.request.user.account:
@@ -102,24 +109,25 @@ class ResultsStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context = super().get_context_data(**kwargs)
         today = timezone.now()
 
-        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
-            self.matches = self.matches.filter(
-                scanner_job__scanner_pk=scannerjob)
-
+        accounts = None
         if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
             if self.request.user.is_superuser or self._confirm_orgunit_access(orgunit):
-                selected_unit = self.user_units.get(uuid=orgunit)
-                self.matches = filter_by_unit(self.matches, selected_unit)
+                accounts = accounts_under_units(self.user_units.filter(uuid=orgunit))
             else:
                 raise OrganizationalUnit.DoesNotExist(
                     _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
         elif not self.request.user.is_superuser:
-            self.matches = self._default_scope(self.matches)
+            accounts = self._default_scope_accounts()
+
+        if accounts is not None:
+            self.matches = filter_by_accounts(self.matches, accounts)
 
         if self.scannerjob_filters is None:
-            self.scannerjob_filters = ScannerReference.objects.all()
-            if org := self.kwargs.get("org"):
-                self.scannerjob_filters = org.scanners.all()
+            self.scannerjob_filters = self._scannerjob_choices(self.kwargs.get("org"), accounts)
+
+        if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
+            self.matches = self.matches.filter(
+                scanner_job__scanner_pk=scannerjob)
 
         (context['match_data'],
          source_type_data,
@@ -869,14 +877,13 @@ class LeaderResultsStatisticsPageView(ResultsStatisticsPageView):
     def _get_own_units(self):
         return self.request.user.account.get_managed_units()
 
-    def _default_scope(self, matches):
+    def _default_scope_accounts(self):
         # No unit chosen: aggregate the leader's managed units plus any
         # accounts they manage directly (the only scope for leaders with no
         # unit position at all) -- never the whole organization.
-        accounts = Account.objects.filter(
+        return Account.objects.filter(
             Q(pk__in=accounts_under_units(self.user_units))
             | Q(pk__in=self.request.user.account.managed_accounts.all()))
-        return filter_by_accounts(matches, accounts)
 
     def _extra_context(self, context):
         org = self.request.user.account.organization
@@ -886,6 +893,15 @@ class LeaderResultsStatisticsPageView(ResultsStatisticsPageView):
             LeaderTabConfigChoices.ACCOUNTS, LeaderTabConfigChoices.BOTH]
         context['active_tab'] = "results"
         return context
+
+    def _scannerjob_choices(self, org, accounts):
+        if org is None:
+            return super()._scannerjob_choices(org, accounts)
+        return org.scanners.filter(
+            document_reports__number_of_matches__gte=1,
+            document_reports__alias_relations__account__in=accounts,
+            document_reports__alias_relations__shared=False,
+        ).distinct()
 
     def dispatch(self, request, *args, **kwargs):
         if request.user.is_authenticated:
