@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('os2datascanner', '0188_usererrorlog_checkup'),
+        ('os2datascanner', '0192_sbsysdbscanner_owner_field'),
     ]
 
     operations = [

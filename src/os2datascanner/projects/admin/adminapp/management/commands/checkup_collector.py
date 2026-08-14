@@ -71,6 +71,13 @@ def create_usererrorlog(
     )
 
 
+def record_account_exploration_error(message: messages.ProblemMessage, ss: ScanStatus):
+    CoveredAccount.objects.filter(
+        scan_status=ss,
+        account__uuid=message.account_uuid
+    ).update(status_is_error=True, message=message.message)
+
+
 def checkup_message_received_raw(body):
     logger.debug(
             "raw checkup message received", body=body)
@@ -123,15 +130,15 @@ def checkup_message_received_raw(body):
         return
 
     if isinstance(message, messages.ProblemMessage) and message.account_uuid:
-        CoveredAccount.objects.filter(
-                scanner=scanner, scan_status=ss,
-                account__uuid=message.account_uuid
-        ).update(status_is_error=True, message=message.message)
+        # We're dealing with something that represents an Account and thereby a
+        # CoveredAccount - mark that as errored, so we don't use this ScanStatus'
+        # timestamp as their LastModified next time.
+        record_account_exploration_error(message, ss)
 
     if not handle:
+        # XXX: it might also be nice to set ScanStatus.message and
+        # .message_is_error in this case, but that might mean lock fighting
         if isinstance(message, messages.ProblemMessage) and message.source:
-            # XXX: it might also be nice to set ScanStatus.message and
-            # .message_is_error in this case, but that might mean lock fighting
             create_usererrorlog(message, ss)
         return
 

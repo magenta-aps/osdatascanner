@@ -172,7 +172,7 @@ def message_received(  # noqa: CCR001
                 objects_reported_individually=True,
                 sources_reported_individually=True,
                 message=exception_message,
-                status_is_error=exception_message != "")
+                status_is_error=exception_message != "" and message.account_uuid is None)
 
 
 def message_received_raw(body, channel, source_manager):

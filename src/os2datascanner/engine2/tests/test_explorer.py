@@ -11,17 +11,16 @@ from os2datascanner.engine2.pipeline.explorer import (
         message_received, process_exploration_error)
 
 from .model import DummySource, DummyHandle
+from ..rules.regex import RegexRule
 
 ACCOUNT_UUID = "11111111-1111-1111-1111-111111111111"
 
 
 def _make_spec(account_uuid=None):
-    scan_tag = messages.ScanTagFragment(
-            time=None, user=None, scanner=None, organisation=None)
     return messages.ScanSpecMessage(
-            scan_tag=scan_tag,
+            scan_tag=messages.ScanTagFragment.make_dummy(),
             source=DummySource(3, secret="hunter2"),
-            rule=True,
+            rule=RegexRule("dummy"),
             configuration={},
             progress=None,
             filter_rule=None,
@@ -71,11 +70,11 @@ def test_process_exploration_error_never_sets_account_uuid():
     assert problems[0].account_uuid is None
 
 
-def test_exploration_failure_still_marks_status_message_as_error():
-    """Unchanged behaviour check: the StatusMessage emitted on failure must
-    still have status_is_error=True regardless of account_uuid (StatusMessage
-    itself does not carry account_uuid -- see design doc non-goals)."""
-    spec = _make_spec(account_uuid=ACCOUNT_UUID)
+def test_exploration_failure_with_no_account_uuid_still_marks_status_message_as_error():
+    """Unchanged behaviour check: a top-level exploration failure that isn't
+    tied to a specific account still has to flag the whole scan as errored --
+    there's no CoveredAccount to carry that information instead."""
+    spec = _make_spec(account_uuid=None)
 
     with SourceManager() as sm, patch.object(spec.source, "handles", _failer):
         results = list(message_received(spec, sm))
@@ -83,4 +82,19 @@ def test_exploration_failure_still_marks_status_message_as_error():
     statuses = [m for m in results if isinstance(m, messages.StatusMessage)]
     assert len(statuses) == 1
     assert statuses[0].status_is_error is True
-    assert not hasattr(statuses[0], "account_uuid")
+
+
+def test_account_attributed_failure_does_not_mark_scan_as_errored():
+    """A top-level exploration failure tied to a specific account must not
+    flag the whole scan as errored: other accounts covered by the same scan
+    may still be explored successfully. The failure is instead tracked
+    per-account via the ProblemMessage's account_uuid (see
+    checkup_collector.record_account_exploration_error)."""
+    spec = _make_spec(account_uuid=ACCOUNT_UUID)
+
+    with SourceManager() as sm, patch.object(spec.source, "handles", _failer):
+        results = list(message_received(spec, sm))
+
+    statuses = [m for m in results if isinstance(m, messages.StatusMessage)]
+    assert len(statuses) == 1
+    assert statuses[0].status_is_error is False
