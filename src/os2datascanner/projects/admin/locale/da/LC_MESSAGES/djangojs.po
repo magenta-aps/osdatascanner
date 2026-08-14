@@ -1,13 +1,14 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Danish translation of JavaScript strings in the Admin module of OSdatascanner.
+# Copyright (C) 2021 - Magenta ApS
+# This file is distributed under the same license as the Admin module of
+# OSdatascanner.
+# MB <mb@magenta.dk>, 2021.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-15 13:07+0200\n"
+"POT-Creation-Date: 2026-08-14 13:24+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -101,7 +102,6 @@ msgstr "Interval"
 msgid "On the"
 msgstr "den"
 
-# Assumed it was "on the 'date'"
 #: dist/js/recurrence_widget/recurrence-widget.js
 #: js/recurrence_widget/recurrence-widget.js
 msgid "Each"
@@ -603,3 +603,11 @@ msgstr "%(unit)s siden scanstart"
 #, javascript-format
 msgid "% scanned"
 msgstr "% scannet"
+
+#: dist/js/tables/tableBehavior.js js/tables/tableBehavior.js
+msgid "Copied to clipboard"
+msgstr "Kopieret til udklipsholderen"
+
+#: dist/js/tables/tableBehavior.js js/tables/tableBehavior.js
+msgid "Failed to copy to clipboard"
+msgstr "Kunne ikke kopiere til udklipsholderen"

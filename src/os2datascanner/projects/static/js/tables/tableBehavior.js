@@ -356,11 +356,11 @@ function copyToClipboard(el) {
     const text = el.innerText;
     navigator.clipboard.writeText(text).then(
       function () {
-        showSnackBar("Copied to clipboard", "success");
+        showSnackBar(gettext("Copied to clipboard"), "success");
       },
       function (err) {
-        console.error("Could not copy text: ", err);
-        showSnackBar("Could not copy text", "error");
+        console.error("Failed to copy to clipboard: ", err);
+        showSnackBar(gettext("Failed to copy to clipboard"), "error");
       }
     );
   }
