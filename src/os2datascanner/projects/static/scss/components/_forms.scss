@@ -826,6 +826,7 @@
         list-style: none;
         margin-left: 0.5rem;
         margin-bottom: 0.875rem;
+        break-inside: avoid;
 
         &:last-child {
           margin-bottom: 0;
@@ -839,9 +840,12 @@
             align-items: center;
             gap: 0.125rem;
             font-size: 0.75em;
+            min-width: 0;
 
             span {
               margin-left: 0.25rem;
+              overflow-wrap: break-word;
+              min-width: 0;
             }
           }
         }
