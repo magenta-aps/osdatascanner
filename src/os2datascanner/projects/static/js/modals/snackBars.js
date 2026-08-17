@@ -1,12 +1,6 @@
 /* jshint -W098 */ //disable check is used ( called from html )
 
-// Old snackbar
-function closeOldSnackBar(el) {
-  el.parentNode.remove();
-}
-
-// New snackbar
-function closeNewSnackBar(el) {
+function closeSnackBar(el) {
   el.parentNode.parentNode.remove();
 }
 
@@ -34,7 +28,7 @@ function showSnackBar(message, type) {
     <div class="snackbar__content">
       <span class="snackbar__icon material-symbols">${icon}</span>
       <p class="snackbar__text">${message}</p>
-      <button type="button" class="close-modal button button--modal-close snackbar__close-button" onclick="closeNewSnackBar(this)" title="Close">
+      <button type="button" class="close-modal button button--modal-close snackbar__close-button" onclick="closeSnackBar(this)" title="Close">
         <span class="material-symbols">close</span>
       </button>
     </div>
