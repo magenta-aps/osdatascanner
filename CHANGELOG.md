@@ -35,6 +35,8 @@
 
 - Using browser's back button on "Completed scans" pages no longer loses side navigation menu.
 
+- Fix overflow on list items with exceptionally long names in the "withheld results" modal.
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"
