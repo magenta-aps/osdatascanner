@@ -1,7 +1,7 @@
 {# Snackbar for popup messages - Using oob swap, to support django messages #}
 {% load static %}
 
-<div class="snackbar__container" hx-swap-oob="afterbegin" id="snackbar">
+<div class="snackbar__container" hx-swap-oob="beforeend" id="snackbar">
   {% for message in messages %}
     <div class="snackbar snackbar--{{ message.tags }}">
       <div class="snackbar__content">
