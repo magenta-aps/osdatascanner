@@ -43,6 +43,19 @@
 
 - Add danish translation for snackbar message (shown when user copies SBSYS case number)
 
+- Fixed a bug where a worker could end up in a permanent loop of losing and reestablishing its
+  connection to the message queue, stopping it from scanning anything. Trigger being a ScanStatus
+  that claims to be not done, but with no corresponding message queue. Workers now check for that
+  queue on a seperate channel, to avoid putting its other work at risk.
+
+- Fixed a bug where objects could be counted as handled without ever being scanned, leaving a
+  forever incomplete ScanStatus.
+
+- Fixed a bug where the same object could be scanned and reported twice, if a worker's channel
+  to the message queue was replaced mid-work, inflating scan progress. Whatever an object has
+  produced but not yet sent is now dropped along with its "ack".
+
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"
