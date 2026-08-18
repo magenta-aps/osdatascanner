@@ -85,8 +85,11 @@
   }
 
   function autoCloseSnackBar() {
-    const snackbars = document.querySelectorAll(".snackbar--auto_close");
+    const snackbars = document.querySelectorAll(
+      ".snackbar--auto_close:not([data-auto-close-wired])"
+    );
     snackbars.forEach(function (snackbar) {
+      snackbar.setAttribute("data-auto-close-wired", "true");
       let timer;
       let startTime;
       let remainingTime = 10000; // 10 seconds --> Has to match the timer animation in _snackbars.SCSS
@@ -133,6 +136,7 @@
         slideSnackbarsIntoPlace(pendingSnackbarRects);
         pendingSnackbarRects = null;
       }
+      autoCloseSnackBar();
     }
   });
 })();
