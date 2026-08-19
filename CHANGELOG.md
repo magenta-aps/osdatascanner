@@ -20,6 +20,10 @@
 
 - Improved performance on DPO page.
 
+- Deleting a scanner job in the administration module now also deletes its corresponding
+  reference and all related reports in the report module. Removing (hiding) a scanner job is
+  unaffected.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the

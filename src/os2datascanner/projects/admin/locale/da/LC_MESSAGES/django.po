@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-14 10:47+0200\n"
+"POT-Creation-Date: 2026-08-19 11:15+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -732,7 +732,8 @@ msgid ""
 "(Only works for files where size is available.)"
 msgstr ""
 "Den maksimale størrelse af filer der skal scannes, i megabytes. Sæt til 0 "
-"for ingen begrænsning. (Virker kun for filer, hvor størrelsen er tilgængelig.)"
+"for ingen begrænsning. (Virker kun for filer, hvor størrelsen er "
+"tilgængelig.)"
 
 #: adminapp/models/scannerjobs/scanner.py
 msgid "rule"
@@ -2490,18 +2491,21 @@ msgstr "Er du sikker på, at du vil slette denne scanner?"
 
 #: adminapp/templates/components/scannerjobs/scannerjobs--active.html
 #: adminapp/templates/components/scannerjobs/scannerjobs--removed.html
-#: adminapp/templates/rules.html
-msgid "The action cannot be reversed"
-msgstr "Handlingen kan ikke fortrydes."
+msgid ""
+"This will permanently delete the scanner job, its scanning history and all "
+"of its reports. The action cannot be reversed."
+msgstr ""
+"Dette vil permanent slette scannerjobbet, dets scanningshistorik og alle "
+"dets resultater. Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/components/scannerjobs/scannerjobs--active.html
 #: adminapp/templates/components/scannerjobs/scannerjobs--removed.html
 msgid ""
-"Delete scanner job. The scannerjob and the related scanning history will be "
-"permanently deleted."
+"Delete scanner job. The scannerjob, its scanning history and all of its "
+"reports will be permanently deleted."
 msgstr ""
-"Slet scannerjobbet. Scannerjobbet og den relaterede scanningshistorik bliver "
-"permanent slettet."
+"Slet scannerjobbet. Scannerjobbet, dets scanningshistorik og alle dets "
+"resultater bliver permanent slettet."
 
 #: adminapp/templates/components/scannerjobs/scannerjobs--active.html
 msgid "Show more information about this scannerjob."
@@ -3072,6 +3076,10 @@ msgstr "redigér"
 #: adminapp/templates/rules.html
 msgid "Do you really want to delete this rule?"
 msgstr "Vil du slette denne regel?"
+
+#: adminapp/templates/rules.html
+msgid "The action cannot be reversed"
+msgstr "Handlingen kan ikke fortrydes."
 
 #: adminapp/templates/rules.html
 msgid "delete"

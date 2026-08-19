@@ -710,6 +710,20 @@ def delete_message_smbgrant():
 
 
 @pytest.fixture
+def delete_message_scanner():
+    return {
+        'time': '2025-08-19T10:11:23+02:00',
+        'type': 'bulk_event_delete',
+        'publisher': 'admin',
+        'classes': {
+            # Broadcasted delete-events carry pks as strings -- see
+            # get_broadcastable_dict() in admin/organizations/models/broadcasted_mixin.py
+            'Scanner': ['17']
+        }
+    }
+
+
+@pytest.fixture
 def update_message_scanner(marvel_organization):
     return {
         'time': '2025-08-19T10:11:23+02:00',
