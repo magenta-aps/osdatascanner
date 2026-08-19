@@ -149,6 +149,15 @@ def event_message_received_raw(body):  # noqa: CCR001 C901
                                     count=len(classes.get(model.__name__))
                                     )
 
+                if scanner_pks := classes.get("Scanner"):
+                    # We have received a deletion event of Scanner objects from the Admin
+                    # module. The Report module doesn't have a Scanner model, but instead
+                    # needs to delete the corresponding ScannerReference(s).
+                    # This deletion will cascade to related document reports
+                    deleted, _ = ScannerReference.objects.filter(
+                        scanner_pk__in=scanner_pks).delete()
+                    logger.info("Deleted ScannerReference(s)", count=deleted)
+
             elif event_type == "bulk_event_purge_all":
                 for model in ORDER_OF_DELETION:
                     if model.__name__ in classes:
