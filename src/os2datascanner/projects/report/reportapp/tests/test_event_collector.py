@@ -9,6 +9,7 @@ from django.contrib.auth.models import User
 from os2datascanner.projects.report.organizations.models import (Account, Alias,
                                                                  Organization, OrganizationalUnit,
                                                                  Position)
+from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 
 from os2datascanner.projects.grants.models import SMBGrant
@@ -190,3 +191,32 @@ class TestEventCollector:
             scan_entire_org=serialized_obj_update['scan_entire_org'],
             only_notify_superadmin=serialized_obj_update['only_notify_superadmin'],
         ).exists()
+
+    # SCANNER Delete
+
+    def test_event_collector_scanner_delete(
+            self, create_message_scanner, delete_message_scanner):
+        # Arrange: create the ScannerReference, and a DocumentReport tied to it.
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(create_message_scanner))
+
+        scanner_pk = create_message_scanner.get("classes").get("Scanner")[0]["pk"]
+        scanner_ref = ScannerReference.objects.get(scanner_pk=scanner_pk)
+
+        DocumentReport.objects.create(
+            path="test/path",
+            sort_key="test",
+            source_type="test",
+            scanner_job=scanner_ref,
+        )
+
+        assert ScannerReference.objects.filter(scanner_pk=scanner_pk).exists()
+        assert DocumentReport.objects.filter(scanner_job=scanner_ref).exists()
+
+        # Act
+        with pytest.raises(StopIteration):
+            next(event_message_received_raw(delete_message_scanner))
+
+        # Assert
+        assert not ScannerReference.objects.filter(scanner_pk=scanner_pk).exists()
+        assert not DocumentReport.objects.filter(scanner_job__scanner_pk=scanner_pk).exists()
