@@ -89,6 +89,30 @@ class PikaConnectionHolder:
     def has_channel(self):
         return bool(self._channel)
 
+    def _probe_queue(self, queue_name: str):
+        """Returns the broker's response to a passive declaration of the named
+        queue, or None if there is no such queue.
+
+        Using a throwaway channel because a passive declaration
+        of a missing queue is answered with 404, which closes the channel it arrived on.
+        If we used the same channel we're already using for work, would cost us every consumer
+        we hold, and recovering from it makes us ask again. A queue that has been deleted
+        for good will therefore keep us busy forever. Asked here, it costs a
+        channel we were finished with anyway."""
+        probe = self.connection.channel()
+        try:
+            return probe.queue_declare(queue_name, passive=True)
+        except pika.exceptions.ChannelClosed:
+            return None
+        finally:
+            try:
+                if probe.is_open:
+                    probe.close()
+            except pika.exceptions.AMQPError:
+                # We don't want to raise anything here, as that may mean trying to recover
+                # the "main" channel, which probably is healthy.
+                pass
+
     def clear(self):
         """Closes the managed Pika connection, if there is one."""
         try:
@@ -156,8 +180,14 @@ class PikaPipelineRunner(PikaConnectionHolder):
         """Handles an AMQP message.
 
         The default implementation of this method acknowledges the message and
-        otherwise does nothing."""
-        self.channel.basic_ack(method.delivery_tag)
+        otherwise does nothing.
+
+        The acknowledgement goes to the channel Pika gives us rather than to
+        self.channel.
+        Delivery tag is only valid on the channel that issued
+        it, and self.channel is a property that will quietly open a fresh
+        channel if the old one has gone away. (Inherited from PikaConnectionHolder)"""
+        channel.basic_ack(method.delivery_tag)
 
     def _basic_consume(self, *, exclusive=False):
         """Registers this PikaPipelineRunner to receive messages directed to
@@ -223,6 +253,21 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         self._default_basic_properties = dict(delivery_mode=2, content_encoding="gzip")
         self._tick = 0
 
+        self._message_channel = None
+        """The channel that delivered the message await_message last handed to
+        the main thread. A delivery tag is only valid on the channel that
+        issued it, so requests referring to that tag carry this to be checked
+        against the channel in use when they are finally executed.
+        run_consumer handles one message at a time, so this is what an ack
+        enqueued now is talking about."""
+
+        self._channel_serial = 0
+        """How many channels this runner has had. Diagnostics only, never a
+        condition: channel numbers are reused (every recovery reports
+        number=1), so logs need a counter that keeps going up to be readable at
+        all. Do not compare it to decide whether a tag is still valid; compare
+        the channel itself."""
+
         self._shutdown_exception = None
 
     def _enqueue(self, label: str, *args, check_live=True):
@@ -243,13 +288,20 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
 
     def enqueue_ack(self, delivery_tag: int):
         """Requests that the background thread acknowledge receipt of the
-        message with the given tag."""
-        return self._enqueue("ack", delivery_tag)
+        message with the given tag.
+
+        The tag is stamped with the channel that issued it. If the channel has
+        been replaced by the time this runs, the tag no longer identifies the
+        message it was meant for. A new channel numbers its deliveries from 1
+        again, so it is discarded rather than applied to whichever message now
+        holds that number."""
+        return self._enqueue("ack", delivery_tag, self._message_channel)
 
     def enqueue_reject(self, delivery_tag: int, requeue: bool = True):
         """Requests that the background thread reject the message with the
-        given tag."""
-        return self._enqueue("rej", delivery_tag, requeue)
+        given tag. Stamped with its channel, as enqueue_ack."""
+        return self._enqueue(
+                "rej", delivery_tag, requeue, self._message_channel)
 
     def enqueue_stop(self):
         """Requests that the background thread stop running. (This is the only
@@ -264,12 +316,27 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                         routing_key: str,
                         body: bytes,
                         exchange: str = "",
+                        *,
+                        delivery_channel=None,
                         **basic_properties):
         """Requests that the background thread send a message.
 
         Note that the content_encoding property gets special treatment: if it's
         set, the message will be encoded accordingly -- on the calling thread,
-        not the background one -- before it's enqueued."""
+        not the background one -- before it's enqueued.
+
+        delivery_channel ties this message to the channel that delivered the
+        message being handled, so that a publish still waiting its turn is
+        dropped when the ack it belongs with is going to be discarded. Pass it
+        for anything produced while handling a message: that delivery will be
+        redelivered and handled again, and publishing now would duplicate every
+        result, metadata and status message it produced. Leave it None for
+        publishes that stand on their own (f.e. a stage's own output, worker_hello,
+        the admin system's broadcasts), which must always be retried.
+
+        This narrows the duplicate window. We publish without confirms, so a publish
+        that has already been handed to the broker cannot be recalled once the channel dies.
+        Only the ones still in the queue can be dropped. """
         basic_properties = self._default_basic_properties | basic_properties
 
         if not isinstance(body, bytes):
@@ -279,7 +346,8 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
             body = encoder(body)
 
         return self._enqueue(
-                "msg", routing_key, body, exchange, basic_properties)
+                "msg", routing_key, body, exchange, basic_properties,
+                delivery_channel)
 
     def _enqueue_pause(self, duration: float = 5.0):
         """Requests that the background thread wait for the specified duration.
@@ -326,7 +394,8 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                          " awaiting message: releasing lock and going to sleep...")
             rv = self._condition.wait_for(waiter, timeout)
             if rv and self._live:
-                method, properties, body = self._incoming.pop(0)
+                method, properties, body, channel = self._incoming.pop(0)
+                self._message_channel = channel
         if body and properties and properties.content_encoding:
             _, decoder = _coders[properties.content_encoding]
             body = decoder(body)
@@ -354,9 +423,12 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
 
     def handle_message_raw(self, channel, method, properties, body):
         """(Background thread.) Collects a message and stores it for later
-        retrieval by the main thread."""
+        retrieval by the main thread.
+
+        Pika hands us the channel this arrived on, and we keep it. The delivery
+        tag in 'method' is meaningless without it."""
         with self._condition:
-            self._incoming.add((method, properties, body,))
+            self._incoming.add((method, properties, body, channel,))
             logger.trace(f"PikaPipelineThread - Thread TID: {self.native_id}"
                          " handled incoming message. Notifying other threads.")
             self._condition.notify()
@@ -392,15 +464,32 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         """(Background thread.) Reopens the channel and re-subscribes to all
         queues after a broker-initiated channel closure.
 
-        This typically happens when a per-scan queue is deleted while the
-        worker has an unacked message from it: the broker invalidates the
-        delivery tag and closes the channel when we try to ack it."""
+        The usual trigger is a passive declaration of a queue that no longer
+        exists, which the broker answers with 404 and a closed channel. """
         try:
             self.clear()
+            with self._condition:
+                self._channel_serial += 1
+                # Dropping these shouldbe safe. Anything
+                # the broker never heard an ack for is requeued when the
+                # channel closes, so it comes back ... unless its queue was
+                # deleted, in which case it is gone, but so is the scan that
+                # produced it. If we keep them instead, we might ack a delivery tag
+                # that now belongs to somebody else's message, silently
+                # destroying work that was never done and can never be counted.
+                stale_incoming = len(self._incoming)
+                self._incoming.clear()
+                stale_acks = [r for r in self._outgoing if r[0] in ("ack", "rej")]
+
+                # Outgoing can hold other msg's too, which we don't want to clear.
+                self._outgoing = [r for r in self._outgoing if r[0] not in ("ack", "rej")]
             consumer_tags = self._basic_consume()
             logger.info(
                     "Channel recovered after broker closure,"
-                    " re-subscribed to queues")
+                    " re-subscribed to queues",
+                    channel_serial=self._channel_serial,
+                    discarded_deliveries=stale_incoming,
+                    discarded_acks=len(stale_acks))
             return consumer_tags
         except Exception as e:
             raise RuntimeError(
@@ -435,17 +524,46 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                                      " Processing outgoing message.")
                         try:
                             match head:
-                                case ("msg", routing_key, body, exchange, props):
-                                    self.channel.basic_publish(
-                                            exchange=exchange,
-                                            routing_key=routing_key,
-                                            properties=pika.BasicProperties(**props),
-                                            body=body)
-                                case ("ack", delivery_tag):
-                                    self.channel.basic_ack(delivery_tag)
-                                case ("rej", delivery_tag, requeue):
-                                    self.channel.basic_reject(
-                                            delivery_tag, requeue=requeue)
+                                case ("msg", routing_key, body, exchange, props,
+                                      delivery_channel):
+                                    if (delivery_channel is not None
+                                            and delivery_channel
+                                            is not self._channel):
+                                        # The delivery that produced this can
+                                        # no longer be acked, so it will come
+                                        # back and produce this message again.
+                                        logger.info(
+                                                "Discarding publish from a"
+                                                " closed channel",
+                                                routing_key=routing_key,
+                                                channel_serial=self._channel_serial)
+                                    else:
+                                        self.channel.basic_publish(
+                                                exchange=exchange,
+                                                routing_key=routing_key,
+                                                properties=pika.BasicProperties(
+                                                        **props),
+                                                body=body)
+                                case ("ack", delivery_tag, delivery_channel):
+                                    if delivery_channel is self._channel:
+                                        self.channel.basic_ack(delivery_tag)
+                                    else:
+                                        logger.info(
+                                                "Discarding ack from a closed"
+                                                " channel",
+                                                delivery_tag=delivery_tag,
+                                                channel_serial=self._channel_serial)
+                                case ("rej", delivery_tag, requeue,
+                                      delivery_channel):
+                                    if delivery_channel is self._channel:
+                                        self.channel.basic_reject(
+                                                delivery_tag, requeue=requeue)
+                                    else:
+                                        logger.info(
+                                                "Discarding rejection from a"
+                                                " closed channel",
+                                                delivery_tag=delivery_tag,
+                                                channel_serial=self._channel_serial)
                                 case ("fin",):
                                     running = False
                                     break
@@ -459,7 +577,13 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                                     " operation; will recover",
                                     operation=head[0],
                                     exc=str(e))
-                            self._outgoing.clear()
+                            if head[0] == "msg":
+                                # No confirms, so whether the broker got this
+                                # one is unknowable. Put it back anyway, and
+                                # keep doing so. Dropping it loses a message the
+                                # system already counted, and a duplicate is the
+                                # cheaper mistake.
+                                self._outgoing.insert(0, head)
                             needs_recovery = True
                             break
 
@@ -529,15 +653,23 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                     key = method.routing_key
                     dbd = json_utf8_decode(body)
 
+                    # Everything produced while handling this delivery is tied
+                    # to the channel that delivered it, so that it and the ack
+                    # below commit or abort as a unit.
+                    delivery_channel = self._message_channel
                     for msg in self.handle_message(key, dbd):
                         match msg:
                             case (routing_key, message, exchange, headers):
-                                self.enqueue_message(routing_key,
-                                                     message,
-                                                     exchange=exchange,
-                                                     **headers)
+                                self.enqueue_message(
+                                        routing_key,
+                                        message,
+                                        exchange=exchange,
+                                        delivery_channel=delivery_channel,
+                                        **headers)
                             case (routing_key, message):
-                                self.enqueue_message(routing_key, message)
+                                self.enqueue_message(
+                                        routing_key, message,
+                                        delivery_channel=delivery_channel)
 
                     self.enqueue_ack(method.delivery_tag)
                     self.after_message(key, dbd)

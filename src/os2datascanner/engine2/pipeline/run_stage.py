@@ -246,26 +246,28 @@ class GenericRunner(PikaPipelineThread):
             # We're already there.
             return
 
+        # The scan may have completed and the queue been deleted between the
+        # broadcast being sent and us getting here, so only subscribe if the
+        # queue is still there.
+        if not self._probe_queue(queue_name):
+            logger.warning("Per-scan queue gone before subscription, skipping",
+                           queue=queue_name)
+            return
+
         self._read.add(queue_name)
         self._per_scan_queue_priorities[queue_name] = tag
         try:
-            # passive=True: only subscribe if the queue already exists.
-            # The scan may have completed and the queue deleted between the
-            # broadcast arriving and us processing it. Using passive=False here
-            # would silently re-create the queue as an empty zombie.
-            self.channel.queue_declare(queue_name, passive=True)
-        except Exception:
-            # Queue is gone. Undo state additions before re-raising so that
-            # the channel recovery path (_basic_consume) doesn't try to
-            # resubscribe to a queue that no longer exists.
-            self._read.discard(queue_name)
-            self._per_scan_queue_priorities.pop(queue_name, None)
-            logger.warning("Per-scan queue gone before subscription, skipping",
+            consumer_tag = self.channel.basic_consume(
+                    queue_name, self.handle_message_raw, exclusive=False)
+        except pika.exceptions.ChannelClosed:
+            # Probably pretty niche, but: the queue went away between the check above and this call.
+            # Undo our state additions before re-raising, so that the recovery this
+            # triggers doesn't resubscribe to a queue that no longer exists.
+            self._forget_queue(queue_name)
+            logger.warning("Per-scan queue deleted mid-subscription, recovering",
                            queue=queue_name)
             raise
 
-        consumer_tag = self.channel.basic_consume(
-                queue_name, self.handle_message_raw, exclusive=False)
         self._consumer_tags[queue_name] = consumer_tag
         logger.info("Subscribed to per-scan queue", queue=queue_name, tag=tag)
 
@@ -318,11 +320,14 @@ class GenericRunner(PikaPipelineThread):
         """Switch consumers dynamically based on queue message counts."""
         queue_msg_counts = {}
         for queue in self._queue_priorities:
-            try:
-                queue_msg_counts[queue] = self.channel.queue_declare(
-                        queue=queue, passive=True).method.message_count
-            except Exception:
-                return  # Channel closed by broker (queue missing); bail out
+            # Asked on a throwaway channel: a missing queue would otherwise
+            # close ours, and there is nothing to switch to on a dead channel.
+            if (queue_state := self._probe_queue(queue)) is None:
+                logger.warning(
+                        "Priority queue missing, not switching priority",
+                        queue=queue)
+                return
+            queue_msg_counts[queue] = queue_state.method.message_count
 
         first_priority_count = queue_msg_counts[self._first_priority]
 
@@ -400,23 +405,33 @@ class GenericRunner(PikaPipelineThread):
             )
             has_consumer = q in self._consumer_tags
 
-            # Channel-dead returns bail out the whole pass; next tick retries.
+            # A dead channel is re-raised so that run() recovers it.
             match (should_consume, has_consumer):
                 case (True, False):  # We should consume but aren't
+                    # There's a tiny window where the queue could be deleted by
+                    # before we get to consume, so, probe first: better safe than sorry!
+                    if not self._probe_queue(q):
+                        logger.info("Per-scan queue gone while paused, forgetting it",
+                                    queue=q, tag=qtag)
+                        self._forget_queue(q)
+                        continue
                     try:
                         self._consumer_tags[q] = self.channel.basic_consume(
                             q, self.handle_message_raw, exclusive=False)
-                    except Exception:
+                    except self._CHANNEL_ERRORS:
                         self._forget_queue(q)
-                        return
+                        logger.warning("Per-scan queue died on resume, recovering",
+                                       queue=q, tag=qtag)
+                        raise
                     logger.info("Subscribed per-scan queue",
                                 queue=q, tag=qtag, active_tag=active_tag)
                 case (False, True):  # We shouldn't consume but are
                     try:
                         self.channel.basic_cancel(self._consumer_tags.pop(q))
-                    except Exception:
-                        self._consumer_tags.pop(q, None)
-                        return
+                    except self._CHANNEL_ERRORS:
+                        logger.warning("Channel died pausing per-scan queue, recovering",
+                                       queue=q, tag=qtag)
+                        raise
                     logger.info("Cancelled per-scan queue",
                                 queue=q, tag=qtag, active_tag=active_tag)
 
