@@ -82,9 +82,9 @@
                         {% csrf_token %}
                         <button type="submit"
                                 class="button button--icon-button button--datatable-actions"
-                                onclick="return confirm(`{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "The action cannot be reversed" %}`)"
-                                aria-label="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}"
-                                title="{% trans "Delete scanner job. The scannerjob and the related scanning history will be permanently deleted." %}">
+                                onclick="return confirm(`{% trans "Do you really want to delete this scanner?" %}\n\n{{ scanner.name }}\n\n{% trans "This will permanently delete the scanner job, its scanning history and all of its reports. The action cannot be reversed." %}`)"
+                                aria-label="{% trans "Delete scanner job. The scannerjob, its scanning history and all of its reports will be permanently deleted." %}"
+                                title="{% trans "Delete scanner job. The scannerjob, its scanning history and all of its reports will be permanently deleted." %}">
                           <i id="delete_forever" class="material-symbols">delete_forever</i>
                         </button>
                       </form>
