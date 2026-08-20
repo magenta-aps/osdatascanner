@@ -20,6 +20,8 @@ extra_modules = [".model._staging.sbsysdb"]
 
 [pipeline.worker]
 CHECK_DUPLICATION = true
+OBJECT_PROGRESS_THRESHOLD_SECONDS = 5
+OBJECT_PROGRESS_INTERVAL_SECONDS = 2
 
 [model.sbsysdb]
 document_proxy = "http://document_proxy:5000/"

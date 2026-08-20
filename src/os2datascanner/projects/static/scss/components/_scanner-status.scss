@@ -175,3 +175,148 @@
   -o-transition: width 0.5s linear;
   transition: width 0.5s linear;
 }
+
+// Long-running objects still being scanned in-process.
+.active-objects-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: 0.5rem;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+
+  .material-icons {
+    font-size: 1.125rem;
+  }
+}
+
+// The drill-down row is rendered for every scan so its out-of-band list always
+// has a swap target, hide it wheneverit holds nothing.
+
+.active-objects-row:not(:has(.active-object)) {
+  display: none;
+}
+
+.active-objects-row > td {
+  padding-top: 0;
+}
+
+.active-objects-details {
+  &__summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    cursor: pointer;
+    user-select: none;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+    list-style: none;
+    border-radius: var(--border-radius-button, 4px);
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    &:hover {
+      color: var(--color-text);
+    }
+
+    .material-icons {
+      font-size: 1.125rem;
+      transition: transform 0.15s ease;
+    }
+  }
+
+  &[open] &__summary .material-icons {
+    transform: rotate(180deg);
+  }
+}
+
+.active-objects-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--color-hover, rgba(0, 0, 0, 0.03));
+  border-radius: var(--border-radius-widget, 4px);
+}
+
+.active-object {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border-radius: var(--border-radius-button, 4px);
+
+  & + & {
+    border-top: 1px solid var(--color-border-neutral, rgba(0, 0, 0, 0.08));
+  }
+
+  &__dot {
+    flex: 0 0 auto;
+    margin-top: 0.3rem;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    box-sizing: border-box;
+    background-color: var(--color-ok);
+  }
+
+  &__body {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  &__headline {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+  }
+
+  &__name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: var(--font-monospace, monospace);
+    color: var(--color-text);
+  }
+
+  &__elapsed {
+    flex: 0 0 auto;
+    font-variant-numeric: tabular-nums;
+    color: var(--color-text-secondary);
+  }
+
+  // The nested sub-object the worker is grinding right now
+  // prefixed with a ↳, truncated with the full path in
+  // the title attribute.
+  &__current {
+    display: block;
+    margin-top: 0.125rem;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-family: var(--font-monospace, monospace);
+    font-size: 0.825rem;
+    color: var(--color-text-secondary);
+
+    &::before {
+      content: "\21b3\00a0"; // ↳ plus a space
+      opacity: 0.6;
+    }
+  }
+
+  &__state {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    border: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    clip: rect(0, 0, 0, 0);
+  }
+}

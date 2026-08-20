@@ -2742,6 +2742,15 @@ msgid "An error occured during this scan"
 msgstr "Der skete en fejl under dette scan"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
+#, python-format
+msgid "A large file is being scanned (%(mins)s min so far)"
+msgid_plural ""
+"%(n)s large files are being scanned (longest one has run for %(mins)s min)"
+msgstr[0] "En stor fil bliver scannet (%(mins)s min indtil videre)"
+msgstr[1] ""
+"%(n)s store filer bliver scannet (den længst kørende har scannet i %(mins)s min)"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "cancel running scanner job"
 msgstr "afbryd kørende scannerjob"
 
@@ -2756,6 +2765,19 @@ msgstr ""
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "status for running scanner"
 msgstr "status for kørende scanner"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+msgid "Show files in progress"
+msgstr "Vis filer der bliver scannet"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#, python-format
+msgid "%(mins)s min"
+msgstr "%(mins)s min"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+msgid "still working"
+msgstr "arbejder fortsat"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "no ongoing scans"

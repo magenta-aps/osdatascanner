@@ -76,6 +76,12 @@ obj_limit = 10
 [pipeline.worker]
 # Should the worker hash files to check for duplicates?
 CHECK_DUPLICATION = false
+# Per-object liveness heartbeat. A worker only reports
+# progress on a top-level object once it has spent this many seconds on it,
+# and then at most once per interval. (Between object processings)
+# Objects faster than threshold never emit anything.
+OBJECT_PROGRESS_THRESHOLD_SECONDS = 60
+OBJECT_PROGRESS_INTERVAL_SECONDS = 15
 
 [conversions.cache]
 # The directory in which to store cached representations of objects, if

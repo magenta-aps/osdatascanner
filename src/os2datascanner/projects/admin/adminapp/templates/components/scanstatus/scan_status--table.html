@@ -92,6 +92,15 @@
                   {% trans "An error occured during this scan" %}
                 {% endif %}
 
+                {% with summary=status.active_object_summary %}
+                  {% if summary %}
+                    <div class="active-objects-summary">
+                      <i class="material-symbols" aria-hidden="true">hourglass_top</i>
+                      {% blocktranslate count n=summary.count with mins=summary.max_minutes %}A large file is being scanned ({{ mins }} min so far){% plural %}{{ n }} large files are being scanned (longest one has run for {{ mins }} min){% endblocktranslate %}
+                    </div>
+                  {% endif %}
+                {% endwith %}
+
                 {# don't show number of bytes scanned as it's not very useful #}
                 {# don't show estimated time as it's very imprecise #}
                 {# don't show a progress bar to represent status, as "100%" can vary #}
@@ -133,6 +142,35 @@
                     <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                   </button>
                 </div>
+              </td>
+            </tr>
+            <tr class="active-objects-row">
+              <td colspan="4">
+                <details class="active-objects-details">
+                  <summary class="active-objects-details__summary">
+                    <i class="material-symbols" aria-hidden="true">expand_more</i>
+                    {% trans "Show files in progress" %}
+                  </summary>
+                  <ul class="active-objects-list"
+                      id="active_objects_list__{{ status.pk|unlocalize }}"
+                      {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
+                    {% for active in status.active_objects.all %}
+                      <li class="active-object">
+                        <span class="active-object__dot" aria-hidden="true"></span>
+                        <div class="active-object__body">
+                          <div class="active-object__headline">
+                            <span class="active-object__name" title="{{ active.object_path }}">{{ active.object_path }}</span>
+                            <span class="active-object__elapsed">{% blocktranslate with mins=active.elapsed_minutes %}{{ mins }} min{% endblocktranslate %}</span>
+                          </div>
+                          {% if active.current_path %}
+                            <span class="active-object__current" title="{{ active.current_path }}">{{ active.current_path }}</span>
+                          {% endif %}
+                        </div>
+                        <span class="active-object__state">{% trans "still working" %}</span>
+                      </li>
+                    {% endfor %}
+                  </ul>
+                </details>
               </td>
             </tr>
             <tr class="error"

@@ -3,8 +3,10 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import hashlib
 import json
 from collections.abc import Generator
+from typing import Optional
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
@@ -53,6 +55,68 @@ def notify_abort(scan_tag) -> None:
     _cancelled_tags.add(scan_tag)
 
 
+class _ProgressTracker:
+    """Tracks, for a single top-level object a worker is currently handling,
+    how many nested objects have been walked, and decides when to emit a
+    throttled liveness heartbeat.
+    """
+
+    def __init__(self):
+        self.reset(scan_tag=None, object_key="", object_path="")
+
+    def reset(self, *, scan_tag, object_key: str, object_path: str) -> None:
+        self.scan_tag = scan_tag
+        self.object_key = object_key
+        self.object_path = object_path
+        self.current_path = ""
+        self.items_processed = 0
+        self.started_at = time.monotonic()
+        self.last_heartbeat_at = None
+        self.heartbeat_emitted = False
+        self.threshold = settings.pipeline['worker']['OBJECT_PROGRESS_THRESHOLD_SECONDS']
+        self.interval = settings.pipeline['worker']['OBJECT_PROGRESS_INTERVAL_SECONDS']
+
+    def tick(self, current_path: str) -> Optional[messages.ObjectProgressMessage]:
+        """Records that one more nested object (described by current_path) has
+        been walked, and returns a heartbeat if the time gates are satisfied,
+        otherwise None."""
+        self.items_processed += 1
+        self.current_path = current_path
+
+        now = time.monotonic()
+        elapsed = now - self.started_at
+        if elapsed < self.threshold:
+            return None
+        if (self.last_heartbeat_at is not None
+                and (now - self.last_heartbeat_at) < self.interval):
+            return None
+
+        self.last_heartbeat_at = now
+        self.heartbeat_emitted = True
+        return self._message(final=False, elapsed=elapsed)
+
+    def terminal(self) -> Optional[messages.ObjectProgressMessage]:
+        """Returns a final heartbeat (to remove the tracking row) only if this
+        object ever emitted a heartbeat, otherwise None, so fast objects send nothing."""
+        if not self.heartbeat_emitted:
+            return None
+        return self._message(
+                final=True, elapsed=time.monotonic() - self.started_at)
+
+    def _message(self, *, final: bool, elapsed: float) -> messages.ObjectProgressMessage:
+        return messages.ObjectProgressMessage(
+                scan_tag=self.scan_tag,
+                object_key=self.object_key,
+                object_path=self.object_path,
+                current_path=self.current_path,
+                items_processed=self.items_processed,
+                elapsed_seconds=int(elapsed),
+                final=final)
+
+
+_progress = _ProgressTracker()
+
+
 def determine_channel(scan_spec, for_type: str) -> str:
     scan_spec_obj = messages.ScanSpecMessage.from_json_object(scan_spec)
     if for_type == "explorer":
@@ -71,6 +135,9 @@ def explore(
             # Scan has been cancelled, stop processing
             return
         if isinstance(m, messages.ConversionMessage):
+            heartbeat = _progress.tick(str(m.handle))
+            if heartbeat is not None:
+                yield heartbeat
             yield from process(sm, m, check=check)
         elif isinstance(m, messages.ScanSpecMessage):
             # Huh? Surely a standalone explorer should have handled this
@@ -143,6 +210,12 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
 
     message = messages.ConversionMessage.from_json_object(body)
 
+    top_handle = message.handle
+    _progress.reset(
+            scan_tag=message.scan_spec.scan_tag,
+            object_key=hashlib.sha256(str(top_handle).encode("utf-8")).hexdigest(),
+            object_path=str(top_handle))
+
     content_identifier = None
 
     try:
@@ -153,7 +226,8 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
                 (messages.MatchesMessage, ["os2ds_checkups", "os2ds_matches"]),
                 (messages.MetadataMessage, ["os2ds_metadata"]),
-                (messages.StatusMessage, ["os2ds_status"]))
+                (messages.StatusMessage, ["os2ds_status"]),
+                (messages.ObjectProgressMessage, ["os2ds_status"]))
     finally:
         process_time_total = time.perf_counter() - process_time_start
 
@@ -190,6 +264,10 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
                 process_time_worker=process_time_total,
                 matches_found=total_matches,
                 content_identifier=content_identifier).to_json_object())
+
+        terminal = _progress.terminal()
+        if terminal is not None:
+            yield ("os2ds_status", terminal.to_json_object())
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()
