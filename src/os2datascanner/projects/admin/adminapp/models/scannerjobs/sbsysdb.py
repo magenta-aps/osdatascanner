@@ -23,6 +23,13 @@ logger = structlog.get_logger("adminapp")
 
 
 class SBSYSDBScanner(Scanner):
+    SUPPORTED_ALIASES = [
+            (value, label)
+            for value, label in AliasType.choices
+            if value in (AliasType.USER_PRINCIPAL_NAME.value,
+                         AliasType.LOGON.value,
+                         AliasType.SID.value,)]
+
     _supports_account_annotations = True  # sort of :D
 
     @classmethod
@@ -70,6 +77,32 @@ class SBSYSDBScanner(Scanner):
                     "A service account with access to the SQL Server"
                     " instance."))
 
+    owner_field = models.CharField(
+            max_length=None,
+            blank=False,
+            choices=SUPPORTED_ALIASES,
+            default=AliasType.USER_PRINCIPAL_NAME.value,
+            verbose_name=_("Ownership field"),
+            help_text=_(
+                    "The database field to use to associate SBSYS cases"
+                    " with imported users."))
+
+    @property
+    def owner_tuple(self) -> tuple[str, AliasType]:
+        """Returns a tuple containing the name of the database field to be used
+        to identify a user, and the corresponding OSdatascanner AliasType whose
+        values might appear in that field. (Used by _yield_sources to build the
+        filter rule.)"""
+        match self.owner_field:
+            case AliasType.USER_PRINCIPAL_NAME.value:
+                return ("Behandler.UserPrincipalName", AliasType.USER_PRINCIPAL_NAME)
+            case AliasType.SID.value:
+                return ("Behandler.ObjectSid", AliasType.SID)
+            case AliasType.LOGON.value:
+                return ("Behandler.LogonID", AliasType.LOGON)
+            case _:
+                raise ValueError
+
     def generate_sources(self):
         if not self.grant:
             raise ValueError
@@ -78,7 +111,8 @@ class SBSYSDBScanner(Scanner):
                 self.db_server, self.db_port, self.db_name,
                 self.grant.traditional_name, self.grant.password,
                 reflect_tables=None,  # trust the defaults
-                base_weblink=self.weblink or None)
+                base_weblink=self.weblink or None,
+                owner_field=self.owner_field)
 
     object_name = pgettext_lazy("unit of scan", "case")
     object_name_plural = pgettext_lazy("unit of scan", "cases")
@@ -98,29 +132,30 @@ class SBSYSDBScanner(Scanner):
         # /does/ work correctly, remarkably, but it's unnecessary -- and it
         # stops us from scanning SBSYS users without an Account
         if not self.scan_entire_org:
+            field_name, alias_type = self.owner_tuple
             covered_accs = self.compute_covered_accounts()
 
-            upn_set = set()
+            id_set = set()
             for acc in covered_accs:
-                acc_upns = {a._value
-                            for a in acc.aliases.filter(
-                                    _alias_type=AliasType.USER_PRINCIPAL_NAME)}
+                acc_ids = {
+                        a._value
+                        for a in acc.aliases.filter(_alias_type=alias_type)}
                 logger.debug(
-                        "computed UPN set for account",
-                        scanner=self, account=acc, upn_set=acc_upns)
-                upn_set |= acc_upns
-            if not upn_set:
-                # No UPNs to scan, so don't emit a Source at all. Failing early is
-                # better than submitting a broken scan
+                        "computed ID set for account",
+                        scanner=self, account=acc, acc_ids=acc_ids)
+                id_set |= acc_ids
+            if not id_set:
+                # No account identifiers to scan, so don't emit a Source at
+                # all. Failing early is better than submitting a broken scan
                 logger.error(
-                        "final UPN set is empty, not creating a Source",
+                        "final ID set is empty, not creating a Source",
                         scanner=self)
                 return
 
             user_filter_rule.append(sbsysdb_rule.SBSYSDBRule(
-                    "Behandler.UserPrincipalName",
+                    field_name,
                     "iin",
-                    list(upn_set),
+                    list(id_set),
                     synthetic=True))
 
         Counter.try_incr(source_counter)

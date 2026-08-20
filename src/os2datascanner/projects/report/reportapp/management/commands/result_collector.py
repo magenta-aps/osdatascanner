@@ -84,14 +84,16 @@ def result_message_received_raw(body):
 
 def owner_from_metadata(message: messages.MetadataMessage) -> str:
     match message.metadata:
-        case {"user-principal-name": upn}:
-            return upn
         case {"email-account": addr} | {"msgraph-owner-account": addr}:
             return addr
-        case {"filesystem-owner-sid": adsid}:
-            return adsid
+        case {"filesystem-owner-sid": sid} | {"sbsys-caseworker-sid": sid}:
+            return sid
         case {"web-domain": domain}:
             return domain
+        case {"windows-domain-user": logon}:
+            return logon
+        case {"user-principal-name": upn}:
+            return upn
         case _:
             return ""
 

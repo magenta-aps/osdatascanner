@@ -6,6 +6,8 @@
 
 ### New in this release
 
+- Add support for using other aliases in the SBSYS user filter
+
 ### General improvements
 
 - Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase.

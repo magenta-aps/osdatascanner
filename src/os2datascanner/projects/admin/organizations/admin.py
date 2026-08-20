@@ -19,7 +19,7 @@ admin.site.register(Position, ImportedAdmin)
 class AliasAdmin(ImportedAdmin):
     """ Controls behaviour in Django Admin
            for the Alias model"""
-    list_filter = ["_alias_type"]
+    list_filter = ["_alias_type", "account__organization"]
     fields = ('account', '_alias_type', '_value',
               'last_import_requested', 'last_import', 'shared'
               )

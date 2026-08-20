@@ -649,6 +649,16 @@ msgid "A service account with access to the SQL Server instance."
 msgstr "En servicekonto med adgang til SQL Server-instansen."
 
 #: adminapp/models/scannerjobs/sbsysdb.py
+msgid "Ownership field"
+msgstr "Ejerskabsfelt"
+
+#: adminapp/models/scannerjobs/sbsysdb.py
+msgid "The database field to use to associate SBSYS cases with imported users."
+msgstr ""
+"Det databasefelt, der bruges til at tilknytte SBSYS-sager til importerede "
+"brugere."
+
+#: adminapp/models/scannerjobs/sbsysdb.py
 msgctxt "unit of scan"
 msgid "case"
 msgstr "sag"
