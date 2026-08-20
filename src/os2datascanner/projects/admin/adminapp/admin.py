@@ -135,7 +135,7 @@ class ScannerAdmin(admin.ModelAdmin):
 
 @admin.register(CoveredAccount)
 class CoveredAccountAdmin(admin.ModelAdmin):
-    list_display = ('account', 'scanner', 'scan_status')
+    list_display = ('account', 'scanner', 'scan_status', 'status_is_error')
 
 
 @admin.register(MIMETypeProcessStat)

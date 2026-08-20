@@ -728,6 +728,157 @@ class TestScannerSourcesWithAccounts:
         assert scan_spec.explorer_queue == test_client_with_queue_priority.explorer_full_queue
         assert scan_spec.conversion_queue.startswith(f"osds_conversions.{basic_scanner.pk}_")
 
+    def test_yield_sources_sets_account_uuid(self, msgraph_mailscanner, fritz):
+        """Each per-account ScanSpecMessage must carry that account's UUID so
+        a later exploration failure can be traced back to it."""
+        fake_source = graph_mail.MSGraphMailSource(
+            client_id="4", tenant_id="5", client_secret="6")
+        msgraph_mailscanner.generate_sources_with_accounts = (
+            lambda: [(fritz, fake_source)])
+
+        spec_template = msgraph_mailscanner._construct_scan_spec_template(
+            user=None, force=False)
+        specs = list(msgraph_mailscanner._yield_sources(spec_template, force=False))
+
+        assert len(specs) == 1
+        assert specs[0].account_uuid == str(fritz.uuid)
+
+    def test_yield_sources_sets_account_uuid_on_full_scan_too(
+            self, msgraph_mailscanner, fritz):
+        """A full scan (force=True) has no last-modified cutoff to protect,
+        but a mailbox can still fail to explore during one - account_uuid
+        must still be set so that failure can be attributed correctly."""
+        fake_source = graph_mail.MSGraphMailSource(
+            client_id="4", tenant_id="5", client_secret="6")
+        msgraph_mailscanner.generate_sources_with_accounts = (
+            lambda: [(fritz, fake_source)])
+
+        spec_template = msgraph_mailscanner._construct_scan_spec_template(
+            user=None, force=True)
+        specs = list(msgraph_mailscanner._yield_sources(spec_template, force=True))
+
+        assert len(specs) == 1
+        assert specs[0].account_uuid == str(fritz.uuid)
+        lm_rules = [r for r in specs[0].rule.flatten() if isinstance(r, LastModifiedRule)]
+        assert lm_rules == []
+
+    def test_yield_sources_handles_source_with_no_owning_account(
+            self, msgraph_filescanner):
+        """MSGraphFileScanner yields a (None, source) pair for SharePoint
+        site drives, which have no owning Account - _yield_sources must not
+        crash trying to read an UUID off of that None."""
+        fake_source = graph_files.MSGraphFilesSource(
+            client_id="4", tenant_id="5", client_secret="6")
+        msgraph_filescanner.generate_sources_with_accounts = (
+            lambda: [(None, fake_source)])
+
+        spec_template = msgraph_filescanner._construct_scan_spec_template(
+            user=None, force=False)
+        specs = list(msgraph_filescanner._yield_sources(spec_template, force=False))
+
+        assert len(specs) == 1
+        assert specs[0].account_uuid is None
+
+    def test_failed_scan_does_not_advance_lm_cutoff(
+            self, msgraph_mailscanner, fritz):
+        """A scan that failed source exploration (status_is_error=True) must
+        not be used as the LastModifiedRule cutoff; the next run should fall
+        back to the most recent scan that actually succeeded."""
+
+        good_time = parse_datetime("2025-01-01T00:00:00+00:00")
+        failed_time = parse_datetime("2025-06-01T00:00:00+00:00")
+
+        def _make_tag(t):
+            tag = msgraph_mailscanner._construct_scan_tag().to_json_object()
+            tag["time"] = t.isoformat()
+            return tag
+
+        good_status = ScanStatus.objects.create(
+            scanner=msgraph_mailscanner,
+            scan_tag=_make_tag(good_time),
+            total_sources=1,
+            explored_sources=1,
+            status_is_error=False)
+
+        failed_status = ScanStatus.objects.create(
+            scanner=msgraph_mailscanner,
+            scan_tag=_make_tag(failed_time),
+            total_sources=1,
+            explored_sources=1,
+            status_is_error=True)
+
+        CoveredAccount.objects.create(
+            scanner=msgraph_mailscanner, account=fritz, scan_status=good_status,
+            status_is_error=False)
+        # fritz is the only account covered by this run's sole Source, so a
+        # real failed exploration would flip fritz's own CoveredAccount too
+        # (see checkup_collector.checkup_message_received_raw).
+        CoveredAccount.objects.create(
+            scanner=msgraph_mailscanner, account=fritz, scan_status=failed_status,
+            status_is_error=True)
+
+        fake_source = graph_mail.MSGraphMailSource(
+            client_id="4", tenant_id="5", client_secret="6")
+        msgraph_mailscanner.generate_sources_with_accounts = (
+            lambda: [(fritz, fake_source)])
+
+        spec_template = msgraph_mailscanner._construct_scan_spec_template(
+            user=None, force=False)
+        specs = list(msgraph_mailscanner._yield_sources(spec_template, force=False))
+
+        assert len(specs) == 1
+        lm_rules = [r for r in specs[0].rule.flatten()
+                    if isinstance(r, LastModifiedRule)]
+        assert len(lm_rules) == 1
+        assert lm_rules[0].after == good_time
+
+    def test_sibling_account_failure_does_not_affect_other_accounts_lm_cutoff(
+            self, msgraph_mailscanner, fritz, hansi):
+        """A failed CoveredAccount for one account must not exclude a
+        different account's own last-successful CoveredAccount from being
+        used as its LastModifiedRule cutoff."""
+
+        good_time = parse_datetime("2025-01-01T00:00:00+00:00")
+
+        def _make_tag(t):
+            tag = msgraph_mailscanner._construct_scan_tag().to_json_object()
+            tag["time"] = t.isoformat()
+            return tag
+
+        # The aggregate ScanStatus is marked errored, correctly, because
+        # fritz's Source failed within this run.
+        shared_status = ScanStatus.objects.create(
+            scanner=msgraph_mailscanner,
+            scan_tag=_make_tag(good_time),
+            total_sources=2,
+            explored_sources=2,
+            status_is_error=True)
+
+        # fritz's own CoveredAccount reflects that failure...
+        CoveredAccount.objects.create(
+            scanner=msgraph_mailscanner, account=fritz, scan_status=shared_status,
+            status_is_error=True)
+        # ...but hansi's Source in the same run succeeded, so hansi's own
+        # CoveredAccount is not errored.
+        CoveredAccount.objects.create(
+            scanner=msgraph_mailscanner, account=hansi, scan_status=shared_status,
+            status_is_error=False)
+
+        fake_source = graph_mail.MSGraphMailSource(
+            client_id="4", tenant_id="5", client_secret="6")
+        msgraph_mailscanner.generate_sources_with_accounts = (
+            lambda: [(hansi, fake_source)])
+
+        spec_template = msgraph_mailscanner._construct_scan_spec_template(
+            user=None, force=False)
+        specs = list(msgraph_mailscanner._yield_sources(spec_template, force=False))
+
+        assert len(specs) == 1
+        lm_rules = [r for r in specs[0].rule.flatten()
+                    if isinstance(r, LastModifiedRule)]
+        assert len(lm_rules) == 1
+        assert lm_rules[0].after == good_time
+
     def test_sbsys_unusual_ca_handling(
             self, *,
             smb_grant, sbsysdb_scanner, nisserne,

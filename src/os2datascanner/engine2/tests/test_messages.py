@@ -7,6 +7,8 @@ import datetime
 from dataclasses import dataclass
 
 from os2datascanner.engine2.pipeline import messages
+from os2datascanner.engine2.model.file import FilesystemSource
+from os2datascanner.engine2.rules.dummy import AlwaysMatchesRule
 
 
 @dataclass(frozen=True, slots=True, kw_only=True)
@@ -128,6 +130,34 @@ class TestMessage:
         assert isinstance(mo, messages.ContentIrrelevantMessage)
         assert mo.handle.relative_path == "path/to/second-document.txt"
 
+    def test_problem_message_account_uuid_roundtrip(self):
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.make_dummy(),
+                source=None, handle=None, message="boom",
+                account_uuid="11111111-1111-1111-1111-111111111111")
+        rehydrated = messages.ProblemMessage.from_json_object(problem.to_json_object())
+        assert rehydrated.account_uuid == "11111111-1111-1111-1111-111111111111"
+
+    def test_problem_message_account_uuid_defaults_to_none(self):
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.make_dummy(),
+                source=None, handle=None, message="boom")
+        obj = problem.to_json_object()
+        assert obj["account_uuid"] is None
+        rehydrated = messages.ProblemMessage.from_json_object(obj)
+        assert rehydrated.account_uuid is None
+
+    def test_problem_message_account_uuid_absent_field_defaults_to_none(self):
+        """A ProblemMessage serialized before this field existed (no
+        "account_uuid" key at all) must still deserialize cleanly."""
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.make_dummy(),
+                source=None, handle=None, message="boom")
+        obj = problem.to_json_object()
+        del obj["account_uuid"]
+        rehydrated = messages.ProblemMessage.from_json_object(obj)
+        assert rehydrated.account_uuid is None
+
 
 class TestCommandMessage:
     def test_new_queue_roundtrip(self):
@@ -160,3 +190,35 @@ class TestCommandMessage:
         assert obj["new_queue_priority"] is None
         assert obj["delete_queue"] is None
         assert obj["worker_hello"] is None
+
+
+class TestScanSpecMessageAccountUuid:
+    def _make_spec(self, **kwargs):
+        return messages.ScanSpecMessage(
+                scan_tag=messages.ScanTagFragment.make_dummy(),
+                source=FilesystemSource("/usr/share/common-licenses"),
+                rule=AlwaysMatchesRule(),
+                configuration={},
+                progress=None,
+                filter_rule=None,
+                **kwargs)
+
+    def test_roundtrip(self):
+        spec = self._make_spec(account_uuid="11111111-1111-1111-1111-111111111111")
+        rehydrated = messages.ScanSpecMessage.from_json_object(spec.to_json_object())
+        assert rehydrated.account_uuid == "11111111-1111-1111-1111-111111111111"
+
+    def test_defaults_to_none(self):
+        spec = self._make_spec()
+        obj = spec.to_json_object()
+        assert obj["account_uuid"] is None
+        rehydrated = messages.ScanSpecMessage.from_json_object(obj)
+        assert rehydrated.account_uuid is None
+
+    def test_absent_field_defaults_to_none(self):
+        """A ScanSpecMessage serialized before this field existed (no
+        "account_uuid" key at all) must still deserialize cleanly."""
+        obj = self._make_spec().to_json_object()
+        del obj["account_uuid"]
+        rehydrated = messages.ScanSpecMessage.from_json_object(obj)
+        assert rehydrated.account_uuid is None

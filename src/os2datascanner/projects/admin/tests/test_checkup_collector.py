@@ -8,8 +8,10 @@ import uuid
 
 from datetime import datetime
 
-from ..adminapp.management.commands.checkup_collector import recreate_account_coverage
+from ..adminapp.management.commands.checkup_collector import (
+    recreate_account_coverage, checkup_message_received_raw)
 from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount
+from os2datascanner.engine2.pipeline import messages
 
 
 # TODO: Add tests for "normal" checkup messages
@@ -221,3 +223,97 @@ class TestRecreateCoveredAccounts:
             coverage_message_organization_mismatch[1]["scanner_id"]
         assert covered_account.scan_status.start_time.isoformat() == \
             coverage_message_organization_mismatch[1]["time"]
+
+
+@pytest.mark.django_db
+class TestAccountUuidMatching:
+
+    def test_problem_message_flips_matching_covered_account(
+            self, fritz, hansi, basic_scanner, basic_scanstatus, file_source):
+        ca_fritz = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus)
+        ca_hansi = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=hansi, scan_status=basic_scanstatus)
+
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.from_json_object(
+                        basic_scanstatus.scan_tag),
+                source=file_source, handle=None,
+                message="Exploration error: no valid authentication",
+                account_uuid=str(fritz.uuid))
+
+        list(checkup_message_received_raw(problem.to_json_object()))
+
+        ca_fritz.refresh_from_db()
+        ca_hansi.refresh_from_db()
+        assert ca_fritz.status_is_error is True
+        assert ca_fritz.message == "Exploration error: no valid authentication"
+        assert ca_hansi.status_is_error is False
+        assert ca_hansi.message == ""
+
+    def test_problem_message_with_handle_set_still_flips_covered_account(
+            self, fritz, hansi, basic_scanner, basic_scanstatus, file_handle):
+        """Reproduces the real-world case: a whole-account Source built on a
+        DerivedSource (e.g. MSGraphMailAccountSource) always has a non-None
+        `.handle`, so the ProblemMessage's `handle` field is set too. This
+        must flip CoveredAccount.status_is_error exactly like the
+        handle=None case does."""
+        ca_fritz = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus)
+        ca_hansi = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=hansi, scan_status=basic_scanstatus)
+
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.from_json_object(
+                        basic_scanstatus.scan_tag),
+                source=file_handle.source, handle=file_handle,
+                message="Exploration error: no valid authentication",
+                account_uuid=str(fritz.uuid))
+
+        list(checkup_message_received_raw(problem.to_json_object()))
+
+        ca_fritz.refresh_from_db()
+        ca_hansi.refresh_from_db()
+        assert ca_fritz.status_is_error is True
+        assert ca_hansi.status_is_error is False
+
+    def test_problem_message_with_no_matching_covered_account_is_a_noop(
+            self, fritz, basic_scanner, basic_scanstatus, file_source):
+        """If account_uuid doesn't match any CoveredAccount for this
+        ScanStatus (e.g. compute_covered_accounts() and
+        generate_sources_with_accounts() disagreed), nothing should raise and
+        no row should be created or changed. Other CoveredAccounts must remain
+        untouched."""
+        ca_fritz = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus)
+
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.from_json_object(
+                        basic_scanstatus.scan_tag),
+                source=file_source, handle=None,
+                message="Exploration error: no valid authentication",
+                account_uuid="99999999-9999-9999-9999-999999999999")
+
+        list(checkup_message_received_raw(problem.to_json_object()))
+
+        ca_fritz.refresh_from_db()
+        assert ca_fritz.status_is_error is False
+
+    def test_problem_message_with_no_account_uuid_is_a_noop(
+            self, basic_scanner, basic_scanstatus, fritz, file_source):
+        """Scanners with no per-account Source generation never set
+        account_uuid; their ProblemMessages must not touch CoveredAccount at
+        all."""
+        ca_fritz = CoveredAccount.objects.create(
+                scanner=basic_scanner, account=fritz, scan_status=basic_scanstatus)
+
+        problem = messages.ProblemMessage(
+                scan_tag=messages.ScanTagFragment.from_json_object(
+                        basic_scanstatus.scan_tag),
+                source=file_source, handle=None,
+                message="Exploration error: no valid authentication")
+
+        list(checkup_message_received_raw(problem.to_json_object()))
+
+        ca_fritz.refresh_from_db()
+        assert ca_fritz.status_is_error is False

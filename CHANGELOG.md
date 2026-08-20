@@ -60,6 +60,8 @@
   to the message queue was replaced mid-work, inflating scan progress. Whatever an object has
   produced but not yet sent is now dropped along with its "ack".
 
+- Fixed a bug where one account's scan failure would block last-modified-cutoff credit for every
+  other account covered by the same scan run, forcing unnecessary rescans of healthy accounts.
 
 ## Version 3.32.4, 4th August 2026
 
