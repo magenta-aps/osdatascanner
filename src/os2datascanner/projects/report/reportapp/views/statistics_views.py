@@ -22,7 +22,8 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.conf import settings
 
-from .utilities.statistics_utilities import (base_query, filter_by_unit,
+from .utilities.statistics_utilities import (base_query, filter_by_accounts,
+                                             accounts_under_units,
                                              make_data_structures, source_type_progress,
                                              count_unhandled_matches_by_month,
                                              count_new_matches_by_month)
@@ -40,33 +41,60 @@ from ....utils.view_mixins import CSVExportMixin
 logger = structlog.get_logger("reportapp")
 
 
-class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
+class ResultsStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
+    """Shared scaffolding for the DPO and leader-results statistics pages:
+    both render aggregate charts over a base_query() queryset, scoped to a
+    unit chosen via ?orgunit= (or a subclass-specific default scope
+    otherwise).
+
+    Subclasses implement _get_own_units(); _confirm_orgunit_access(),
+    _default_scope_accounts(), _extra_context() and _scannerjob_choices()
+    are optional overrides for page-specific access rules and context."""
+
     context_object_name = "matches"  # object_list renamed to something more relevant
-    template_name = "dpo_statistics_template.html"
     model = DocumentReport
     scannerjob_filters = None
 
-    # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
+    @abstractmethod
+    def _get_own_units(self):
+        """The organizational units this (non-superuser) user has access to,
+        before ordering."""
+
+    def _confirm_orgunit_access(self, orgunit_uuid):
+        """Whether the user may filter down to @orgunit_uuid. Defaults to
+        checking self.user_units; override when access is broader than that
+        set implies (see DPOStatisticsPageView's universal-DPO case)."""
+        return self.user_units.filter(uuid=orgunit_uuid).exists()
+
+    def _default_scope_accounts(self):
+        """The Accounts to scope matches to when no ?orgunit= is chosen, or
+        None for no extra scoping (the whole organization); override to
+        restrict further."""
+        return None
+
+    def _extra_context(self, context):
+        """Hook for subclass-specific context keys. No-op by default."""
+        return context
+
+    def _scannerjob_choices(self, org, accounts):
+        """Scannerjob dropdown options for the current scope (@accounts is
+        None when unscoped). Defaults to every scanner in @org (or every
+        scanner, for a superuser); override to narrow further."""
+        return org.scanners.all() if org else ScannerReference.objects.all()
 
     def _check_access(self, request):
-        if self.request.user.account:
-
-            if self.request.user.is_superuser:
-                self.user_units = OrganizationalUnit.objects.all().order_by("name")
-            else:
-                # Only allow the user to see reports and units from their own
-                # organization
-                org = request.user.account.organization
-                self.kwargs["org"] = org
-                self.matches = self.matches.filter(scanner_job__organization=org)
-                if self.request.user.account.is_universal_dpo:
-                    self.user_units = OrganizationalUnit.objects.filter(
-                        organization=self.request.user.account.organization).order_by("name")
-                else:
-                    self.user_units = self.request.user.account.get_dpo_units().order_by("name")
-
-        else:
+        if not self.request.user.account:
             raise Account.DoesNotExist(_("The user does not have an account."))
+
+        if self.request.user.is_superuser:
+            self.user_units = OrganizationalUnit.objects.all().order_by("name")
+        else:
+            # Only allow the user to see reports and units from their own
+            # organization
+            org = request.user.account.organization
+            self.kwargs["org"] = org
+            self.matches = self.matches.filter(scanner_job__organization=org)
+            self.user_units = self._get_own_units().order_by("name")
 
     def get(self, request, *args, **kwargs):
         self.matches = base_query()
@@ -77,28 +105,29 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
 
         return response
 
-    def get_context_data(self, number_of_months=12, **kwargs):
+    def get_context_data(self, number_of_months=12, **kwargs):  # noqa CCR001
         context = super().get_context_data(**kwargs)
         today = timezone.now()
+
+        accounts = None
+        if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
+            if self.request.user.is_superuser or self._confirm_orgunit_access(orgunit):
+                accounts = accounts_under_units(self.user_units.filter(uuid=orgunit))
+            else:
+                raise OrganizationalUnit.DoesNotExist(
+                    _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
+        elif not self.request.user.is_superuser:
+            accounts = self._default_scope_accounts()
+
+        if accounts is not None:
+            self.matches = filter_by_accounts(self.matches, accounts)
+
+        if self.scannerjob_filters is None:
+            self.scannerjob_filters = self._scannerjob_choices(self.kwargs.get("org"), accounts)
 
         if (scannerjob := self.request.GET.get('scannerjob')) and scannerjob != 'all':
             self.matches = self.matches.filter(
                 scanner_job__scanner_pk=scannerjob)
-
-        if (orgunit := self.request.GET.get('orgunit')) and orgunit != 'all':
-            confirmed_dpo = (self.request.user.account.get_dpo_units().filter(uuid=orgunit).exists()
-                             or self.request.user.account.is_universal_dpo)
-            if (self.request.user.is_superuser or confirmed_dpo):
-                selected_unit = self.user_units.get(uuid=orgunit)
-                self.matches = filter_by_unit(self.matches, selected_unit)
-            else:
-                raise OrganizationalUnit.DoesNotExist(
-                    _("An organizational unit with the UUID '{0}' was not found.".format(orgunit)))
-
-        if self.scannerjob_filters is None:
-            self.scannerjob_filters = ScannerReference.objects.all()
-            if org := self.kwargs.get("org"):
-                self.scannerjob_filters = org.scanners.all()
 
         (context['match_data'],
          source_type_data,
@@ -115,16 +144,6 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
             count_new_matches_by_month(self.matches, created_month,
                                        current_date=today, num_months=number_of_months)
 
-        # This is removed, until we make some structural changes, which should
-        # prevent clients from having stupid amounts of organizational data.
-        # if self.request.GET.get('orgunit') is None:
-        #     highest_unhandled_ou, highest_handled_ou, highest_total_ou = (
-        #         self.count_match_status_by_org_unit())
-
-        #     context['matches_by_org_unit_unhandled'] = highest_unhandled_ou
-        #     context['matches_by_org_unit_handled'] = highest_handled_ou
-        #     context['matches_by_org_unit_total'] = highest_total_ou
-
         context = context | source_type_progress(source_type_data)
 
         context['scannerjob_choices'] = self.scannerjob_filters
@@ -135,7 +154,123 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
         context['orgunit_choices'] = allowed_orgunits.order_by("name").values("name", "uuid")
         context['chosen_orgunit'] = self.request.GET.get('orgunit', 'all')
 
-        return context
+        return self._extra_context(context)
+
+
+class StatisticsCSVExportMixin(CSVExportMixin):
+    """Shared CSV-export behaviour for the DPO and leader-results statistics
+    pages: identical context data and row layout, differing only in which
+    feature flag gates the export and what filename prefix is used.
+    Subclasses set @exported_filename and @feature_flag_setting (the
+    settings attribute name that gates this export)."""
+
+    feature_flag_setting = None
+
+    def get(self, request, *args, **kwargs):
+        if not getattr(settings, self.feature_flag_setting):
+            raise PermissionDenied
+
+        self.matches = base_query()
+
+        self._check_access(request)
+
+        # Adds scannername and orgunit to name of csv file
+        scanner = None
+        if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
+            if ScannerReference.objects.filter(scanner_pk=scanner_pk).exists():
+                scanner = ScannerReference.objects.get(scanner_pk=scanner_pk)
+            else:
+                logger.debug("Scanner doesn't exists", scanner_pk=scanner_pk)
+        self.exported_filename += f"_scannerjob_{scanner.scanner_name}" if scanner else ''
+
+        orgunit = None
+        if (orgunit_id := request.GET.get('orgunit')) and orgunit_id != 'all':
+            orgunit = self.user_units.get(uuid=orgunit_id)
+        self.exported_filename += f"_orgunit_{orgunit.name}" if orgunit else ''
+
+        # Gets Response from CSVExportMixin
+        response = super().get(request)
+
+        return response
+
+    def stream_queryset(self, rows):
+        # Overwrites CSVExportMixin.stream_queryset
+        self.prepare_stream()
+
+        for row in rows:
+            yield self.writer.writerow(row)
+
+    def unpack_context_data(self):
+        # Takes the data form get_context_data, and restructures it for use in get_rows
+        context_data = self.get_context_data(number_of_months=100)
+
+        match_data = [[values["label"], values["count"]]
+                      for (_key, values) in context_data["match_data"].items()]
+        source_types = [[values["label"], values["count"]]
+                        for (_source, values) in context_data["total_by_source"].items()]
+        resolution_status = [[values["label"], values["count"]]
+                             for (_status, values) in context_data["resolution_status"].items()]
+
+        monthly = []
+        earlier_month = False
+        for ([month_new, count_new], [month_unhandled, count_unhandled]) in zip(
+                context_data["new_matches_by_month"], context_data["unhandled_matches_by_month"]):
+            if (month_new != month_unhandled):
+                logger.warning(
+                    f"Unbalanced months in {self.exported_filename} data: "
+                    f"{month_new} != {month_unhandled}")
+                break
+
+            if earlier_month or count_unhandled or count_new:
+                # Only add month if it, or an earlier month, has matches
+                earlier_month = True
+                monthly.append([month_new, count_unhandled, count_new])
+
+        return match_data, source_types, resolution_status, monthly
+
+    def get_rows(self, qs=None):
+        # Since this isn't a ListView, the data isn't a queryset.
+        # So CSVExportMixin.get_rows is overwritten,
+        # and instead we unpack get_context_data manually
+
+        match_data, source_types, resolutions, monthly = self.unpack_context_data()
+
+        rows = []
+        row_i = -1
+        row = [_("Handled/Unhandled"), _("Matches by Handled/Unhandled"), _("Source Type"),
+               _("Matches by Source Type"), _("Resolution Status"),
+               _("Matches by Resolution Status"), _("Month"), _("Unhandled Matches by Month"),
+               _("New Matches by Month")]
+
+        # If latest row only contains empty cells, we're done
+        while any(value != "" for value in row):
+            rows.append(row)
+            row_i += 1
+            row = []
+
+            # If a column doesn't contain any more data, make empty cells
+            row.extend(match_data[row_i]) if row_i < len(match_data) else row.extend(["", ""])
+            row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
+            row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
+            row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
+
+        return rows
+
+
+class DPOStatisticsPageView(ResultsStatisticsPageView):
+    template_name = "dpo_statistics_template.html"
+
+    # TODO: We need to figure out multi tenancy. I.e. only view stuff from your organization
+
+    def _get_own_units(self):
+        if self.request.user.account.is_universal_dpo:
+            return OrganizationalUnit.objects.filter(
+                organization=self.request.user.account.organization)
+        return self.request.user.account.get_dpo_units()
+
+    def _confirm_orgunit_access(self, orgunit_uuid):
+        return (self.request.user.account.get_dpo_units().filter(uuid=orgunit_uuid).exists()
+                or self.request.user.account.is_universal_dpo)
 
     def dispatch(self, request, *args, **kwargs):
 
@@ -188,97 +323,9 @@ class DPOStatisticsPageView(LoginRequiredMixin, TemplateView):
                      for mt in ("unhandled", "handled", "total"))
 
 
-class DPOStatisticsCSVView(CSVExportMixin, DPOStatisticsPageView):
+class DPOStatisticsCSVView(StatisticsCSVExportMixin, DPOStatisticsPageView):
     exported_filename = 'osdatascanner_dpo_statistics'
-
-    def get(self, request, *args, **kwargs):
-        if not settings.DPO_CSV_EXPORT:
-            raise PermissionDenied
-
-        self.matches = base_query()
-
-        self._check_access(request)
-
-        # Adds scannername and orgunit to name of csv file
-        scanner = None
-        if (scanner_pk := request.GET.get('scannerjob')) and scanner_pk != 'all':
-            if ScannerReference.objects.filter(scanner_pk=scanner_pk).exists():
-                scanner = ScannerReference.objects.get(scanner_pk=scanner_pk)
-            else:
-                logger.debug("Scanner doesn't exists", scanner_pk=scanner_pk)
-        self.exported_filename += f"_scannerjob_{scanner.scanner_name}" if scanner else ''
-
-        orgunit = None
-        if (orgunit_id := request.GET.get('orgunit')) and orgunit_id != 'all':
-            orgunit = self.user_units.get(uuid=orgunit_id)
-        self.exported_filename += f"_orgunit_{orgunit.name}" if orgunit else ''
-
-        # Gets Response from CSVExportMixin
-        response = super().get(request)
-
-        return response
-
-    def stream_queryset(self, rows):
-        # Overwrites CSVExportMixin.stream_queryset
-        self.prepare_stream()
-
-        for row in rows:
-            yield self.writer.writerow(row)
-
-    def unpack_context_data(self):
-        # Takes the data form get_context_data, and restructures it for use in get_rows
-        context_data = self.get_context_data(number_of_months=100)
-
-        match_data = [[values["label"], values["count"]]
-                      for (_key, values) in context_data["match_data"].items()]
-        source_types = [[values["label"], values["count"]]
-                        for (_source, values) in context_data["total_by_source"].items()]
-        resolution_status = [[values["label"], values["count"]]
-                             for (_status, values) in context_data["resolution_status"].items()]
-
-        monthly = []
-        earlier_month = False
-        for ([month_new, count_new], [month_unhandled, count_unhandled]) in zip(
-                context_data["new_matches_by_month"], context_data["unhandled_matches_by_month"]):
-            if (month_new != month_unhandled):
-                logger.warning(
-                    f"Unbalanced months in dpo-statisticsdata: {month_new} != {month_unhandled}")
-                break
-
-            if earlier_month or count_unhandled or count_new:
-                # Only add month if it, or an earlier month, has matches
-                earlier_month = True
-                monthly.append([month_new, count_unhandled, count_new])
-
-        return match_data, source_types, resolution_status, monthly
-
-    def get_rows(self, qs=None):
-        # Since this isn't a ListView, the data isn't a queryset.
-        # So CSVExportMixin.get_rows is overwritten,
-        # and instead we unpack get_context_data manually
-
-        match_data, source_types, resolutions, monthly = self.unpack_context_data()
-
-        rows = []
-        row_i = -1
-        row = [_("Handled/Unhandled"), _("Matches by Handled/Unhandled"), _("Source Type"),
-               _("Matches by Source Type"), _("Resolution Status"),
-               _("Matches by Resolution Status"), _("Month"), _("Unhandled Matches by Month"),
-               _("New Matches by Month")]
-
-        # If latest row only contains empty cells, we're done
-        while any(value != "" for value in row):
-            rows.append(row)
-            row_i += 1
-            row = []
-
-            # If a column doesn't contain any more data, make empty cells
-            row.extend(match_data[row_i]) if row_i < len(match_data) else row.extend(["", ""])
-            row.extend(source_types[row_i]) if row_i < len(source_types) else row.extend(["", ""])
-            row.extend(resolutions[row_i]) if row_i < len(resolutions) else row.extend(["", ""])
-            row.extend(monthly[row_i]) if row_i < len(monthly) else row.extend(["", "", ""])
-
-        return rows
+    feature_flag_setting = 'DPO_CSV_EXPORT'
 
 
 class LeaderStatisticsRedirectView(LoginRequiredMixin, RedirectView):
@@ -480,7 +527,10 @@ class LeaderStatisticsPageView(LoginRequiredMixin, TemplateView, ABC):
         context['show_withheld_column'] = self.request.user.has_perm(
             "organizations.view_withheld_results")
         context['retention_days'] = self.org.retention_days
-        context['show_leader_tabs'] = self.org.leadertab_config == LeaderTabConfigChoices.BOTH
+        context['show_units_tab'] = self.org.leadertab_config in [
+            LeaderTabConfigChoices.UNITS, LeaderTabConfigChoices.BOTH]
+        context['show_accounts_tab'] = self.org.leadertab_config in [
+            LeaderTabConfigChoices.ACCOUNTS, LeaderTabConfigChoices.BOTH]
         context['chosen_scannerjob'] = self.request.GET.get('scannerjob', 'all')
         context['chosen_source_type'] = source_type
         context['only_with_results'] = self.request.GET.get('only_with_results')
@@ -819,6 +869,51 @@ class LeaderUnitsStatisticsCSVView(LeaderStatisticsCSVMixin, LeaderUnitsStatisti
     def get(self, request, *args, **kwargs):
         self.set_user_units_and_org_unit(request)
         return super().get(request, *args, **kwargs)
+
+
+class LeaderResultsStatisticsPageView(ResultsStatisticsPageView):
+    template_name = "leader_results_statistics_template.html"
+
+    def _get_own_units(self):
+        return self.request.user.account.get_managed_units()
+
+    def _default_scope_accounts(self):
+        # No unit chosen: aggregate the leader's managed units plus any
+        # accounts they manage directly (the only scope for leaders with no
+        # unit position at all) -- never the whole organization.
+        return Account.objects.filter(
+            Q(pk__in=accounts_under_units(self.user_units))
+            | Q(pk__in=self.request.user.account.managed_accounts.all()))
+
+    def _extra_context(self, context):
+        org = self.request.user.account.organization
+        context['show_units_tab'] = org.leadertab_config in [
+            LeaderTabConfigChoices.UNITS, LeaderTabConfigChoices.BOTH]
+        context['show_accounts_tab'] = org.leadertab_config in [
+            LeaderTabConfigChoices.ACCOUNTS, LeaderTabConfigChoices.BOTH]
+        context['active_tab'] = "results"
+        return context
+
+    def _scannerjob_choices(self, org, accounts):
+        if org is None:
+            return super()._scannerjob_choices(org, accounts)
+        return org.scanners.filter(
+            document_reports__number_of_matches__gte=1,
+            document_reports__alias_relations__account__in=accounts,
+            document_reports__alias_relations__shared=False,
+        ).distinct()
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            if not request.user.is_superuser and not request.user.account.is_manager:
+                return HttpResponseForbidden(
+                    "Only managers and superusers have access to this page.")
+        return super().dispatch(request, *args, **kwargs)
+
+
+class LeaderResultsStatisticsCSVView(StatisticsCSVExportMixin, LeaderResultsStatisticsPageView):
+    exported_filename = 'osdatascanner_leader_results_statistics'
+    feature_flag_setting = 'LEADER_CSV_EXPORT'
 
 
 class UserStatisticsPageView(LoginRequiredMixin, DetailView):

@@ -1,0 +1,23 @@
+{% extends "components/statistics/statistics.html" %}
+{% load i18n %}
+
+{% block body %}
+  <div class="content content--maxwidth" hx-push-url="true">
+    {% include "components/navigation/leader-statistics-tabs.html" with active_tab=active_tab %}
+
+    {% trans "Leader statistics" as page_title %}
+    {% url "statistics-leader-results" as filter_url %}
+    {% url "statistics-leader-results-export" as csv_export_url %}
+
+    {% include "components/statistics/results_statistics.html" with page_title=page_title filter_url=filter_url csv_export_enabled=settings.LEADER_CSV_EXPORT csv_export_url=csv_export_url %}
+
+    {{ total_by_source|json_script:"total_by_source" }}
+    {{ new_matches_by_month|json_script:"new_matches_by_month" }}
+    {{ unhandled_matches_by_month|json_script:"unhandled_matches_by_month" }}
+    {{ resolution_status|json_script:"resolution_status" }}
+    {{ matches_by_org_unit_unhandled|json_script:"matches_by_org_unit_unhandled" }}
+    {{ matches_by_org_unit_handled|json_script:"matches_by_org_unit_handled" }}
+    {{ matches_by_org_unit_total|json_script:"matches_by_org_unit_total" }}
+    {{ match_data|json_script:"match_data" }}
+  </div>
+{% endblock body %}

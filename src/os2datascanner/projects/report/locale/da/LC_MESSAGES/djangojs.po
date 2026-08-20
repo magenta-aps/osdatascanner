@@ -51,7 +51,7 @@ msgstr "Ingen data"
 #: dist/js/charts/doughnutCharts.js dist/js/charts/pieCharts.js
 #: js/charts/doughnutCharts.js js/charts/pieCharts.js
 msgid "No data"
-msgstr ""
+msgstr "Ingen data"
 
 #: dist/js/forms/clearUploadedFile.js js/forms/clearUploadedFile.js
 msgid "No file chosen"

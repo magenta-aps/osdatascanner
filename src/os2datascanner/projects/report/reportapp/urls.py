@@ -17,7 +17,8 @@ from .views.statistics_views import (
     LeaderUnitsStatisticsPageView, LeaderStatisticsRedirectView,
     DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, LeaderAccountsStatisticsPageView,
-    LeaderAccountsStatisticsCSVView, LeaderUnitsStatisticsCSVView)
+    LeaderAccountsStatisticsCSVView, LeaderUnitsStatisticsCSVView,
+    LeaderResultsStatisticsPageView, LeaderResultsStatisticsCSVView)
 from .views.report_views import (
     UserReportView, UserHandledView,
     RemediatorView, RemediatorHandledView,
@@ -107,6 +108,10 @@ urlpatterns = [
          name='statistics-leader-accounts-export'),
     path('statistics/leader/units/csv', LeaderUnitsStatisticsCSVView.as_view(),
          name='statistics-leader-units-export'),
+    path('statistics/leader/results', LeaderResultsStatisticsPageView.as_view(),
+         name='statistics-leader-results'),
+    path('statistics/leader/results/csv', LeaderResultsStatisticsCSVView.as_view(),
+         name='statistics-leader-results-export'),
     re_path(r'^statistics/dpo/$', DPOStatisticsPageView.as_view(), name='statistics-dpo'),
     re_path(r'^statistics/dpo/csv/$', DPOStatisticsCSVView.as_view(), name='statistics-dpo-export'),
     path('statistics/user/', UserStatisticsPageView.as_view(), name='statistics-user-me'),
