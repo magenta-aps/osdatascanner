@@ -4,15 +4,17 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from . import messages
-
+import structlog
 
 READS_QUEUES = ("os2ds_matches", "os2ds_metadata", "os2ds_problems",)
 WRITES_QUEUES = ("os2ds_results",)
 PROMETHEUS_DESCRIPTION = "Messages exported"
 PREFETCH_COUNT = 8
 
+logger = structlog.get_logger("exporter")
 
-def censor_outgoing_message(message):
+
+def censor_outgoing_message(message):  # noqA CCR001
     """Censors a message before sending it to the outside world."""
     if isinstance(message, messages.MetadataMessage):
         return messages.replace(message, handle=message.handle.censor())
@@ -20,10 +22,16 @@ def censor_outgoing_message(message):
         return messages.replace(message,
                                 handle=message.handle.censor(),
                                 scan_spec=censor_outgoing_message(message.scan_spec))
-    elif isinstance(message, messages.ProblemMessage):
-        return messages.replace(message,
-                                handle=message.handle.censor() if message.handle else None,
-                                source=message.source.censor() if message.source else None)
+    elif isinstance(message, messages.Issue):
+        # Only ProblemMessage of type messages.Issue carry Source, so a little special case is
+        # necessary.
+        if isinstance(message, messages.ProblemMessage):
+            return messages.replace(message,
+                                    handle=message.handle.censor() if message.handle else None,
+                                    source=message.source.censor() if message.source else None)
+        else:
+            return messages.replace(message,
+                                    handle=message.handle.censor() if message.handle else None)
 
     # Not exported from the pipeline, but included here for completeness
     elif isinstance(message, messages.ScanSpecMessage):
@@ -49,7 +57,12 @@ def message_received_raw(body, channel, source_manager):
         message = messages.MatchesMessage.from_json_object(body)
     elif "message" in body:
         message = messages.ProblemMessage.from_json_object(body)
-    # Old-style problem messages are now ignored
+    elif messages.ContentMissingMessage.test(body):
+        message = messages.ContentMissingMessage.from_json_object(body)
+    elif messages.ContentIrrelevantMessage.test(body):
+        message = messages.ContentIrrelevantMessage.from_json_object(body)
+    else:
+        logger.warning("Recieved an unknown message type!", channel=channel)
 
     if message:
         result_body = censor_outgoing_message(message).to_json_object()

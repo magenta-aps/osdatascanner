@@ -67,6 +67,9 @@
 - Fixed a bug where one account's scan failure would block last-modified-cutoff credit for every
   other account covered by the same scan run, forcing unnecessary rescans of healthy accounts.
 
+- Exporter can now properly route and censor ContentMissing and ContentIrrelevantMessage messages,
+  so the result_collector again can perform automatic DocumentReport handling.
+
 ## Version 3.32.4, 4th August 2026
 
 "Come in, 3.32.4, what's your status?"
