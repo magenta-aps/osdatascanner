@@ -48,9 +48,10 @@ document.addEventListener("click", function (e) {
     setStorage("os2ds-prefers-expanded-results", preferenceExpand);
   }
 
-  if (hasClass(targ, "toggleInfoRow")) {
-    row = closestElement(targ, "tr");
-    if (row) { toggleInfoRow(row, targ); }
+  const toggleTrigger = closestElement(targ, ".toggleInfoRow");
+  if (toggleTrigger) {
+    row = closestElement(toggleTrigger, "tr");
+    if (row) { toggleInfoRow(row); }
   }
 
   if (hasClass(targ, "probability-toggle")) {
@@ -120,14 +121,34 @@ function closestElement(elm, selector) {
   return parent;
 }
 
-function toggleInfoRow(row, toggleButton) {
+function toggleInfoRow(row) {
   let nextRow = row.nextElementSibling;
   while (nextRow && !hasClass(nextRow, "expandableInfoRow")) {
     nextRow = nextRow.nextElementSibling;
   }
   if (!nextRow) { return; }
-  toggleClass(toggleButton, "up");
-  nextRow.hidden = !hasClass(toggleButton, "up");
+
+  // Keep all expandableInfoRow triggers (i.e. "show more" + expand_more) in sync
+  // regardless of which one was clicked:
+  const isOpen = nextRow.hidden;
+  nextRow.hidden = !isOpen;
+
+  const triggers = row.querySelectorAll(".toggleInfoRow");
+  Array.prototype.forEach.call(triggers, function (trigger) {
+    if (isOpen) {
+      addClass(trigger, "up");
+    } else {
+      removeClass(trigger, "up");
+    }
+    trigger.setAttribute("aria-expanded", isOpen ? "true" : "false");
+
+    const label = trigger.querySelector(".active-objects-trigger__label");
+    if (label) {
+      label.textContent = isOpen
+        ? label.dataset.labelExpanded
+        : label.dataset.labelCollapsed;
+    }
+  });
 }
 
 function toggleMatchesList(objectRows, toggleButton) {

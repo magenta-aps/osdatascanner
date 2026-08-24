@@ -1,7 +1,4 @@
-{% load l10n %}
-{% load i18n %}
-{% load tz %}
-{% load humanize %}
+{% load l10n i18n tz humanize utility_tags %}
 
 <div class="scan-status-table">
 
@@ -22,191 +19,210 @@
         hx-vals='{"scans":"{{ object_list|length }}", "reload":"{{ reload }}"}'
         hx-sync="#status_tabs_poll:queue"></span>
 
-  <div class="datatable-wrapper card lg"
+  <div class="datatablex__card-container"
        role="region"
        tabindex="0"
        aria-label="{% trans 'Scans in progress' %}">
-    <table class="datatable middle">
-      <colgroup>
-        <col class="datatable__column--name" />
-        <col class="datatable__column--org" />
-        <col class="datatable__column--info" />
-        <col class="datatable__column--actions" />
-      </colgroup>
-      <thead>
-        <tr>
-          <th class="datatable__column--name">{% trans "Scannerjob" %}</th>
-          <th class="datatable__column--org">{% trans "Phase" %}</th>
-          <th class="datatable__column--info">{% trans "Status" %}</th>
-          <th class="datatable__column--actions">{% trans "Actions" %}</th>
-        </tr>
-      </thead>
-
-      {% if object_list %}
-        <tbody>
-          {% for status in object_list %}
-            <tr>
-              <td class="datatable__column--name">{{ status.scanner.name }}</td>
-              <td class="scan-stage stage-{{ status.stage.value }} datatable__column--org"
-                  id="scan-stage__{{ status.pk|unlocalize }}"
-                  {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-                {% if status.stage.value == 0 %}
-                  {% trans "Indexing data ..." %}
-                {% elif status.stage.value == 1 %}
-                  {% trans "Scanning data (still indexing) ..." %}
-                {% elif status.stage.value == 2 %}
-                  {% trans "Scanning data ..." %}
-                {% elif status.stage.value == 3 %}
-                  {% trans "No objects to scan" %}
-                {% elif status.stage.value == 4 %}
-                  {% trans "Scan failed" %}
-                {% endif %}
-              </td>
-              <td class="datatable__column--info"
-                  id="status_column__{{ status.pk|unlocalize }}"
-                  {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-                {% if status.stage.value == 0 %}
-                  {% trans "Building index" %}
-                {% elif status.stage.value == 1 %}
-                  {% blocktranslate with obj=status.scanned_objects unit=scan_unit onp=status.scanner.as_subclass.object_name_plural %}{{ obj }} {{ onp }} scanned{% endblocktranslate %}
-                {% elif status.stage.value == 2 %}
-                  {% blocktranslate with obj=status.scanned_objects total=status.total_objects onp=status.scanner.as_subclass.object_name_plural %}{{ obj }} out of {{ total }} {{ onp }} scanned{% endblocktranslate %}
-                  {% with frac=status.fraction_scanned %}
-                    <div class="progressbar-container">
-                      <div class="progressbar"
-                           id="pb__{{ status.pk }}"
-                           style="width:{% widthratio frac 1 100 %}%"></div>
-                    </div>
-                  {% endwith %}
-
-                  {% with completion_time=status.estimated_completion_time %}
-                    {% if completion_time %}
-                      {% trans "Estimated finished" %} {{ completion_time|naturaltime }}
-                    {% endif %}
-                  {% endwith %}
-
-                {% elif status.stage.value == 3 %}
-                  {% trans "The sources do not contain any scannable objects" %}
-
-                {% elif status.stage.value == 4 %}
-                  {% trans "An error occured during this scan" %}
-                {% endif %}
-
-                {% with summary=status.active_object_summary %}
-                  {% if summary %}
-                    <div class="active-objects-summary">
-                      <i class="material-symbols" aria-hidden="true">hourglass_top</i>
-                      {% blocktranslate count n=summary.count with mins=summary.max_minutes %}A large file is being scanned ({{ mins }} min so far){% plural %}{{ n }} large files are being scanned (longest one has run for {{ mins }} min){% endblocktranslate %}
-                    </div>
-                  {% endif %}
-                {% endwith %}
-
-                {# don't show number of bytes scanned as it's not very useful #}
-                {# don't show estimated time as it's very imprecise #}
-                {# don't show a progress bar to represent status, as "100%" can vary #}
-              </td>
-              <td class="datatable__column--actions">
-                <div class="action-wrapper button-group">
-                  {% if perms.os2datascanner.cancel_scanstatus %}
-                    <form action="{% url "status-cancel" status.pk|unlocalize %}"
-                          method="post"
-                          class="status-cancel">
-                      {% csrf_token %}
-                      <button type="submit"
-                              class="button button--icon-button"
-                              aria-label="{% trans "cancel running scanner job"|capfirst %}"
-                              title="{% trans "cancel running scanner job"|capfirst %}">
-                        <i id="cancel" class="material-symbols">close</i>
-                      </button>
-                    </form>
-                  {% endif %}
-                  {% if perms.os2datascanner.delete_scanstatus %}
-                    <form action="{% url "status-delete" status.pk|unlocalize %}"
-                          method="post"
-                          class="status-delete">
-                      {% csrf_token %}
-                      {% trans "Do you really want to delete the status object for scanner '%(scanner_name)s'?" as r_u_sure %}
-                      <button type="submit"
-                              class="button button--icon-button"
-                              onclick="return confirm(interpolate('{{ r_u_sure|escapejs }}', {'scanner_name': '{{ status.scanner.name|escapejs }}'}, true))"
-                              aria-label="{% trans 'Delete' %} {% trans 'status for running scanner' %}"
-                              title="{% trans 'Delete' %} {% trans 'status for running scanner' %}">
-                        <i id="delete_forever" class="material-symbols">delete_forever</i>
-                      </button>
-                    </form>
-                  {% endif %}
-                  <button class="timelines-expand toggleInfoRow button button--caret-button"
-                          aria-label="{% trans 'Show/hide timeline' %}"
-                          title="{% trans 'Show/hide timeline' %}"
-                          type="button">
-                    <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr class="active-objects-row">
-              <td colspan="4">
-                <details class="active-objects-details">
-                  <summary class="active-objects-details__summary">
-                    <i class="material-symbols" aria-hidden="true">expand_more</i>
-                    {% trans "Show files in progress" %}
-                  </summary>
-                  <ul class="active-objects-list"
-                      id="active_objects_list__{{ status.pk|unlocalize }}"
-                      {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-                    {% for active in status.active_objects.all %}
-                      <li class="active-object">
-                        <span class="active-object__dot" aria-hidden="true"></span>
-                        <div class="active-object__body">
-                          <div class="active-object__headline">
-                            <span class="active-object__name" title="{{ active.object_path }}">{{ active.object_path }}</span>
-                            <span class="active-object__elapsed">{% blocktranslate with mins=active.elapsed_minutes %}{{ mins }} min{% endblocktranslate %}</span>
-                          </div>
-                          {% if active.current_path %}
-                            <span class="active-object__current" title="{{ active.current_path }}">{{ active.current_path }}</span>
-                          {% endif %}
-                        </div>
-                        <span class="active-object__state">{% trans "still working" %}</span>
-                      </li>
-                    {% endfor %}
-                  </ul>
-                </details>
-              </td>
-            </tr>
-            <tr class="error"
-                id="status_message__{{ status.pk|unlocalize }}"
-                {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-              {% if status.message and status.status_is_error %}<td colspan="4">{{ status.message }}</td>{% endif %}
-            </tr>
-            <tr class="statistic_row expandableInfoRow" hidden>
-              <td colspan="7"
-                  hx-get="{% url 'status-timeline' status.pk %}"
-                  hx-trigger="intersect"
-                  hx-swap="outerHTML"
-                  hx-target="this"
-                  hx-push-url="false"
-                  hx-vals='{"updated": "true"}'>
-                <div class="loading">
-                  <svg class="relative page-indicator"
-                       id="report-page-indicator"
-                       viewbox="0 0 100 100">
-                    <circle id="circle" cx="50" cy="50" r="45"></circle>
-                  </svg>
-                </div>
-              </td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      {% else %}
-        <tbody>
+    <div class="datatablex__wrapper">
+      <table class="datatablex scanstatus-table">
+        <colgroup>
+          <col class="column column--name" />
+          <col class="column column--phase" />
+          <col class="column column--status" />
+          <col class="column column--actions" />
+          <col class="column column--show-more" />
+        </colgroup>
+        <thead>
           <tr class="datatablex__row">
-            <td class="column nothing_found_row" colspan="4">{% trans "no ongoing scans"|capfirst %}</td>
+            <th class="column column--name">{% trans "Scannerjob" %}</th>
+            <th class="column column--phase">{% trans "Phase" %}</th>
+            <th class="column column--status">{% trans "Status" %}</th>
+            <th class="column column--actions">{% trans "Actions" %}</th>
+            <th class="column column--show-more"></th>
           </tr>
-        </tbody>
-      {% endif %}
-    </table>
+        </thead>
+
+        {% if object_list %}
+          <tbody>
+            {% for status in object_list %}
+              {% with on=status.scanner.as_subclass.object_name onp=status.scanner.as_subclass.object_name_plural %}
+                <tr class="datatablex__row">
+                  <td class="column column--name">{{ status.scanner.name }}</td>
+
+                  <td class="column column--phase"
+                      id="scan-stage__{{ status.pk|unlocalize }}"
+                      {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
+                    {% if status.stage.value == 0 %}
+                      {% trans "Indexing data ..." %}
+                    {% elif status.stage.value == 1 %}
+                      {% trans "Scanning data (still indexing) ..." %}
+                    {% elif status.stage.value == 2 %}
+                      {% trans "Scanning data ..." %}
+                    {% elif status.stage.value == 3 %}
+                      {% trans "No objects to scan" %}
+                    {% elif status.stage.value == 4 %}
+                      {% trans "Scan failed" %}
+                    {% endif %}
+                  </td>
+
+                  <td class="column column--status"
+                      id="status_column__{{ status.pk|unlocalize }}"
+                      {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
+                    <div class="td-content__container">
+                      {% if status.stage.value == 0 %}
+                        {% trans "Building index" %}
+                      {% elif status.stage.value == 1 %}
+                        {% blocktranslate with obj=status.scanned_objects unit=scan_unit %}{{ obj }} {{ onp }} scanned{% endblocktranslate %}
+                      {% elif status.stage.value == 2 %}
+                        {% blocktranslate with obj=status.scanned_objects total=status.total_objects %}{{ obj }} out of {{ total }} {{ onp }} scanned{% endblocktranslate %}
+                        {% with frac=status.fraction_scanned %}
+                          <div class="progressbar">
+                            <div class="progressbar__bar"
+                                 id="pb__{{ status.pk }}"
+                                 style="width:{% widthratio frac 1 100 %}%"></div>
+                          </div>
+                        {% endwith %}
+
+                        {% with completion_time=status.estimated_completion_time %}
+                          {% if completion_time %}
+                            {% trans "Estimated finished" %} {{ completion_time|naturaltime }}
+                          {% endif %}
+                        {% endwith %}
+
+                      {% elif status.stage.value == 3 %}
+                        {% trans "The sources do not contain any scannable objects" %}
+
+                      {% elif status.stage.value == 4 %}
+                        {% trans "An error occurred during this scan" %}
+                      {% endif %}
+
+                      {% with summary=status.active_object_summary %}
+                        {% if summary %}
+                          <div class="active-objects-summary">
+                            <div class="summary_wrapper">
+                              <i class="material-symbols" aria-hidden="true">hourglass_top</i>
+                              <span>
+                                {% with duration=summary.max_seconds|floor_to_minute|format_timespan:"compact" %}
+                                  {% if summary.count == 1 %}
+                                    {% blocktranslate trimmed %}
+                                      A large {{ on }} is being processed ({{ duration }} so far)
+                                    {% endblocktranslate %}
+                                  {% else %}
+                                    {% blocktranslate with n=summary.count trimmed %}
+                                      {{ n }} large {{ onp }} are being processed (longest one has run for {{ duration }})
+                                    {% endblocktranslate %}
+                                  {% endif %}
+                                {% endwith %}
+                              </span>
+                            </div>
+
+                            <button type="button"
+                                    id="active_objects_trigger__{{ status.pk|unlocalize }}"
+                                    hx-preserve
+                                    class="button button--transparent-button active-objects-trigger toggleInfoRow"
+                                    aria-label="{% blocktranslate asvar trigger_label %}Show/hide {{ onp }} currently being processed.{% endblocktranslate %}{{ trigger_label }}"
+                                    title="{{ trigger_label }}"
+                                    aria-expanded="false">
+                              <span class="active-objects-trigger__label"
+                                    data-label-collapsed="{% trans "show more"|capfirst %}"
+                                    data-label-expanded="{% trans "show less"|capfirst %}">
+                                {% trans "show more"|capfirst %}
+                              </span>
+                              <i class="material-symbols" aria-hidden="true">expand_more</i>
+                            </button>
+                          </div>
+                        {% endif %}
+                      {% endwith %}
+                    </div>
+                  </td>
+
+                  <td class="column column--actions">
+                    <div class="action-wrapper button-group">
+                      {% if perms.os2datascanner.cancel_scanstatus %}
+                        <form action="{% url "status-cancel" status.pk|unlocalize %}"
+                              method="post"
+                              class="status-cancel">
+                          {% csrf_token %}
+                          <button type="submit"
+                                  class="button button--icon-text-button"
+                                  aria-label="{% trans "Stop this scanner run. It will be marked as &quot;cancelled&quot; in the scan history." %}"
+                                  title="{% trans "Stop this scanner run. It will be marked as &quot;cancelled&quot; in the scan history." %}">
+                            <i id="cancel" class="material-symbols">close</i>
+                            <span>{% trans "cancel"|capfirst %}</span>
+                          </button>
+                        </form>
+                      {% endif %}
+                      {% if perms.os2datascanner.delete_scanstatus %}
+                        <form action="{% url "status-delete" status.pk|unlocalize %}"
+                              method="post"
+                              class="status-delete">
+                          {% csrf_token %}
+                          {% trans "Do you really want to delete the status object for scanner '%(scanner_name)s'?" as r_u_sure %}
+                          <button type="submit"
+                                  class="button button--icon-text-button"
+                                  onclick="return confirm(interpolate('{{ r_u_sure|escapejs }}', {'scanner_name': '{{ status.scanner.name|escapejs }}'}, true))"
+                                  aria-label="{% trans "Stop this scanner run and permanently delete it from the scan history. This cannot be undone." %}"
+                                  title="{% trans "Stop this scanner run and permanently delete it from the scan history. This cannot be undone." %}">
+                            <i id="delete_forever" class="material-symbols">delete_forever</i>
+                            <span>{% trans "cancel and delete"|capfirst %}</span>
+                          </button>
+                        </form>
+                      {% endif %}
+                    </div>
+                  </td>
+                  <td class="column column--show-more">
+                    <button class="timelines-expand toggleInfoRow button button--caret-button" aria-label="{% trans "Show/hide info row." %}" title="{% trans "Show/hide info row." %}" aria-expanded="false" type="button">
+                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                    </button>
+                  </td>
+                </tr>
+
+                <tr class="error"
+                    id="status_message__{{ status.pk|unlocalize }}"
+                    {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
+                  {% if status.message and status.status_is_error %}<td colspan="5">{{ status.message }}</td>{% endif %}
+                </tr>
+
+                <tr class="datatablex__row datatablex__row--expanded statistic_row expandableInfoRow"
+                    hidden>
+                  <td id="ongoing-scan-statistics"
+                      class="statistics statistics--ongoing-scans"
+                      colspan="5">
+                    <div class="statistics__wrapper">
+                      <div class="statistics__body">
+                        {% if status.active_object_summary %}
+                          <section class="statistics__section statistics__section--primary-overview">
+                            <div class="section__body">
+                              <div class="section__region section__region--workers">
+                                {# List of objects with scan times over 60s: #}
+                                {% include "components/scanstatus/card_worker-peek.html" %}
+                              </div>
+                            </div>
+                          </section>
+                        {% else %}
+                          <section class="statistics__section statistics__section--nodata">
+                            <div class="section__body">
+                              <div class="section__region section__region--nodata">
+                                <p>{% trans "Nothing further to show for this scan right now." %}</p>
+                              </div>
+                            </div>
+                          </section>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              {% endwith %}
+            {% endfor %}
+          </tbody>
+        {% else %}
+          <tbody>
+            <tr class="datatablex__row">
+              <td class="column nothing_found_row" colspan="4">{% trans "no ongoing scans"|capfirst %}</td>
+            </tr>
+          </tbody>
+        {% endif %}
+      </table>
+    </div>
   </div>
-  {% comment %} <div class="progressbar-container">
-    <div id="scanstatus-progressbar" class="progressbar" style="width:50%"></div>
-  </div> {% endcomment %}
 </div>

@@ -1023,6 +1023,7 @@ $statistics-card-spacing: 1.5rem;
 }
 
 /*** Variants/modifiers ***/
+.statistics--ongoing-scans,
 .statistics--scanstatus,
 .statistics--scannerjobs {
   .statistics__header__title:is(h1) {
@@ -1046,6 +1047,16 @@ $statistics-card-spacing: 1.5rem;
     .section__region--overview {
       // TEMP: until UI-friendly MIMEtype mapping.
       @include statistics-card-grid(25rem);
+    }
+
+    .section__region--workers {
+      width: clamp(30rem, 100%, 70rem);
+    }
+
+    .section__region--nodata {
+      text-align: center;
+      color: var(--color-text-secondary);
+      padding: 1rem;
     }
   }
 
