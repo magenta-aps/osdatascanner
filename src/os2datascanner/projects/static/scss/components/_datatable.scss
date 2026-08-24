@@ -1072,13 +1072,13 @@ $font-size_subtitle: 0.875rem;
       }
     }
 
-    &--show-more {
-      #expand_more {
-        color: var(--color-primary-dark);
-      }
-      text-align: right;
-      width: calc(20px + (var(--datatable-cell-padding) * 1.5));
-    }
+    // &--show-more {
+    //   #expand_more {
+    //     color: var(--color-primary-dark);
+    //   }
+    //   text-align: right;
+    //   width: calc(20px + (var(--datatable-cell-padding) * 1.5));
+    // }
   }
 
   a:not(.button) {

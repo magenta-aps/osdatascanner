@@ -30,7 +30,6 @@
           <col class="column column--phase" />
           <col class="column column--status" />
           <col class="column column--actions" />
-          <col class="column column--show-more" />
         </colgroup>
         <thead>
           <tr class="datatablex__row">
@@ -38,7 +37,6 @@
             <th class="column column--phase">{% trans "Phase" %}</th>
             <th class="column column--status">{% trans "Status" %}</th>
             <th class="column column--actions">{% trans "Actions" %}</th>
-            <th class="column column--show-more"></th>
           </tr>
         </thead>
 
@@ -170,24 +168,19 @@
                       {% endif %}
                     </div>
                   </td>
-                  <td class="column column--show-more">
-                    <button class="timelines-expand toggleInfoRow button button--caret-button" aria-label="{% trans "Show/hide info row." %}" title="{% trans "Show/hide info row." %}" aria-expanded="false" type="button">
-                      <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
-                    </button>
-                  </td>
                 </tr>
 
                 <tr class="error"
                     id="status_message__{{ status.pk|unlocalize }}"
                     {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-                  {% if status.message and status.status_is_error %}<td colspan="5">{{ status.message }}</td>{% endif %}
+                  {% if status.message and status.status_is_error %}<td colspan="4">{{ status.message }}</td>{% endif %}
                 </tr>
 
                 <tr class="datatablex__row datatablex__row--expanded statistic_row expandableInfoRow"
                     hidden>
                   <td id="ongoing-scan-statistics"
                       class="statistics statistics--ongoing-scans"
-                      colspan="5">
+                      colspan="4">
                     <div class="statistics__wrapper">
                       <div class="statistics__body">
                         <section class="statistics__section statistics__section--primary-overview">
