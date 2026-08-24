@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-19 11:15+0200\n"
+"POT-Creation-Date: 2026-08-21 16:10+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1948,7 +1948,6 @@ msgstr ""
 
 #: adminapp/templates/components/rules/regexrule_confirm_delete.html
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status--table.html
 #: adminapp/templates/error_log.html
 #: organizations/templates/organizations/org_table.html
 msgid "Delete"
@@ -2103,7 +2102,6 @@ msgid "scannerjob"
 msgstr "scannerjob"
 
 #: adminapp/templates/components/scanner/scan_completed.html
-#: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "Show/hide timeline"
 msgstr "Vis/skjul tidslinje"
 
@@ -2661,6 +2659,26 @@ msgstr "tidslinje for scanningsforløbet"
 msgid "percentage completion over time"
 msgstr "procentvis færdiggørelse over tid"
 
+#: adminapp/templates/components/scanstatus/card_worker-peek.html
+#, python-format
+msgid "%(onp)s with long processing times"
+msgstr "%(onp)s med lange behandlingstider"
+
+#: adminapp/templates/components/scanstatus/card_worker-peek.html
+#, python-format
+msgid ""
+"These %(onp)s have currently been processing for longer than 1 minute. This "
+"is normal for large elements with complex content (e.g. PDFs, SVGs, images, "
+"etc.)."
+msgstr ""
+"Disse %(onp)s har været under behandling i mere end 1 minut. Det er normalt "
+"for store elementer med komplekst indhold (f.eks. PDF'er, SVG'er, billeder "
+"osv.)."
+
+#: adminapp/templates/components/scanstatus/card_worker-peek.html
+msgid "still processing"
+msgstr "fortsat under behandling"
+
 #: adminapp/templates/components/scanstatus/remove_error.html
 #: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "Remove selected scan data"
@@ -2738,21 +2756,48 @@ msgid "The sources do not contain any scannable objects"
 msgstr "Datakilden indeholder ikke nogle objekter"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "An error occured during this scan"
+msgid "An error occurred during this scan"
 msgstr "Der skete en fejl under dette scan"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
-msgid "A large file is being scanned (%(mins)s min so far)"
-msgid_plural ""
-"%(n)s large files are being scanned (longest one has run for %(mins)s min)"
-msgstr[0] "En stor fil bliver scannet (%(mins)s min indtil videre)"
-msgstr[1] ""
-"%(n)s store filer bliver scannet (den længst kørende har scannet i %(mins)s min)"
+msgid "A large %(on)s is being processed (%(duration)s so far)"
+msgstr "En stor %(on)s bliver behandlet (%(duration)s indtil videre)"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "cancel running scanner job"
-msgstr "afbryd kørende scannerjob"
+#, python-format
+msgid ""
+"%(n)s large %(onp)s are being processed (longest one has run for "
+"%(duration)s)"
+msgstr ""
+"%(n)s store %(onp)s bliver behandlet (den længste har kørt i %(duration)s)"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#, python-format
+msgid "Show/hide %(onp)s currently being processed."
+msgstr "Vis/skjul %(onp)s der bliver behandlet lige nu."
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#: adminapp/templates/error_log.html adminapp/templates/rules.html
+msgid "show more"
+msgstr "vis mere"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#: adminapp/templates/error_log.html adminapp/templates/rules.html
+msgid "show less"
+msgstr "vis mindre"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+msgid ""
+"Stop this scanner run. It will be marked as &quot;cancelled&quot; in the "
+"scan history."
+msgstr ""
+"Stop denne scannerkørsel. Den vil fremgå som &quot;annulleret&quot; i "
+"scanningshistorikken."
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+msgid "cancel"
+msgstr "afbryd"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
@@ -2763,21 +2808,24 @@ msgstr ""
 "Er du sikker på, at du vil slette status for scanner »%%(scanner_name)s«?"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "status for running scanner"
-msgstr "status for kørende scanner"
+msgid ""
+"Stop this scanner run and permanently delete it from the scan history. This "
+"cannot be undone."
+msgstr ""
+"Stop denne scannerkørsel og fjern den permanent fra scanningshistorikken. "
+"Dette kan ikke fortrydes."
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "Show files in progress"
-msgstr "Vis filer der bliver scannet"
+msgid "cancel and delete"
+msgstr "afbryd og slet"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-#, python-format
-msgid "%(mins)s min"
-msgstr "%(mins)s min"
+msgid "Show/hide info row."
+msgstr "Vis/skjul inforække"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "still working"
-msgstr "arbejder fortsat"
+msgid "Nothing further to show for this scan right now."
+msgstr "Der er ikke mere info at vise for dette scan i øjeblikket."
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "no ongoing scans"
@@ -2964,14 +3012,6 @@ msgstr "Vælg resultater"
 #: adminapp/templates/error_log.html
 msgid "new"
 msgstr "ny"
-
-#: adminapp/templates/error_log.html adminapp/templates/rules.html
-msgid "show more"
-msgstr "vis mere"
-
-#: adminapp/templates/error_log.html adminapp/templates/rules.html
-msgid "show less"
-msgstr "vis mindre"
 
 #: adminapp/templates/error_log.html
 msgid "mark this error message as seen."
