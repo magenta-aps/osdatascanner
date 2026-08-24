@@ -1052,12 +1052,6 @@ $statistics-card-spacing: 1.5rem;
     .section__region--workers {
       width: clamp(30rem, 100%, 70rem);
     }
-
-    .section__region--nodata {
-      text-align: center;
-      color: var(--color-text-secondary);
-      padding: 1rem;
-    }
   }
 
   /* Cards (scanstatus only) */
@@ -1067,6 +1061,22 @@ $statistics-card-spacing: 1.5rem;
 
     &__label .title {
       font-size: 1rem;
+    }
+
+    &:has(.active-objects-empty) {
+      .card__header {
+        display: none;
+      }
+
+      .card__body__wrapper--list {
+        margin-top: 0;
+        background-color: transparent;
+        border: none;
+
+        ul > li {
+          justify-content: center;
+        }
+      }
     }
 
     /* List-style card body */

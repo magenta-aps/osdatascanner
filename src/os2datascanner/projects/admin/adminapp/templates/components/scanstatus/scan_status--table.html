@@ -190,24 +190,14 @@
                       colspan="5">
                     <div class="statistics__wrapper">
                       <div class="statistics__body">
-                        {% if status.active_object_summary %}
-                          <section class="statistics__section statistics__section--primary-overview">
-                            <div class="section__body">
-                              <div class="section__region section__region--workers">
-                                {# List of objects with scan times over 60s: #}
-                                {% include "components/scanstatus/card_worker-peek.html" %}
-                              </div>
+                        <section class="statistics__section statistics__section--primary-overview">
+                          <div class="section__body">
+                            <div class="section__region section__region--workers">
+                              {# List of objects with scan times over 60s: #}
+                              {% include "components/scanstatus/card_worker-peek.html" %}
                             </div>
-                          </section>
-                        {% else %}
-                          <section class="statistics__section statistics__section--nodata">
-                            <div class="section__body">
-                              <div class="section__region section__region--nodata">
-                                <p>{% trans "Nothing further to show for this scan right now." %}</p>
-                              </div>
-                            </div>
-                          </section>
-                        {% endif %}
+                          </div>
+                        </section>
                       </div>
                     </div>
                   </td>

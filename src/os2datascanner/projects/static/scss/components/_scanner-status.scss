@@ -82,6 +82,11 @@
   list-style: none;
 }
 
+.active-objects-empty {
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
 .active-object {
   @include layout-horizontal(0.5rem);
   font-size: 0.9rem;

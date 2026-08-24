@@ -28,6 +28,8 @@
           </div>
           <span class="active-object__state">{% trans "still processing" %}</span>
         </li>
+      {% empty %}
+        <li class="active-objects-empty">{% trans "Nothing further to show for this scan right now." %}</li>
       {% endfor %}
     </ul>
   </div>
