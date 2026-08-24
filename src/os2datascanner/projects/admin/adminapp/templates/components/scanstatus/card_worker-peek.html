@@ -1,0 +1,36 @@
+{% extends "components/containers/cards/card--statistics.html" %}
+
+{% load i18n l10n utility_tags %}
+
+{% block card_title %}
+  {% blocktranslate asvar title %}{{ onp }} with long processing times{% endblocktranslate %}{{ title|capfirst }}
+{% endblock %}
+
+{% block card_subtitle %}
+  {% blocktranslate %}These {{ onp }} have currently been processing for longer than 1 minute. This is normal for large elements with complex content (e.g. PDFs, SVGs, images, etc.).{% endblocktranslate %}
+{% endblock %}
+
+{% block card_body %}
+  <div class="card__body__wrapper--list">
+    <ul class="active-objects-list"
+        id="active_objects_list__{{ status.pk|unlocalize }}"
+        {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
+      {% for active in status.active_objects.all %}
+        <li class="active-object">
+          <div class="active-object__body">
+            <div class="active-object__headline">
+              <span class="active-object__name" title="{{ active.object_path }}">{{ active.object_path }}</span>
+              <span class="active-object__elapsed">{{ active.elapsed_seconds|floor_to_minute|format_timespan:"compact" }}</span>
+            </div>
+            {% if active.current_path %}
+              <span class="active-object__current" title="{{ active.current_path }}">{{ active.current_path }}</span>
+            {% endif %}
+          </div>
+          <span class="active-object__state">{% trans "still processing" %}</span>
+        </li>
+      {% empty %}
+        <li class="active-objects-empty">{% trans "Nothing further to show for this scan right now." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

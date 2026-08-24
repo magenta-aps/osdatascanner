@@ -1023,6 +1023,7 @@ $statistics-card-spacing: 1.5rem;
 }
 
 /*** Variants/modifiers ***/
+.statistics--ongoing-scans,
 .statistics--scanstatus,
 .statistics--scannerjobs {
   .statistics__header__title:is(h1) {
@@ -1047,6 +1048,10 @@ $statistics-card-spacing: 1.5rem;
       // TEMP: until UI-friendly MIMEtype mapping.
       @include statistics-card-grid(25rem);
     }
+
+    .section__region--workers {
+      width: 100%;
+    }
   }
 
   /* Cards (scanstatus only) */
@@ -1056,6 +1061,22 @@ $statistics-card-spacing: 1.5rem;
 
     &__label .title {
       font-size: 1rem;
+    }
+
+    &:has(.active-objects-empty) {
+      .card__header {
+        display: none;
+      }
+
+      .card__body__wrapper--list {
+        margin-top: 0;
+        background-color: transparent;
+        border: none;
+
+        ul > li {
+          justify-content: center;
+        }
+      }
     }
 
     /* List-style card body */

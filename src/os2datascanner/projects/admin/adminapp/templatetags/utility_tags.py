@@ -55,6 +55,17 @@ def _build_timespan_parts(seconds, time_formats, style):
 
 
 @register.filter
+def floor_to_minute(seconds):
+    """Rounds a duration in seconds down to the nearest whole minute, so
+    downstream duration formatting never surfaces a seconds component."""
+    try:
+        seconds = int(seconds)
+    except (TypeError, ValueError):
+        return seconds
+    return (seconds // 60) * 60
+
+
+@register.filter
 def format_timespan(seconds, style="sentence"):
     """
     Return a string of the two largest time units of the time span given in seconds.

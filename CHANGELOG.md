@@ -9,8 +9,9 @@
 - Add support for using other aliases in the SBSYS user filter
 
 - Workers now emit more information about what they are doing, for the running scanners to show.
-  F.e. what page of a PDF file we're at and for how long the top-level object has been processing
+  E.g. what page of a PDF file we're at and for how long the top-level object has been processing
   for. (By default, emitted if current top-level object has been processing for over a minute.)
+  It's replaced the usual statistics overview in the expandable row.
 
 ### General improvements
 
@@ -69,6 +70,8 @@
 
 - Exporter can now properly route and censor ContentMissing and ContentIrrelevantMessage messages,
   so the result_collector again can perform automatic DocumentReport handling.
+
+- Removed statistics overview from the expandable rows for running scanner jobs.
 
 ## Version 3.32.4, 4th August 2026
 

@@ -1066,7 +1066,19 @@ $font-size_subtitle: 0.875rem;
       #expand_more {
         color: var(--color-primary-dark);
       }
+
+      .button-group {
+        flex-wrap: nowrap;
+      }
     }
+
+    // &--show-more {
+    //   #expand_more {
+    //     color: var(--color-primary-dark);
+    //   }
+    //   text-align: right;
+    //   width: calc(20px + (var(--datatable-cell-padding) * 1.5));
+    // }
   }
 
   a:not(.button) {
@@ -1296,6 +1308,10 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       // The "fixed" column of this specific table
       width: $fixed-column_width;
 
+      .button-group {
+        flex-wrap: wrap;
+      }
+
       #sso-button {
         /* A "diy" icon made with existing icons from the Material Symbols library*/
         #sso-icon-container {
@@ -1471,10 +1487,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     &--actions {
       width: 8rem; // 128px
-
-      .button-group {
-        flex-wrap: nowrap;
-      }
     }
   }
 }
@@ -1591,10 +1603,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       width: $fixed-column_width;
 
       .button-group {
-        /* NOTE: We might need to re-think this in _buttons.scss instead, but I 
-        think it's worth waiting until after we've refactored all datatables */
-        flex-wrap: nowrap;
-
         .button:not(:has(#expand_more)) {
           .material-symbols {
             color: var(--color-primary-dark);
@@ -1751,7 +1759,20 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 // Redmine ticket: [#60289]
 
 // ONGOING SCANS:
-// Redmine ticket: [#66057]
+.scanstatus-table {
+  .column {
+    &--status {
+      padding-right: var(--datatable-cell-padding);
+    }
+
+    &--actions {
+      width: 14rem;
+      .button-group {
+        flex-wrap: wrap;
+      }
+    }
+  }
+}
 
 // FINISHED SCANS:
 // Redmine ticket: [#66056]
@@ -1781,10 +1802,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     &--actions {
       width: 10rem; // 160px
-
-      .button-group {
-        flex-wrap: nowrap;
-      }
     }
   }
 }
@@ -1929,10 +1946,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         var(--base_width) + var(--expand_width) + var(--false-positive_width)
       );
 
-      .button-group {
-        flex-wrap: nowrap;
-      }
-
       .material-symbols {
         font-size: 20px;
         width: 20px;
@@ -2059,7 +2072,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       }
 
       .button-group {
-        flex-wrap: nowrap;
         justify-content: flex-end;
       }
     }
