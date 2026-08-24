@@ -234,7 +234,7 @@ class ActiveObjectSummary(NamedTuple):
     """The admin-facing summary of a scan's long-running objects: how many are
     in flight and how long the oldest has been running."""
     count: int
-    max_minutes: int
+    max_seconds: int
 
 
 class ScanStatus(AbstractScanStatus):
@@ -349,7 +349,7 @@ class ScanStatus(AbstractScanStatus):
             return None
         return ActiveObjectSummary(
                 count=len(rows),
-                max_minutes=max(row.elapsed_minutes for row in rows))
+                max_seconds=max(row.elapsed_seconds for row in rows))
 
     class Meta:
         verbose_name = _("scan status")
@@ -727,10 +727,6 @@ class ActiveObjectStatus(models.Model):
     elapsed_seconds = models.PositiveIntegerField(default=0)
 
     last_heartbeat = models.DateTimeField(default=timezone.now)
-
-    @property
-    def elapsed_minutes(self) -> int:
-        return self.elapsed_seconds // 60
 
     class Meta:
         # Explicit ordering, so objects stay in the order they're met and don't

@@ -42,7 +42,7 @@ class TestActiveObjectSummary:
         _add_active(running_status, "k2", "b.zip", 14)
         summary = running_status.active_object_summary
         assert summary.count == 2
-        assert summary.max_minutes == 14
+        assert summary.max_seconds == 14 * 60
 
     def test_poll_renders_oob_list_target_even_when_empty(
             self, client, superuser, running_status):
