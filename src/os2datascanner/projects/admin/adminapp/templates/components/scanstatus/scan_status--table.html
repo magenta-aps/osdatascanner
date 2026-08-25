@@ -19,12 +19,12 @@
         hx-vals='{"scans":"{{ object_list|length }}", "reload":"{{ reload }}"}'
         hx-sync="#status_tabs_poll:queue"></span>
 
-  <div class="datatablex__card-container"
+  <div class="datatablex__card-container no-side-scroll"
        role="region"
        tabindex="0"
        aria-label="{% trans 'Scans in progress' %}">
-    <div class="datatablex__wrapper">
-      <table class="datatablex scanstatus-table">
+    <div class="datatablex__wrapper no-side-scroll">
+      <table class="datatablex scanstatus-table no-side-scroll">
         <colgroup>
           <col class="column column--name" />
           <col class="column column--phase" />
@@ -50,17 +50,19 @@
                   <td class="column column--phase"
                       id="scan-stage__{{ status.pk|unlocalize }}"
                       {% if request.GET.reload == "#status_table_poll" %}hx-swap-oob="true"{% endif %}>
-                    {% if status.stage.value == 0 %}
-                      {% trans "Indexing data ..." %}
-                    {% elif status.stage.value == 1 %}
-                      {% trans "Scanning data (still indexing) ..." %}
-                    {% elif status.stage.value == 2 %}
-                      {% trans "Scanning data ..." %}
-                    {% elif status.stage.value == 3 %}
-                      {% trans "No objects to scan" %}
-                    {% elif status.stage.value == 4 %}
-                      {% trans "Scan failed" %}
-                    {% endif %}
+                    <span class="phase-label">
+                      {% if status.stage.value == 0 %}
+                        {% trans "Indexing data ..." %}
+                      {% elif status.stage.value == 1 %}
+                        {% trans "Scanning data (still indexing) ..." %}
+                      {% elif status.stage.value == 2 %}
+                        {% trans "Scanning data ..." %}
+                      {% elif status.stage.value == 3 %}
+                        {% trans "No objects to scan" %}
+                      {% elif status.stage.value == 4 %}
+                        {% trans "Scan failed" %}
+                      {% endif %}
+                    </span>
                   </td>
 
                   <td class="column column--status"
