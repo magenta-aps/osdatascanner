@@ -13,7 +13,7 @@ from django.views.generic import RedirectView
 
 from os2datascanner import __version__
 
-from .views.statistics_views import (
+from .views.statistics import (
     LeaderUnitsStatisticsPageView, LeaderStatisticsRedirectView,
     DPOStatisticsPageView, DPOStatisticsCSVView,
     UserStatisticsPageView, LeaderAccountsStatisticsPageView,

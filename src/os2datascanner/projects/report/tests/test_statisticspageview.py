@@ -27,12 +27,11 @@ from os2datascanner.projects.report.organizations.models.aliases import Alias, A
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
-from ..reportapp.views.statistics_views import (
+from ..reportapp.views.statistics import (
         UserStatisticsPageView, LeaderUnitsStatisticsPageView, LeaderUnitsStatisticsCSVView,
         DPOStatisticsPageView, DPOStatisticsCSVView, LeaderAccountsStatisticsCSVView,
         LeaderAccountsStatisticsPageView, LeaderStatisticsPageView,
-        LeaderResultsStatisticsPageView, LeaderResultsStatisticsCSVView)
-from ..reportapp.views.utilities.statistics_utilities import (
+        LeaderResultsStatisticsPageView, LeaderResultsStatisticsCSVView,
         base_query, make_data_structures, count_unhandled_matches_by_month,
         count_new_matches_by_month)
 from ....core_organizational_structure.models.organization import LeaderTabConfigChoices

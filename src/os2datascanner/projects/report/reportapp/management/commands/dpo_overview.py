@@ -15,7 +15,7 @@ from django.db.models import Q
 from os2datascanner.projects.report.organizations.models import (
     Organization, OrganizationalUnit)
 from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
-from os2datascanner.projects.report.reportapp.views.utilities.statistics_utilities import (
+from os2datascanner.projects.report.reportapp.views.statistics import (
     base_query, filter_by_unit, make_data_structures, source_type_progress,
     count_unhandled_matches_by_month, count_new_matches_by_month)
 
