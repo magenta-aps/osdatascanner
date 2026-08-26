@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-07-23 13:37+0200\n"
+"POT-Creation-Date: 2026-08-26 11:45+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1403,10 +1403,6 @@ msgstr "Du er nu logget ud."
 msgid "DPO statistics"
 msgstr "DPO-statistik"
 
-#: reportapp/templates/leader_results_statistics_template.html
-msgid "Leader statistics"
-msgstr "Lederstatistik"
-
 #: reportapp/templates/error_pages/no-units-error.html
 msgid "No organizational units associated with account"
 msgstr "Ingen organisatoriske enheder er forbundet til brugeren"
@@ -1471,6 +1467,10 @@ msgstr ""
 "\n"
 "Du har adgang til denne side, da du er superadmin. Hvis du ønsker oprydder "
 "privilegier, skal du konfigurere dette i admin modulet."
+
+#: reportapp/templates/leader_results_statistics_template.html
+msgid "Leader statistics"
+msgstr "Lederstatistik"
 
 #: reportapp/templates/leader_statistics_template.html
 msgid "Leader overview for:"

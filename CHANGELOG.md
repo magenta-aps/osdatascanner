@@ -1,12 +1,12 @@
 # Changelog
 
-## Version 3.XX.X, XXth XXX 2026
+## Version 3.33.0, 26th August 2026
 
-""
+"9 to 5 ✨️💗✨️"
 
 ### New in this release
 
-- Add support for using other aliases in the SBSYS user filter
+- Add support for using other aliases in the SBSYS user filter.
 
 - Workers now emit more information about what they are doing, for the running scanners to show.
   E.g. what page of a PDF file we're at and for how long the top-level object has been processing
@@ -15,7 +15,7 @@
 
 ### General improvements
 
-- Renamed Report to Results, and Archive to Handled in the UI and thoughout the codebase.
+- Renamed Report to Results, and Archive to Handled in the UI and throughout the codebase.
 
 - Removed the deprecated Sensitivity concept.
 
@@ -51,12 +51,12 @@
 
 - Fix overflow on list items with exceptionally long names in the "withheld results" modal.
 
-- Add danish translation for snackbar message (shown when user copies SBSYS case number)
+- Add danish translation for snackbar message (shown when user copies SBSYS case number).
 
 - Fixed a bug where a worker could end up in a permanent loop of losing and reestablishing its
   connection to the message queue, stopping it from scanning anything. Trigger being a ScanStatus
   that claims to be not done, but with no corresponding message queue. Workers now check for that
-  queue on a seperate channel, to avoid putting its other work at risk.
+  queue on a separate channel, to avoid putting its other work at risk.
 
 - Fixed a bug where objects could be counted as handled without ever being scanned, leaving a
   forever incomplete ScanStatus.
