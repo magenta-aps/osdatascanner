@@ -181,7 +181,7 @@ Build API:
       variables:
         DATASYNTH_HOST: "datasynth"
     - postgres:16
-    - rabbitmq:3.8-alpine
+    - rabbitmq:4.2-alpine
     - name: magentaaps/samba-test:master
       alias: samba
   variables:

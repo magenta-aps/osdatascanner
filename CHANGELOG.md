@@ -1,5 +1,15 @@
 # Changelog
 
+## Version 3.3x.x  xx September 2026
+
+### New in this release
+
+### General improvements
+
+- Upgrade RabbitMQ version to 4.2
+
+### Bugfixes
+
 ## Version 3.33.0, 26th August 2026
 
 "9 to 5 ✨️💗✨️"
