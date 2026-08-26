@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-21 16:10+0200\n"
+"POT-Creation-Date: 2026-08-26 11:44+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -2679,6 +2679,10 @@ msgstr ""
 msgid "still processing"
 msgstr "fortsat under behandling"
 
+#: adminapp/templates/components/scanstatus/card_worker-peek.html
+msgid "Nothing further to show for this scan right now."
+msgstr "Der er ikke mere info at vise for dette scan i øjeblikket."
+
 #: adminapp/templates/components/scanstatus/remove_error.html
 #: adminapp/templates/components/scanstatus/resolve_status.html
 msgid "Remove selected scan data"
@@ -2818,14 +2822,6 @@ msgstr ""
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "cancel and delete"
 msgstr "afbryd og slet"
-
-#: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "Show/hide info row."
-msgstr "Vis/skjul inforække"
-
-#: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "Nothing further to show for this scan right now."
-msgstr "Der er ikke mere info at vise for dette scan i øjeblikket."
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "no ongoing scans"
