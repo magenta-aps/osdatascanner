@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 11:45+0200\n"
+"POT-Creation-Date: 2026-08-26 15:37+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -580,7 +580,7 @@ msgid "Scannerjob"
 msgstr "Scannerjob"
 
 #: reportapp/templates/components/navigation/leader-statistics-tabs.html
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "Organizational units"
 msgstr "Organisatoriske enheder"
 
@@ -719,7 +719,7 @@ msgstr "Nulstil min adgangskode"
 
 #: reportapp/templates/components/report_table/report_table--filters.html
 #: reportapp/templates/leader_statistics_template.html
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/utils.py
 msgid "Source Type"
 msgstr "Kildetype"
 
@@ -732,7 +732,7 @@ msgid "All source types"
 msgstr "Alle kildetyper"
 
 #: reportapp/templates/components/report_table/report_table--filters.html
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/utils.py
 msgid "Resolution Status"
 msgstr "Håndteringsstatus"
 
@@ -1270,7 +1270,7 @@ msgid "report module"
 msgstr "rapportmodulet"
 
 #: reportapp/templates/components/user/login.html reportapp/templates/user.html
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "Username"
 msgstr "Brugernavn"
 
@@ -1554,7 +1554,7 @@ msgstr ""
 "ikke med i udviklingsoverblikket."
 
 #: reportapp/templates/leader_statistics_template.html
-#: reportapp/templates/manual.html reportapp/views/statistics_views.py
+#: reportapp/templates/manual.html reportapp/views/statistics/leader.py
 msgid "Status"
 msgstr "Status"
 
@@ -2385,70 +2385,154 @@ msgstr ""
 "Uventet fejl: Systemet er ikke i stand til at bekræfte din SBSYS-faneadgang "
 "på nuværende tidspunkt."
 
-#: reportapp/views/statistics_views.py
-msgid "The user does not have an account."
-msgstr "Brugeren har ikke en konto."
-
-#: reportapp/views/statistics_views.py
-#, python-brace-format
-msgid "An organizational unit with the UUID '{0}' was not found."
-msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
-
-#: reportapp/views/statistics_views.py
-msgid "Handled/Unhandled"
-msgstr "Håndteret/Uhånderet"
-
-#: reportapp/views/statistics_views.py
-msgid "Matches by Handled/Unhandled"
-msgstr "Resultater fordelt på Håndteret/Uhånderet"
-
-#: reportapp/views/statistics_views.py
-msgid "Matches by Source Type"
-msgstr "Resultater fordelt på Kildetype"
-
-#: reportapp/views/statistics_views.py
-msgid "Matches by Resolution Status"
-msgstr "Resultater fordelt på Håndteringsstatus"
-
-#: reportapp/views/statistics_views.py
-msgid "Month"
-msgstr "Måned"
-
-#: reportapp/views/statistics_views.py
-msgid "Unhandled Matches by Month"
-msgstr "Uhåndterede Resultater per Måned"
-
-#: reportapp/views/statistics_views.py
-msgid "New Matches by Month"
-msgstr "Nye Resultater per Måned"
-
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "First name"
 msgstr "Fornavn"
 
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "Last name"
 msgstr "Efternavn"
 
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "Matches"
 msgstr "Matches"
 
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 msgid "Withheld matches"
 msgstr "Tilbageholdte matches"
 
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/leader.py
 #, python-format
 msgid "Results older than %(days)s days"
 msgstr "Resultater ældre end %(days)s dage"
 
-#: reportapp/views/statistics_views.py
+#: reportapp/views/statistics/user.py
 #, python-format
 msgid ""
 "You have deleted all results from %(scannerjob)s associated with %(account)s."
 msgstr ""
 "Du har slettet alle resultater fra %(scannerjob)s tilknyttet %(account)s."
+
+#: reportapp/views/statistics/utils.py
+msgid "Jan"
+msgstr "Jan"
+
+#: reportapp/views/statistics/utils.py
+msgid "Feb"
+msgstr "Feb"
+
+#: reportapp/views/statistics/utils.py
+msgid "Mar"
+msgstr "Mar"
+
+#: reportapp/views/statistics/utils.py
+msgid "Apr"
+msgstr "Apr"
+
+#: reportapp/views/statistics/utils.py
+msgid "May"
+msgstr "Maj"
+
+#: reportapp/views/statistics/utils.py
+msgid "Jun"
+msgstr "Jun"
+
+#: reportapp/views/statistics/utils.py
+msgid "Jul"
+msgstr "Jul"
+
+#: reportapp/views/statistics/utils.py
+msgid "Aug"
+msgstr "Aug"
+
+#: reportapp/views/statistics/utils.py
+msgid "Sep"
+msgstr "Sep"
+
+#: reportapp/views/statistics/utils.py
+msgid "Oct"
+msgstr "Okt"
+
+#: reportapp/views/statistics/utils.py
+msgid "Nov"
+msgstr "Nov"
+
+#: reportapp/views/statistics/utils.py
+msgid "Dec"
+msgstr "Dec"
+
+#: reportapp/views/statistics/utils.py
+msgid "handled"
+msgstr "håndteret"
+
+#: reportapp/views/statistics/utils.py
+msgid "unhandled"
+msgstr "ikke håndteret"
+
+#: reportapp/views/statistics/utils.py
+msgid "other source"
+msgstr "Datakilder"
+
+#: reportapp/views/statistics/utils.py
+msgid "web scan"
+msgstr "Webscan"
+
+#: reportapp/views/statistics/utils.py
+msgid "file scan"
+msgstr "Filscan"
+
+#: reportapp/views/statistics/utils.py
+msgid "mail scan"
+msgstr "Mailscan"
+
+#: reportapp/views/statistics/utils.py
+msgid "Teams scan"
+msgstr "Teams-scan"
+
+#: reportapp/views/statistics/utils.py
+msgid "SBSYS scan"
+msgstr "SBSYS-scan"
+
+#: reportapp/views/statistics/utils.py
+msgid "calendar scan"
+msgstr "Kalender scan"
+
+#: reportapp/views/statistics/utils.py
+msgid "The user does not have an account."
+msgstr "Brugeren har ikke en konto."
+
+#: reportapp/views/statistics/utils.py
+#, python-brace-format
+msgid "An organizational unit with the UUID '{0}' was not found."
+msgstr "En organisatorisk enhed med UUID'et '{0}' blev ikke fundet."
+
+#: reportapp/views/statistics/utils.py
+msgid "Handled/Unhandled"
+msgstr "Håndteret/Uhånderet"
+
+#: reportapp/views/statistics/utils.py
+msgid "Matches by Handled/Unhandled"
+msgstr "Resultater fordelt på Håndteret/Uhånderet"
+
+#: reportapp/views/statistics/utils.py
+msgid "Matches by Source Type"
+msgstr "Resultater fordelt på Kildetype"
+
+#: reportapp/views/statistics/utils.py
+msgid "Matches by Resolution Status"
+msgstr "Resultater fordelt på Håndteringsstatus"
+
+#: reportapp/views/statistics/utils.py
+msgid "Month"
+msgstr "Måned"
+
+#: reportapp/views/statistics/utils.py
+msgid "Unhandled Matches by Month"
+msgstr "Uhåndterede Resultater per Måned"
+
+#: reportapp/views/statistics/utils.py
+msgid "New Matches by Month"
+msgstr "Nye Resultater per Måned"
 
 #: reportapp/views/user_views.py
 msgid "match category colour"
@@ -2522,90 +2606,6 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #: reportapp/views/utilities/smb_utilities.py
 msgid "Target file is not on a Windows network drive"
 msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Jan"
-msgstr "Jan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Feb"
-msgstr "Feb"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Mar"
-msgstr "Mar"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Apr"
-msgstr "Apr"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "May"
-msgstr "Maj"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Jun"
-msgstr "Jun"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Jul"
-msgstr "Jul"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Aug"
-msgstr "Aug"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Sep"
-msgstr "Sep"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Oct"
-msgstr "Okt"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Nov"
-msgstr "Nov"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Dec"
-msgstr "Dec"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "handled"
-msgstr "håndteret"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "unhandled"
-msgstr "ikke håndteret"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "other source"
-msgstr "Datakilder"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "web scan"
-msgstr "Webscan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "file scan"
-msgstr "Filscan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "mail scan"
-msgstr "Mailscan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "Teams scan"
-msgstr "Teams-scan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "SBSYS scan"
-msgstr "SBSYS-scan"
-
-#: reportapp/views/utilities/statistics_utilities.py
-msgid "calendar scan"
-msgstr "Kalender scan"
 
 #~ msgid "sensitivity"
 #~ msgstr "følsomhed"
