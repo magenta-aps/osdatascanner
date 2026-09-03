@@ -9,6 +9,7 @@ from os2datascanner.engine2.model.ews import (
         EWSMailHandle, EWSAccountSource)
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
 from os2datascanner.engine2.model.data import DataSource, DataHandle
+from os2datascanner.engine2.model.http import WebSource, WebHandle
 from os2datascanner.engine2.model.derived.zip import ZipSource, ZipHandle
 from os2datascanner.engine2.model.derived.filtered import (
         GzipSource, FilteredHandle)
@@ -106,3 +107,59 @@ class TestCensor:
         assert censored_handle.source._content is None
         assert handle.source.mime == censored_handle.source.mime
         assert handle.source.name == censored_handle.source.name
+
+
+class TestWebCensor:
+    """A WebSource's URLs can carry credentials as userinfo, and the censored
+    Source is what the report module presents and links to."""
+
+    def test_userinfo_is_removed(self):
+        source = WebSource("https://svend:hemmelighed@intranet.invalid/docs")
+
+        censored = source.censor()
+
+        assert censored.url == "https://intranet.invalid/docs"
+
+    def test_userinfo_is_removed_from_every_url(self):
+        source = WebSource(
+                "https://svend:hemmelighed@intranet.invalid",
+                sitemap="https://svend:hemmelighed@intranet.invalid/sitemap.xml",
+                exclude=["https://svend:hemmelighed@intranet.invalid/private"])
+
+        censored = source.censor()
+
+        assert "hemmelighed" not in str(censored.to_json_object())
+
+    def test_other_properties_survive(self):
+        source = WebSource(
+                "https://svend:hemmelighed@intranet.invalid",
+                sitemap_trusted=True, extended_hints=True, always_crawl=True)
+
+        censored = source.censor()
+
+        assert censored._sitemap_trusted
+        assert censored._extended_hints
+        assert censored._always_crawl
+
+    def test_a_handle_keeps_its_path(self):
+        handle = WebHandle(
+                WebSource("https://svend:hemmelighed@intranet.invalid"),
+                "docs/Personal Information.docx")
+
+        censored = handle.censor()
+
+        assert censored.relative_path == handle.relative_path
+        assert "hemmelighed" not in censored.presentation_url
+
+    @pytest.mark.parametrize("url", [
+        "https://intranet.invalid",
+        "https://intranet.invalid/docs?q=a@b#fragment",
+        "http://intranet.invalid:8080/~svend",
+    ])
+    def test_a_credential_free_source_is_unchanged(self, url):
+        """Censoring must not perturb the crunched form of the Sources already
+        in the wild: it is the primary key of their DocumentReports and
+        ScheduledCheckups."""
+        source = WebSource(url)
+
+        assert source.censor().crunch() == source.crunch()

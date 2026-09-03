@@ -59,6 +59,22 @@ def netloc_normalize(hostname: Union[str, None]) -> str:
     return ""
 
 
+def remove_userinfo(url: str) -> str:
+    """Removes the userinfo component, if any, from the authority of @url.
+
+    A URL with no userinfo is returned unchanged, so the crunched form of a
+    credential-free WebSource is identical before and after censoring."""
+    if not url:
+        return url
+
+    split = urlsplit(url)
+    if "@" not in split.netloc:
+        return url
+
+    _, _, host = split.netloc.rpartition("@")
+    return urlunsplit(split._replace(netloc=host))
+
+
 def make_head_fallback(context):
     """Returns a function equivalent to context.head -- unless the resulting
     HEAD request fails with HTTP/1.1 405 Method Not Supported, in which case
@@ -168,9 +184,16 @@ class WebSource(Source):
             yield session
 
     def censor(self) -> "WebSource":
-        # XXX: we should actually decompose the URL and remove authentication
-        # details from netloc
-        return self
+        # Credentials can appear as userinfo in any of these URLs, which are
+        # otherwise reproduced: the censored Source is what the report module
+        # builds its links from
+        return WebSource(
+                remove_userinfo(self._url),
+                sitemap=remove_userinfo(self._sitemap),
+                exclude=[remove_userinfo(url) for url in self._exclude],
+                sitemap_trusted=self._sitemap_trusted,
+                extended_hints=self._extended_hints,
+                always_crawl=self._always_crawl)
 
     def handles(self, sm, **kwargs):
         session = sm.open(self)
