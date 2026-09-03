@@ -8,6 +8,8 @@
 
 - Upgrade RabbitMQ version to 4.2
 
+- Webscan censors netloc credentials.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.

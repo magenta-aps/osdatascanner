@@ -64,7 +64,7 @@ def remove_userinfo(url: str) -> str:
 
     A URL with no userinfo is returned unchanged, so the crunched form of a
     credential-free WebSource is identical before and after censoring."""
-    if not url:
+    if not url or "@" not in url:
         return url
 
     split = urlsplit(url)
@@ -188,7 +188,7 @@ class WebSource(Source):
         # otherwise reproduced: the censored Source is what the report module
         # builds its links from
         return WebSource(
-                remove_userinfo(self._url),
+                url=remove_userinfo(self._url),
                 sitemap=remove_userinfo(self._sitemap),
                 exclude=[remove_userinfo(url) for url in self._exclude],
                 sitemap_trusted=self._sitemap_trusted,
@@ -432,10 +432,12 @@ class WebHandle(Handle):
 
     @property
     def presentation_url(self) -> str:
+        # Credentials can be part of the URL and should not be displayed raw,
+        # as this is used both for UI and logs.
         if (true_url := self.hint("true_url")):
-            return true_url
+            return remove_userinfo(true_url)
         else:
-            return self._url
+            return remove_userinfo(self._url)
 
     @property
     def _url(self) -> str:
