@@ -13,11 +13,19 @@
 
 - Webscan censors netloc credentials.
 
+- Conditionally add dropdown arrow to "handle"-buttons for `HANDLE_DROPDOWN: true`.
+
+- Tighten the consistency of labels on "handle"-buttons.
+
 - Give the snackbar a minor UI/UX overhaul:
   - New snackbars will slide in smoothly instead of appearing abruptly.
   - New snackbars now appear at the bottom of the container instead of at the top.
   - Fixed width on snackbars to prevent UI jumping whenever a new message with longer content appears.
   - Removed all code related to the "old" snackbar.
+
+- Conditionally add dropdown arrow to "handle"-buttons for `HANDLE_DROPDOWN: true`.
+
+- Tighten the consistency of labels on "handle"-buttons.
 
 ### Bugfixes
 
