@@ -10,6 +10,8 @@
 
 ### Bugfixes
 
+- Fixed a bug where error, warning and status text could be unreadable.
+
 ## Version 3.33.0, 26th August 2026
 
 "9 to 5 ✨️💗✨️"
