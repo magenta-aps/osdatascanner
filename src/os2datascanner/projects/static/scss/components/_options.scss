@@ -241,7 +241,7 @@ label + .input {
     cursor: default;
 
     & + .dropdown-container {
-      left: -9rem;
+      right: 0;
     }
 
     &:focus + .dropdown-container,
@@ -257,7 +257,7 @@ tr.htmx-request .macthes-handle.expand + .dropdown-container {
 
 .table-checkbox__action {
   & + .dropdown-container {
-    left: 0;
+    right: 0;
   }
 
   &:not(:disabled):hover + .dropdown-container {

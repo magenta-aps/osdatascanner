@@ -32,12 +32,13 @@
           <col class="column column--source">
           <col class="column column--flexible">
           {% if is_handled %}<col class="column column--resolution-status">{% endif %}
-          <col class="column column--actions expand-row{% if not is_handled %} false-positive{% endif %}">
+          <col class="column column--actions{% if not is_handled %} false-positive{% endif %}{% if settings.HANDLE_DROPDOWN %} handle-dropdown{% endif %}">
+          <col class="column column--show-more">
         </colgroup>
 
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if is_handled %}8{% else %}7{% endif %}">
+            <th colspan="{% if is_handled %}9{% else %}8{% endif %}">
               <div class="table-toolbar">
                 {% include "components/report_table/report_table--toolbar.html" %}
 
@@ -151,6 +152,8 @@
               <span aria-label="{% trans "actions"|capfirst %}"
                     title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
             </th>
+
+            <th class="column column--show-more"></th>
           </tr>
         </thead>
 
@@ -159,18 +162,19 @@
             {% include "components/report_table/report_table--row.html" %}
           {% empty %}
             <tr class="datatablex__row">
-              <td colspan="10" class="datatable__column--nodata">{% trans "No results were found" %}</td>
+              <td colspan="{% if is_handled %}9{% else %}8{% endif %}"
+                  class="datatable__column--nodata">{% trans "No results were found" %}</td>
             </tr>
           {% endfor %}
         </tbody>
 
         <tfoot>
           {% if is_handled %}
-            {% with colspan=8 %}
+            {% with colspan=9 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% else %}
-            {% with colspan=7 %}
+            {% with colspan=8 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% endif %}
