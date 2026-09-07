@@ -4,11 +4,20 @@
 
 ### New in this release
 
+- Show a snackbar message when results are handled + if the status of a handled result is changed
+  or reverted.
+
 ### General improvements
 
 - Upgrade RabbitMQ version to 4.2
 
 - Webscan censors netloc credentials.
+
+- Give the snackbar a minor UI/UX overhaul:
+  - New snackbars will slide in smoothly instead of appearing abruptly.
+  - New snackbars now appear at the bottom of the container instead of at the top.
+  - Fixed width on snackbars to prevent UI jumping whenever a new message with longer content appears.
+  - Removed all code related to the "old" snackbar.
 
 ### Bugfixes
 
