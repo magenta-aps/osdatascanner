@@ -377,6 +377,8 @@ randomtimestamp==2.2
     # via -r requirements-all.in
 red-black-tree-mod==1.22
     # via extract-msg
+redis==5.2.1
+    # via -r requirements-all.in
 regex==2022.9.13
     # via -r requirements-all.in
 requests==2.31.0
