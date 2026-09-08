@@ -9,6 +9,11 @@
 
 - Show a snackbar message when the visibility state is toggled for organizational units.
 
+- Workers can now coordinate through a shared store so that content appearing in several places
+  is converted only once per scan instead of once per copy. Every location is still reported
+  separately: a worker that skips the conversion reports the first worker's findings against its
+  own copy, and extracts that copy's own metadata. Disabled by default.
+
 ### General improvements
 
 - Upgrade RabbitMQ version to 4.2
