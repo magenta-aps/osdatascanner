@@ -5,15 +5,19 @@
 
 import hashlib
 import json
-from collections.abc import Generator
-from typing import Optional
+from functools import partial
+from itertools import chain
+from typing import Optional, Generator, Any
 import structlog
 
 from os2datascanner.engine2.model.core.utilities import SourceManager
 from os2datascanner.engine2 import settings
+from os2datascanner.engine2.pipeline.messages import SerialisableMessage, ConversionMessage
+from os2datascanner.engine2.pipeline.utilities.deduplication import Contended
 
 from ..utilities.backoff import TimeoutRetrier
 from .utilities.stage import dispatch
+from .utilities import deduplication, deferral, sharing
 from .explorer import message_received as explorer_handler
 from .processor import message_received as processor_handler
 from .matcher import message_received as matcher_handler
@@ -46,6 +50,11 @@ Populated by notify_abort() when the runner receives an abort command while
 a worker is mid-processing. Checked in explore() between sub-items so that
 a large scan (e.g. a 1000-page PDF) stops between pages rather than running
 to completion."""
+
+
+def clear_dedup_store(scan_tag) -> None:
+    """Deletes this scan's claims and results from the deduplication store."""
+    deduplication.clear_scan(scan_tag)
 
 
 def notify_abort(scan_tag) -> None:
@@ -117,6 +126,14 @@ class _ProgressTracker:
 _progress = _ProgressTracker()
 
 
+def make_checkpoint(scan_tag):
+    """Builds the callback long-running conversions poll between pages."""
+    def checkpoint():
+        deduplication.renew_claims()
+        return scan_tag in _cancelled_tags
+    return checkpoint
+
+
 def determine_channel(scan_spec, for_type: str) -> str:
     scan_spec_obj = messages.ScanSpecMessage.from_json_object(scan_spec)
     if for_type == "explorer":
@@ -127,9 +144,13 @@ def determine_channel(scan_spec, for_type: str) -> str:
         logger.warning("Asked to determine channel for unknown type", for_type=for_type)
 
 
-def explore(
+def explore(  # noqa: CCR001
         sm: SourceManager, msg: messages.ScanSpecMessage,
         *, check=True) -> Generator[messages.SerialisableMessage]:
+    # Objects another worker is busy with the content of. Getting on with the
+    # rest of this Source is how they wait, so they are picked up again below.
+    set_aside = []
+
     for m in explorer_handler(msg, sm):
         if msg.scan_tag in _cancelled_tags:
             # Scan has been cancelled, stop processing
@@ -138,7 +159,14 @@ def explore(
             heartbeat = _progress.tick(str(m.handle))
             if heartbeat is not None:
                 yield heartbeat
-            yield from process(sm, m, check=check)
+            contended = False
+            for out in process(sm, m, check=check):
+                if isinstance(out, deduplication.Contended):
+                    contended = True
+                else:
+                    yield out
+            if contended:
+                set_aside.append(m)
         elif isinstance(m, messages.ScanSpecMessage):
             # Huh? Surely a standalone explorer should have handled this
             logger.warning("worker exploring unexpected nested Source")
@@ -150,35 +178,84 @@ def explore(
         else:
             yield m
 
+    for m in set_aside:
+        if msg.scan_tag in _cancelled_tags:
+            return
+        yield from second_look(sm, m)
+
+
+def second_look(
+        sm: SourceManager, msg: ConversionMessage) -> Generator[
+            SerialisableMessage | Contended | Any, None, None]:
+    """Picks up an object that was set aside, running the whole protocol again
+    and converting a duplicate if its content is still being converted
+    elsewhere."""
+    # We've already checked this once before. So we never want check=True
+    for out in process(sm, msg, check=False):
+        if isinstance(out, deduplication.Contended):
+            logger.info(
+                "content still being converted elsewhere, not waiting for the result.",
+                handle=str(msg.handle))
+            # Converted here rather than stood aside from a second time.
+            with deduplication.settled(msg.handle):
+                yield from process(sm, msg, check=False)
+            return
+        yield out
+
 
 def process(
-        sm: SourceManager, msg: messages.ConversionMessage,
-        *, check=True) -> Generator[messages.SerialisableMessage]:
-
+        sm: SourceManager, msg: ConversionMessage,
+        *, check=True, coordinate=True) -> Generator[
+        SerialisableMessage | Contended | Any, None, None]:
     scan_tag = msg.scan_spec.scan_tag
+    checkpoint = make_checkpoint(scan_tag)
 
-    def should_abort():
-        return scan_tag in _cancelled_tags
-
-    if should_abort():
+    if checkpoint():
         # Scan has been cancelled, stop processing
         return
 
-    for m in processor_handler(msg, sm, _check=check, should_abort=should_abort):
-        if should_abort():
+    for m in (output  := processor_handler(
+            msg, sm, _check=check, should_abort=checkpoint,
+            coordinate=coordinate)):
+        if checkpoint():
             # Scan has been cancelled, stop processing
             return
-        if isinstance(m, messages.RepresentationMessage):
-            # Processing this object has produced a request for a new
-            # conversion; there's no need to call Resource.check() a second
-            # time
-            yield from match(sm, m, check=False)
-        elif isinstance(m, messages.ScanSpecMessage):
-            # Processing this object has given us a new source to scan. Make
-            # sure we don't call Resource.check() on the objects under it
-            yield from explore(sm, m, check=False)
-        else:
-            yield m
+        match m:
+            case deduplication.Claimed() as claim:
+                yield from sharing.share(
+                    claim, msg, output,
+                    relay=partial(relay, sm),
+                    should_abort=checkpoint,
+                    cancelled=lambda: scan_tag in _cancelled_tags)
+                return
+            case deduplication.Stored() as stored:
+                yield from count_and_tag(sm, sharing.replay(
+                        stored.payload, msg,
+                        convert=partial(process, sm, msg, check=check)))
+                return
+            case deduplication.Contended():
+                # Handed to back to the caller, so it can decide if/how to wait.
+                yield m
+                return
+            case _:
+                yield from relay(sm, m)
+
+
+def relay(
+        sm: SourceManager, m) -> Generator[
+            SerialisableMessage | Any, None, None]:
+    """Hands one message from the processor to the stage that deals with it."""
+    if isinstance(m, messages.RepresentationMessage):
+        # Processing this object has produced a request for a new
+        # conversion; there's no need to call Resource.check() a second
+        # time
+        yield from match(sm, m, check=False)
+    elif isinstance(m, messages.ScanSpecMessage):
+        # Processing this object has given us a new source to scan. Make
+        # sure we don't call Resource.check() on the objects under it
+        yield from explore(sm, m, check=False)
+    else:
+        yield m
 
 
 total_matches = 0
@@ -193,6 +270,8 @@ def match(
             total_matches += 1
             yield from tag(sm, m)
         elif isinstance(m, messages.ConversionMessage):
+            # The same object again, for a representation the rule needs and
+            # this one did not produce.
             yield from process(sm, m, check=check)
         else:
             yield m
@@ -200,6 +279,34 @@ def match(
 
 def tag(sm, msg):
     yield from tagger_handler(msg, sm)
+
+
+def count_and_tag(sm, generator) -> Generator[messages.SerialisableMessage]:
+    """Counts the matches going past and has their metadata extracted, the way
+    match() does for the results this worker converted itself."""
+    global total_matches
+
+    for m in generator:
+        if isinstance(m, messages.HandleMessage):
+            total_matches += 1
+
+            yield from tag(sm, m)
+        else:
+            yield m
+
+
+def dispatched(processor_output) -> Generator[tuple[str, dict]]:
+    """Routes what one delivery produced to the queues that take it"""
+    yield from dispatch(
+        processor_output,
+        (messages.ProblemMessage, ["os2ds_checkups", "os2ds_problems"]),
+        (messages.ContentMissingMessage, ["os2ds_checkups", "os2ds_problems"]),
+        # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
+        (messages.MatchesMessage, ["os2ds_checkups", "os2ds_matches"]),
+        (messages.MetadataMessage, ["os2ds_metadata"]),
+        (messages.StatusMessage, ["os2ds_status"]),
+        (messages.ObjectProgressMessage, ["os2ds_status"])
+    )
 
 
 def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 too high cognitive complexity
@@ -216,61 +323,97 @@ def message_received_raw(body, channel, source_manager):  # noqa: CCR001, E501 t
             object_key=hashlib.sha256(str(top_handle).encode("utf-8")).hexdigest(),
             object_path=str(top_handle))
 
-    content_identifier = None
+    deferred = False
 
     try:
-        yield from dispatch(
-                process(source_manager, message),
-                (messages.ProblemMessage, ["os2ds_checkups", "os2ds_problems"]),
-                (messages.ContentMissingMessage, ["os2ds_checkups", "os2ds_problems"]),
-                # (messages.ContentSkippedMessage, ["os2ds_checkups", "os2ds_problems"]),
-                (messages.MatchesMessage, ["os2ds_checkups", "os2ds_matches"]),
-                (messages.MetadataMessage, ["os2ds_metadata"]),
-                (messages.StatusMessage, ["os2ds_status"]),
-                (messages.ObjectProgressMessage, ["os2ds_status"]))
+        # The processor can return early with a ContentMissingMessage, but
+        # otherwise a Contended comes first, or never. Peeking at it before
+        # anything is dispatched lets a deferral emit nothing at all, and
+        # proceed as usual if it isn't contended.
+        outputs = process(source_manager, message)
+        first = next(outputs, None)
+
+        if isinstance(first, deduplication.Contended):
+            if (plan := deferral.plan_deferral(body, message)) is not None:
+                # Deliberately no status message: this object has not been
+                # scanned, and reporting it now would count it twice, once here
+                # and once when the copy that comes back out of the deferral
+                # queue is finally scanned.
+                deferred = True
+                logger.info(
+                        "another worker is converting this content, deferring",
+                        handle=str(message.handle), delay_ms=plan.delay_ms)
+                yield deferral.publication(
+                        message.scan_spec.conversion_queue,
+                        plan.delay_ms, plan.body)
+                return
+
+            # Waited as long as it is allowed to. Settled, so that nothing
+            # reached from this object stands aside a second time.
+            with deduplication.settled(message.handle):
+                yield from dispatched(process(source_manager, message))
+            return
+
+        yield from dispatched(
+            # Put "first" back in place before passing on - or pass on
+            # nothing, if it was empty.
+            () if first is None else chain([first], outputs)
+        )
+
     finally:
-        process_time_total = time.perf_counter() - process_time_start
-
-        object_size = 0
-        computed_type = "application/octet-stream"
-        try:
-            resource = message.handle.follow(source_manager)
-            object_size = TimeoutRetrier(max_tries=3, seconds=10).run(
-                    resource.get_size)
-            computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
-                    resource.compute_type)
-
-            if settings.pipeline['worker']['CHECK_DUPLICATION']:
-                content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
-                        resource.compute_content_identifier)
-
-        except TimeoutError:
-            # FileResource.get_size has timed out. This method should (in
-            # principle) be lightweight, so there may be something wrong with
-            # our state object: we err on the side of caution and clear it
-            logger.warning(
-                    f"{message.handle}.follow(...).get_size()"
-                    " took too long, clearing SourceManager state")
-            source_manager.clear()
-        except Exception:
-            pass
-        yield ("os2ds_status", messages.StatusMessage(
-                scan_tag=message.scan_spec.scan_tag,
-                message="",
-                object_size=object_size,
-                # Computing the MIME type is unnecessary -- we don't use it for
-                # anything, we just need it to be present(?)
-                object_type=computed_type,
-                process_time_worker=process_time_total,
-                matches_found=total_matches,
-                content_identifier=content_identifier).to_json_object())
-
-        terminal = _progress.terminal()
-        if terminal is not None:
-            yield ("os2ds_status", terminal.to_json_object())
+        if not deferred:
+            yield from report_object_scanned(
+                    message, source_manager, process_time_start)
 
         # Clean up after temporary files, but leave connections open
         source_manager.clear_dependents()
+        deduplication.forget_delivery()
+
+
+def report_object_scanned(message, source_manager, process_time_start):
+    """Tells the admin module that one more object of this scan has been
+    scanned, with what it cost and what was found in it."""
+    process_time_total = time.perf_counter() - process_time_start
+
+    object_size = 0
+    computed_type = "application/octet-stream"
+    content_identifier = None
+
+    try:
+        resource = message.handle.follow(source_manager)
+        object_size = TimeoutRetrier(max_tries=3, seconds=10).run(
+                resource.get_size)
+        computed_type = TimeoutRetrier(max_tries=3, seconds=10).run(
+                resource.compute_type)
+
+        if settings.pipeline['worker']['CHECK_DUPLICATION']:
+            content_identifier = TimeoutRetrier(max_tries=3, seconds=60).run(
+                    resource.compute_content_identifier)
+
+    except TimeoutError:
+        # FileResource.get_size has timed out. This method should (in
+        # principle) be lightweight, so there may be something wrong with
+        # our state object: we err on the side of caution and clear it
+        logger.warning(
+                f"{message.handle}.follow(...).get_size()"
+                " took too long, clearing SourceManager state")
+        source_manager.clear()
+    except Exception:
+        pass
+    yield ("os2ds_status", messages.StatusMessage(
+            scan_tag=message.scan_spec.scan_tag,
+            message="",
+            object_size=object_size,
+            # Computing the MIME type is unnecessary -- we don't use it for
+            # anything, we just need it to be present(?)
+            object_type=computed_type,
+            process_time_worker=process_time_total,
+            matches_found=total_matches,
+            content_identifier=content_identifier).to_json_object())
+
+    terminal = _progress.terminal()
+    if terminal is not None:
+        yield ("os2ds_status", terminal.to_json_object())
 
 
 def basic_consume_hook(runner):
@@ -285,6 +428,11 @@ def basic_consume_hook(runner):
             exchange="broadcast",
             routing_key="",
             body=json.dumps(hello.to_json_object()).encode())
+
+    # Only a coordinating worker ever defers anything, so only a coordinating
+    # worker needs somewhere to defer it to.
+    if deduplication.get_store() is not None:
+        deferral.declare_queues(runner.channel)
 
 
 def new_queue_hook(runner, queue_name, tag):

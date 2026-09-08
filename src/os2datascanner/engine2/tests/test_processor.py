@@ -128,7 +128,8 @@ def test_email_headers_served_from_ancestor_hint():
             scan_spec=_scan_spec(rule, progress), handle=child, progress=progress)
 
     headers = do_conversion(
-            child.follow(sm), conv, TimeoutRetrier(seconds=60, max_tries=1), sm)
+            child.follow(sm), conv, OutputType.EmailHeaders,
+            TimeoutRetrier(seconds=60, max_tries=1), sm)
 
     assert headers == HINT
     assert headers.parent is None
@@ -185,7 +186,8 @@ def test_do_conversion_size_returns_none_when_unconvertible():
     retrier = TimeoutRetrier(seconds=10, max_tries=1)
     sm = SourceManager()
 
-    result = do_conversion(handle.follow(sm), conversion, retrier, sm)
+    result = do_conversion(
+            handle.follow(sm), conversion, OutputType.Size, retrier, sm)
 
     assert result is None
 
@@ -198,7 +200,8 @@ def test_do_conversion_size_uses_converter_when_available():
     retrier = TimeoutRetrier(seconds=10, max_tries=1)
     sm = SourceManager()
 
-    result = do_conversion(handle.follow(sm), conversion, retrier, sm)
+    result = do_conversion(
+            handle.follow(sm), conversion, OutputType.Size, retrier, sm)
 
     assert result is not None
     assert int(result) > 0
@@ -215,4 +218,6 @@ def test_do_conversion_non_size_still_reinterprets():
     sm = SourceManager()
 
     with pytest.raises(KeyError):
-        do_conversion(handle.follow(sm), conversion, retrier, sm)
+        do_conversion(
+                handle.follow(sm), conversion, OutputType.ImageDimensions,
+                retrier, sm)
