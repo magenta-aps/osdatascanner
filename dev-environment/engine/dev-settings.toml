@@ -20,8 +20,20 @@ extra_modules = [".model._staging.sbsysdb"]
 
 [pipeline.worker]
 CHECK_DUPLICATION = true
+
 OBJECT_PROGRESS_THRESHOLD_SECONDS = 5
 OBJECT_PROGRESS_INTERVAL_SECONDS = 2
+
+[pipeline.worker.dedup]
+enabled = true
+host = "dedup_store"
+# The credentials the dedup_store service is started with.
+username = "osds"
+password = "osds"
+# Dev conversions finish in seconds rather than hours, so poll more often.
+backoff_ms = [5000, 10000, 20000]
+# Still has to outlast a whole conversion.
+max_deferral_ms = 1800000
 
 [model.sbsysdb]
 document_proxy = "http://document_proxy:5000/"

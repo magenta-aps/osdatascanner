@@ -83,6 +83,94 @@ CHECK_DUPLICATION = false
 OBJECT_PROGRESS_THRESHOLD_SECONDS = 60
 OBJECT_PROGRESS_INTERVAL_SECONDS = 15
 
+[pipeline.worker.dedup]
+# Should workers coordinate through a shared store so that content appearing in
+# several places is converted once instead of once per copy? Every location is
+# still reported: a worker that skips the conversion replays the first one's
+# matches against its own object. Requires a reachable store (see host below);
+# when there isn't one, every check fails open and the worker converts exactly
+# as it would with this disabled.
+#
+# Unrelated to [pipeline.worker] CHECK_DUPLICATION, which decides whether a
+# worker reports a content identifier for the admin module's duplication
+# statistics.
+enabled = false
+
+# Connection details for the shared claim and result store (a Valkey or Redis
+# server; the two are wire-compatible and this feature uses only commands common
+# to both).
+# An empty host disables coordination however `enabled` is set.
+host = ""
+port = 6379
+db = 0
+# Credentials, for a store that requires them. The stored results describe real
+# findings in real documents, so a store reachable from anywhere else on the
+# network should want these; leave them empty and no authentication is
+# attempted. Set them through the environment
+# (pipeline__worker__dedup__password) rather than in a settings file wherever
+# that is an option.
+username = ""
+password = ""
+# Seconds to wait on the store before giving up. Kept short deliberately: a
+# worker that cannot reach the store this quickly should get on with converting
+# rather than hold up the pipeline.
+socket_timeout = 2
+
+# Objects smaller than this are never coordinated (in bytes).
+#
+# The threshold is where coordinating an object stops paying for itself.
+# Measured on plain text with no match in it, which is the least coordination
+# can save, the two meet somewhere between 4 and 8 kB, and coordinating is a
+# clear win from about 16 kB up.
+#
+# Objects of a type in always_types skip this check, and nothing is coordinated
+# unless converting it would produce something (see can_convert).
+min_size = 16384
+
+# How long, in seconds, to allow for identifying an object's content before
+# giving up and converting it without coordinating.
+identify_timeout = 300
+
+# MIME types worth coordinating whatever their size, for formats whose
+# conversion cost is driven by their content rather than their byte count. A
+# trailing wildcard ("image/*") matches a whole family.
+#
+# Images are here because of what they cost rather than what they weigh: a 20 kB
+# signature logo is seconds of OCR, and the same handful of them turns up in
+# every mail in a department. Objects a scan is configured not to convert at all
+# (skip_mime_types, which is image/* when OCR is off) are never coordinated,
+# whatever this says.
+always_types = ["application/pdf", "image/*"]
+
+# How long, in milliseconds, a claim on an in-flight conversion stays valid
+# without being renewed. Renewal is hung off the conversion's abort check, so
+# this has to outlast the longest stretch of a conversion that reaches no such
+# check: the pre-processing of a PDF, bounded by [subprocess] pdf_clean_timeout.
+# A shorter lease expires while its holder is still working, and the content is
+# then converted twice.
+lease_ms = 1800000
+
+# How long, in seconds, a stored result stays available for other copies to
+# replay. Reading a result renews it, so this is how long a result may go
+# *unused* before it is discarded, not how long it lives in total.
+#
+# A backstop rather than the usual way results go: the admin module tells the
+# pipeline when a scan is over, and a worker then drops everything held for it.
+# This covers a scan nobody ever declared finished, because it stalled or
+# because no worker was running to hear about it.
+result_ttl = 604800
+
+# How long, in milliseconds, to leave a copy in the deferral queue, indexed by
+# the number of times it has already been deferred. The final value repeats.
+backoff_ms = [60000, 120000, 300000, 600000]
+
+# Once a copy has spent this long deferred in total, it stops waiting for the
+# claim holder and converts the content itself, which bounds the damage when a
+# claim disappears without its result having been written. In milliseconds, and
+# should comfortably exceed the longest conversion worth deduplicating: a copy
+# that gives up early pays for the conversion in full anyway.
+max_deferral_ms = 14400000
+
 [conversions.cache]
 # The directory in which to store cached representations of objects, if
 # applicable
