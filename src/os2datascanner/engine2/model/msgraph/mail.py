@@ -341,6 +341,7 @@ class MSGraphMailMessageResource(FileResource):
         # it raw. Hashing still lets a forwarded copy of an email resolve to
         # the same identifier as the original (ticket #68590), since the
         # Message-ID itself is preserved on forwarding.
+        # We've chosen to trust RFC2822 in that message-id's are globally unique.
         message_id = self.get_message_metadata().get("internetMessageId").strip("<>")
         return hashlib.blake2b(message_id.encode()).hexdigest()
 
