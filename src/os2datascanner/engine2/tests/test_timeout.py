@@ -41,25 +41,25 @@ class TestTimeoutLegacy:
     # SECTION: TimerManager.get().timeout
 
     def test_timeout_raises_sends_signal_when_expired(self):
-        ctx = TimerManager.get().timeout(1)
+        ctx = TimerManager.get().timeout(0.2)
         with pytest.raises(ctx.Timeout):
             with ctx:
-                time.sleep(2)
+                time.sleep(0.4)
 
     def test_timeout_cancels_alarm_in_due_time(self):
         result = 0
-        with TimerManager.get().timeout(2):
+        with TimerManager.get().timeout(0.4):
             result += 1
 
         assert result == 1
 
     def test_timeout_raises_sends_signal_for_generators(self):
-        ctx = TimerManager.get().timeout(1)
+        ctx = TimerManager.get().timeout(0.2)
 
         def generator():
             for num in [1, 2, 3]:
                 with ctx:
-                    time.sleep(2)
+                    time.sleep(0.4)
                     yield num
 
         with pytest.raises(ctx.Timeout):
@@ -70,7 +70,7 @@ class TestTimeoutLegacy:
     # SECTION: run_with_default_timeout
 
     def test_run_with_timeout_no_args_no_return_finishes_in_time(self):
-        (_, result) = run_with_timeout(2, lambda: time.sleep(1))
+        (_, result) = run_with_timeout(0.4, lambda: time.sleep(0.2))
         assert result is None
 
     def test_run_with_timeout_no_args_finishes_in_one_second(self):
@@ -84,10 +84,10 @@ class TestTimeoutLegacy:
 
     def test_run_with_timeout_no_args_retval_finishes_in_time(self):
         def func():
-            time.sleep(1)
+            time.sleep(0.2)
             return 1
 
-        (finished, result) = run_with_timeout(2, func)
+        (finished, result) = run_with_timeout(0.4, func)
 
         assert finished is True
         assert result == 1
@@ -97,9 +97,9 @@ class TestTimeoutLegacy:
             time.sleep(seconds)
             return seconds
 
-        seconds = 1
+        seconds = 0.2
 
-        (finished, result) = run_with_timeout(2, func, seconds)
+        (finished, result) = run_with_timeout(0.4, func, seconds)
 
         assert result == seconds
         assert finished is True
@@ -109,9 +109,9 @@ class TestTimeoutLegacy:
             time.sleep(fst)
             return snd
 
-        seconds = 1
+        seconds = 0.2
 
-        (finished, result) = run_with_timeout(2, func, seconds, seconds)
+        (finished, result) = run_with_timeout(0.4, func, seconds, seconds)
 
         assert result == seconds
         assert finished is True
@@ -174,48 +174,48 @@ class TestTimeoutLegacy:
     def test_yield_from_with_timeout_succeeds_within_time_limit(self):
         def func(elements):
             for element in elements:
-                time.sleep(1)
+                time.sleep(0.2)
                 yield element*2
 
         elements = [1, 2]
 
-        result = list(yield_from_with_timeout(2, func(elements)))
+        result = list(yield_from_with_timeout(0.4, func(elements)))
 
         assert result == [2, 4]
 
     def test_yield_from_with_timeout_produces_half_of_the_results(self):
         def func(elements):
             for element in elements:
-                time.sleep(element)
+                time.sleep(element / 5)
                 yield element*2
 
         elements = [1, 2]
 
-        result = list(yield_from_with_timeout(2, func(elements)))
+        result = list(yield_from_with_timeout(0.4, func(elements)))
 
         assert result == [2]
 
     def test_yield_from_with_timeout_generates_nothing_in_edge_case(self):
         def func(elements):
             for element in elements:
-                time.sleep(1)
+                time.sleep(0.2)
                 yield element*2
 
         elements = [1, 2]
 
-        result = list(yield_from_with_timeout(1, func(elements)))
+        result = list(yield_from_with_timeout(0.2, func(elements)))
 
         assert result == []
 
     def test_yield_from_with_timeout_generated_nothing_on_timeout(self):
         def func(elements):
             for element in elements:
-                time.sleep(2)
+                time.sleep(0.4)
                 yield element*2
 
         elements = [1, 2]
 
-        result = list(yield_from_with_timeout(1, func(elements)))
+        result = list(yield_from_with_timeout(0.2, func(elements)))
 
         assert result == []
 

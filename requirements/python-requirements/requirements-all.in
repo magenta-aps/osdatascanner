@@ -95,7 +95,7 @@ django_extensions
 django-debug-toolbar
 
 # Versions required for Python 3.13 compatibility
-numpy==1.26.4
+numpy==2.5.3
 uvloop>=0.18.0
 pyyaml==6.0.1
 gevent>=25.8.1

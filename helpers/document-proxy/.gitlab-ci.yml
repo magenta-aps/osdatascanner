@@ -33,6 +33,7 @@ variables:
 Build document_proxy:
   stage: pre-build
   extends: .build-docker
+  timeout: 30m
   variables:
     CI_IMAGE: ${IMAGE}
     TARGET: dproxy
@@ -41,6 +42,7 @@ Build document_proxy:
 
 Release document_proxy:
   stage: release
+  interruptible: false
   needs:
     - Build document_proxy
   image: alpine

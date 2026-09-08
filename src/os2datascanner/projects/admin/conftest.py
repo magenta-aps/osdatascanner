@@ -1091,11 +1091,16 @@ def sam(other_org):
 # Translation
 
 
+# translation.activate() leaks to later tests in the same process, so they
+# become random / order dependent, so we use a contextmanager like below, and tests
+# can then opt in as needed.
 @pytest.fixture
 def danish_translation():
-    translation.activate("da")
+    with translation.override("da"):
+        yield
 
 
 @pytest.fixture
 def english_translation():
-    translation.activate("en")
+    with translation.override("en"):
+        yield
