@@ -25,6 +25,7 @@ from ...models.scannerjobs.scanner import (
     Scanner, ScanStatus, ScanStatusSnapshot)
 from ...models.scannerjobs.scanner_helpers import (
         MIMETypeProcessStat, DuplicationStat, HashCache, delete_per_scan_queue,
+        clear_dedup_store,
         notify_new_conversion_queues_batch, ActiveObjectStatus)
 from ...notification import FinishedScannerNotificationEmail
 from datetime import timedelta
@@ -221,8 +222,10 @@ def status_message_received_raw(body):  # noqa: CCR001, C901 complexity
                 # Clean up the hash cache for this scan
                 HashCache.objects.filter(scan_status=scan_status).delete()
 
-                # Clean up the per-scan conversion queue now that all work is done.
+                # Clean up the per-scan conversion queue now that all work is
+                # done, and the deduplication entries that went with it.
                 delete_per_scan_queue(scan_status.scan_tag)
+                clear_dedup_store(scan_status.scan_tag)
             else:
                 logger.warning(
                     "BUG: received status message for a ScanStatus marked as complete!",

@@ -699,9 +699,12 @@ class ActiveObjectStatus(models.Model):
 
     A worker cannot heartbeat while busy inside a single large object, so heartbeat silence
     cannot be told apart from genuine progress. A row left
-    behind by a crashed worker is cleaned up when its (unacked) conversion
+    behind by a crashed worker is usually cleaned up when its (unacked) conversion
     message is redelivered and reprocessed under the same object_key, or with
     the scan via the CASCADE deletion.
+    Redelivery is not a guarantee: a redelivered object may be replayed from the
+    deduplication store or deferred again, and neither path emits heartbeats, so
+    neither sends the final one that would remove the row.
     Finished scans drop out of the only view that renders these rows,
     so an orphan is never displayed."""
 
@@ -785,6 +788,35 @@ def delete_per_scan_queue(tag: dict):
         _delete_queue(queue_name)
 
 
+def _clear_dedup_store_command(tag: dict) -> messages.CommandMessage:
+    """The order to delete this scan's entries from the deduplication store.
+
+    They are namespaced per scan, so nothing can read them once nothing more
+    will be scanned under the tag, but they hold match contexts and would
+    otherwise sit there for a week. Safe on completion or cancellation, and
+    idempotent."""
+    return messages.CommandMessage(
+            clear_dedup_store=messages.ScanTagFragment.from_json_object(tag))
+
+
+def clear_dedup_store(tag: dict):
+    """Broadcasts the order to clear this scan's deduplication entries.
+
+    For callers with nothing else to say; one that is already broadcasting
+    should send _clear_dedup_store_command() down the connection it has."""
+    try:
+        with PikaPipelineThread() as p:
+            p.enqueue_message(
+                    "", _clear_dedup_store_command(tag).to_json_object(),
+                    "broadcast", priority=10)
+            p.enqueue_stop()
+            p.run()
+    except Exception:
+        logger.warning(
+                "Could not broadcast deduplication store clearance",
+                tag=tag, exc_info=True)
+
+
 def notify_new_conversion_queue(scan_status: ScanStatus,
                                 tag: str = "full",
                                 target_queue: str = None,
@@ -840,6 +872,12 @@ def cancel_scan_tag_messages(tag: dict, delete_queue: bool = False):
     with PikaPipelineThread() as p:
         p.enqueue_message(
                 "", msg.to_json_object(),
+                "broadcast", priority=10)
+        # Nothing more will be scanned under this tag, so nothing can read its
+        # deduplication entries either. Sent down this connection rather than
+        # through clear_dedup_store(), which would open a second one.
+        p.enqueue_message(
+                "", _clear_dedup_store_command(tag).to_json_object(),
                 "broadcast", priority=10)
         p.enqueue_stop()
         p.run()

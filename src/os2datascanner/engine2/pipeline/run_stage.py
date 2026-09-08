@@ -163,6 +163,10 @@ class GenericRunner(PikaPipelineThread):
             if hasattr(self._module, "notify_abort"):
                 self._module.notify_abort(cmd.abort)
 
+        if cmd.clear_dedup_store and hasattr(
+                self._module, "clear_dedup_store"):
+            self._module.clear_dedup_store(cmd.clear_dedup_store)
+
         if cmd.delete_queue and cmd.delete_queue in self._consumer_tags:
             # Update tracking state immediately so the rest of the system sees
             # this queue as gone. We intentionally do NOT call basic_cancel
