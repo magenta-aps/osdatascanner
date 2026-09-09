@@ -35,6 +35,9 @@
   - Split shared row markup into a base template with handled/unhandled variants.
   - Moved the status-handling dropdown into its own reusable component.
 
+- Added help text to the "Only notify superadmin" and "Only notify remediators"
+  settings on scanner job forms.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.

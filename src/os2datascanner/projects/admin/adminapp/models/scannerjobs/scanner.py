@@ -151,11 +151,16 @@ class Scanner(models.Model):
     only_notify_superadmin = models.BooleanField(
         default=False,
         verbose_name=_('only notify superadmin'),
+        help_text=_('Results found by this scanner go to users with permission to view the '
+                    '"Withheld" tab in the Report Module, '
+                    'who can then delegate them to their owners.')
     )
 
     only_notify_remediators = models.BooleanField(
         default=False,
         verbose_name=_('only notify remediators'),
+        help_text=_("Results found by this scanner only go to users with the scanner's remediator "
+                    "role, and to universal remediators")
     )
 
     keep_false_positives = models.BooleanField(
