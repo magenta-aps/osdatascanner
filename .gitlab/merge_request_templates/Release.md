@@ -1,6 +1,6 @@
 ## Version <!-- Add version number here -->
 
-#/request_review @jkh @nsn @sos @asl @en @apb
+#/request_review @jkh @nsn @sos @en @apb
 
 - [ ] Version has been bumped
 - [ ] `makemigrations` produces no changes
