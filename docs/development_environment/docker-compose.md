@@ -133,10 +133,6 @@ everything in the "admin" project.
 
 Builds and bundles different frontend static files.
 
-#### `pg_upgrade`
-
-A helper service specific to upgrading PostgreSQL version.
-
 #### `report_migrate`
 
 Responsible for applying database migrations from
