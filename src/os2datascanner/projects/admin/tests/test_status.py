@@ -90,7 +90,8 @@ class TestStatus:
     def test_mail_context_user(self,
                                basic_scanner,
                                basic_scanstatus,
-                               superuser
+                               superuser,
+                               danish_translation
                                ):
 
         assert (FinishedScannerNotificationEmail(basic_scanner, basic_scanstatus)

@@ -19,6 +19,15 @@ stages:
   - release
   - deploy
 
+# Pushing to a branch again should make the newest push supersede the pipeline.
+# So, cancel previous one's run. (If marked interruptible, which we do by default,
+# release and test-deploy being exceptions.)
+workflow:
+  auto_cancel:
+    on_new_commit: interruptible
+
+default:
+  interruptible: true
 
 variables:
   # Project variables
@@ -43,6 +52,7 @@ variables:
   stage: lint
   needs: []
   services: []
+  timeout: 10m
 
 Lint Dockerfiles:
   <<: *lint-default
@@ -132,6 +142,7 @@ Check for line numbers in translations:
 Build base image:
   extends: .build-docker
   stage: pre-build
+  timeout: 30m
   variables:
     CI_IMAGE: ${BASE_IMAGE}
     TARGET: base
@@ -141,6 +152,7 @@ Build base image:
 .build-default:
   extends: .build-docker
   needs: ["Build base image"]
+  timeout: 30m
   variables:
     # All images need to set the BASE_IMAGE arg to ensure that the base image
     # used is the one we just built
@@ -173,27 +185,25 @@ Build API:
 # Test stage
 #############
 
-.test-default: &test-default
+.postgres-variables: &postgres-variables
+  POSTGRES_DB: os2datascanner
+  POSTGRES_USER: os2datascanner
+  POSTGRES_PASSWORD: os2datascanner
+
+.samba-variables: &samba-variables
+  SMB_USER: os2
+  SMB_PASSWD: swordfish
+  SMB_SHARE_NAME: general
+  SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
+  SMB_SHARE_BROWSABLE: "no"
+  SMB_SHARE_READONLY: "yes"
+
+.test-default:
   stage: test
-  services:
-    - name: egnmagenta/os2datasynth:v0.2.5
-      alias: datasynth
-      variables:
-        DATASYNTH_HOST: "datasynth"
-    - postgres:16
-    - rabbitmq:4.2-alpine
-    - name: magentaaps/samba-test:master
-      alias: samba
-  variables:
-    SMB_USER: os2
-    SMB_PASSWD: swordfish
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
+  # Running on Kubernetes runners, services are built as pods, making the job wait for it,
+  # so each job should declare just what it needs
+  services: []
+  timeout: 15m
   coverage: '/^TOTAL.+?(\d+(?:\.\d+)?\%)$/'
 
 Unit Test Admin Application:
@@ -201,7 +211,12 @@ Unit Test Admin Application:
   image:
     name: ${ADMIN_IMAGE}
     entrypoint: [""]
+  services:
+    - postgres:16
+    - rabbitmq:4.2-alpine
   variables:
+    <<: *postgres-variables
+    COVERAGE_FILE: /tmp/.coverage
     OS2DS_ADMIN_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/admin/test-settings.toml
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
   needs:
@@ -215,6 +230,8 @@ Unit Test Admin Application:
       --junitxml $CI_PROJECT_DIR/admin_unit_tests-junit.xml
       -p no:cacheprovider
       --color=yes
+      -n auto
+      --dist=loadfile
       --cov=/code/src/os2datascanner/projects/admin
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/admin-coverage.xml
@@ -227,62 +244,17 @@ Unit Test Admin Application:
       junit: $CI_PROJECT_DIR/admin_unit_tests-junit.xml
       coverage_report:
         coverage_format: cobertura
-        path: ${CI_PROJECT_DIR}/admin_unit_tests-junit.xml
-
-Integration Test Admin Application:
-  image:
-    name: ${ADMIN_IMAGE}
-    entrypoint: [""]
-  stage: test
-  rules:
-    - when: never  # until 53346 is fixed 
-  services:
-    - name: egnmagenta/os2datasynth:v0.2.5
-      alias: datasynth
-      variables:
-       DATASYNTH_HOST: "datasynth"
-    - rabbitmq:3.8-alpine
-    - postgres:16
-    - name: magentaaps/samba-test:master
-      alias: samba
-    - name: ${ENGINE_IMAGE}
-      alias: worker
-      command: [worker]
-    - name: ${ENGINE_IMAGE}
-      alias: explorer
-      command: [explorer]
-    - name: ${ENGINE_IMAGE}
-      alias: exporter
-      command: [exporter]
-  variables:
-    SMB_USER: os2
-    SMB_PASSWD: swordfish
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
-    FF_NETWORK_PER_BUILD: "true"
-    DATASYNTH_HOST: "datasynth"
-    OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
-    OS2DS_ADMIN_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/admin/test-settings.toml
-  needs:
-    - Build Admin Application
-    - Build Engine
-  script:
-    - cd src/os2datascanner/projects/admin
-    - bash /code/docker/docker-entrypoint.sh
-    # The pipeline collector cannot be created as a service, as the ADMIN_USER_PATH
-    # overwrites the ENGINE_USER_PATH and individual services cannot have variables set.
-    - python manage.py pipeline_collector &
-    - django-admin test os2datascanner.projects.admin.tests.integration
+        path: ${CI_PROJECT_DIR}/admin-coverage.xml
 
 Integration Test Engine:
   extends: .test-default
   image: ${ENGINE_IMAGE}
+  services:
+    - rabbitmq:4.2-alpine
+    - name: magentaaps/samba-test:master
+      alias: samba
   variables:
+    <<: *samba-variables
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
   needs:
     - Build Engine
@@ -311,7 +283,11 @@ Unit Test Engine:
   stage: test
   image:
     name: ${ENGINE_IMAGE}
+  services:
+    - name: magentaaps/samba-test:master
+      alias: samba
   variables:
+    <<: *samba-variables
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
   needs:
     - Build Engine
@@ -340,80 +316,28 @@ Unit Test Engine:
 
 Benchmark Test Engine:
   stage: test
+  timeout: 15m
   image:
     name: ${ENGINE_IMAGE}
   needs:
     - Build Engine
-  services:
-    - postgres:16
-    - rabbitmq:3.8-alpine
+  # The benchmarks time CPRRule against file on disk
+  services: []
   variables:
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
   script:
     - cd /code/src/os2datascanner/engine2
     - pytest --color=yes --benchmark-only tests/benchmarks
 
-Performance Test:
-  image:
-    name: ${ADMIN_IMAGE}
-    entrypoint: [""]
-  rules:
-    - when: never # until 53346 is fixed
-  services:
-    - name: egnmagenta/os2datasynth:v0.2.5
-      alias: datasynth
-      variables:
-       DATASYNTH_HOST: "datasynth"
-    - rabbitmq:3.8-alpine
-    - postgres:16
-    - name: magentaaps/samba-test:master
-      alias: samba
-    - name: ${ENGINE_IMAGE}
-      alias: worker
-      command: [worker]
-    - name: ${ENGINE_IMAGE}
-      alias: explorer
-      command: [explorer]
-    - name: ${ENGINE_IMAGE}
-      alias: exporter
-      command: [exporter]
-  variables:
-    SMB_USER: os2
-    SMB_PASSWD: swordfish
-    SMB_SHARE_NAME: general
-    SMB_SHARE_PATH: ${CI_PROJECT_DIR}/src/os2datascanner/engine2/tests/data/engine2
-    SMB_SHARE_BROWSABLE: "no"
-    SMB_SHARE_READONLY: "yes"
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
-    FF_NETWORK_PER_BUILD: "true"
-    DATASYNTH_HOST: "datasynth"
-    OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
-    OS2DS_ADMIN_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/admin/test-settings.toml
-  needs:
-    - Build Admin Application
-    - Build Engine
-  script:
-    - cd src/os2datascanner/projects/admin
-    - bash /code/docker/docker-entrypoint.sh
-
-    # The pipeline collector cannot be created as a service, as the ADMIN_USER_PATH
-    # overwrites the ENGINE_USER_PATH and individual services cannot have variables set.
-    - python manage.py pipeline_collector &
-    - python manage.py performance_measurement ${CI_PROJECT_DIR}
-  artifacts:
-    when: always
-    paths:
-      - ${CI_PROJECT_DIR}/performance.prof
-
 Unit Test Report Application:
   extends: .test-default
   image: ${REPORT_IMAGE}
+  services:
+    - postgres:16
   variables:
+    <<: *postgres-variables
+    # See the comment on the admin job
+    COVERAGE_FILE: /tmp/.coverage
     OS2DS_REPORT_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/report/test-settings.toml
     OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
   needs:
@@ -427,6 +351,8 @@ Unit Test Report Application:
       --junitxml $CI_PROJECT_DIR/report-junit.xml
       -p no:cacheprovider
       --color=yes
+      -n auto
+      --dist=loadfile
       --cov=/code/src/os2datascanner/projects/report
       --cov-config=${CI_PROJECT_DIR}/setup.cfg
       --cov-report=xml:${CI_PROJECT_DIR}/report-coverage.xml
@@ -440,42 +366,6 @@ Unit Test Report Application:
       coverage_report: 
         coverage_format: cobertura
         path: ${CI_PROJECT_DIR}/report-coverage.xml
-
-Integration Test Report Application:
-  image:
-    name: ${REPORT_IMAGE}
-    entrypoint: [""]
-  stage: test
-  rules:
-    - when: never # until 53346 is fixed
-  allow_failure: true # until 48725 has been fixed
-  services:
-    - name: egnmagenta/os2datasynth:v0.2.5
-      alias: datasynth
-      variables:
-        DATASYNTH_HOST: "datasynth"
-    - rabbitmq:3.8-alpine
-    - postgres:16
-    - name: ${API_IMAGE}
-      alias: api_server
-  variables:
-    POSTGRES_DB: os2datascanner
-    POSTGRES_USER: os2datascanner
-    POSTGRES_PASSWORD: os2datascanner
-    DATASYNTH_HOST: "datasynth"
-    server__token: 'thisIsNotASecret'
-    demo__token: 'demoToken'
-    FF_NETWORK_PER_BUILD: "true"
-    OS2DS_SERVER_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/api/dev-settings.toml
-    OS2DS_ENGINE_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/engine/test-settings.toml
-    OS2DS_REPORT_USER_CONFIG_PATH: ${CI_PROJECT_DIR}/dev-environment/report/test-settings.toml
-  needs:
-    - Build Report Application
-    - Build API
-  script:
-    - cd src/os2datascanner/projects/report
-    - bash /code/docker/docker-entrypoint.sh
-    - django-admin test os2datascanner.projects.report.tests.integration
 
 Unit Test API server:
   extends: .test-default
@@ -507,6 +397,7 @@ Unit Test API server:
 
 Run Engine notice scripts:
   stage: test
+  timeout: 15m
   services: []
   image: ${ENGINE_IMAGE}
   needs:
@@ -526,6 +417,7 @@ Run Engine notice scripts:
 
 .release-default: &release-default
   stage: release
+  interruptible: false
   needs:
     # we do not have any test cases for the api
     - Build API
@@ -533,9 +425,6 @@ Run Engine notice scripts:
     - Unit Test Engine
     - Integration Test Engine
     - Unit Test Report Application
-    # No point in waiting for jobs that always fail...
-    #- Integration Test Admin Application
-    #- Integration Test Report Application
   image: alpine
   variables:
     GIT_STRATEGY: none # We do not need the source code
@@ -677,6 +566,9 @@ Deploy test:
   # https://test.os2datascanner.dk/ and https://test-admin.os2datascanner.dk/
   extends:
     - .saltbert
+  # We probably don't want to interrupt deploying to test - and probably can't if command has
+  # already fired.
+  interruptible: false
   rules:
     - if: '$CI_COMMIT_REF_NAME == "main" && $CI_PIPELINE_SOURCE != "schedule"'
   needs:

@@ -6,9 +6,28 @@
 from time import sleep
 import pytest
 
+from os2datascanner.engine2.utilities import backoff
 from os2datascanner.engine2.utilities.backoff import (
         Testing, ExponentialBackoffRetrier as EBRetrier,
         TimeoutRetrier)
+
+
+@pytest.fixture
+def fake_clock(monkeypatch):
+    """Advances a counter instead of really sleeping."""
+
+    # ... to not waste time when running tests, the sleep itself isn't what we want to test.
+    now = 0.0
+
+    def _time():
+        return now
+
+    def _sleep(seconds):
+        nonlocal now
+        now += seconds
+
+    monkeypatch.setattr(backoff, "time", _time)
+    monkeypatch.setattr(backoff, "sleep", _sleep)
 
 
 class EtiquetteBreach(Exception):
@@ -29,26 +48,27 @@ class TestBackoff:
             Testing.requires_k_seconds(8, ImpatientClientFauxPas)(
                     2, 3, scale_factor=4)
 
-    def test_eventual_success(self):
+    def test_eventual_success(self, fake_clock):
         operation = Testing.requires_k_seconds(8, ImpatientClientFauxPas)
         assert EBRetrier(ImpatientClientFauxPas).run(operation, 2, 3, scale_factor=4) == 20
 
+    # The next two cannot use fake_clock
     def test_timeout_failure(self):
         with pytest.raises(TimeoutError):
             TimeoutRetrier(
-                    seconds=5.0,
-                    max_tries=2, warn_after=1).run(sleep, 6.0)
+                    seconds=1.0,
+                    max_tries=2, warn_after=1).run(sleep, 1.2)
 
     def test_timeout_success(self):
         TimeoutRetrier(
-                seconds=7.0,
-                max_tries=2, warn_after=1).run(sleep, 6.0)
+                seconds=1.4,
+                max_tries=2, warn_after=1).run(sleep, 1.2)
 
-    def test_base_class_success(self):
+    def test_base_class_success(self, fake_clock):
         operation = Testing.requires_k_seconds(8, ImpatientClientFauxPas)
         assert EBRetrier(EtiquetteBreach).run(operation, 2, 3, scale_factor=4) == 20
 
-    def test_impatient_failure1(self):
+    def test_impatient_failure1(self, fake_clock):
         operation = Testing.requires_k_seconds(8, ImpatientClientFauxPas)
         with pytest.raises(ImpatientClientFauxPas):
             EBRetrier(ImpatientClientFauxPas, max_tries=3).run(
