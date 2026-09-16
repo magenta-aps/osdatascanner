@@ -288,42 +288,47 @@
       <td class="column column--actions">
         <div class="button-group text-align-right">
           {% if settings.HANDLE_DROPDOWN %}
-            <button class="matches-handle expand button button--icon-text-button"
-                    type="button"
-                    aria-label=""
-                    {% if not allow_handle %}disabled{% endif %}
-                    title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
-              <i class="material-symbols" aria-hidden="true">archive</i>
-              <span>{% trans "Handle" %}</span>
-            </button>
-
-            <div class="dropdown-container">
-              <div class="handle-dropdown">
-                <ul hx-swap="{% if is_handled %}none{% else %}outerHTML swap:300ms{% endif %}"
-                    hx-target="closest tr"
-                    hx-indicator="closest tr"
-                    hx-push-url="false"
-                    {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}>
-                  {% if is_handled %}
-                    <li class="revert-option button"
-                        hx-trigger="click"
-                        name="revert-match"
-                        hx-swap="outerHTML swap:300ms"
-                        hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{% trans "Revert" %}</li>
-                  {% endif %}
-
-                  {% for choice in resolution_choices %}
-                    {% if choice|first != document_report.resolution_status %}
-                      <li class="handle-option button button--text-button"
+            <div class="dropdown-anchor">
+              <button class="matches-handle expand button button--icon-text-button"
+                      type="button"
+                      aria-label=""
+                      {% if not allow_handle %}disabled{% endif %}
+                      title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
+                <i class="material-symbols" aria-hidden="true">archive</i>
+                <span>{% trans "Handle" %}</span>
+                <i class="material-symbols handle-result-dropdown__toggle-icon"
+                   aria-hidden="true">expand_more</i>
+              </button>
+ 
+              <div class="dropdown-container">
+                <div class="handle-dropdown">
+                  <ul hx-swap="{% if is_handled %}none{% else %}outerHTML swap:300ms{% endif %}"
+                      hx-target="closest tr"
+                      hx-indicator="closest tr"
+                      hx-push-url="false"
+                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}>
+                    {% if is_handled %}
+                      <li class="revert-option button"
                           hx-trigger="click"
-                          hx-vals='{"action":"{{ choice|first }}"}'
-                          name="handle-match"
-                          hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{{ choice|last }}</li>
+                          name="revert-match"
+                          hx-swap="outerHTML swap:300ms"
+                          hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{% trans "Revert" %}</li>
                     {% endif %}
-                  {% endfor %}
-                </ul>
+ 
+                    {% for choice in resolution_choices %}
+                      {% if choice|first != document_report.resolution_status %}
+                        <li class="handle-option button button--text-button"
+                            hx-trigger="click"
+                            hx-vals='{"action":"{{ choice|first }}"}'
+                            name="handle-match"
+                            hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{{ choice|last }}</li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                </div>
               </div>
             </div>
+
 
           {% else %}
 
@@ -395,19 +400,21 @@
               <span>{% trans "false positive"|capfirst %}</span>
             </button>
           {% endif %}
-
-          <button type="button"
-                  class="matches-expand button button--caret-button"
-                  aria-label=""
-                  title="{% trans 'Show/hide matches' %}">
-            <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
-          </button>
         </div>
+      </td>
+
+      <td class="column column--show-more">
+        <button type="button"
+                class="matches-expand button button--caret-button"
+                aria-label=""
+                title="{% trans 'Show/hide matches' %}">
+          <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+        </button>
       </td>
     </tr>
 
     <tr class="datatablex__row datatablex__row--expanded matches-list" hidden>
-      <td colspan="{% if is_handled %}8{% else %}7{% endif %}">
+      <td colspan="{% if is_handled %}9{% else %}8{% endif %}">
         <table class="smaller datatable compressed">
           <thead>
             <tr>

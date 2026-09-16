@@ -302,11 +302,8 @@
 
   &--icon-text-button {
     // ***** For smaller buttons that contains an icon followed by text *****
-    // Layout
-    display: flex !important;
-    align-items: center !important;
 
-    // Box Model
+    @include layout-horizontal(0.25rem);
     padding: 0.5rem 0.625rem 0.5rem 0.5rem;
     max-height: 2.125rem;
 
@@ -321,7 +318,11 @@
       margin-left: -0.25rem;
     }
 
-    > :last-child {
+    &:has(.handle-result-dropdown__toggle-icon) {
+      padding: 0.5rem;
+    }
+
+    .handle-result-dropdown__toggle-icon {
       margin-left: 0.25rem;
     }
   }

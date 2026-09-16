@@ -1066,12 +1066,12 @@ msgid "No results were found"
 msgstr "Der er ingen resultater"
 
 #: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "handle matches"
-msgstr "håndtér matches"
+msgid "handle selected results"
+msgstr "håndtér valgte resultater"
 
 #: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "Mark as handled"
-msgstr "Markér som håndterede"
+msgid "handle selected"
+msgstr "håndtér valgte"
 
 #: reportapp/templates/components/report_table/report_table--toolbar.html
 msgid ""
@@ -1084,8 +1084,8 @@ msgstr ""
 "du manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/report_table/report_table--toolbar.html
-msgid "Mark as unhandled"
-msgstr "Markér som uhåndterede"
+msgid "revert handling of selected"
+msgstr "fortryd håndtering af valgte"
 
 #: reportapp/templates/components/report_table/report_table--toolbar.html
 msgid "emails"
@@ -2654,12 +2654,3 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #: reportapp/views/utilities/smb_utilities.py
 msgid "Target file is not on a Windows network drive"
 msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
-
-#~ msgid "sensitivity"
-#~ msgstr "følsomhed"
-
-#~ msgid "Sensitivity"
-#~ msgstr "Følsomhed"
-
-#~ msgid "All sensitivities"
-#~ msgstr "Alle følsomheder"

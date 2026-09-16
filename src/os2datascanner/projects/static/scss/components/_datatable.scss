@@ -1,5 +1,5 @@
 :root {
-  --datatable-cell-padding: 2em;
+  --datatable-cell-padding: 2rem;
   --color-warning-light: #ffedb6;
 }
 
@@ -1072,13 +1072,22 @@ $font-size_subtitle: 0.875rem;
       }
     }
 
-    // &--show-more {
-    //   #expand_more {
-    //     color: var(--color-primary-dark);
-    //   }
-    //   text-align: right;
-    //   width: calc(20px + (var(--datatable-cell-padding) * 1.5));
-    // }
+    &--show-more {
+      .matches-expand {
+        $size: 1rem;
+        width: $size;
+        min-width: $size;
+        max-width: $size;
+
+        @include flex-center;
+        border: none;
+        overflow: hidden;
+      }
+      #expand_more {
+        color: var(--color-primary-dark);
+      }
+      width: calc(1rem + (var(--datatable-cell-padding) * 1.5));
+    }
   }
 
   a:not(.button) {
@@ -1935,22 +1944,21 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
 
     &--actions {
       // Default widths:
-      --base_width: 10rem; // 160px
-      --expand_width: 0rem;
+      --base_width: 6.625rem;
       --false-positive_width: 0rem;
 
-      // Modified widths:
-      &.expand-row {
-        --expand_width: 2.25rem; // 36px
+      &.handle-dropdown {
+        --base_width: 8.25rem;
       }
 
       &.false-positive {
-        --false-positive_width: 8.875rem; // 142px
+        --false-positive_width: 9.125rem;
       }
 
       // Computed width:
       width: calc(
-        var(--base_width) + var(--expand_width) + var(--false-positive_width)
+        var(--base_width) + var(--false-positive_width) +
+          var(--datatable-cell-padding)
       );
 
       .material-symbols {
