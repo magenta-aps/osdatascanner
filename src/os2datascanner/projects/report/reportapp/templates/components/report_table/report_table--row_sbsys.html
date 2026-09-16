@@ -121,6 +121,9 @@
                     hx-indicator="closest tr"
                     hx-target="closest tr"
                     hx-push-url="false"
+                    hx-on:htmx:before-request="this.disabled = true"
+                    hx-on:htmx:response-error="this.disabled = false"
+                    hx-on:htmx:send-error="this.disabled = false"
                     {% if not allow_handle %}disabled{% endif %}
                     name="revert-match">
               <i id="archive"
@@ -144,6 +147,9 @@
                     hx-trigger="click"
                     hx-push-url="false"
                     hx-vals='{"action":"6"}'
+                    hx-on:htmx:before-request="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = true)"
+                    hx-on:htmx:response-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
+                    hx-on:htmx:send-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
                     {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file.{% endblocktrans %}" {% endif %}
                     {% if not allow_handle %}disabled{% endif %}
                     name="handle-match">
@@ -161,6 +167,9 @@
                     hx-trigger="click"
                     hx-push-url="false"
                     hx-vals='{"action":"4"}'
+                    hx-on:htmx:before-request="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = true)"
+                    hx-on:htmx:response-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
+                    hx-on:htmx:send-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
                     {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% blocktrans %}You are about to handle this result by marking it as a false positive. This action does not change the file, that the result is about.{% endblocktrans %}" {% endif %}
                     {% if not allow_handle %}disabled{% endif %}
                     name="handle-match-false-positive">

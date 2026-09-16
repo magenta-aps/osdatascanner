@@ -49,6 +49,9 @@
             hx-swap="none"
             hx-trigger="click"
             hx-push-url="false"
+            hx-on:htmx:before-request="this.disabled = true"
+            hx-on:htmx:response-error="this.disabled = false"
+            hx-on:htmx:send-error="this.disabled = false"
             {% if is_handled %} hx-vals='{"action":None}' {% elif "/sbsys" in request.path %} hx-vals='{"action":"6"}' {% else %} hx-vals='{"action":"0"}' {% endif %}
             {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle the marked results. This action does not change the files, that the results are about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
       <i class="material-symbols text-secondary" aria-hidden="true">archive</i> <span>

@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-26 15:37+0200\n"
+"POT-Creation-Date: 2026-09-16 13:40+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2552,6 +2552,54 @@ msgstr ""
 #: reportapp/views/user_views.py
 msgid "Failed to update your Outlook category settings."
 msgstr "Kunne ikke opdatere indstillinger for Outlook-kategorisering."
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid ""
+"Status was changed to \"unhandled\" and the result has been moved to the "
+"\"Results\" tab."
+msgid_plural ""
+"%(count)d results had their status changed to \"unhandled\" and have been "
+"moved to the \"Results\" tab."
+msgstr[0] ""
+"Status blev ændret til \"Uhåndteret\" og resultatet er blevet flyttet til "
+"\"Resultater\"-fanen."
+msgstr[1] ""
+"%(count)d resultater har fået deres status ændret til \"Uhåndteret\" og er "
+"blevet flyttet til \"Resultater\"-fanen."
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "Status was changed to \"unhandled\""
+msgid_plural "%(count)d results had their status changed to \"unhandled\""
+msgstr[0] "Status blev ændret til \"Uhåndteret\""
+msgstr[1] ""
+"%(count)d resultater har fået deres status ændret til \"Uhåndteret\""
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "Status was changed to \"%(label)s\""
+msgid_plural "%(count)d results had their status changed to \"%(label)s\""
+msgstr[0] "Status blev ændret til \"%(label)s\""
+msgstr[1] "%(count)d resultater har fået deres status ændret til \"%(label)s\""
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid ""
+"The result was marked as \"%(label)s\" and has been moved to the \"Handled\" "
+"tab."
+msgid_plural ""
+"%(count)d results were marked as \"%(label)s\" and have been moved to the "
+"\"Handled\" tab."
+msgstr[0] "Resultatet blev markeret som \"%(label)s\" og er blevet flyttet til \"Håndteret\"-fanen."
+msgstr[1] "%(count)d resultater blev markeret som \"%(label)s\" og er blevet flyttet til \"Håndteret\"-fanen."
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "The result was marked as \"%(label)s\""
+msgid_plural "%(count)d results were marked as \"%(label)s\""
+msgstr[0] "Resultatet blev markeret som \"%(label)s\""
+msgstr[1] "%(count)d resultater blev markeret som \"%(label)s\""
 
 #: reportapp/views/utilities/ews_utilities.py
 #: reportapp/views/utilities/google_utilities.py

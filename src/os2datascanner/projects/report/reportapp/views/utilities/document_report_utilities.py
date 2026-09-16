@@ -5,6 +5,9 @@
 
 import structlog
 
+from django.conf import settings
+from django.utils.translation import ngettext
+
 from os2datascanner.projects.report.organizations.models import Account
 from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
 
@@ -56,6 +59,55 @@ def handle_report(account: Account,
     document_report.save()
     logger.info(f"Successfully handled DocumentReport {account} with "
                 f"resolution_status {action}.")
+
+
+def build_resolution_message(action, count: int | None = None, was_handled: bool = False) -> str:
+    """
+    Builds a human-readable, status-specific success message for handle/mass-handle
+    actions (for use in the snackbar notification).
+
+    `count` should be given (and the reports' previous state reflected in `was_handled`)
+    for mass actions; omit it for single-report actions.
+    """
+    # Treat a single-report action as a mass action of exactly 1, so every string is always
+    # routed through ngettext -- xgettext rejects a msgid that's used both as a plain string
+    # and as the singular half of a plural pair.
+    n = count if count is not None else 1
+
+    if not action:
+        # Reverting -- the report(s) had a resolution_status and now don't.
+        if settings.HANDLED_TAB:
+            return ngettext(
+                'Status was changed to "unhandled" and the result has been moved to the '
+                '"Results" tab.',
+                '%(count)d results had their status changed to "unhandled" and have been '
+                'moved to the "Results" tab.',
+                n) % {"count": n}
+        return ngettext(
+            'Status was changed to "unhandled"',
+            '%(count)d results had their status changed to "unhandled"',
+            n) % {"count": n}
+
+    label = DocumentReport.ResolutionChoices(int(action)).label
+
+    if was_handled:
+        # The report(s) already had a resolution_status, and it's being changed.
+        return ngettext(
+            'Status was changed to "%(label)s"',
+            '%(count)d results had their status changed to "%(label)s"',
+            n) % {"count": n, "label": label}
+    else:
+        # The report(s) had no resolution_status yet and are being handled for the first time.
+        if settings.HANDLED_TAB:
+            return ngettext(
+                'The result was marked as "%(label)s" and has been moved to the "Handled" tab.',
+                '%(count)d results were marked as "%(label)s" and have been moved to the '
+                '"Handled" tab.',
+                n) % {"count": n, "label": label}
+        return ngettext(
+            'The result was marked as "%(label)s"',
+            '%(count)d results were marked as "%(label)s"',
+            n) % {"count": n, "label": label}
 
 
 def get_deviations(report: DocumentReport) -> list[str]:

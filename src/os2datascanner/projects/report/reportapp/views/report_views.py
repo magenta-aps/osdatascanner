@@ -21,7 +21,9 @@ from django.views.generic import ListView, DetailView
 from os2datascanner.utils.system_utilities import time_now
 
 from .base_views import HTMXEndpointView, BaseMassView
-from .utilities.document_report_utilities import handle_report, get_deviations
+from .utilities.document_report_utilities import (
+    handle_report, get_deviations, build_resolution_message,
+)
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ..models.scanner_reference import ScannerReference
 from ...organizations.models.account import Account
@@ -592,7 +594,13 @@ class HandleMatchView(HTMXEndpointView, DetailView):
         self.account = request.user.account
         report = self.get_object()
         action = request.POST.get('action')
+        was_handled = report.resolution_status is not None
         handle_report(self.request.user.account, report, action)
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            build_resolution_message(action, was_handled=was_handled),
+            extra_tags="auto_close")
 
         return response
 
@@ -632,6 +640,8 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
             else:
                 raise Http404("At least one of the specified reports not found!")
 
+        count = reports.count()
+        was_handled = reports.filter(resolution_status__isnull=False).exists()
         for report in reports:
             report.resolution_status = action
             report.raw_problem = None
@@ -640,6 +650,12 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
             f"Successfully handled DocumentReports "
             f"{', '.join([str(report) for report in reports])} with "
             f"resolution_status {action}.")
+        messages.add_message(
+            self.request,
+            messages.SUCCESS,
+            build_resolution_message(action, count=count, was_handled=was_handled),
+            extra_tags="auto_close"
+        )
 
 
 class OpenMatchView(HTMXEndpointView, DetailView):
