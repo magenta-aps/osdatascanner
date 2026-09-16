@@ -5,6 +5,7 @@
 
 import structlog
 
+from django.conf import settings
 from django.utils.translation import ngettext
 
 from os2datascanner.projects.report.organizations.models import Account
@@ -75,6 +76,13 @@ def build_resolution_message(action, count: int | None = None, was_handled: bool
 
     if not action:
         # Reverting -- the report(s) had a resolution_status and now don't.
+        if settings.HANDLED_TAB:
+            return ngettext(
+                'Status was changed to "unhandled" and the result has been moved to the '
+                '"Results" tab.',
+                '%(count)d results had their status changed to "unhandled" and have been '
+                'moved to the "Results" tab.',
+                n) % {"count": n}
         return ngettext(
             'Status was changed to "unhandled"',
             '%(count)d results had their status changed to "unhandled"',
@@ -90,6 +98,12 @@ def build_resolution_message(action, count: int | None = None, was_handled: bool
             n) % {"count": n, "label": label}
     else:
         # The report(s) had no resolution_status yet and are being handled for the first time.
+        if settings.HANDLED_TAB:
+            return ngettext(
+                'The result was marked as "%(label)s" and has been moved to the "Handled" tab.',
+                '%(count)d results were marked as "%(label)s" and have been moved to the '
+                '"Handled" tab.',
+                n) % {"count": n, "label": label}
         return ngettext(
             'The result was marked as "%(label)s"',
             '%(count)d results were marked as "%(label)s"',

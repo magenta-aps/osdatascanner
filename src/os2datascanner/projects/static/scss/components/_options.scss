@@ -251,6 +251,10 @@ label + .input {
   }
 }
 
+tr.htmx-request .macthes-handle.expand + .dropdown-container {
+  display: none;
+}
+
 .table-checkbox__action {
   & + .dropdown-container {
     left: 0;
