@@ -152,7 +152,10 @@ class ReportView(LoginRequiredMixin, ListView):
         # We do this at the request of a customer to change the structure of resolution choices.
         choices = DocumentReport.ResolutionChoices.choices
         context["resolution_choices"] = [choices[i] for i in [3, 2, 1, 0]]  # No False Positive
-        context["mass_resolution_choices"] = [choices[i] for i in [3, 2, 4, 1, 0]]  # Has FP
+        context["handled_resolution_choices"] = [choices[i]
+                                                 for i in [3, 2, 4, 1, 0]]  # Has False Positive
+        context["mass_resolution_choices"] = [choices[i]
+                                              for i in [3, 2, 4, 1, 0]]  # Has False Positive
 
         self.add_form_context(context)
 

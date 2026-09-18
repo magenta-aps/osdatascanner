@@ -4,43 +4,26 @@
 
 <div class="table-toolbar__content-left">
   {% if settings.HANDLE_DROPDOWN and "/sbsys" not in request.path %}
+    {% if is_handled %}
+      {% trans "edit handle status for selected results"|capfirst as mass_action_label %}
+      {% trans "edit selected"|capfirst as mass_action_span %}
+    {% else %}
+      {% trans "handle selected results"|capfirst as mass_action_label %}
+      {% trans "handle selected"|capfirst as mass_action_span %}
+    {% endif %}
     <div class="dropdown-anchor">
       <button type="button"
               class="table-checkbox__action button button--icon-text-button"
               disabled
               id="mass_handle_button"
-              aria-label="{% trans "handle selected results"|capfirst %}"
-              title="{% trans "handle selected results"|capfirst %} - {% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
-        <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
-        <span>{% trans "handle selected"|capfirst %}</span>
+              aria-label="{{ mass_action_label }}"
+              title="{{ mass_action_label }} - {% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
+        <i class="material-symbols text-secondary" aria-hidden="true">{{ is_handled|yesno:"edit,archive" }}</i>
+        <span>{{ mass_action_span }}</span>
         <i class="material-symbols handle-result-dropdown__toggle-icon"
            aria-hidden="true">expand_more</i>
       </button>
-      <div class="dropdown-container">
-        <div class="handle-dropdown">
-          <ul hx-swap="afterend"
-              hx-target="this"
-              hx-indicator="#mass_handle_button"
-              {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
-            {% if is_handled %}
-              <li class="handle-option button button--text-button"
-                  hx-post="{% url 'mass-handle' %}"
-                  hx-trigger="click"
-                  name="handle-matches"
-                  hx-push-url="false"
-                  hx-vals='{"action":None}'>{% trans "Revert" %}</li>
-            {% endif %}
-            {% for choice in mass_resolution_choices %}
-              <li class="handle-option button button--text-button"
-                  hx-post="{% url 'mass-handle' %}"
-                  hx-trigger="click"
-                  name="handle-matches"
-                  hx-push-url="false"
-                  hx-vals='{"action":"{{ choice|first }}"}'>{{ choice|last }}</li>
-            {% endfor %}
-          </ul>
-        </div>
-      </div>
+      {% include "components/report_table/handle_dropdown.html" with choices=mass_resolution_choices is_mass_handle=True %}
     </div>
   {% else %}
     <button type="button"
@@ -59,7 +42,7 @@
             hx-on:htmx:send-error="this.disabled = false"
             {% if is_handled %} hx-vals='{"action":None}' {% elif "/sbsys" in request.path %} hx-vals='{"action":"6"}' {% else %} hx-vals='{"action":"0"}' {% endif %}
             {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans 'You are about to handle the marked results. This action does not change the files, that the results are about. Please do not handle a result before action has been manually taken to the file.' %}" {% endif %}>
-      <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
+      <i class="material-symbols text-secondary" aria-hidden="true">{{ is_handled|yesno:"undo,archive" }}</i>
       <span>
         {% if is_handled %}
           {% trans "revert handling of selected"|capfirst %}
