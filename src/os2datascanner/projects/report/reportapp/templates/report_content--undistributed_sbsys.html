@@ -25,8 +25,8 @@
 {% endblock content-header %}
 
 {% block content %}
-  {% include "components/report_table/report_table--filters.html" %}
-  {% include "components/report_table/report_table--sbsys.html" %}
+  {% include "components/report_table/filters.html" %}
+  {% include "components/report_table/sbsys/table.html" %}
 
   {% if perms.organizations.distribute_withheld_results %}
     {% include "components/modals/modal__distribute-results.html" %}

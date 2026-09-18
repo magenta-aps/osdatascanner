@@ -19,7 +19,7 @@
   {% if not user.account.is_remediator %}
     {% include "error_pages/remediator-error-page.html" %}
   {% else %}
-    {% include "components/report_table/report_table--filters.html" %}
-    {% include "components/report_table/report_table.html" %}
+    {% include "components/report_table/filters.html" %}
+    {% include "components/report_table/table.html" %}
   {% endif %}
 {% endblock content %}

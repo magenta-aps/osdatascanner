@@ -673,7 +673,7 @@ class OpenMatchView(HTMXEndpointView, DetailView):
 
 
 class ShowMoreMatchesView(HTMXEndpointView, DetailView):
-    template_name = "components/report_table/report_table--row_expanded.html"
+    template_name = "components/report_table/row_matches_list.html"
     model = DocumentReport
 
     def get_context_data(self, **kwargs):

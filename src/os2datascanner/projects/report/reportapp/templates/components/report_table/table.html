@@ -1,4 +1,4 @@
-{# report_table--sbsys.html #}
+{# table.html #}
 
 {% load i18n %}
 {% load handle_extras %}
@@ -18,7 +18,7 @@
        hx-indicator="#report-page-indicator">
 
     <div class="datatablex__wrapper no-side-scroll">
- 
+
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
         sidescroll on this specific table. This should be refactored if we find, that we don't want
@@ -27,32 +27,37 @@
         <colgroup>
           <col class="column column--checkbox">
           <col class="column column--flexible">
-          <col class="column column--flexible">
-          <col class="column column--case-number">
+          <col class="column column--flexible column--numeral">
           <col class="column column--datasource_last_modified">
-          <col class="column column--datasource_creation_time">
+          <col class="column column--source">
+          <col class="column column--flexible">
           {% if is_handled %}<col class="column column--resolution-status">{% endif %}
-          <col class="column column--actions{% if not is_handled %} false-positive{% endif %}">
+          <col class="column column--actions{% if not is_handled %} false-positive{% endif %}{% if settings.HANDLE_DROPDOWN %} handle-dropdown{% endif %}">
+          <col class="column column--show-more">
         </colgroup>
- 
+
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if is_handled %}8{% else %}7{% endif %}">
+            <th colspan="{% if is_handled %}9{% else %}8{% endif %}">
               <div class="table-toolbar">
-                {% include "components/report_table/report_table--toolbar.html" %}
+                {% include "components/report_table/toolbar.html" %}
 
-                {% comment %}
-                  TODO: Remove the dropdown options for SBSYS results. 
-                  Users can only "close" their SBSYS cases, so "handle" is the only option needed.
-                {% endcomment %}
- 
-                <div class="table-toolbar__content-right">{% comment %} Empty {% endcomment %}</div>
+                <div class="table-toolbar__content-right">
+                  <button type="button" class="toggle probability-toggle" aria-pressed="false">
+                    {% trans "Show match probability" %}
+                  </button>
+
+                  <button type="button" class="matches-expand-all button button--caret-button button--icon-text-button" aria-label="{% trans "Show/hide all matches" %}" title="{% trans "Show/hide all matches" %}">
+                    {% trans "Show/hide all matches" %}
+                    <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                  </button>
+                </div>
               </div>
             </th>
           </tr>
- 
+
           <tr class="datatablex__row column-headings sticky">
-            <th class="column--checkbox">
+            <th class="column column--checkbox">
               <div class="ds-checkbox">
                 <input id="select-all"
                        type="checkbox"
@@ -62,34 +67,29 @@
                        title="{% trans "Select all results." %}"></label>
               </div>
             </th>
- 
-            <th class="column--name">
+
+            <th class="column column--name">
               <div class="th__flex-container">{% trans "name"|capfirst %}</div>
             </th>
- 
-            <th class="column--deviations">
-              <div class="th__flex-container">{% trans "deviations"|capfirst %}</div>
-            </th>
- 
-            <th class="column--case-number">
+
+            <th class="column column--matchcount column--numeral">
               <div class="th__flex-container">
-                <label class="th-label" for="case_number-caret">
-                  <span>{% trans "case number"|capfirst %}</span>
+                <label class="th-label" for="matches-caret">
+                  <span>{% trans "matches"|capfirst %}</span>
                 </label>
- 
                 <button type="button"
-                        name="case_number"
-                        aria-label="{% trans "Sort the results by case number." %}"
-                        title="{% trans "Sort the results by case number." %}"
-                        id="case_number-caret"
-                        class="order-by button button--caret-button{% if order_by == "case_number" and order == "ascending" %} up{% endif %}"
-                        value="{% if order_by == "case_number" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                        name="number_of_matches"
+                        aria-label="{% trans "Sort the results by number of matches." %}"
+                        title="{% trans "Sort the results by number of matches." %}"
+                        id="matches-caret"
+                        class="order-by button button--caret-button{% if order_by == "number_of_matches" and order == "descending" %} up{% endif %}"
+                        value="{% if order_by == "number_of_matches" and order == "descending" %}ascending{% else %}descending{% endif %}">
                   <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                 </button>
               </div>
             </th>
- 
-            <th class="column--datasource_last_modified">
+
+            <th class="column column--datasource_last_modified">
               <div class="th__flex-container">
                 <label class="th-label"
                        title="{% trans "Time when the source object was last modified." %}"
@@ -109,32 +109,32 @@
               </div>
             </th>
 
-            <th class="column--datasource_creation_time">
-              <div class="th__flex-container">
-                <label class="th-label"
-                       title="{% trans "Time when the source object was created." %}"
-                       for="case_created-caret">
-                  <span>{% trans "creation date"|capfirst %}</span>
-                </label>
+            <th class="column column--source column--attribute">
+              <div class="th__flex-container">{% trans "source"|capfirst %}</div>
+            </th>
 
+            <th class="column column--path">
+              <div class="th__flex-container">
+                <label class="th-label" for="path-caret">{% trans "path"|capfirst %}</label>
+                {% comment %}We use a click event handler on this button to
+                submit the form defined in filters.html{% endcomment %}
                 <button type="button"
-                        name="datasource_creation_time"
-                        aria-label="{% trans "Sort the results by when the source object was created." %}"
-                        title="{% trans "Sort the results by when the source object was created." %}"
-                        id="datasource_creation_time-caret"
-                        class="order-by button button--caret-button{% if order_by == "datasource_creation_time" and order == "ascending" %} up{% endif %}"
-                        value="{% if order_by == "datasource_creation_time" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                        name="sort_key"
+                        aria-label="{% trans "Sort the results by path name." %}"
+                        title="{% trans "Sort the results by path name." %}"
+                        id="path-caret"
+                        class="order-by button button--caret-button{% if order_by == "sort_key" and order == "descending" %} up{% endif %}"
+                        value="{% if order_by == "sort_key" and order == "descending" %}ascending{% else %}descending{% endif %}">
                   <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                 </button>
               </div>
             </th>
 
- 
             {% if is_handled %}
-              <th class="column--resolution-status">
+              <th class="column column--resolution-status">
                 <div class="th__flex-container">
-                  <label for="status-caret">{% trans "status"|capfirst %}</label>
- 
+                  <label class="th-label" for="status-caret">{% trans "status"|capfirst %}</label>
+
                   <button type="button"
                           name="resolution_status"
                           aria-label="{% trans "Sort the results by resolution status." %}"
@@ -148,35 +148,38 @@
               </th>
             {% endif %}
 
-            <th class="column--actions">
+            <th class="column column--actions">
               <span aria-label="{% trans "actions"|capfirst %}"
                     title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
             </th>
+
+            <th class="column column--show-more"></th>
           </tr>
         </thead>
- 
+
         <tbody>
           {% for document_report in document_reports %}
-            {% include "components/report_table/report_table--row_sbsys.html" %}
+            {% include "components/report_table/report_table--row.html" %}
           {% empty %}
             <tr class="datatablex__row">
-              <td colspan="10" class="datatable__column--nodata">{% trans "No results were found" %}</td>
+              <td colspan="{% if is_handled %}9{% else %}8{% endif %}"
+                  class="datatable__column--nodata">{% trans "No results were found" %}</td>
             </tr>
           {% endfor %}
         </tbody>
- 
+
         <tfoot>
           {% if is_handled %}
-            {% with colspan=8 %}
+            {% with colspan=9 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% else %}
-            {% with colspan=7 %}
+            {% with colspan=8 %}
               {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
             {% endwith %}
           {% endif %}
         </tfoot>
- 
+
       </table>
     </div>
   </div>
