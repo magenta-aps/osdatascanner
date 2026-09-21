@@ -37,6 +37,7 @@ from os2datascanner.engine2.rules.external import ExternallyExecutedRegexRule, \
 from os2datascanner.engine2.rules.license_plate import DanishLicensePlateRule
 from os2datascanner.engine2.rules.credit_card import CreditCardRule
 from .scanner_reference import ScannerReference
+from .container_report import ContainerReport
 
 logger = structlog.get_logger("reportapp")
 
@@ -111,6 +112,14 @@ class DocumentReport(models.Model):
     scanner_job = models.ForeignKey(
         ScannerReference,
         on_delete=models.CASCADE,
+        related_name='document_reports',
+    )
+
+    container = models.ForeignKey(
+        ContainerReport,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
         related_name='document_reports',
     )
 

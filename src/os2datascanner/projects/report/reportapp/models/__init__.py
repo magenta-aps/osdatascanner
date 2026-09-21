@@ -5,3 +5,4 @@
 
 from . import documentreport  # noqa
 from . import leader_statistic_snapshot  # noqa
+from . import container_report  # noqa

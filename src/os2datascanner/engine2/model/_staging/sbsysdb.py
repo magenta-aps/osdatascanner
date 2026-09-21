@@ -269,6 +269,10 @@ class SBSYSDBHandles:
         def department(self):
             return self._department
 
+        @property
+        def title(self):
+            return self._title
+
         def guess_type(self):
             return self._DUMMY_MIME
 
@@ -373,6 +377,14 @@ class SBSYSDBHandles:
             self._name = name
             self._draft = draft
 
+        @property
+        def name(self):
+            return self._name
+
+        @property
+        def draft(self):
+            return self._draft
+
         def to_json_object(self):
             return super().to_json_object() | {
                 "name": self._name,
@@ -404,6 +416,17 @@ class SBSYSDBHandles:
                 return type_hint
             else:
                 return super().guess_type()
+
+
+def find_case_handle(handle: Handle) -> "SBSYSDBHandles.Case | None":
+    """Walks up from @handle to find the SBSYSDBHandles.Case it belongs to,
+    if any -- @handle can be the Case handle itself, or any Document/Field
+    handle beneath it. Returns None if @handle isn't part of the SBSYS
+    handle hierarchy at all."""
+    for h in handle.walk_up():
+        if isinstance(h, SBSYSDBHandles.Case):
+            return h
+    return None
 
 
 @registry.conversion(OutputType.DatabaseRow, SBSYSDBHandles.Case._DUMMY_MIME)

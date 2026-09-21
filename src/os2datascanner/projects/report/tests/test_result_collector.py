@@ -21,6 +21,8 @@ from os2datascanner.engine2.rules.last_modified import LastModifiedRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
+from os2datascanner.engine2.model._staging.sbsysdb import (
+        SBSYSDBHandles, SBSYSDBSources)
 
 from django.test import Client
 from django.urls import reverse
@@ -997,3 +999,106 @@ class TestPipelineCollector:
         record_problem(transient_handle_error)
 
         assert not DocumentReport.objects.exists()
+
+
+@pytest.mark.django_db
+class TestSBSYSContainerLinking:
+    def test_two_matches_on_the_same_case_share_one_container_and_keep_their_own_data(
+            self, sbsys_match_document, sbsys_match_field):
+        record_match(sbsys_match_document)
+        record_match(sbsys_match_field)
+
+        reports = list(DocumentReport.objects.order_by("path"))
+        assert len(reports) == 2, "each handle must keep its own report"
+
+        containers = {r.container_id for r in reports}
+        assert len(containers) == 1, "both reports must share one container"
+        assert all(r.container is not None for r in reports)
+
+        # The container is bucketed under the same source_type as its own
+        # children, not under the derived per-case source.
+        container = reports[0].container
+        assert container.source_type == "sbsys-db"
+        assert all(r.source_type == container.source_type for r in reports)
+
+        # Each report's own match content must survive independently.
+        raw_matches_by_path = {r.path: r.raw_matches["matches"][0]["matches"]
+                               for r in reports}
+        assert list(raw_matches_by_path.values()) == [
+            [{"dummy": "match object 1"}], [{"dummy": "match object 2"}]
+        ] or list(raw_matches_by_path.values()) == [
+            [{"dummy": "match object 2"}], [{"dummy": "match object 1"}]
+        ]
+
+    def test_matches_on_different_cases_get_different_containers(
+            self, sbsys_match_document, common_scan_spec, scan_tag0, common_rule,
+            sbsys_source):
+        other_case_handle = SBSYSDBHandles.Case(
+                sbsys_source, "other-case-number", "Other case", None)
+        other_case_source = SBSYSDBSources.Case(other_case_handle)
+        other_document_handle = SBSYSDBHandles.Document(
+                other_case_source, "doc-2", name="andet.docx")
+        other_match = messages.MatchesMessage(
+            scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
+            handle=other_document_handle,
+            matched=True,
+            matches=[messages.MatchFragment(rule=common_rule, matches=[{"dummy": "m"}])])
+
+        record_match(sbsys_match_document)
+        record_match(other_match)
+
+        containers = set(DocumentReport.objects.values_list("container_id", flat=True))
+        assert len(containers) == 2
+
+    def test_updating_an_existing_report_does_not_change_its_container(
+            self, sbsys_match_document):
+        record_match(sbsys_match_document)
+        dr = DocumentReport.objects.get()
+        original_container_id = dr.container_id
+        assert original_container_id is not None
+
+        record_match(sbsys_match_document)
+        dr.refresh_from_db()
+
+        assert dr.container_id == original_container_id
+
+    def test_updating_an_unlinked_report_links_it_to_its_container(
+            self, sbsys_match_document):
+        """A report that predates containers, or whose metadata message never
+        arrived, is linked the next time it's matched."""
+        record_match(sbsys_match_document)
+        DocumentReport.objects.update(container=None)
+
+        record_match(sbsys_match_document)
+
+        dr = DocumentReport.objects.get()
+        assert dr.container is not None
+
+    def test_metadata_message_creates_a_container_for_a_brand_new_handle(
+            self, sbsys_document_handle, scan_tag2, org_frag):
+        metadata = messages.MetadataMessage(
+            scan_tag=scan_tag2,
+            handle=sbsys_document_handle,
+            metadata={"filesystem-owner-sid": "S-1-dummy"})
+
+        record_metadata(metadata)
+
+        dr = DocumentReport.objects.get()
+        assert dr.container is not None
+
+    def test_problem_message_never_creates_or_changes_a_container(
+            self, sbsys_match_document):
+        record_match(sbsys_match_document)
+        dr = DocumentReport.objects.get()
+        original_container_id = dr.container_id
+        assert original_container_id is not None
+
+        problem = messages.ProblemMessage(
+            scan_tag=sbsys_match_document.scan_spec.scan_tag,
+            source=None,
+            handle=sbsys_match_document.handle,
+            message="transient failure")
+        record_problem(problem)
+
+        dr.refresh_from_db()
+        assert dr.container_id == original_container_id
