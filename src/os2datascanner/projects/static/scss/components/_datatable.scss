@@ -975,6 +975,52 @@ $font-size_subtitle: 0.875rem;
     }
   }
 
+  &__row.sbsys-case-group__summary {
+    // Marks each case's own row as a distinct group, not just another
+    // result -- a top border between one case and the next, since rounded
+    // corners/shadows don't render cleanly on table rows.
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+
+    .sbsys-case-group__title {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0.5rem;
+
+      .material-symbols {
+        color: var(--color-primary-dark);
+        flex-shrink: 0;
+        // Figma's icon frame is a 44px "hug" box: the 24px glyph plus 10px
+        // padding on every side, not a bare icon flush against the text.
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+      }
+
+      &-text {
+        min-width: 0;
+        // So overflow-ellipsis on .title can actually kick in inside a flex item.
+
+        .title {
+          font-weight: 500;
+        }
+
+        .subtitle {
+          font-size: 0.813rem;
+          color: var(--color-text-secondary);
+        }
+      }
+    }
+
+    &.sbsys-case-group__summary--expanded
+      .sbsys-case-group__toggle
+      .material-symbols {
+      transform: rotate(180deg);
+    }
+  }
+
   .column {
     width: auto;
     /* Sets all column widths to auto unless otherwise specified. */
@@ -2026,6 +2072,10 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   }
 
   .matches-list {
+    tr.highlighted > td {
+      background-color: var(--color-primary-lightest);
+    }
+
     &__column {
       width: auto;
 
@@ -2043,11 +2093,23 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         text-align: right;
       }
 
+      &.column--document {
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        word-break: break-word;
+      }
+
       &--show-more-matches {
         padding-left: 0; // Align button inside with left side.
         padding-top: 2rem; // Add visual space between button and rows above.
       }
     }
+  }
+
+  // .expand-row's <col> needs room for a handle button plus a separate
+  // caret, wider than any single-control --base_width variant above.
+  .column--actions.expand-row {
+    --base_width: 11rem;
   }
 }
 

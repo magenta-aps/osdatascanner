@@ -1,6 +1,7 @@
 {# sbsys/table.html #}
 
-{% load i18n handle_extras %}
+{% load i18n %}
+{% load handle_extras %}
 
 <form id="table_checkboxes">
   <div class="datatablex__card-container no-side-scroll"
@@ -17,10 +18,10 @@
        hx-indicator="#report-page-indicator">
 
     <div class="datatablex__wrapper no-side-scroll">
-
+ 
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
-      sidescroll on this specific table. This should be refactored if we find, that we don't want
+        sidescroll on this specific table. This should be refactored if we find, that we don't want
         sidescroll behaviour on any tables. {% endcomment %}
 
         <colgroup>
@@ -28,13 +29,9 @@
           <col class="column column--flexible">
           <col class="column column--flexible">
           <col class="column column--case-number">
-          <col class="column column--datasource_last_modified">
           <col class="column column--datasource_creation_time">
-          {% if is_handled %}
-            <col class="column column--status">
-          {% else %}
-            <col class="column column--actions false-positive">
-          {% endif %}
+          <col class="column column--datasource_last_modified">
+          <col class="column column--actions expand-row">
         </colgroup>
 
         <thead>
@@ -44,15 +41,15 @@
                 {% include "components/report_table/toolbar.html" %}
 
                 {% comment %}
-                TODO: Remove the dropdown options for SBSYS results.
-                Users can only "close" their SBSYS cases, so "handle" is the only option needed.
+                  TODO: Remove the dropdown options for SBSYS results. 
+                  Users can only "close" their SBSYS cases, so "handle" is the only option needed.
                 {% endcomment %}
-
+ 
                 <div class="table-toolbar__content-right">{% comment %} Empty {% endcomment %}</div>
               </div>
             </th>
           </tr>
-
+ 
           <tr class="datatablex__row column-headings sticky">
             <th class="column--checkbox">
               <div class="ds-checkbox">
@@ -64,7 +61,7 @@
                        title="{% trans "Select all results." %}"></label>
               </div>
             </th>
-
+ 
             <th class="column--name">
               <div class="th__flex-container">{% trans "name"|capfirst %}</div>
             </th>
@@ -72,13 +69,13 @@
             <th class="column--deviations">
               <div class="th__flex-container">{% trans "deviations"|capfirst %}</div>
             </th>
-
+ 
             <th class="column--case-number">
               <div class="th__flex-container">
                 <label class="th-label" for="case_number-caret">
                   <span>{% trans "case number"|capfirst %}</span>
                 </label>
-
+ 
                 <button type="button"
                         name="case_number"
                         aria-label="{% trans "Sort the results by case number." %}"
@@ -86,6 +83,26 @@
                         id="case_number-caret"
                         class="order-by button button--caret-button{% if order_by == "case_number" and order == "ascending" %} up{% endif %}"
                         value="{% if order_by == "case_number" and order == "ascending" %}descending{% else %}ascending{% endif %}">
+                  <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+                </button>
+              </div>
+            </th>
+ 
+            <th class="column--datasource_creation_time">
+              <div class="th__flex-container">
+                <label class="th-label"
+                       title="{% trans "Time when the source object was created." %}"
+                       for="case_created-caret">
+                  <span>{% trans "creation date"|capfirst %}</span>
+                </label>
+
+                <button type="button"
+                        name="datasource_creation_time"
+                        aria-label="{% trans "Sort the results by when the source object was created." %}"
+                        title="{% trans "Sort the results by when the source object was created." %}"
+                        id="datasource_creation_time-caret"
+                        class="order-by button button--caret-button{% if order_by == "datasource_creation_time" and order == "ascending" %} up{% endif %}"
+                        value="{% if order_by == "datasource_creation_time" and order == "ascending" %}descending{% else %}ascending{% endif %}">
                   <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
                 </button>
               </div>
@@ -111,66 +128,29 @@
               </div>
             </th>
 
-            <th class="column--datasource_creation_time">
-              <div class="th__flex-container">
-                <label class="th-label"
-                       title="{% trans "Time when the source object was created." %}"
-                       for="case_created-caret">
-                  <span>{% trans "creation date"|capfirst %}</span>
-                </label>
-
-                <button type="button"
-                        name="datasource_creation_time"
-                        aria-label="{% trans "Sort the results by when the source object was created." %}"
-                        title="{% trans "Sort the results by when the source object was created." %}"
-                        id="datasource_creation_time-caret"
-                        class="order-by button button--caret-button{% if order_by == "datasource_creation_time" and order == "ascending" %} up{% endif %}"
-                        value="{% if order_by == "datasource_creation_time" and order == "ascending" %}descending{% else %}ascending{% endif %}">
-                  <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
-                </button>
-              </div>
+            <th class="column--actions">
+              <span aria-label="{% trans "actions"|capfirst %}"
+                    title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
             </th>
-
-
-            {% if is_handled %}
-              <th class="column--status">
-                <div class="th__flex-container">
-                  <label for="status-caret">{% trans "status"|capfirst %}</label>
-
-                  <button type="button"
-                          name="resolution_status"
-                          aria-label="{% trans "Sort the results by resolution status." %}"
-                          title="{% trans "Sort the results by resolution status." %}"
-                          id="status-caret"
-                          class="order-by button button--caret-button{% if order_by == "resolution_status" and order == "descending" %} up{% endif %}"
-                          value="{% if order_by == "resolution_status" and order == "descending" %}ascending{% else %}descending{% endif %}">
-                    <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
-                  </button>
-                </div>
-              </th>
-            {% else %}
-              <th class="column--actions">
-                <span aria-label="{% trans "actions"|capfirst %}"
-                      title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
-              </th>
-            {% endif %}
           </tr>
         </thead>
-
+ 
         <tbody>
-          {% for document_report in document_reports %}
-            {% include "components/report_table/sbsys/row.html" %}
+          {% for group in case_groups %}
+            {% include "components/report_table/sbsys/row_group.html" %}
           {% empty %}
             <tr class="datatablex__row">
               <td colspan="7" class="datatable__column--nodata">{% trans "No results were found" %}</td>
             </tr>
           {% endfor %}
         </tbody>
-
+ 
         <tfoot>
-          {% include "components/pagination/pagination.html" with colspan=7 content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+          {% with colspan=7 %}
+            {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+          {% endwith %}
         </tfoot>
-
+ 
       </table>
     </div>
   </div>

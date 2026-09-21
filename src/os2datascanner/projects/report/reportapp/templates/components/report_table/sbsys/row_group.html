@@ -1,0 +1,153 @@
+{# sbsys/row_group.html #}
+{# One row per case, plus a hidden expanded row for its documents -- reuses #}
+{# the regular table's datatablex__row--expanded "show matches" pattern. #}
+
+{% load i18n l10n humanize handle_extras %}
+{% with first_report=group.reports.0 %}
+  {% with case_id=group.container_id|default:first_report.pk %}
+    <tr class="datatablex__row sbsys-case-group__summary"
+        data-case-id="{{ case_id|unlocalize }}">
+      <td class="column--checkbox">
+        <div class="ds-checkbox">
+          <input type="checkbox"
+                 id="table-checkbox-case-{{ case_id|unlocalize }}"
+                 value="{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}"
+                 name="table-checkbox"
+                 class="datatable-checkbox" />
+          <label for="table-checkbox-case-{{ case_id|unlocalize }}"
+                 aria-label="{% trans 'Select case' %}"
+                 title="{% trans 'Select case' %}"></label>
+        </div>
+      </td>
+
+      <td class="column--name">
+        <div class="td-content__container sbsys-case-group__title">
+          <i class="material-symbols" aria-hidden="true">folder</i>
+          <div class="sbsys-case-group__title-text">
+            {% translate "Untitled case" as untitled_case_label %}
+            <div class="tooltip">
+              <div class="title overflow-ellipsis">
+                <strong data-tooltip-text>{{ group.case_title|default:untitled_case_label }}</strong>
+              </div>
+            </div>
+            <div class="subtitle">
+              {% blocktrans count counter=group.reports|length %}
+              {{ counter }} deviation on this case
+            {% plural %}
+              {{ counter }} deviations on this case
+              {% endblocktrans %}
+            </div>
+
+            {% with case_url=group.case_handle|present_url %}
+              {% if case_url %}
+                <div class="table-ui__container">
+                  <div class="hit-link">
+                    <div class="button-group">
+                      <a href="{{ case_url }}"
+                         class="button button--text-button"
+                         target="_blank"
+                         rel="noopener"
+                         title="{% trans "Click here to open this case in SBSYS" %}">{% trans "Open" %}</a>
+                    </div>
+                  </div>
+                </div>
+              {% endif %}
+            {% endwith %}
+          </div>
+        </div>
+      </td>
+
+      <td class="column--deviations">
+        <div class="td__flex-container">
+          {% for deviation in group.deviations %}
+            <div class="status tooltip">
+              <div class="status__wrapper overflow-ellipsis"
+                   data-status="{{ deviation }}">
+                <span class="status__label" data-tooltip-text>{{ deviation }}</span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </td>
+
+      <td class="column--case-number">
+        <div class="matches_container">
+          <div class="matches">
+            <span class="datatable-numeral">{{ group.case_number|default:"—" }}</span>
+          </div>
+        </div>
+      </td>
+
+      <td class="column--datasource_creation_time">
+        {% translate "unknown" as unknown_label %}
+        {{ first_report.datasource_creation_time|naturalday:"j. M Y"|default_if_none:unknown_label|capfirst }}
+      </td>
+
+      <td class="column--datasource_last_modified">
+        {{ first_report.datasource_last_modified|naturalday:"j. M Y"|capfirst }}
+      </td>
+
+      <td class="column--actions">
+        <div class="button-group text-align-right">
+          {% if is_handled %}
+            <button class="button button--icon-text-button"
+                    type="button"
+                    title="{% trans "Reverts every result on this case to unhandled." %}"
+                    hx-post="{% url 'mass-handle' %}"
+                    hx-swap="outerHTML swap:300ms"
+                    hx-target="closest tr"
+                    hx-indicator="closest tr"
+                    hx-trigger="click"
+                    hx-push-url="false"
+                    hx-include="this"
+                    hx-vals='{"table-checkbox": [{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                    name="revert-case">
+              <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
+              <span>{% trans "Revert case" %}</span>
+            </button>
+          {% else %}
+            <button class="button button--icon-text-button"
+                    type="button"
+                    title="{% trans "Marks every result on this case as handled." %}"
+                    hx-post="{% url 'mass-handle' %}"
+                    hx-swap="outerHTML swap:300ms"
+                    hx-target="closest tr"
+                    hx-indicator="closest tr"
+                    hx-trigger="click"
+                    hx-push-url="false"
+                    hx-include="this"
+                    hx-vals='{"action": "6", "table-checkbox": [{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                    name="handle-case">
+              <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
+              <span>{% trans "Handle case" %}</span>
+            </button>
+          {% endif %}
+
+          <button type="button" class="button button--caret-button sbsys-case-group__toggle" title="{% trans "Show/hide the individual results on this case" %}">
+            <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+          </button>
+        </div>
+      </td>
+    </tr>
+
+    <tr class="datatablex__row datatablex__row--expanded matches-list sbsys-case-group__detail"
+        data-case-id="{{ case_id|unlocalize }}"
+        hidden>
+      <td colspan="7">
+        <table class="smaller datatable compressed">
+          <thead>
+            <tr>
+              <th>{% trans "Documents" %}</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {% for document_report in group.reports %}
+              {% include "components/report_table/sbsys/row.html" %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </td>
+    </tr>
+  {% endwith %}
+{% endwith %}

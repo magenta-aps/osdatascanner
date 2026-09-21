@@ -54,6 +54,10 @@ document.addEventListener("click", function (e) {
     if (row) { toggleInfoRow(row); }
   }
 
+  if (hasClass(targ, "sbsys-case-group__toggle")) {
+    toggleSbsysCaseGroup(targ);
+  }
+
   if (hasClass(targ, "probability-toggle")) {
     const isPressed = targ.getAttribute("aria-pressed") === "true";
     if (isPressed) {
@@ -119,6 +123,20 @@ function closestElement(elm, selector) {
     parent = parent.parentElement;
   }
   return parent;
+}
+
+function toggleSbsysCaseGroup(toggleButton) {
+  const row = closestElement(toggleButton, "tr[data-case-id]");
+  if (!row) {
+    return;
+  }
+  const detail = row.nextElementSibling;
+  const nowExpanded = !hasClass(row, "sbsys-case-group__summary--expanded");
+
+  toggleClass(row, "sbsys-case-group__summary--expanded");
+  if (detail) {
+    detail.hidden = !nowExpanded;
+  }
 }
 
 function toggleInfoRow(row) {

@@ -170,6 +170,32 @@ def egon_remediator_alias(egon_account):
 
 
 @pytest.fixture
+def sbsys_organization():
+    return Organization.objects.create(
+        name="Vejstrand Kommune", sbsystab_access="A")
+
+
+@pytest.fixture
+def sbsys_account(sbsys_organization):
+    return Account.objects.create(
+        username="bruce_lee",
+        first_name="Bruce",
+        last_name="Lee",
+        organization=sbsys_organization,
+    )
+
+
+@pytest.fixture
+def sbsys_remediator_alias(sbsys_account):
+    return Alias.objects.create(
+        account=sbsys_account,
+        user=sbsys_account.user,
+        _alias_type=AliasType.REMEDIATOR,
+        _value="0",
+    )
+
+
+@pytest.fixture
 def benny_email_alias(benny_account):
     return Alias.objects.create(
       account=benny_account,
