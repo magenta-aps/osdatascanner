@@ -1,0 +1,75 @@
+@startuml
+' Deduplicating a conversion: two copies of one document inside one scan.
+'
+' Kept in step with engine2/pipeline/processor.py (message_received),
+' engine2/pipeline/worker.py (process, message_received_raw) and
+' engine2/pipeline/utilities/{deduplication,deferral,sharing}.py
+' (sharing.share, sharing.replay).
+' A third copy behaves exactly like copy 2.
+
+autonumber
+skinparam maxMessageSize 260
+
+participant explorer
+queue       "per-scan\nconversion queue" as cq
+participant "worker A" as wa
+participant "worker B" as wb
+database    "claim store\n(Valkey)" as st
+queue       "osds_dedup_deferred.{delay}" as dq
+queue       "os2ds_matches" as mq
+
+explorer -> cq : ConversionMessage, /finance/report.pdf
+explorer -> cq : ConversionMessage, /legal/report.pdf
+
+cq -> wa : deliver copy 1
+activate wa
+wa -> wa : cost gate: is this worth coordinating over?\n(size hint, or a MIME type in always_types)
+wa -> wa : identify content:\ndigest plus converted-as MIME type
+wa -> st : GETEX result:{scan}:{cid}
+st --> wa : nil
+wa -> st : SET claim:{scan}:{cid} NX PX lease_ms
+st --> wa : OK, claim taken
+
+cq -> wb : deliver copy 2
+activate wb
+wb -> wb : identifies the same content,\nso computes the same key
+wb -> st : GETEX result:{scan}:{cid}
+st --> wb : nil
+wb -> st : SET claim:{scan}:{cid} NX PX lease_ms
+st --> wb : nil, A holds the claim
+wb -> st : GETEX result:{scan}:{cid}\n(re-check: A may have finished\nin the window since the read above)
+st --> wb : nil
+wb -> dq : republish, header dedup-delay-ms\nrouting key left as the conversion queue
+wb --> cq : ack copy 2, freeing the prefetch slot
+deactivate wb
+
+loop for as long as the conversion runs
+    wa -> wa : convert one object
+    wa -> st : PEXPIRE claim, owner-checked\n(from the abort check, at most once per\nlease_ms / 3, so a crash costs one lease\nand not a conversion)
+end
+
+note over wb, dq
+  Copy 2 sits out its delay, is redelivered, finds no result
+  yet and defers again. A delay queue is a timer and not a
+  wake up, so it waits out its whole step even once the
+  result lands.
+end note
+
+wa -> mq : MatchesMessage per object,\nagainst copy 1's handles
+wa -> st : SET result:{scan}:{cid} EX result_ttl
+wa -> st : DEL claim, owner-checked
+wa --> cq : ack copy 1
+deactivate wa
+
+dq --> cq : dead-lettered when the delay expires,\non its own untouched routing key
+cq -> wb : redeliver copy 2
+activate wb
+wb -> st : GETEX result:{scan}:{cid}
+st --> wb : the stored result,\nand reading it renews its expiry
+wb -> wb : swap_root: rebuild every handle\nonto /legal/report.pdf
+wb -> wb : extract this copy's own metadata\n(never reused: it describes a location)
+wb -> mq : MatchesMessage per object,\nagainst copy 2's handles
+wb --> cq : ack copy 2
+deactivate wb
+
+@enduml

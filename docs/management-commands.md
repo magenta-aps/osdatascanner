@@ -127,6 +127,27 @@ The command must include the following options:
 
 * `--scanners` followed by space-separated primary keys of existing scanners.
 
+### `cleanup_dedup_store`
+
+Deletes every key in the conversion deduplication store that does not belong to
+a running scan. A scan counts as running until it is completed or cancelled, so
+a stalled scan's keys need `--include-running`.
+
+It walks the store's keyspace rather than the per-scan `keys:` indices, which
+can be missing too. Only `claim:`, `result:` and `keys:` entries are touched. It
+uses the engine's `[pipeline.worker.dedup]` store settings whether or not
+`enabled` is set, and is safe to run from cron.
+
+`docker compose exec admin django-admin cleanup_dedup_store [--all] [--scanner PK] [--include-running] [--dry-run]`
+
+* `--scanner PK` only considers keys of that scanner job's scans.
+* `--include-running` also deletes running scans' keys; they then convert again.
+* `--all` deletes every deduplication key. Not combinable with `--scanner` or
+  `--include-running`.
+* `--dry-run` reports what would be deleted and deletes nothing.
+
+See [Conversion deduplication](architecture/deduplication.md).
+
 ### `diagnostics`
 
 This command is used to give basic information about some objects in the

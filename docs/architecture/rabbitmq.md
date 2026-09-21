@@ -10,8 +10,11 @@ is used as the primary medium of communication between said modules/components.
 
 Almost all messages are routed through the 
 [RabbitMQ default exchange](https://www.cloudamqp.com/blog/part4-rabbitmq-for-beginners-exchanges-routing-keys-bindings.html),
-using the `routing_key` to determine the destination queue. The exception being a fanout exchange 
-called "broadcast" used by some OSdatascanner components to send and receive global messages.
+using the `routing_key` to determine the destination queue. The exceptions are a fanout exchange 
+called "broadcast", used by some OSdatascanner components to send and receive global messages, and a
+headers exchange called `osds_dedup_deferral`, which routes a conversion message to a delay queue
+that returns it to the queue it came from (see
+[Conversion deduplication](deduplication.md#deferral)).
 
 By default, most message queues have the prefix 'os2ds_' which is then followed by the type of messages that are 
 stored in the queue (e.g. the queue `os2ds_scan_specs` contains `ScanSpecMessage`s and so on).
