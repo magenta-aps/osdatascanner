@@ -53,6 +53,10 @@
   - Removed the empty scrollbar space that was always reserved on the right-hand side of pages.
   - Stopped the dropdown arrow in the user menu from overflowing and widening the page.
 
+- Workers no longer prefetch too many messages on prioritization switching.
+
+- Workers now prioritize their subscriptions properly on start up.
+
 ## Version 3.33.0, 26th August 2026
 
 "9 to 5 ✨️💗✨️"
