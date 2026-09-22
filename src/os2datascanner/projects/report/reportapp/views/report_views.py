@@ -179,6 +179,7 @@ class ReportView(LoginRequiredMixin, ListView):
             check() for check in [
                 org.has_smb_file_delete_permission,
                 org.has_exchange_email_delete_permission,
+                org.has_exchange_calendar_delete_permission,
                 org.has_gmail_email_delete_permission,
                 org.has_gdrive_file_delete_permission,
                 org.has_msgraph_email_delete_permission,
@@ -204,44 +205,43 @@ class ReportView(LoginRequiredMixin, ListView):
                     )
                 case ["smbc"]:
                     context["show_smb_mass_delete_button"] = (
-                        self.request.user.account.organization.has_smb_file_delete_permission()
+                        org.has_smb_file_delete_permission()
                     )
                 case ["ews"]:
                     context["show_ews_mass_delete_button"] = (
-                       self.request.user.account.organization.has_exchange_email_delete_permission()
+                       org.has_exchange_email_delete_permission()
+                    )
+                case ["ews-calendar"]:
+                    context["show_ews_calendar_mass_delete_button"] = (
+                        org.has_exchange_calendar_delete_permission()
                     )
                 case ["gmail"]:
                     context["show_gmail_mass_delete_button"] = (
-                        self.request.user.account.organization.has_gmail_email_delete_permission()
+                        org.has_gmail_email_delete_permission()
                     )
                 case ["googledrive"]:
                     context["show_gdrive_mass_delete_button"] = (
-                        self.request.user.account.organization.has_gdrive_file_delete_permission()
+                        org.has_gdrive_file_delete_permission()
                     )
                 case ["msgraph-mail"]:
                     context["show_msgraph_email_mass_delete_button"] = (
-                        self.request.user.account.organization.has_msgraph_email_delete_permission()
+                        org.has_msgraph_email_delete_permission()
                     )
                 case ["msgraph-files"]:
                     context["show_msgraph_file_mass_delete_button"] = (
-                        self.request.user.account.organization.has_msgraph_file_delete_permission()
+                        org.has_msgraph_file_delete_permission()
                     )
                 case _:
                     logger.info("Mass deletion not applicable", source=s)
 
         # Check permissions for deleting shared files
-        context["show_smb_delete_button"] = (
-            self.request.user.account.organization.has_smb_file_delete_permission())
-        context["show_ews_delete_button"] = (
-            self.request.user.account.organization.has_exchange_email_delete_permission())
-        context["show_gmail_delete_button"] = (
-            self.request.user.account.organization.has_gmail_email_delete_permission())
-        context["show_gdrive_delete_button"] = (
-            self.request.user.account.organization.has_gdrive_file_delete_permission())
-        context["show_msgraph_email_delete_button"] = (
-            self.request.user.account.organization.has_msgraph_email_delete_permission())
-        context["show_msgraph_file_delete_button"] = (
-            self.request.user.account.organization.has_msgraph_file_delete_permission())
+        context["show_smb_delete_button"] = org.has_smb_file_delete_permission()
+        context["show_ews_delete_button"] = org.has_exchange_email_delete_permission()
+        context["show_ews_calendar_delete_button"] = org.has_exchange_calendar_delete_permission()
+        context["show_gmail_delete_button"] = org.has_gmail_email_delete_permission()
+        context["show_gdrive_delete_button"] = org.has_gdrive_file_delete_permission()
+        context["show_msgraph_email_delete_button"] = org.has_msgraph_email_delete_permission()
+        context["show_msgraph_file_delete_button"] = org.has_msgraph_file_delete_permission()
 
         # Retention policy details
         context["retention_policy"] = self.org.retention_policy
@@ -400,6 +400,8 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
         context["show_smb_mass_delete_button"] = False
         context["show_ews_delete_button"] = False
         context["show_ews_mass_delete_button"] = False
+        context["show_ews_calendar_delete_button"] = False
+        context["show_ews_calendar_mass_delete_button"] = False
         context["show_gmail_delete_button"] = False
         context["show_gmail_mass_delete_button"] = False
         context["show_drive_delete_button"] = False
@@ -612,6 +614,8 @@ class HandledMixin:
         context["show_smb_mass_delete_button"] = False
         context["show_ews_delete_button"] = False
         context["show_ews_mass_delete_button"] = False
+        context["show_ews_calendar_delete_button"] = False
+        context["show_ews_calendar_mass_delete_button"] = False
         context["show_gmail_delete_button"] = False
         context["show_gmail_mass_delete_button"] = False
         context["show_drive_delete_button"] = False

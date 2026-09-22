@@ -257,6 +257,15 @@
                 </div>
               {% endif %}
 
+              {% if form.exchange_calendar_delete_permission %}
+                <div class="form__row__item form__row__item__checkboxcontainer ds-checkbox">
+                  {{ form.exchange_calendar_delete_permission }}
+                  <label for="{{ form.exchange_calendar_delete_permission.id_for_label }}">
+                    {% trans "calendar events on Exchange server"|capfirst %}
+                  </label>
+                </div>
+              {% endif %}
+
               {% if form.outlook_delete_email_permission %}
                 <div class="form__row__item form__row__item__checkboxcontainer ds-checkbox">
                   {{ form.outlook_delete_email_permission }}

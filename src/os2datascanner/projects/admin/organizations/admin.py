@@ -80,6 +80,7 @@ class OrganizationAdmin(admin.ModelAdmin):
                            'onedrive_delete_permission',
                            'smb_delete_permission',
                            'exchange_delete_permission',
+                           'exchange_calendar_delete_permission',
                            'gmail_delete_permission',
                            'gdrive_delete_permission')
             }

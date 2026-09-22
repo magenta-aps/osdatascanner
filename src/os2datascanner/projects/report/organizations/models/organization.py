@@ -60,6 +60,9 @@ class Organization(Core_Organization):
     def has_exchange_email_delete_permission(self) -> bool:
         return self.exchange_delete_permission
 
+    def has_exchange_calendar_delete_permission(self) -> bool:
+        return self.exchange_calendar_delete_permission
+
     def has_msgraph_email_delete_permission(self) -> bool:
         return self.outlook_delete_email_permission
 

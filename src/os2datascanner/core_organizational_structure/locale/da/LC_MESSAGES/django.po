@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-04 15:00+0200\n"
+"POT-Creation-Date: 2026-09-22 15:54+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -246,6 +246,10 @@ msgid "allow deletion of emails on Exchange server directly"
 msgstr "tillad direkte sletning af emails på Exchangeserver"
 
 #: models/organization.py
+msgid "allow deletion of calendar events on Exchange server directly"
+msgstr "tillad direkte sletning af kalender events på Exchangeserver"
+
+#: models/organization.py
 msgid "allow deletion of emails in gmail directly"
 msgstr "tillad direkte sletning af emails i gmail"
 
@@ -280,9 +284,10 @@ msgid ""
 "rather than computed live on every page load. Set to 0 to disable "
 "snapshotting and always compute the overview live."
 msgstr ""
-"Hvor mange timer der må gå mellem opdatering af lederstatistik snapshot."
-"Lederoverblikket viser data fra nyeste snapshot, fremfor at genberegne data ved hver indlæsning."
-"Sæt til 0 for at slå snapshots fra og dermed altid beregne data ved indlæsning af overblikket."
+"Hvor mange timer der må gå mellem opdatering af lederstatistik "
+"snapshot.Lederoverblikket viser data fra nyeste snapshot, fremfor at "
+"genberegne data ved hver indlæsning.Sæt til 0 for at slå snapshots fra og "
+"dermed altid beregne data ved indlæsning af overblikket."
 
 #: models/organization.py
 msgid "Prioritize MSGraph grant"

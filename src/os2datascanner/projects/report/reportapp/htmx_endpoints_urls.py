@@ -14,7 +14,8 @@ from .views.delete_views import (
     DeleteSMBFileView, MassDeleteSMBFileView,
     DeleteEWSMailView, MassDeleteEWSMailView,
     DeleteGmailView, MassDeleteGmailView,
-    DeleteGoogleDriveView, MassDeleteGoogleDriveView)
+    DeleteGoogleDriveView, MassDeleteGoogleDriveView, DeleteEWSCalendarView,
+    MassDeleteEWSCalendarView)
 
 urlpatterns = [
     path('handle_match/<int:pk>/', HandleMatchView.as_view(), name='handle-match'),
@@ -30,6 +31,10 @@ urlpatterns = [
     path('mass_delete_smb_file/', MassDeleteSMBFileView.as_view(), name="mass-delete-smb-file"),
     path('delete_ews_mail/<int:pk>', DeleteEWSMailView.as_view(), name="delete-ews-mail"),
     path('mass_delete_ews_mail/', MassDeleteEWSMailView.as_view(), name="mass-delete-ews-mail"),
+    path('delete_ews_calendar/<int:pk>', DeleteEWSCalendarView.as_view(),
+         name="delete-ews-calendar"),
+    path('mass_delete_ews_calendar/', MassDeleteEWSCalendarView.as_view(),
+         name="mass-delete-ews-calendar"),
     path('delete_gmail/<int:pk>', DeleteGmailView.as_view(), name="delete-gmail"),
     path('mass_delete_gmail/', MassDeleteGmailView.as_view(), name="mass-delete-gmail"),
     path('delete_gdrive/<int:pk>',
