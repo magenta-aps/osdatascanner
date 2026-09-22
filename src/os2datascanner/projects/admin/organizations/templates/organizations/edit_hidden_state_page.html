@@ -1,13 +1,10 @@
 {% extends 'organizations/base.html' %}
-{% load i18n %}
 
-{% load static %}
-
+{% load i18n static %}
 
 {% block title %}
-  {% trans "Edit visibility"|capfirst %}
+  {% trans "edit visibility"|capfirst %}
 {% endblock %}
-
 
 {% block content %}
   <svg class="page-indicator"
@@ -31,10 +28,14 @@
           <fieldset class="form__fieldset">
             <div class="form__content">
               <div class="form__content__header">
-                <h3 class="header__title">{% trans "Choose organizational units" %}</h3>
+                <h3 class="header__title">{% trans "visibility settings"|capfirst %}</h3>
 
                 <p class="header__subtitle">
-                  {% trans "Select the organizational units that should be visible throughout the Admin and Report module from the list below. Any changes will be visible to all users once saved." %}
+                  {% blocktrans trimmed %}
+                    From the list below, select which organizational units should be visible 
+                    throughout both Admin and Report. Be aware that any changes will be visible to
+                    all users immediately.
+                  {% endblocktrans %}
                 </p>
               </div>
 
@@ -48,13 +49,21 @@
                       hx-select="#list-of-all-ou"
                       hx-target="#list-of-all-ou">
                   <div class="form__ui-container">
-                    <div class="ui-group ui-group--left">
-                      {% comment %} "make all OU visible" button {% endcomment %}
+                    <div class="ui-group ui-group--left"
+                         id="mass-visibility-buttons"
+                         hx-swap-oob="true">
+                      {# "Unhide all"-button #}
+                      {% if all_units_visible %}
+                        {% trans "All organizational units are already marked as &quot;visible&quot;." as unhide_all_label %}
+                      {% else %}
+                        {% trans "Mark all organizational units as &quot;visible&quot;." as unhide_all_label %}
+                      {% endif %}
                       <button type="button"
                               class="button button--modal-ui button--cta-button button--icon-text-button"
                               name="unhide_all_orgunits"
-                              aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
-                              title="{% trans 'Make all organizational units visible' %}"
+                              aria-label="{{ unhide_all_label }}"
+                              title="{{ unhide_all_label }}"
+                              {% if all_units_visible %}disabled{% endif %}
                               hx-post=""
                               hx-trigger="click"
                               hx-trigger-name="unhide_all_orgunits"
@@ -62,15 +71,21 @@
                               hx-target="#list-of-all-ou"
                               hx-select="#list-of-all-ou">
                         <i class="material-symbols">visibility</i>
-                        <span>{% trans "Make all visible"|capfirst %}</span>
+                        <span>{% trans "mark all as visible"|capfirst %}</span>
                       </button>
 
-                      {% comment %} "hide all OU" button {% endcomment %}
+                      {# "Hide all"-button #}
+                      {% if all_units_hidden %}
+                        {% trans "All organizational units are already marked as &quot;hidden&quot;." as hide_all_label %}
+                      {% else %}
+                        {% trans "Mark all organizational units as &quot;hidden&quot;." as hide_all_label %}
+                      {% endif %}
                       <button type="button"
                               class="button button--modal-ui button--outline-button button--icon-text-button"
                               name="hide_all_orgunits"
-                              aria-label="{% trans 'This button handles toggling of visibility for all organizational units' %}"
-                              title="{% trans 'Make all organizational units hidden' %}"
+                              aria-label="{{ hide_all_label }}"
+                              title="{{ hide_all_label }}"
+                              {% if all_units_hidden %}disabled{% endif %}
                               hx-post=""
                               hx-trigger="click"
                               hx-trigger-name="hide_all_orgunits"
@@ -78,12 +93,12 @@
                               hx-target="#list-of-all-ou"
                               hx-select="#list-of-all-ou">
                         <i class="material-symbols">visibility_off</i>
-                        <span>{% trans "Make all hidden"|capfirst %}</span>
+                        <span>{% trans "mark all as hidden"|capfirst %}</span>
                       </button>
                     </div>
 
                     <div class="ui-group ui-group--right">
-                      {% comment %} search field {% endcomment %}
+                      {# Search field: #}
                       <div class="search_field_wrapper">
                         <input type="search"
                                name="search_field"
@@ -93,7 +108,7 @@
                                autocomplete="off" />
                       </div>
 
-                      {% comment %} Place future filtering options here as well {% endcomment %}
+                      {# NOTE: Place future filtering options here. #}
                     </div>
                   </div>
                 </form>
@@ -130,7 +145,7 @@
                     </div>
                   </div>
 
-                  <!-- pagination -->
+                  {# Pagination: #}
                   <table id="ou-visibility-form-pagitation">
                     {% include "components/pagination/pagination.html" %}
                   </table>
@@ -150,7 +165,6 @@
          title="{% trans 'return to the organizational structure overview'|capfirst %}"
          name="return">
         <i id="undo" class="material-symbols">undo</i>
-
         <span>{% trans "go back"|capfirst %}</span>
       </a>
     </div>
