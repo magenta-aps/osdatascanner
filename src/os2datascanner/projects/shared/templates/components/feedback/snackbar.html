@@ -1,5 +1,5 @@
 {# Snackbar for popup messages - Using oob swap, to support django messages #}
-{% load static %}
+{# Requires js/modals/snackBars.js, which is loaded by the base templates #}
 
 <div class="snackbar__container" hx-swap-oob="beforeend" id="snackbar">
   {% for message in messages %}
@@ -31,5 +31,3 @@
     </div>
   {% endfor %}
 </div>
-
-<script src="{% static 'js/modals/snackBars.js' %}"></script>

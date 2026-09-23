@@ -44,6 +44,8 @@
     </head>
     <body class="{% block body_class %}{% endblock %} page">
 
+      {% include "components/feedback/snackbar.html" %}
+
       {% block additional_styles %}{% endblock %}
 
       {% block body %}{% endblock %}
@@ -55,6 +57,7 @@
       </div>
 
       <script src="{% static '3rdparty/jquery-3.6.0.min.js' %} "></script>
+      <script src="{% static 'js/modals/snackBars.js' %}"></script>
 
       {% block scripts %}
         <!-- NOTE: This needs a tidy at some point in time, see [#60788] -->
