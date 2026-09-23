@@ -66,11 +66,12 @@ class ReportView(LoginRequiredMixin, ListView):
             reports = reports.exclude(source_type__in=self.exclude_types)
         return reports
 
-    def get_base_queryset(self):
+    def get_base_queryset(self, handled=None):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            reports = acct.get_report(self.report_type, self.handled)
+            reports = acct.get_report(
+                    self.report_type, handled if handled is not None else self.handled)
             return self.apply_source_type_filters(reports)
         except Account.DoesNotExist:
             logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
@@ -371,7 +372,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     permission_required = "organizations.view_withheld_results"
     template_name = "report_content--undistributed.html"
 
-    def get_base_queryset(self):
+    def get_base_queryset(self, handled=None):
         # This is the only ReportView subclass that doesn't use Aliases to get
         # results, so it doesn't use the Account.get_report() mechanism
         try:
@@ -382,7 +383,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
                 scanner_job__organization=self.org,
                 only_notify_superadmin=True,
                 number_of_matches__gte=1,
-                resolution_status__isnull=not self.handled,
+                resolution_status__isnull=not (handled if handled is not None else self.handled),
             )
 
             return self.apply_source_type_filters(reports)
@@ -459,9 +460,8 @@ class SBSYSMixin:
         if self.handled:
             # A case stays on the unhandled tab until all its documents are.
             still_open_containers = set(
-                self.apply_source_type_filters(
-                    self.request.user.account.get_report(self.report_type, handled=False)
-                ).exclude(container__isnull=True).values_list("container_id", flat=True))
+                self.get_base_queryset(handled=False)
+                .exclude(container__isnull=True).values_list("container_id", flat=True))
             keys_in_order = [
                 key for key in keys_in_order
                 if not (isinstance(key, int) and key in still_open_containers)]
@@ -484,11 +484,7 @@ class SBSYSMixin:
         )
         # Account-scoped, not the raw manager, so this can't render a
         # report outside what the viewer is entitled to see.
-        acct = self.request.user.account
-        own_reports = self.apply_source_type_filters(
-            acct.get_report(self.report_type, handled=True)
-            | acct.get_report(self.report_type, handled=False)
-        )
+        own_reports = self.get_base_queryset(handled=True) | self.get_base_queryset(handled=False)
         object_list = own_reports.filter(
             Q(container_id__in=container_ids) | Q(pk__in=fallback_pks)
         ).annotate(_group_order=group_order).order_by("_group_order", "pk")

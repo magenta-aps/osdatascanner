@@ -28,7 +28,7 @@ from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
     UserHandledView, RemediatorHandledView, UndistributedHandledView,
-    SBSYSRemediatorView, SBSYSRemediatorHandledView)
+    SBSYSRemediatorView, SBSYSRemediatorHandledView, SBSYSUndistributedView)
 from ..organizations.models import Account
 
 from importlib import reload, import_module
@@ -1586,3 +1586,17 @@ class TestSBSYSCaseGrouping:
         handled_response = SBSYSRemediatorHandledView.as_view()(handled_request)
 
         assert handled_response.context_data["case_groups"] == []
+
+    def test_sbsys_undistributed_view_does_not_crash(self, rf, sbsys_organization):
+        # SBSYSUndistributedView never sets report_type (unlike the other
+        # SBSYS views), and UndistributedView's own get_base_queryset()
+        # doesn't go through Account.get_report() at all -- paginate_queryset
+        # used to call get_report() directly, which crashed here.
+        superuser = Account.objects.create(
+            username="super_bruce", is_superuser=True, organization=sbsys_organization)
+
+        request = rf.get('/results/sbsys-undistributed/')
+        request.user = superuser.user
+        response = SBSYSUndistributedView.as_view()(request)
+
+        assert response.status_code == 200

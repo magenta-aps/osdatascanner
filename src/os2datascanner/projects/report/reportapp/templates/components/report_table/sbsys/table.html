@@ -147,7 +147,7 @@
  
         <tfoot>
           {% with colspan=7 %}
-            {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+            {% include "components/pagination/pagination.html" with colspan=colspan content_list=case_groups target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
           {% endwith %}
         </tfoot>
  

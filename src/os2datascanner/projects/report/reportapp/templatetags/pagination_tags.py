@@ -41,5 +41,5 @@ def object_interval(object_list, page_obj, paginate_by):
     curr_page = int(page_obj.number)
     pag_by = int(paginate_by)
     first_item = pag_by * curr_page - (pag_by - 1)
-    last_item = first_item + object_list.count() - 1
+    last_item = first_item + len(object_list) - 1
     return f"{intcomma(first_item)} - {intcomma(last_item)}"
