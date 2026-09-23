@@ -7,6 +7,8 @@
 - Show a snackbar message when results are handled + if the status of a handled result is changed
   or reverted.
 
+- Show a snackbar message when the visibility state is toggled for organizational units.
+
 ### General improvements
 
 - Upgrade RabbitMQ version to 4.2

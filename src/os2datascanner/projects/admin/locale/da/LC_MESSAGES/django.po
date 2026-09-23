@@ -1653,8 +1653,8 @@ msgstr "organisatorisk struktur"
 #: adminapp/templates/components/common/breadcrumb.html
 #: organizations/templates/organizations/edit_hidden_state_page.html
 #: organizations/templates/organizations/orgunit_list.html
-msgid "Edit visibility"
-msgstr "Redigér synlighed"
+msgid "edit visibility"
+msgstr "redigér synlighed"
 
 #: adminapp/templates/components/common/breadcrumb.html
 #: organizations/templates/organizations/account_list.html
@@ -4624,40 +4624,44 @@ msgid "edit organizational unit visibility for"
 msgstr "redigér organisatorisk enheds synlighed for"
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "Choose organizational units"
-msgstr "Vælg organisatoriske enheder"
+msgid "visibility settings"
+msgstr "synlighedsindstillinger"
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
 msgid ""
-"Select the organizational units that should be visible throughout the Admin "
-"and Report module from the list below. Any changes will be visible to all "
-"users once saved."
+"From the list below, select which organizational units should be visible "
+"throughout both Admin and Report. Be aware that any changes will be visible "
+"to all users immediately."
 msgstr ""
-"Vælg hvilke organisatoriske enheder, der skal være synlige på tværs af "
-"Admin- og Rapportmodulet fra listen nedenfor. Ændringer bliver synlige for "
-"alle brugere med det samme."
+"Vælg fra listen nedenfor hvilke organisatoriske enheder, der skal være "
+"synlige på tværs af Admin og Rapport. Vær opmærksom på at ændringer bliver "
+"synlige for alle brugere med det samme."
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "This button handles toggling of visibility for all organizational units"
+msgid "All organizational units are already marked as &quot;visible&quot;."
 msgstr ""
-"Denne knap håndterer valg/fravalg af synlighed for alle organisatoriske "
-"enheder"
+"Alle organisatoriske enheder er allerede markerede som &quot;synlige&quot;."
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "Make all organizational units visible"
-msgstr "Gør alle organisatoriske enhededer synlige"
+msgid "Mark all organizational units as &quot;visible&quot;."
+msgstr "Markér alle organisatoriske enheder som &quot;synlige&quot;."
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "Make all visible"
-msgstr "Markér alle som synlige"
+msgid "mark all as visible"
+msgstr "markér alle som synlige"
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "Make all organizational units hidden"
-msgstr "Gør alle organisatoriske enheder skjulte"
+msgid "All organizational units are already marked as &quot;hidden&quot;."
+msgstr ""
+"Alle organisatoriske enheder er allerede markerede som &quot;skjulte&quot;."
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
-msgid "Make all hidden"
-msgstr "Markér alle som skjulte"
+msgid "Mark all organizational units as &quot;hidden&quot;."
+msgstr "Markér alle organisatoriske enheder som &quot;skjulte&quot;."
+
+#: organizations/templates/organizations/edit_hidden_state_page.html
+msgid "mark all as hidden"
+msgstr "markér alle som skjulte"
 
 #: organizations/templates/organizations/edit_hidden_state_page.html
 msgid "Search for unit"
@@ -5111,3 +5115,21 @@ msgid ""
 msgstr ""
 "Outlook kategorisering kræver at en MSGraph bevilling er synkroniseret til "
 "rapport modulet."
+
+#: organizations/views/orgunit_views.py
+#, python-format
+msgid "\"%(name)s\" was marked as \"hidden\""
+msgstr "\"%(name)s\" blev markeret som \"skjult\""
+
+#: organizations/views/orgunit_views.py
+#, python-format
+msgid "\"%(name)s\" was marked as \"visible\""
+msgstr "\"%(name)s\" blev markeret som \"synlig\""
+
+#: organizations/views/orgunit_views.py
+msgid "All organizational units were marked as \"visible\""
+msgstr "Alle organisatoriske enheder blev markeret som \"synlige\""
+
+#: organizations/views/orgunit_views.py
+msgid "All organizational units were marked as \"hidden\""
+msgstr "Alle organisatoriske enheder blev markeret som \"skjulte\""
