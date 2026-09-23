@@ -1002,6 +1002,9 @@ $font-size_subtitle: 0.875rem;
       &-text {
         min-width: 0;
         // So overflow-ellipsis on .title can actually kick in inside a flex item.
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
 
         .title {
           font-weight: 500;
@@ -2107,9 +2110,10 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
   }
 
   // .expand-row's <col> needs room for a handle button plus a separate
-  // caret, wider than any single-control --base_width variant above.
+  // caret, wider than any single-control --base_width variant above --
+  // and wide enough for its longest label, "Fortryd håndtering".
   .column--actions.expand-row {
-    --base_width: 11rem;
+    --base_width: 13rem;
   }
 }
 

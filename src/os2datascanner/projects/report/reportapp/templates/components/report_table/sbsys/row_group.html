@@ -13,7 +13,8 @@
                  id="table-checkbox-case-{{ case_id|unlocalize }}"
                  value="{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}"
                  name="table-checkbox"
-                 class="datatable-checkbox" />
+                 class="datatable-checkbox"
+                 {% if not allow_handle %}disabled{% endif %} />
           <label for="table-checkbox-case-{{ case_id|unlocalize }}"
                  aria-label="{% trans 'Select case' %}"
                  title="{% trans 'Select case' %}"></label>
@@ -42,9 +43,14 @@
               {% if case_url %}
                 <div class="table-ui__container">
                   <div class="hit-link">
-                    <div class="button-group">
+                    <div class="button-group"
+                         hx-post="{% url 'open-match' first_report.pk|unlocalize %}"
+                         hx-push-url="false"
+                         hx-swap="none"
+                         hx-trigger="click target:.sbsys-case-open-link"
+                         hx-indicator="#report-page-indicator">
                       <a href="{{ case_url }}"
-                         class="button button--text-button"
+                         class="button button--text-button sbsys-case-open-link"
                          target="_blank"
                          rel="noopener"
                          title="{% trans "Click here to open this case in SBSYS" %}">{% trans "Open" %}</a>
@@ -73,7 +79,12 @@
       <td class="column--case-number">
         <div class="matches_container">
           <div class="matches">
-            <span class="datatable-numeral">{{ group.case_number|default:"—" }}</span>
+            <button type="button"
+                    class="button button--transparent-button click-to-copy"
+                    aria-label="{% trans "Click to copy the case number to the clipboard" %}"
+                    title="{% trans "Click to copy to clipboard" %}">
+              <span class="datatable-numeral">{{ group.case_number|default:"—" }}</span>
+            </button>
           </div>
         </div>
       </td>
@@ -101,9 +112,13 @@
                     hx-push-url="false"
                     hx-include="this"
                     hx-vals='{"table-checkbox": [{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                    hx-on:htmx:before-request="this.disabled = true"
+                    hx-on:htmx:response-error="this.disabled = false"
+                    hx-on:htmx:send-error="this.disabled = false"
+                    {% if not allow_handle %}disabled{% endif %}
                     name="revert-case">
-              <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
-              <span>{% trans "Revert case" %}</span>
+              <i class="material-symbols text-secondary" aria-hidden="true">undo</i>
+              <span>{% trans "Undo handling" %}</span>
             </button>
           {% else %}
             <button class="button button--icon-text-button"
@@ -117,6 +132,10 @@
                     hx-push-url="false"
                     hx-include="this"
                     hx-vals='{"action": "6", "table-checkbox": [{% for r in group.reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                    hx-on:htmx:before-request="this.disabled = true"
+                    hx-on:htmx:response-error="this.disabled = false"
+                    hx-on:htmx:send-error="this.disabled = false"
+                    {% if not allow_handle %}disabled{% endif %}
                     name="handle-case">
               <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
               <span>{% trans "Handle case" %}</span>
