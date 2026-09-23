@@ -260,7 +260,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
                     messages.add_message(
                         request,
                         messages.SUCCESS,
-                        f"Fetched end date: {end_date}",
+                        _("Expiry date fetched: {end_date}").format(end_date=end_date),
                         extra_tags="auto_close"
                     )
 
@@ -268,8 +268,8 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
                     messages.add_message(
                         request,
                         messages.ERROR,
-                        e,
-                        extra_tags="auto_close"
+                        _("Could not fetch expiry date: {error}").format(error=e),
+                        extra_tags="manual_close"
                     )
                 return self.get(request, *args, end_date=end_date)
 
@@ -313,7 +313,7 @@ class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
                     messages.add_message(
                         request,
                         messages.SUCCESS,
-                        f"Fetched end date: {end_date}",
+                        _("Expiry date fetched: {end_date}").format(end_date=end_date),
                         extra_tags="auto_close"
                     )
 
@@ -321,8 +321,8 @@ class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
                     messages.add_message(
                         request,
                         messages.ERROR,
-                        e,
-                        extra_tags="auto_close"
+                        _("Could not fetch expiry date: {error}").format(error=e),
+                        extra_tags="manual_close"
                     )
                 return self.get(request, *args, end_date=end_date)
 
