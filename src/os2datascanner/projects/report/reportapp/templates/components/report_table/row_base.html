@@ -1,8 +1,8 @@
-{# report_table--row.html #}
+{# row_base.html #}
 
-{% load i18n l10n humanize admin_urls handle_extras %}
+{% load i18n l10n humanize handle_extras %}
+
 {% with type=document_report.matches.handle|find_type_label %}
-
   {% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
     <tr data-type="{{ type }}"
         class="datatablex__row{% if request.session.last_opened == document_report.pk|unlocalize %} highlighted{% endif %}">
@@ -274,134 +274,7 @@
         </div>
       </td>
 
-      {% if is_handled %}
-        <td class="column column--resolution-status">
-          <div class="status">
-            <div class="status__wrapper"
-                 data-status="{{ document_report.resolution_status }}">
-              <span class="status__label">{{ document_report.get_resolution_status_display }}</span>
-            </div>
-          </div>
-        </td>
-      {% endif %}
-
-      <td class="column column--actions">
-        <div class="button-group text-align-right">
-          {% if settings.HANDLE_DROPDOWN %}
-            <div class="dropdown-anchor">
-              <button class="matches-handle expand button button--icon-text-button"
-                      type="button"
-                      aria-label=""
-                      {% if not allow_handle %}disabled{% endif %}
-                      title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}">
-                <i class="material-symbols" aria-hidden="true">archive</i>
-                <span>{% trans "Handle" %}</span>
-                <i class="material-symbols handle-result-dropdown__toggle-icon"
-                   aria-hidden="true">expand_more</i>
-              </button>
- 
-              <div class="dropdown-container">
-                <div class="handle-dropdown">
-                  <ul hx-swap="{% if is_handled %}none{% else %}outerHTML swap:300ms{% endif %}"
-                      hx-target="closest tr"
-                      hx-indicator="closest tr"
-                      hx-push-url="false"
-                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}>
-                    {% if is_handled %}
-                      <li class="revert-option button"
-                          hx-trigger="click"
-                          name="revert-match"
-                          hx-swap="outerHTML swap:300ms"
-                          hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{% trans "Revert" %}</li>
-                    {% endif %}
- 
-                    {% for choice in resolution_choices %}
-                      {% if choice|first != document_report.resolution_status %}
-                        <li class="handle-option button button--text-button"
-                            hx-trigger="click"
-                            hx-vals='{"action":"{{ choice|first }}"}'
-                            name="handle-match"
-                            hx-post="{% url 'handle-match' document_report.pk|unlocalize %}">{{ choice|last }}</li>
-                      {% endif %}
-                    {% endfor %}
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-
-          {% else %}
-
-            {% if is_handled %}
-              <button class="revert-handle button button--icon-text-button"
-                      type="button"
-                      title="{% blocktrans %}Revert the selected handling status for this result. This will remove the result from the handled tab and return it to the result overview.{% endblocktrans %}"
-                      hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
-                      hx-swap="outerHTML swap:300ms"
-                      hx-trigger="click"
-                      hx-indicator="closest tr"
-                      hx-target="closest tr"
-                      hx-push-url="false"
-                      hx-on:htmx:before-request="this.disabled = true"
-                      hx-on:htmx:response-error="this.disabled = false"
-                      hx-on:htmx:send-error="this.disabled = false"
-                      {% if not allow_handle %}disabled{% endif %}
-                      name="revert-match">
-                <i id="archive"
-                   class="material-symbols text-secondary"
-                   aria-hidden="true">archive</i>
-                <span>{% trans "Revert" %}</span>
-              </button>
-
-            {% else %}
-
-              <button class="matches-handle button button--icon-text-button"
-                      type="button"
-                      title="{% blocktrans %}OSdatascanner will not delete results from the system that was scanned. Marking a result as handled will only remove the result from OSdatascanner.{% endblocktrans %}"
-                      hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
-                      hx-swap="outerHTML swap:300ms"
-                      hx-target="closest tr"
-                      hx-indicator="closest tr"
-                      hx-trigger="click"
-                      hx-push-url="false"
-                      hx-vals='{"action":"0"}'
-                      hx-on:htmx:before-request="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = true)"
-                      hx-on:htmx:response-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
-                      hx-on:htmx:send-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
-                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
-                      {% if not allow_handle %}disabled{% endif %}
-                      name="handle-match">
-                <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
-                <span>{% trans "Handle" %}</span>
-              </button>
-            {% endif %}
-
-          {% endif %}
-
-          {% if not is_handled %}
-            <button class="matches-handle button button--icon-text-button"
-                    id="false-positive-button"
-                    type="button"
-                    title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"
-                    hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
-                    hx-swap="outerHTML swap:300ms"
-                    hx-target="closest tr"
-                    hx-indicator="closest tr"
-                    hx-trigger="click"
-                    hx-push-url="false"
-                    hx-vals='{"action":"4"}'
-                    hx-on:htmx:before-request="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = true)"
-                    hx-on:htmx:response-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
-                    hx-on:htmx:send-error="this.closest('tr').querySelectorAll('.matches-handle').forEach(b => b.disabled = false)"
-                    {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
-                    {% if not allow_handle %}disabled{% endif %}
-                    name="handle-match-false-positive">
-              <i class="material-symbols" aria-hidden="true">block</i>
-              <span>{% trans "false positive"|capfirst %}</span>
-            </button>
-          {% endif %}
-        </div>
-      </td>
+      {% block actions_cell %}{% endblock %}
 
       <td class="column column--show-more">
         <button type="button"
@@ -414,7 +287,7 @@
     </tr>
 
     <tr class="datatablex__row datatablex__row--expanded matches-list" hidden>
-      <td colspan="{% if is_handled %}9{% else %}8{% endif %}">
+      <td colspan="8">
         <table class="smaller datatable compressed">
           <thead>
             <tr>
@@ -429,13 +302,12 @@
           <tbody>
             {% with document_report.pk as pk %}
               {% with None as interval %}
-                {% include "components/report_table/report_table--row_expanded.html" %}
+                {% include "components/report_table/row_matches_list.html" %}
               {% endwith %}
             {% endwith %}
           </tbody>
         </table>
       </td>
     </tr>
-
   {% endwith %}
 {% endwith %}

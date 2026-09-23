@@ -13,19 +13,27 @@
 
 - Webscan censors netloc credentials.
 
-- Conditionally add dropdown arrow to "handle"-buttons for `HANDLE_DROPDOWN: true`.
-
-- Tighten the consistency of labels on "handle"-buttons.
-
 - Give the snackbar a minor UI/UX overhaul:
   - New snackbars will slide in smoothly instead of appearing abruptly.
   - New snackbars now appear at the bottom of the container instead of at the top.
   - Fixed width on snackbars to prevent UI jumping whenever a new message with longer content appears.
   - Removed all code related to the "old" snackbar.
 
-- Conditionally add dropdown arrow to "handle"-buttons for `HANDLE_DROPDOWN: true`.
+- Overhauled the handle/unhandle status UI to match the design mockup:
+  - `HANDLE_DROPDOWN: true`: add dropdown arrow to "handle"-buttons on all result handling views,
+    and also swap the "archive" icon for a "pencil" icon when on the handled-results view.
+  - `HANDLE_DROPDOWN: false`: swap the "archive" icon for an "undo" icon on the handled-results view.
+  - Tightened the consistency of labels on "handle"-buttons, and updated "mass-delete"-button wording
+    to match. 
+  - On the handled-results view, changed the key word of the handle buttons from "handle" to "edit".
+  - Styled the dropdown by for example giving the element a fixed width, and styled the "revert"
+    option distinctly from the regular status options
 
-- Tighten the consistency of labels on "handle"-buttons.
+- Restructured report table templates:
+  - Dropped the redundant `report_table--` prefix from file names.
+  - Use nested folders rather than adding extra descriptors to file names.
+  - Split shared row markup into a base template with handled/unhandled variants.
+  - Moved the status-handling dropdown into its own reusable component.
 
 ### Bugfixes
 

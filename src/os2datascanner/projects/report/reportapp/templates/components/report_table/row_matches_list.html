@@ -1,4 +1,4 @@
-{# report_table--row_expanded.html #}
+{# row_matches_list.html #}
 
 {% load handle_extras %}
 {% load i18n l10n %}
@@ -13,7 +13,7 @@
       {% endif %}
 
       <td class="matches-list__column matches-list__column--probability" hidden>
-        {% include "components/report_table/report_table--probability.html" %}
+        {% include "components/report_table/probability.html" %}
       </td>
     </tr>
   {% endfor %}

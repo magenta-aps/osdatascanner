@@ -152,7 +152,10 @@ class ReportView(LoginRequiredMixin, ListView):
         # We do this at the request of a customer to change the structure of resolution choices.
         choices = DocumentReport.ResolutionChoices.choices
         context["resolution_choices"] = [choices[i] for i in [3, 2, 1, 0]]  # No False Positive
-        context["mass_resolution_choices"] = [choices[i] for i in [3, 2, 4, 1, 0]]  # Has FP
+        context["handled_resolution_choices"] = [choices[i]
+                                                 for i in [3, 2, 4, 1, 0]]  # Has False Positive
+        context["mass_resolution_choices"] = [choices[i]
+                                              for i in [3, 2, 4, 1, 0]]  # Has False Positive
 
         self.add_form_context(context)
 
@@ -673,7 +676,7 @@ class OpenMatchView(HTMXEndpointView, DetailView):
 
 
 class ShowMoreMatchesView(HTMXEndpointView, DetailView):
-    template_name = "components/report_table/report_table--row_expanded.html"
+    template_name = "components/report_table/row_matches_list.html"
     model = DocumentReport
 
     def get_context_data(self, **kwargs):

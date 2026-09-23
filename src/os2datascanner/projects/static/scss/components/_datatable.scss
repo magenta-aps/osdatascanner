@@ -1882,18 +1882,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       // Empty
     }
 
-    &--resolution-status {
-      /* Archive only */
-      width: 13rem; // 208px, roughly fits the width of the widest status label.
-
-      .status {
-        @include pill-variant(
-          var(--color-primary-lightest),
-          var(--color-primary-dark)
-        );
-      }
-    }
-
     &--deviations {
       .td__flex-container {
         flex-wrap: wrap;
@@ -1947,10 +1935,6 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
       --base_width: 6.625rem;
       --false-positive_width: 0rem;
 
-      &.handle-dropdown {
-        --base_width: 8.25rem;
-      }
-
       &.false-positive {
         --false-positive_width: 9.125rem;
       }
@@ -1961,9 +1945,40 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
           var(--datatable-cell-padding)
       );
 
+      #false-positive-button {
+        .material-symbols {
+          font-variation-settings:
+            "FILL" 1,
+            "wght" 500,
+            "GRAD" -25,
+            "opsz" 20;
+        }
+      }
+    }
+
+    &--actions,
+    &--set-status,
+    &--status {
       .material-symbols {
-        font-size: 20px;
-        width: 20px;
+        $icon-size: 1.25rem;
+        font-size: $icon-size;
+        width: $icon-size;
+      }
+    }
+
+    &--set-status {
+      /* Unhandled results: a Handle button (or dropdown) plus the false positive button. */
+
+      --base_width: 15.75rem; // 6.625rem handle button + 9.125rem false positive button
+
+      &.handle-dropdown {
+        --base_width: 17.375rem; // 8.25rem handle dropdown + 9.125rem false positive button
+      }
+
+      width: calc(var(--base_width) + var(--datatable-cell-padding));
+
+      .button-group {
+        flex-wrap: nowrap;
       }
 
       #false-positive-button {
@@ -1974,6 +1989,38 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
             "GRAD" -25,
             "opsz" 20;
         }
+      }
+    }
+
+    &--status {
+      --base_width: 6.625rem; // Revert button
+      --chip_width: 13rem; // Max-width of the status chip
+
+      &.handle-dropdown {
+        --base_width: 8.25rem; // Change-status dropdown button
+      }
+
+      width: calc(
+        var(--base_width) + var(--chip_width) + 0.5rem +
+          var(--datatable-cell-padding)
+      );
+
+      .status {
+        @include pill-variant(
+          var(--color-primary-lightest),
+          var(--color-primary-dark)
+        );
+
+        padding: 0.5rem 1rem;
+        height: 2.125rem;
+        border-radius: 2.125rem;
+        font-size: 1rem;
+        font-weight: 500;
+      }
+
+      .td__flex-container,
+      .button-group {
+        flex-wrap: nowrap;
       }
     }
   }

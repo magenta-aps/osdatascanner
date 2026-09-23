@@ -1,0 +1,75 @@
+{# handle_dropdown.html #}
+
+{% comment %}
+  Dropdown menu for setting/editing a resolution status for one or more results.
+  Used by both the single-handle and mass-handle buttons on Report.
+
+  Receives:
+  • choices
+  • is_mass_handle
+  • is_handled
+  • document_report
+{% endcomment %}
+
+{% load i18n l10n %}
+
+{% if request.user.account.time_since_last_handle > 172800 %}
+  {% blocktranslate asvar confirm_message trimmed %}
+    You are about to handle this result. This action does not change the file, that the result 
+    is about. Please do not handle a result before action has been manually taken to the file.
+  {% endblocktranslate %}
+{% endif %}
+
+{% if is_mass_handle %}
+  {% url 'mass-handle' as action_url %}
+{% else %}
+  {% url 'handle-match' document_report.pk|unlocalize as action_url %}
+{% endif %}
+
+<div class="dropdown-container">
+  <div class="handle-dropdown">
+    <div class="handle-dropdown__content">
+      <div class="handle-dropdown__header">
+        <span class="title">
+          {% if is_handled %}
+            {% trans "Change status to" %}
+          {% else %}
+            {% trans "Set status to" %}
+          {% endif %}
+        </span>
+      </div>
+
+      {% with row_swap=is_handled|yesno:'none,outerHTML swap:300ms' %}
+        {% with hx_swap=is_mass_handle|yesno:'afterend,'|default:row_swap %}
+          <ul class="handle-dropdown__body"
+              hx-swap="{{ hx_swap }}"
+              hx-target="{{ is_mass_handle|yesno:'this,closest tr' }}"
+              hx-indicator="{{ is_mass_handle|yesno:'#mass_handle_button,closest tr' }}"
+              hx-push-url="false"
+              {% if confirm_message %}hx-confirm="{{ confirm_message }}"{% endif %}>
+            {% for choice in choices %}
+              {% if is_mass_handle or choice|first != document_report.resolution_status %}
+                <li class="handle-option button button--text-button"
+                    hx-trigger="click"
+                    hx-vals='{"action":"{{ choice|first }}"}'
+                    name="{{ is_mass_handle|yesno:'handle-matches,handle-match' }}"
+                    hx-post="{{ action_url }}">{{ choice|last }}</li>
+              {% endif %}
+            {% endfor %}
+
+            {% if is_handled %}
+              <li class="handle-revert button button--icon-text-button button--transparent-button"
+                  hx-trigger="click"
+                  name="{{ is_mass_handle|yesno:'handle-matches,handle-match' }}"
+                  hx-swap="{{ is_mass_handle|yesno:'afterend,outerHTML swap:300ms' }}"
+                  hx-post="{{ action_url }}">
+                <i class="material-symbols" aria-hidden="true">undo</i>
+                {% trans "revert handling"|capfirst %}
+              </li>
+            {% endif %}
+          </ul>
+        {% endwith %}
+      {% endwith %}
+    </div>
+  </div>
+</div>

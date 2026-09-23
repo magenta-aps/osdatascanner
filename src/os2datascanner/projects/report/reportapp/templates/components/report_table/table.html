@@ -1,7 +1,6 @@
-{# report_table.html #}
+{# table.html #}
 
-{% load i18n %}
-{% load handle_extras %}
+{% load i18n handle_extras %}
 
 <form id="table_checkboxes">
   <div class="datatablex__card-container no-side-scroll"
@@ -21,7 +20,7 @@
 
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
-        sidescroll on this specific table. This should be refactored if we find, that we don't want
+      sidescroll on this specific table. This should be refactored if we find, that we don't want
         sidescroll behaviour on any tables. {% endcomment %}
 
         <colgroup>
@@ -31,16 +30,19 @@
           <col class="column column--datasource_last_modified">
           <col class="column column--source">
           <col class="column column--flexible">
-          {% if is_handled %}<col class="column column--resolution-status">{% endif %}
-          <col class="column column--actions{% if not is_handled %} false-positive{% endif %}{% if settings.HANDLE_DROPDOWN %} handle-dropdown{% endif %}">
+          {% if is_handled %}
+            <col class="column column--status{% if settings.HANDLE_DROPDOWN %} handle-dropdown{% endif %}">
+          {% else %}
+            <col class="column column--set-status{% if settings.HANDLE_DROPDOWN %} handle-dropdown{% endif %}">
+          {% endif %}
           <col class="column column--show-more">
         </colgroup>
 
         <thead>
           <tr class="datatablex__row table-topbar topbar-stick sticky">
-            <th colspan="{% if is_handled %}9{% else %}8{% endif %}">
+            <th colspan="8">
               <div class="table-toolbar">
-                {% include "components/report_table/report_table--toolbar.html" %}
+                {% include "components/report_table/toolbar.html" %}
 
                 <div class="table-toolbar__content-right">
                   <button type="button" class="toggle probability-toggle" aria-pressed="false">
@@ -96,7 +98,7 @@
                        for="datasource_last_modified-caret">
                   <span>{% trans "last modified"|capfirst %}</span>
                 </label>
- 
+
                 <button type="button"
                         name="datasource_last_modified"
                         aria-label="{% trans "Sort the results by when the source object was last modified." %}"
@@ -117,7 +119,7 @@
               <div class="th__flex-container">
                 <label class="th-label" for="path-caret">{% trans "path"|capfirst %}</label>
                 {% comment %}We use a click event handler on this button to
-                submit the form defined in report_table--filters.html{% endcomment %}
+                submit the form defined in filters.html{% endcomment %}
                 <button type="button"
                         name="sort_key"
                         aria-label="{% trans "Sort the results by path name." %}"
@@ -131,7 +133,7 @@
             </th>
 
             {% if is_handled %}
-              <th class="column column--resolution-status">
+              <th class="column column--status">
                 <div class="th__flex-container">
                   <label class="th-label" for="status-caret">{% trans "status"|capfirst %}</label>
 
@@ -146,12 +148,12 @@
                   </button>
                 </div>
               </th>
+            {% else %}
+              <th class="column column--set-status">
+                <span aria-label="{% trans "actions"|capfirst %}"
+                      title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
+              </th>
             {% endif %}
-
-            <th class="column column--actions">
-              <span aria-label="{% trans "actions"|capfirst %}"
-                    title="{% trans "actions"|capfirst %}">{% trans "actions"|capfirst %}</span>
-            </th>
 
             <th class="column column--show-more"></th>
           </tr>
@@ -159,25 +161,20 @@
 
         <tbody>
           {% for document_report in document_reports %}
-            {% include "components/report_table/report_table--row.html" %}
+            {% if is_handled %}
+              {% include "components/report_table/actions_handled.html" %}
+            {% else %}
+              {% include "components/report_table/actions_unhandled.html" %}
+            {% endif %}
           {% empty %}
             <tr class="datatablex__row">
-              <td colspan="{% if is_handled %}9{% else %}8{% endif %}"
-                  class="datatable__column--nodata">{% trans "No results were found" %}</td>
+              <td colspan="8" class="datatable__column--nodata">{% trans "No results were found" %}</td>
             </tr>
           {% endfor %}
         </tbody>
 
         <tfoot>
-          {% if is_handled %}
-            {% with colspan=9 %}
-              {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
-            {% endwith %}
-          {% else %}
-            {% with colspan=8 %}
-              {% include "components/pagination/pagination.html" with colspan=colspan content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
-            {% endwith %}
-          {% endif %}
+          {% include "components/pagination/pagination.html" with colspan=8 content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
         </tfoot>
 
       </table>
