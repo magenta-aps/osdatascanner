@@ -359,10 +359,6 @@
 // Lock background scroll while any modal <dialog> is open:
 html:has(dialog[open]) {
   overflow: hidden;
-}
-
-// Prevent layout shift when the scrollbar appears/disappears:
-html {
   scrollbar-gutter: stable;
 }
 
