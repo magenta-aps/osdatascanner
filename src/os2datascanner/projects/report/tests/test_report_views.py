@@ -15,14 +15,20 @@ from django.urls import reverse_lazy
 
 from os2datascanner.utils.system_utilities import time_now
 
+from os2datascanner.engine2.pipeline import messages
+from os2datascanner.engine2.model._staging.sbsysdb import (
+    SBSYSDBHandles, SBSYSDBSources)
+
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
+from .generate_test_data import record_match
 
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
-    UserHandledView, RemediatorHandledView, UndistributedHandledView)
+    UserHandledView, RemediatorHandledView, UndistributedHandledView,
+    SBSYSRemediatorView, SBSYSRemediatorHandledView, SBSYSUndistributedView)
 from ..organizations.models import Account
 
 from importlib import reload, import_module
@@ -43,6 +49,26 @@ def reload_urlconf(urlconf=None):
 @pytest.fixture(autouse=True)
 def override_handled_tab_feature_flag():
     settings.HANDLED_TAB = True
+
+
+def _record_sbsys_match(common_scan_spec, scan_tag0, common_rule, sbsys_source,
+                        organization, case_number, field_name):
+    """Feeds a match for `field_name` on case `case_number` through the real
+    ingestion path (as record_match does for the other SBSYS tests), so the
+    report's container is derived the same way it would be in production."""
+    scan_tag = messages.replace(
+        scan_tag0,
+        organisation=messages.OrganisationFragment(
+            name=organization.name, uuid=organization.uuid))
+    case_handle = SBSYSDBHandles.Case(sbsys_source, case_number, "Test case", None)
+    case_source = SBSYSDBSources.Case(case_handle)
+    field_handle = SBSYSDBHandles.Field(case_source, field_name)
+
+    return record_match(messages.MatchesMessage(
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag),
+        handle=field_handle,
+        matched=True,
+        matches=[messages.MatchFragment(rule=common_rule, matches=[{"dummy": "m"}])]))
 
 
 @pytest.mark.django_db
@@ -1465,3 +1491,112 @@ class TestHandleMatchView:
         assert response.status_code == 200
         assert all([dr.resolution_status == DocumentReport.ResolutionChoices.REMOVED
                     for dr in DocumentReport.objects.all()])
+
+
+@pytest.mark.django_db
+class TestSBSYSCaseGrouping:
+    def test_reports_sharing_a_container_are_grouped_together(
+            self, rf, common_scan_spec, scan_tag0, common_rule, sbsys_source,
+            sbsys_account, sbsys_remediator_alias):
+        for field_name in ("Kommentar", "Titel"):
+            _record_sbsys_match(
+                common_scan_spec, scan_tag0, common_rule, sbsys_source,
+                sbsys_account.organization, "case-1", field_name)
+        create_alias_and_match_relations(sbsys_remediator_alias)
+
+        request = rf.get('/results/sbsys-remediator/')
+        request.user = sbsys_account.user
+        response = SBSYSRemediatorView.as_view()(request)
+
+        groups = response.context_data["case_groups"]
+        assert len(groups) == 1
+        assert len(groups[0]["reports"]) == 2
+        assert groups[0]["case_number"] == "case-1"
+
+    def test_reports_on_different_cases_are_separate_groups(
+            self, rf, common_scan_spec, scan_tag0, common_rule, sbsys_source,
+            sbsys_account, sbsys_remediator_alias):
+        for case_number in ("case-1", "case-2"):
+            _record_sbsys_match(
+                common_scan_spec, scan_tag0, common_rule, sbsys_source,
+                sbsys_account.organization, case_number, "Kommentar")
+        create_alias_and_match_relations(sbsys_remediator_alias)
+
+        request = rf.get('/results/sbsys-remediator/')
+        request.user = sbsys_account.user
+        response = SBSYSRemediatorView.as_view()(request)
+
+        groups = response.context_data["case_groups"]
+        assert len(groups) == 2
+        assert all(len(g["reports"]) == 1 for g in groups)
+        assert {g["case_number"] for g in groups} == {"case-1", "case-2"}
+
+    def test_a_case_never_splits_across_two_pages(
+            self, rf, common_scan_spec, scan_tag0, common_rule, sbsys_source,
+            sbsys_account, sbsys_remediator_alias):
+        # case-1 has 3 documents, case-2 has 1 -- with paginate_by=1 (one
+        # CASE per page, not one report), page 1 must show every one of
+        # case-1's 3 reports together, and case-2 must not leak onto page 1.
+        for field_name in ("Kommentar", "Titel", "Beskrivelse"):
+            _record_sbsys_match(
+                common_scan_spec, scan_tag0, common_rule, sbsys_source,
+                sbsys_account.organization, "case-1", field_name)
+        _record_sbsys_match(
+            common_scan_spec, scan_tag0, common_rule, sbsys_source,
+            sbsys_account.organization, "case-2", "Kommentar")
+        create_alias_and_match_relations(sbsys_remediator_alias)
+
+        request = rf.get('/results/sbsys-remediator/', {"paginate_by": "1"})
+        request.user = sbsys_account.user
+        response = SBSYSRemediatorView.as_view()(request)
+
+        groups = response.context_data["case_groups"]
+        assert len(groups) == 1
+        assert groups[0]["case_number"] == "case-1"
+        assert len(groups[0]["reports"]) == 3
+        assert response.context_data["page_obj"].has_next()
+
+    def test_partially_handled_case_stays_on_the_unhandled_tab(
+            self, rf, common_scan_spec, scan_tag0, common_rule, sbsys_source,
+            sbsys_account, sbsys_remediator_alias):
+        # A case with 2 documents, only one of them handled, must still show
+        # -- with BOTH documents -- on the unhandled tab, and must not show
+        # up on the handled tab at all yet.
+        reports = [
+            _record_sbsys_match(
+                common_scan_spec, scan_tag0, common_rule, sbsys_source,
+                sbsys_account.organization, "case-1", field_name)
+            for field_name in ("Kommentar", "Titel")]
+        create_alias_and_match_relations(sbsys_remediator_alias)
+
+        handled_report = reports[0]
+        handled_report.resolution_status = DocumentReport.ResolutionChoices.HANDLED
+        handled_report.save()
+
+        unhandled_request = rf.get('/results/sbsys-remediator/')
+        unhandled_request.user = sbsys_account.user
+        unhandled_response = SBSYSRemediatorView.as_view()(unhandled_request)
+        unhandled_groups = unhandled_response.context_data["case_groups"]
+
+        assert len(unhandled_groups) == 1
+        assert len(unhandled_groups[0]["reports"]) == 2
+
+        handled_request = rf.get('/results/sbsys-remediator/')
+        handled_request.user = sbsys_account.user
+        handled_response = SBSYSRemediatorHandledView.as_view()(handled_request)
+
+        assert handled_response.context_data["case_groups"] == []
+
+    def test_sbsys_undistributed_view_does_not_crash(self, rf, sbsys_organization):
+        # SBSYSUndistributedView never sets report_type (unlike the other
+        # SBSYS views), and UndistributedView's own get_base_queryset()
+        # doesn't go through Account.get_report() at all -- paginate_queryset
+        # used to call get_report() directly, which crashed here.
+        superuser = Account.objects.create(
+            username="super_bruce", is_superuser=True, organization=sbsys_organization)
+
+        request = rf.get('/results/sbsys-undistributed/')
+        request.user = superuser.user
+        response = SBSYSUndistributedView.as_view()(request)
+
+        assert response.status_code == 200

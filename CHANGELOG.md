@@ -76,6 +76,9 @@
 - Added a new subtab on the leader overview showing the same statistics as the
   DPO overview, scoped to the departments a leader manages.
 
+- SBSYS results are now grouped by case: one result per case, with its documents foldable
+  underneath and a single handle/open action for the whole case.
+
 ### Bugfixes
 
 - Fixed a bug where a scan that failed to explore its source(s) would still advance the

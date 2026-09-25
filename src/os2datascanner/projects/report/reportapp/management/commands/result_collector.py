@@ -24,7 +24,10 @@ from prometheus_client import Summary, start_http_server
 from os2datascanner.engine2.model.core.errors import DeserialisationError
 
 
+from os2datascanner.engine2.model._staging.sbsysdb import find_case_handle
+
 from ...models.documentreport import DocumentReport, count_matches
+from ...models.container_report import ContainerReport
 from ...models.scanner_reference import ScannerReference
 from ...utils import prepare_json_object
 from ....organizations.models import AccountOutlookSetting
@@ -120,6 +123,27 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
+def get_or_create_container(scanner, handle):
+    """Resolves the ContainerReport for @handle's case, creating it if it
+    doesn't exist yet. Returns None if @handle isn't part of an SBSYS case
+    at all."""
+    case_handle = find_case_handle(handle)
+    if case_handle is None:
+        return None
+    # Walk to the root source
+    source = case_handle.source
+    while source.handle:
+        source = source.handle.source
+    container, _ = ContainerReport.objects.get_or_create(
+        scanner_job=scanner,
+        path=case_handle.crunch(hash=True),
+        defaults={
+            "source_type": source.type_label,
+        },
+    )
+    return container
+
+
 def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitive complexity
     message = messages.MetadataMessage.from_json_object(result)
     path = message.handle.crunch(hash=True)
@@ -151,6 +175,9 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         "only_notify_remediators": scan_tag.scanner.only_notify_remediators,
         "owner": owner,
     }
+
+    if previous_report is None or previous_report.container is None:
+        update_fields["container"] = get_or_create_container(scanner, message.handle)
 
     if "last-modified" in message.metadata:
         update_fields['datasource_last_modified'] = OutputType.LastModified.decode_json_object(
@@ -320,7 +347,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 resolution_status = None
                 resolution_time = None
 
-            DocumentReport.objects.filter(pk=prev.pk).update(
+            update_fields = dict(
                 raw_problem=None,
                 only_notify_superadmin=scan_tag.scanner.test,
                 only_notify_remediators=scan_tag.scanner.only_notify_remediators,
@@ -334,6 +361,11 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 resolution_time=resolution_time,
                 number_of_matches=count_matches(message),
             )
+
+            if prev.container is None:
+                update_fields["container"] = get_or_create_container(
+                        scanner, message.handle)
+            DocumentReport.objects.filter(pk=prev.pk).update(**update_fields)
             prev.refresh_from_db()
             return prev
 
@@ -357,6 +389,7 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 raw_matches=prepare_json_object(sort_matches_by_probability(result)),
                 resolution_status=None,
                 resolution_time=None,
+                container=get_or_create_container(scanner, message.handle),
             )
             return dr
 

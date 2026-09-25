@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-18 15:57+0200\n"
+"POT-Creation-Date: 2026-09-25 13:53+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -188,12 +188,10 @@ msgstr "match"
 
 #: organizations/models/account_outlook_setting.py
 #: reportapp/templates/components/report_table/actions_unhandled.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "false positive"
 msgstr "falsk positiv"
 
 #: organizations/models/account_outlook_setting.py
-#: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
 msgid "name"
 msgstr "navn"
@@ -719,7 +717,6 @@ msgstr "Nulstil min adgangskode"
 
 #: reportapp/templates/components/report_table/actions_handled.html
 #: reportapp/templates/components/report_table/actions_unhandled.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 #: reportapp/templates/components/report_table/toolbar.html
 msgid ""
 "OSdatascanner will not delete results from the system that was scanned. "
@@ -741,7 +738,6 @@ msgstr ""
 "resultatet fra håndteret-fanen og returnere det til resultat overblikket."
 
 #: reportapp/templates/components/report_table/actions_handled.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "revert"
 msgstr "fortryd"
 
@@ -751,7 +747,6 @@ msgstr "håndtér"
 
 #: reportapp/templates/components/report_table/actions_unhandled.html
 #: reportapp/templates/components/report_table/handle_dropdown.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid ""
 "You are about to handle this result. This action does not change the file, "
 "that the result is about. Please do not handle a result before action has "
@@ -762,12 +757,10 @@ msgstr ""
 "manuelt har gjort noget ved filen."
 
 #: reportapp/templates/components/report_table/actions_unhandled.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "Handle"
 msgstr "Håndtér"
 
 #: reportapp/templates/components/report_table/actions_unhandled.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "Handle this result by marking it as a false positive."
 msgstr "Håndtér resultatet ved at markere det som falsk positiv."
 
@@ -842,12 +835,11 @@ msgid "delete selected"
 msgstr "slet valgte"
 
 #: reportapp/templates/components/report_table/row_base.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "Select result"
 msgstr "Vælg resultat"
 
 #: reportapp/templates/components/report_table/row_base.html
-#: reportapp/templates/components/report_table/sbsys/row.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Open"
 msgstr "Åbn"
 
@@ -932,7 +924,6 @@ msgstr ""
 "OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/report_table/row_base.html
-#: reportapp/templates/components/report_table/sbsys/row.html
 msgid "Opened for"
 msgstr "Åbnet for"
 
@@ -965,6 +956,7 @@ msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
 #: reportapp/templates/components/report_table/row_base.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Context"
 msgstr "Kontekst"
 
@@ -976,38 +968,80 @@ msgstr "Sandsynlighed"
 msgid "Show more matches"
 msgstr "Vis flere matches"
 
-#: reportapp/templates/components/report_table/sbsys/row.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+#, fuzzy
+#| msgid "Select result"
+msgid "Select case"
+msgstr "Vælg resultat"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+msgid "Untitled case"
+msgstr "Unavngivet sag"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+#, python-format
+msgid ""
+"\n"
+"              %(counter)s deviation on this case\n"
+"            "
+msgid_plural ""
+"\n"
+"              %(counter)s deviations on this case\n"
+"              "
+msgstr[0] ""
+"\n"
+"              %(counter)s afvigelse på denne sag\n"
+"            "
+msgstr[1] ""
+"\n"
+"              %(counter)s afvigelser på denne sag\n"
+"              "
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click here to open this case in SBSYS"
 msgstr "Klik her for at åbne den relaterede sag i SBSYS"
 
-#: reportapp/templates/components/report_table/sbsys/row.html
-msgid "no deviations found"
-msgstr "ingen afvigelser fundet"
-
-#: reportapp/templates/components/report_table/sbsys/row.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click to copy the case number to the clipboard"
 msgstr "Klik for at kopiere sagsnummeret til udklipsholderen"
 
-#: reportapp/templates/components/report_table/sbsys/row.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click to copy to clipboard"
 msgstr "Klik for at kopiére til udklipsholderen"
 
-#: reportapp/templates/components/report_table/sbsys/row.html
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "unknown"
 msgstr "ukendt"
 
-#: reportapp/templates/components/report_table/sbsys/row.html
-msgid "Revert handle status and return this result to the result overview"
-msgstr ""
-"Fortryd håndteringsstatus og returnér dette resultat til resultatoverblikket"
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+msgid "Reverts every result on this case to unhandled."
+msgstr "Fortryder alle resultater på denne sag til uhåndteret."
 
-#: reportapp/templates/components/report_table/sbsys/row.html
-msgid ""
-"You are about to handle this result by marking it as a false positive. This "
-"action does not change the file, that the result is about."
-msgstr ""
-"Du er ved at håndtere det markerede resultat som falsk positiv. Denne "
-"handling ændrer ikke på filen, som resultatet handler om."
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+#, fuzzy
+#| msgid "revert handling"
+msgid "Undo handling"
+msgstr "fortryd håndtering"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+msgid "Marks every result on this case as handled."
+msgstr "Markerer alle resultater på denne sag som håndterede."
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+#, fuzzy
+#| msgid "Handle"
+msgid "Handle case"
+msgstr "Håndtér"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+msgid "Show/hide the individual results on this case"
+msgstr "Vis/skjul de enkelte resultater for denne sag"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
+#, fuzzy
+#| msgid "document reports"
+msgid "Documents"
+msgstr "dokument rapporter"
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
@@ -1026,6 +1060,10 @@ msgid "Select all results."
 msgstr "Vælg alle resultater."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
+msgid "case title"
+msgstr "sagstitel"
+
+#: reportapp/templates/components/report_table/sbsys/table.html
 msgid "deviations"
 msgstr "afvigelser"
 
@@ -1036,21 +1074,6 @@ msgstr "sagsnummer"
 #: reportapp/templates/components/report_table/sbsys/table.html
 msgid "Sort the results by case number."
 msgstr "Sortér resultaterne efter sagsnummer."
-
-#: reportapp/templates/components/report_table/sbsys/table.html
-#: reportapp/templates/components/report_table/table.html
-msgid "Time when the source object was last modified."
-msgstr "Tidspunkt, hvor kildeobjektet sidst blev ændret."
-
-#: reportapp/templates/components/report_table/sbsys/table.html
-#: reportapp/templates/components/report_table/table.html
-msgid "last modified"
-msgstr "ændringsdato"
-
-#: reportapp/templates/components/report_table/sbsys/table.html
-#: reportapp/templates/components/report_table/table.html
-msgid "Sort the results by when the source object was last modified."
-msgstr "Sortér resultaterne efter hvornår kilden sidst er blevet ændret."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 msgid "Time when the source object was created."
@@ -1066,13 +1089,18 @@ msgstr "Sortér resultaterne efter hvornår kilden blev oprettet."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
-msgid "status"
-msgstr "status"
+msgid "Time when the source object was last modified."
+msgstr "Tidspunkt, hvor kildeobjektet sidst blev ændret."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
-msgid "Sort the results by resolution status."
-msgstr "Sortér resultater efter håndteringsstatus."
+msgid "last modified"
+msgstr "ændringsdato"
+
+#: reportapp/templates/components/report_table/sbsys/table.html
+#: reportapp/templates/components/report_table/table.html
+msgid "Sort the results by when the source object was last modified."
+msgstr "Sortér resultaterne efter hvornår kilden sidst er blevet ændret."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
@@ -1107,6 +1135,14 @@ msgstr "kilde"
 #: reportapp/templates/components/report_table/table.html
 msgid "Sort the results by path name."
 msgstr "Sortér resultaterne efter sti navn."
+
+#: reportapp/templates/components/report_table/table.html
+msgid "status"
+msgstr "status"
+
+#: reportapp/templates/components/report_table/table.html
+msgid "Sort the results by resolution status."
+msgstr "Sortér resultater efter håndteringsstatus."
 
 #: reportapp/templates/components/report_table/toolbar.html
 msgid "edit handle status for selected results"
@@ -2685,3 +2721,18 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #: reportapp/views/utilities/smb_utilities.py
 msgid "Target file is not on a Windows network drive"
 msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
+
+#~ msgid "no deviations found"
+#~ msgstr "ingen afvigelser fundet"
+
+#~ msgid "Revert handle status and return this result to the result overview"
+#~ msgstr ""
+#~ "Fortryd håndteringsstatus og returnér dette resultat til "
+#~ "resultatoverblikket"
+
+#~ msgid ""
+#~ "You are about to handle this result by marking it as a false positive. "
+#~ "This action does not change the file, that the result is about."
+#~ msgstr ""
+#~ "Du er ved at håndtere det markerede resultat som falsk positiv. Denne "
+#~ "handling ændrer ikke på filen, som resultatet handler om."

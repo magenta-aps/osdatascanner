@@ -40,6 +40,14 @@ class BaseMassView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        pks = self.request.POST.getlist("table-checkbox", [])
+        # Usually one report pk per checkbox value, but a single checkbox can
+        # also stand in for a whole group of reports (e.g. an SBSYS case's
+        # summary-row checkbox in sbsys/row_group.html), whose
+        # value is a comma-separated list of that group's report pks.
+        pks = [
+            pk
+            for value in self.request.POST.getlist("table-checkbox", [])
+            for pk in value.split(",")
+        ]
         reports = qs.filter(pk__in=pks)
         return reports
