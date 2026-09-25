@@ -38,9 +38,14 @@
 - Added help text to the "Only notify superadmin" and "Only notify remediators"
   settings on scanner job forms.
 
+- Wired up the snackbar component on Admins base.html, and then removed all the direct includes
+  from templates.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.
+
+- Added missing grant expire date translation.
 
 ## Version 3.33.0, 26th August 2026
 
