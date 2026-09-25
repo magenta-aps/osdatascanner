@@ -11,7 +11,8 @@ function dropMenu() {
 window.onclick = function (e) {
   if (!e.target.closest(".user-menu__trigger, .user-menu__container")) {
     const menu = document.getElementById("userMenu");
-    if (menu.classList.contains("show")) {
+    // Menu isn't rendered for logged-out users:
+    if (menu && menu.classList.contains("show")) {
       menu.classList.remove("show");
       document.querySelector(".user-menu__trigger").setAttribute("aria-expanded", false);
     }
