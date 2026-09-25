@@ -47,6 +47,10 @@
 
 - Added missing grant expire date translation.
 
+- Fixed a bug where pages in the Admin and Report modules could scroll sideways:
+  - Removed the empty scrollbar space that was always reserved on the right-hand side of pages.
+  - Stopped the dropdown arrow in the user menu from overflowing and widening the page.
+
 ## Version 3.33.0, 26th August 2026
 
 "9 to 5 ✨️💗✨️"
