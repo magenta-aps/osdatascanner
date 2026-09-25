@@ -1,6 +1,6 @@
 <header class="banner" role="banner">
   {% include "components/common/logo.html" %}
-  {% include "components/user/user.html" %}
+  {% include "components/navigation/user_menu.html" with account=None profile_url_name="my-user" show_password_change=True %}
   <button id="navigation-toggle" aria-haspopup="true" aria-controls="sidemenu">
     <span class="screen-reader-only">Menu</span>
   </button>

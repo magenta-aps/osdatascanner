@@ -2,15 +2,18 @@
 /* When the user clicks on the button,
 toggle between hiding and showing the dropdown content */
 function dropMenu() {
-  document.getElementById("userMenu").classList.toggle("show");
+  const menu = document.getElementById("userMenu");
+  const isOpen = menu.classList.toggle("show");
+  document.querySelector(".user-menu__trigger").setAttribute("aria-expanded", isOpen);
 }
 
 // Close the dropdown if the user clicks outside of it
 window.onclick = function (e) {
-  if (!e.target.matches('.dropbtn, .user__name, .material-symbols')) {
-    var dropdown = document.getElementById("userMenu");
-    if (dropdown.classList.contains('show')) {
-      dropdown.classList.remove('show');
+  if (!e.target.closest(".user-menu__trigger, .user-menu__container")) {
+    const menu = document.getElementById("userMenu");
+    if (menu.classList.contains("show")) {
+      menu.classList.remove("show");
+      document.querySelector(".user-menu__trigger").setAttribute("aria-expanded", false);
     }
   }
 };

@@ -1,0 +1,82 @@
+{% load i18n static %}
+
+{% comment %}
+  User menu shown in the top-right corner on both Admin and Report.
+
+  Requirements:
+  • `account`: Account to show the avatar for. Always pass it explicitly (`None` shows an icon),
+    otherwise the page's own `account` context variable (e.g. on profile pages) is used instead.
+  • `profile_url_name`: URL of the user's profile page.
+
+  Optional:
+  • `show_password_change`: Whether you want to show the "change password" option in the menu.
+{% endcomment %}
+
+<script src="{% static 'js/user/user_menu.js' %}"></script>
+
+{% if request.user.is_authenticated %}
+  <div class="user">
+    <button class="button button--transparent-button button--icon-text-button user-menu__trigger"
+            type="button"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="userMenu"
+            onclick="dropMenu()">
+      <span class="user__avatar user__avatar--small">
+        {% include "components/decoration/account_image.html" with account=account %}
+      </span>
+      <span class="user__name">{{ request.user }}</span>
+      <i class="material-symbols">arrow_drop_down</i>
+    </button>
+
+    <div class="user-menu__container" id="userMenu">
+      <div class="user-menu">
+        <div class="user-menu__header">
+          <div class="user__avatar user__avatar--medium">
+            {% include "components/decoration/account_image.html" with account=account %}
+          </div>
+
+          <div class="user-info">
+            <span class="user-info__full-name" title="{{ request.user.get_full_name }}">{{ request.user.get_full_name }}</span>
+            <span class="user-info__user-name" title="{{ request.user }}">{{ request.user }}</span>
+          </div>
+        </div>
+
+        <div class="user-menu__body">
+          <div class="menu-item menu-item--profile">
+            <div class="menu-item__wrapper">
+              <a class="button button--transparent-button button--icon-text-button"
+                 href="{% url profile_url_name %}">
+                <i class="material-symbols">account_circle</i>
+                <span>{% trans "show profile"|capfirst %}</span>
+              </a>
+            </div>
+          </div>
+
+          {% if show_password_change %}
+            <div class="menu-item menu-item--password">
+              <div class="menu-item__wrapper">
+                <a class="button button--transparent-button button--icon-text-button"
+                   href="{% url "password_change" %}">
+                  <i class="material-symbols">settings</i>
+                  <span>{% trans "change password"|capfirst %}</span>
+                </a>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="menu-item menu-item--logout">
+            <form class="menu-item__wrapper" method="post" action="{% url "logout" %}">
+              {% csrf_token %}
+              <button class="button button--transparent-button button--icon-text-button"
+                      type="submit">
+                <i class="material-symbols">logout</i>
+                <span>{% trans "log out"|capfirst %}</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}

@@ -105,10 +105,10 @@ h1.userprofile-text {
 }
 
 .user {
+  position: relative;
   align-items: center;
   display: none;
-  margin-top: 1em;
-  flex: 0 1 0;
+  margin-top: 1rem;
 
   @media (min-width: $break-xs) {
     justify-content: flex-end;
@@ -121,197 +121,172 @@ h1.userprofile-text {
 }
 
 .user a {
-  flex: 0 1 0;
   color: inherit;
   text-decoration: none;
 }
 
 .user__name {
-  flex: 0 1 0;
   color: inherit;
-
-  &--bold {
-    font-weight: 600;
-  }
+  margin-right: -0.125rem;
 }
 
 .user__avatar {
+  --avatar-size: 1rem;
+
+  @include flex-center;
+
+  height: var(--avatar-size);
+  width: var(--avatar-size);
   border-radius: 50%;
-  margin-right: 1rem;
-  height: var(--size-logo-height);
-  width: var(--size-logo-height);
+  overflow: hidden;
 
-  .account_initials {
-    height: 1.7rem;
-    width: 1.7rem;
-    margin: 0.15rem;
-    font-size: 0.875rem;
-    line-height: 1.7rem;
+  &--tiny {
+    --avatar-size: 1.5rem;
+    margin-right: 0.25rem;
   }
 
-  .material-symbols {
-    fill: #fff;
-    font-size: var(--size-logo-height);
-  }
+  &--small {
+    --avatar-size: var(--size-logo-height);
+    margin-right: 0.25rem;
 
-  img {
-    width: var(--size-logo-height);
-    height: var(--size-logo-height);
-    object-fit: cover;
-    border-radius: 50%;
-  }
-}
-
-.user__avatar_big {
-  border-radius: 50%;
-  margin-right: 1rem;
-
-  .account_initials {
-    height: 3rem;
-    width: 3rem;
-    margin: 0.25rem;
-    font-size: 1.5rem;
-    line-height: 3rem;
-  }
-
-  .material-symbols {
-    fill: #fff;
-    height: 100%;
-    width: 100%;
-    font-size: 3.5rem;
-  }
-
-  img {
-    width: 3.5rem;
-    height: 3.5rem;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-}
-
-.user__avatar_verybig {
-  border-radius: 50%;
-  margin-right: 1rem;
-
-  .account_initials {
-    height: 8.5rem;
-    width: 8.5rem;
-    margin: 0.75rem;
-    font-size: 4.5rem;
-    line-height: 8.5rem;
-  }
-
-  .material-symbols {
-    color: var(--color-text-secondary);
-    fill: #fff;
-    height: 10rem;
-    width: 10rem;
-    font-size: 10rem;
-  }
-
-  img {
-    width: 10rem;
-    height: 10rem;
-    object-fit: cover;
-    border-radius: 50%;
-  }
-}
-
-.arrow {
-  height: var(--size-logo-height);
-  width: var(--size-logo-height);
-
-  .material-symbols {
-    font-size: var(--size-logo-height);
-    overflow: hidden;
-  }
-}
-
-.user_menu {
-  display: flex;
-  flex: 0 1 0;
-
-  .dropbtn {
-    flex: 0 1 0;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    border: none;
-    outline: none;
-    background-color: var(--color-widget-bg);
-    margin: 0;
-    font-size: 1rem;
-  }
-
-  .user-content {
-    display: none;
-    position: absolute;
-    top: 2rem;
-    right: 20%;
-    background-color: var(--color-widget-bg);
-    min-width: 15rem;
-    box-shadow: var(--box-shadow-default);
-    border-radius: var(--border-radius-default);
-    z-index: 10;
-  }
-
-  .user-content a,
-  .user-content button,
-  .user-content > div {
-    display: flex;
-    align-items: center;
-    padding: 12px 16px;
-    text-decoration: none;
-    text-align: left;
-    width: 100%;
-  }
-
-  .user-content a:hover,
-  .user-content button:hover {
-    color: var(--color-primary-dark);
-    cursor: pointer;
-  }
-
-  .user-content a:last-child {
-    border-radius: 0 0 0.625rem 0.625rem;
-  }
-
-  .show {
-    display: block;
-  }
-
-  .password-change {
-    border-top: 1px solid var(--color-hover);
-    font-weight: 600;
-  }
-
-  .show-account {
-    border-top: 1px solid var(--color-hover);
-    font-weight: 600;
-  }
-
-  .logout {
-    border-top: 1px solid var(--color-hover);
-
-    button {
-      color: #e24e4e;
-      font-weight: 600;
-
-      // Remove default button styling
-      background-color: rgba(0, 0, 0, 0);
-      border: none;
-      font-size: 1rem;
+    .material-symbols {
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 40;
     }
   }
-}
 
-.account_initials {
-  color: var(--color-text-white);
-  border-radius: 50%;
-  text-align: center;
-  font-family: monospace;
+  &--medium {
+    --avatar-size: 3.5rem;
+
+    .material-symbols {
+      font-variation-settings:
+        "FILL" 1,
+        "wght" 400,
+        "GRAD" 0,
+        "opsz" 48;
+    }
+  }
+
+  &--large {
+    --avatar-size: 8.5rem;
+  }
+
+  .account_initials {
+    height: var(--avatar-size);
+    width: var(--avatar-size);
+    color: var(--color-text-white);
+    font-family: monospace;
+    font-size: calc(var(--avatar-size) * 0.5);
+    line-height: var(--avatar-size);
+    text-align: center;
+  }
+
+  .material-symbols {
+    // The account_circle glyph's circle only fills 20/24 of its box,
+    // so we need to scale it up to make the visible circle match --avatar-size.
+    $glyph_scale: 1.2;
+
+    font-size: calc(var(--avatar-size) * #{$glyph_scale});
+    width: calc(var(--avatar-size) * #{$glyph_scale});
+    height: calc(var(--avatar-size) * #{$glyph_scale});
+    flex-shrink: 0;
+  }
+
+  img {
+    height: var(--avatar-size);
+    width: var(--avatar-size);
+    object-fit: cover;
+  }
 }
 
 .edit-button {
   margin-left: 1rem;
+}
+
+.user-menu {
+  &__container {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 15rem;
+    margin-top: 0.375rem;
+    margin-right: 1rem;
+
+    background-color: var(--color-widget-bg);
+    border-radius: var(--border-radius-m);
+    box-shadow: var(--box-shadow-default);
+
+    &.show {
+      display: block;
+    }
+  }
+
+  &__header {
+    @include layout-vertical(0.75rem);
+    align-items: center;
+    padding: 1.5rem 0.375rem;
+  }
+
+  &__body {
+    margin-bottom: 0.25rem;
+  }
+}
+
+.user-info {
+  @include layout-vertical(0.25rem);
+  align-items: center;
+  max-width: 100%;
+
+  &__full-name,
+  &__user-name {
+    max-width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  &__full-name {
+    font-weight: 500;
+    font-size: 0.875rem;
+  }
+
+  &__user-name {
+    font-size: 0.75rem;
+  }
+}
+
+.menu-item {
+  border-top: 1px solid var(--color-hover);
+
+  .button {
+    font-weight: 600;
+    font-size: 0.906rem;
+  }
+
+  .material-symbols {
+    $icon_size: 1.25rem;
+
+    height: $icon_size;
+    width: $icon_size;
+    font-size: $icon_size;
+
+    font-variation-settings:
+      "FILL" 1,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 20;
+  }
+
+  &__wrapper {
+    padding: 0.375rem 0.5rem;
+  }
+
+  &--logout button {
+    color: var(--color-tag-red-text);
+  }
 }
