@@ -3,12 +3,17 @@
 {# see sbsys/row_group.html. Purely informational: only the #}
 {# case as a whole is handled/opened, so there's nothing to click here. #}
 
-<tr>
-  <td class="matches-list__column column--document">
-    <div class="tooltip">
-      <div class="overflow-ellipsis">
-        <span data-tooltip-text>{{ document_report.matches.handle.name|capfirst }}</span>
+{% load handle_extras %}
+{% with frag=document_report.matches.matches|merge_renderable_match_fragments %}
+  <tr>
+    <td class="matches-list__column column--document">
+      <div class="tooltip">
+        <div class="overflow-ellipsis">
+          <span data-tooltip-text>{{ document_report.matches.handle.name|capfirst }}</span>
+        </div>
       </div>
-    </div>
-  </td>
-</tr>
+    </td>
+
+    <td class="matches-list__column matches-list__column--context match-context">{{ frag.matches.0.context }}</td>
+  </tr>
+{% endwith %}
