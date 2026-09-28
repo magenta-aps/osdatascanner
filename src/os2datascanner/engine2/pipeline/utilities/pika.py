@@ -253,6 +253,10 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
         self._default_basic_properties = dict(delivery_mode=2, content_encoding="gzip")
         self._tick = 0
 
+        self._message_delivery = None
+        """ What await_message last handed to the main thread, and so is no longer
+        in _incoming. Combined with _incoming, it's what we have in hand, but haven't acked yet."""
+
         self._message_channel = None
         """The channel that delivered the message await_message last handed to
         the main thread. A delivery tag is only valid on the channel that
@@ -285,6 +289,28 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
             logger.trace(f"PikaPipelineThread - Thread TID: {self.native_id} "
                          "acquired conditional and enqueued outgoing message.")
             self._outgoing.append((label, *args))
+
+    def _delivery_done(self, delivery_tag: int):
+        """Notes that await_message has handed a message to the main thread, that has
+        now been ack'ed (or rejected), so we no longer hold it."""
+
+        if (self._message_delivery is not None and
+                self._message_delivery.delivery_tag == delivery_tag):
+            self._message_delivery = None
+
+    def outstanding(self, queue: str) -> int:
+        """How many deliveries from given queue we're holding but have not yet ack'ed
+          Means stuff that we're either currently working on or is still in _incoming.
+        """
+        with self._condition:
+            # Counts messages in _incoming that belong to this queue/routing_key.
+            # _incoming returns a tuple, we only need 'method' which is pika's Basic.Delivery
+            held = sum(
+                1 for method, *_ in self._incoming
+                if method.routing_key == queue
+            )
+            working_on = self._message_delivery
+            return held + (1 if working_on is not None and working_on.routing_key == queue else 0)
 
     def enqueue_ack(self, delivery_tag: int):
         """Requests that the background thread acknowledge receipt of the
@@ -395,6 +421,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
             rv = self._condition.wait_for(waiter, timeout)
             if rv and self._live:
                 method, properties, body, channel = self._incoming.pop(0)
+                self._message_delivery = method
                 self._message_channel = channel
         if body and properties and properties.content_encoding:
             _, decoder = _coders[properties.content_encoding]
@@ -479,6 +506,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                 # destroying work that was never done and can never be counted.
                 stale_incoming = len(self._incoming)
                 self._incoming.clear()
+                self._message_delivery = None
                 stale_acks = [r for r in self._outgoing if r[0] in ("ack", "rej")]
 
                 # Outgoing can hold other msg's too, which we don't want to clear.
@@ -545,6 +573,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                                                         **props),
                                                 body=body)
                                 case ("ack", delivery_tag, delivery_channel):
+                                    self._delivery_done(delivery_tag)
                                     if delivery_channel is self._channel:
                                         self.channel.basic_ack(delivery_tag)
                                     else:
@@ -555,6 +584,7 @@ class PikaPipelineThread(threading.Thread, PikaPipelineRunner):
                                                 channel_serial=self._channel_serial)
                                 case ("rej", delivery_tag, requeue,
                                       delivery_channel):
+                                    self._delivery_done(delivery_tag)
                                     if delivery_channel is self._channel:
                                         self.channel.basic_reject(
                                                 delivery_tag, requeue=requeue)

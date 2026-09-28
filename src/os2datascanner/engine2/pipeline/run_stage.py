@@ -90,11 +90,6 @@ class GenericRunner(PikaPipelineThread):
         self._per_scan_queue_priorities: dict[str, str] = {}
         self._conversion_priority = conversion_priority
 
-        # Delivery counts per queue, incremented by handle_message_raw and
-        # snapshot-and-cleared by _check_per_scan_priority. Both run on the
-        # background thread.
-        self._delivery_counts: dict[str, int] = {}
-
         self._queue_priorities = queue_priorities
         if self._queue_priorities:
             logger.info(
@@ -233,15 +228,16 @@ class GenericRunner(PikaPipelineThread):
             # on an already-acked delivery tag, which closes the channel.
             return
 
-        # Track deliveries per queue for priority decisions
-        queue = method.routing_key
-        if queue in self._per_scan_queue_priorities:
-            self._delivery_counts[queue] = self._delivery_counts.get(queue, 0) + 1
-
         super().handle_message_raw(channel, method, properties, body)
 
     def _subscribe_to_queue(self, queue_name: str, tag: str = ""):
-        """(Background thread.) Subscribe to a new per-scan conversion queue."""
+        """(Background thread.) Takes note of a new per-scan conversion queue.
+            We don't know yet if we should subscribe to it or not. When the worker starts, it is
+            told about all running scans in a batch, and can only make priority decisions after
+            that.
+
+            A worker with no conversion priority consumes everything.
+        """
         if queue_name in self._read:
             # We're already there.
             return
@@ -256,6 +252,14 @@ class GenericRunner(PikaPipelineThread):
 
         self._read.add(queue_name)
         self._per_scan_queue_priorities[queue_name] = tag
+
+        if self._conversion_priority:
+            # We know the worker runs with prioritization and that there's a queue, but
+            # we don't yet know if we should subscribe or not,
+            # _processing_complete figures that out.
+            logger.info("Registered per-scan queue", queue=queue_name, tag=tag)
+            return
+
         try:
             consumer_tag = self.channel.basic_consume(
                     queue_name, self.handle_message_raw, exclusive=False)
@@ -284,6 +288,16 @@ class GenericRunner(PikaPipelineThread):
         for queue_name, priority in new_queues:
             if hasattr(self._module, "new_queue_hook"):
                 self._module.new_queue_hook(self, queue_name, priority)
+
+        # Sorting out what to subscribe to now - if we didn't, on worker start
+        # we'd potentially subscribe to queues that are out-prioritized already,
+        # or do nothing, waiting for a tick.
+        if new_queues and self._conversion_priority and self._per_scan_queue_priorities:
+            # new_queues is a list of tuples: queue-name and their tag
+            # _conversion_priority is the workers priority list, f.e. ('full', 'delta')
+            # _per_scan_queue_priorities is a dict of queue-name: tag
+            self._check_per_scan_priority()
+
         try:
             result = super()._processing_complete(tick)
         except pika.exceptions.ConsumerCancelled as e:
@@ -308,6 +322,56 @@ class GenericRunner(PikaPipelineThread):
                 self._module.tick_hook(self)
 
         return result
+
+    def _prioritized_tag(self) -> str | None:
+        """ Returns the highest priority conversion tag with work available, or None
+        if there isn't any.
+        """
+        by_tag: dict[str, list[str]] = {}
+        for queue, tag in self._per_scan_queue_priorities.items():
+            # Adds queues as a list to the tag key's value.
+            by_tag.setdefault(tag, []).append(queue)
+
+        for tag in self._conversion_priority:
+            for queue in by_tag.get(tag, ()):
+                if queue in self._consumer_tags and self.outstanding(queue):
+                    # We're consuming and still have outstanding work in memory.
+                    return tag
+
+                match self._probe_queue(queue):
+                    case None:
+                        logger.info("Per-scan queue gone, forgetting it",
+                                    queue=queue, tag=tag)
+                        self._forget_queue(queue)
+                    case broker_response if broker_response.method.message_count > 0:
+                        # We got a reply from our probing and can verify there's messages
+                        return tag
+                    case _:
+                        continue
+        return None
+
+    def _resume_queue(self, queue: str) -> bool:
+        """ Starts consuming from queue again, unless we're already holding deliveries from it.
+            It can seem counter-intuitive, but holding messages and not being consuming means
+            they're from a previous consumer we've cancelled.
+
+            Cancelling a consumer does not requeue messages, but the prefetch allowance it
+            had, dies with it. Meaning it'd be able to prefetch too many messages if we let it
+            consume again before dealing with what it has already taken.
+
+            Returns True if we're now consuming from the queue.
+        """
+
+        if held := self.outstanding(queue):
+            logger.info("Not resuming queue: It still holds previously prefetched messages.",
+                        queue=queue, held=held)
+            return False
+
+        logger.info("Resuming queue consumption", queue=queue)
+        self._consumer_tags[queue] = self.channel.basic_consume(
+            queue, self.handle_message_raw, exclusive=False
+        )
+        return True
 
     def _forget_queue(self, queue_name: str) -> None:
         """ Forget about this per-scan queue.
@@ -349,12 +413,8 @@ class GenericRunner(PikaPipelineThread):
                         continue  # Skip first priority
                     # If the queue has no consumer and messages, start one
                     if queue not in self._consumer_tags and queue_msg_counts[queue] > 0:
-                        logger.info("Starting consumer", queue=queue)
-                        self._consumer_tags[queue] = self.channel.basic_consume(
-                            queue=queue,
-                            on_message_callback=self.handle_message_raw,
-                            exclusive=False
-                        )
+                        if not self._resume_queue(queue):
+                            break
                         self._current_priority = queue
                         break  # Break the loop - we don't want to start any more consumers.
 
@@ -373,58 +433,35 @@ class GenericRunner(PikaPipelineThread):
 
     def _check_per_scan_priority(self):
         """For workers with a configured conversion priority: focus on per-scan
-        queues whose tag appears earliest in the worker's priority list.
-
-        Uses delivery counts tracked by handle_message_raw instead of polling
-        the broker with queue_declare(passive=True).
+        queues whose tag appears earliest (first) in the worker's priority list.
 
         A worker with conversion_priority=("delta", "full") focuses on
         delta-scan queues and only helps with full-scan queues when there is
         no delta work left. A worker with conversion_priority=("delta",)
         will never consume full-scan queues."""
 
-        # Snapshot and reset delivery counts since last check
-        counts = self._delivery_counts.copy()
-        self._delivery_counts.clear()
-
-        # Tags that currently have unprocessed deliveries
-        active_tags = {
-            qtag for q, qtag in self._per_scan_queue_priorities.items()
-            if counts.get(q, 0) > 0
-        }
-
-        # Highest-priority tag (earliest in the list) that's active
-        active_tag = next(
-            (tag for tag in self._conversion_priority if tag in active_tags),
-            None)
+        prioritized_tag = self._prioritized_tag()
 
         for q, qtag in list(self._per_scan_queue_priorities.items()):
             should_consume = (
                     qtag in self._conversion_priority
-                    and (active_tag is None or qtag == active_tag)
+                    and (prioritized_tag is None or qtag == prioritized_tag)
             )
             has_consumer = q in self._consumer_tags
 
             # A dead channel is re-raised so that run() recovers it.
             match (should_consume, has_consumer):
                 case (True, False):  # We should consume but aren't
-                    # There's a tiny window where the queue could be deleted by
-                    # before we get to consume, so, probe first: better safe than sorry!
-                    if not self._probe_queue(q):
-                        logger.info("Per-scan queue gone while paused, forgetting it",
-                                    queue=q, tag=qtag)
-                        self._forget_queue(q)
-                        continue
                     try:
-                        self._consumer_tags[q] = self.channel.basic_consume(
-                            q, self.handle_message_raw, exclusive=False)
+                        if not self._resume_queue(q):
+                            continue
                     except self._CHANNEL_ERRORS:
                         self._forget_queue(q)
                         logger.warning("Per-scan queue died on resume, recovering",
                                        queue=q, tag=qtag)
                         raise
                     logger.info("Subscribed per-scan queue",
-                                queue=q, tag=qtag, active_tag=active_tag)
+                                queue=q, tag=qtag, prioritized_tag=prioritized_tag)
                 case (False, True):  # We shouldn't consume but are
                     try:
                         self.channel.basic_cancel(self._consumer_tags.pop(q))
@@ -433,7 +470,7 @@ class GenericRunner(PikaPipelineThread):
                                        queue=q, tag=qtag)
                         raise
                     logger.info("Cancelled per-scan queue",
-                                queue=q, tag=qtag, active_tag=active_tag)
+                                queue=q, tag=qtag, prioritized_tag=prioritized_tag)
 
     def _handle_content(self, routing_key, body):
         raw_scan_tag = body.get("scan_tag")
