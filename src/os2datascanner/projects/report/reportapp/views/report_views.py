@@ -14,8 +14,8 @@ from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
 from django.db.models import Count, F, Q
-from django.http import Http404
-from django.utils.translation import gettext_lazy as _
+from django.http import Http404, HttpResponseForbidden
+from django.utils.translation import gettext_lazy as _, ngettext
 from django.views.generic import ListView, DetailView
 
 from os2datascanner.utils.system_utilities import time_now
@@ -711,8 +711,24 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
     def get_queryset(self):
         qs = super().get_queryset()
         scanner_job_pks = self.request.POST.getlist('distribute-to')
-        qs = qs.filter(scanner_job__in=scanner_job_pks)
+        qs = qs.filter(scanner_job__in=scanner_job_pks, only_notify_superadmin=True)
         return qs
+
+    def handle_no_permission(self):
+        # LoginRequiredMixin also routes here; only handle authenticated users lacking the
+        # permission.
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+
+        messages.add_message(
+            self.request,
+            messages.ERROR,
+            _("You do not have permission to release results."),
+            extra_tags="manual_close")
+        # Send the user to the index page, where the snackbar will show the message:
+        response = HttpResponseForbidden()
+        response.headers["HX-Redirect"] = str(reverse_lazy("index"))
+        return response
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -721,5 +737,25 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
         update_output = object_list.update(only_notify_superadmin=False)
 
         logger.info(f"Updated DocumetReport objects: {update_output}")
+
+        if update_output:
+            messages.add_message(
+                request,
+                messages.SUCCESS,
+                ngettext(
+                    "%(count)d result has been released.",
+                    "%(count)d results have been released.",
+                    update_output) % {"count": update_output},
+                extra_tags="auto_close")
+        else:
+            # Nothing matched (they were probably already released or deleted in parallel sessions):
+            messages.add_message(
+                request,
+                messages.WARNING,
+                _(
+                    "0 results have been released. They may "
+                    "already have been released or deleted."
+                ),
+                extra_tags="manual_close")
 
         return response
