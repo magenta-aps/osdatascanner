@@ -1828,7 +1828,6 @@ msgstr "Håndbog"
 
 #: adminapp/templates/components/navigation/navigation.html
 #: adminapp/templates/components/user/logout.html
-#: adminapp/templates/components/user/user.html
 msgid "Logout"
 msgstr "Log ud"
 
@@ -1873,7 +1872,6 @@ msgstr "Næste"
 
 #: adminapp/templates/components/password/password_change.html
 #: adminapp/templates/components/password/password_reset_confirm.html
-#: adminapp/templates/components/user/user.html
 msgid "Change password"
 msgstr "Skift password"
 
@@ -2872,10 +2870,6 @@ msgstr "Tak, fordi du brugte OSdatascanner."
 #: adminapp/templates/components/user/logout.html
 msgid "again"
 msgstr "igen"
-
-#: adminapp/templates/components/user/user.html
-msgid "Show User"
-msgstr "Vis bruger"
 
 #: adminapp/templates/components/user/user_detail.html
 msgid "Edit user"

@@ -612,7 +612,6 @@ msgid "User profile"
 msgstr "Brugerprofil"
 
 #: reportapp/templates/components/navigation/navigation.html
-#: reportapp/templates/components/user/user_corner_menu.html
 msgid "Logout"
 msgstr "Log ud"
 
@@ -1423,10 +1422,6 @@ msgstr ""
 #: reportapp/templates/components/user/outlook_category_settings.html
 msgid "Categorize"
 msgstr "Kategorisér"
-
-#: reportapp/templates/components/user/user_corner_menu.html
-msgid "Show Account"
-msgstr "Vis konto"
 
 #: reportapp/templates/django_saml2_auth/denied.html
 msgid "Permission denied"
