@@ -1027,6 +1027,11 @@ class CommandMessage:
     deleted. Workers should cancel their consumer for this queue before it
     disappears, to avoid broker-initiated channel closures. (Avoid crashing)"""
 
+    clear_dedup_store: Optional[ScanTagFragment] = None
+    """If set, the scan tag whose entries should be deleted from the
+    deduplication store. Sent by the admin module once nothing more will be
+    scanned under that tag."""
+
     worker_hello: Optional[str] = None
     """If set, a worker has just started up and is requesting that the
     status_collector send it all active per-scan queue names so it can
@@ -1044,6 +1049,9 @@ class CommandMessage:
             "new_queue": self.new_queue,
             "new_queue_priority": self.new_queue_priority,
             "delete_queue": self.delete_queue,
+            "clear_dedup_store": (
+                    self.clear_dedup_store.to_json_object()
+                    if self.clear_dedup_store else None),
             "worker_hello": self.worker_hello,
         }
 
@@ -1059,6 +1067,9 @@ class CommandMessage:
                 new_queue=obj.get("new_queue"),
                 new_queue_priority=obj.get("new_queue_priority"),
                 delete_queue=obj.get("delete_queue"),
+                clear_dedup_store=(
+                        ScanTagFragment.from_json_object(tag)
+                        if (tag := obj.get("clear_dedup_store")) else None),
                 worker_hello=obj.get("worker_hello"))
 
 

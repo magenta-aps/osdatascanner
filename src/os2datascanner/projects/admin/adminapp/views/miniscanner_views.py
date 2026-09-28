@@ -111,7 +111,8 @@ def mini_scan(scan_item, rule):
 
             yield from (
                     message
-                    for message in worker.process(SourceManager(), conv)
+                    for message in worker.process(
+                            SourceManager(), conv)
                     if isinstance(message, messages.MatchesMessage)
                     and message.matched)
         else:

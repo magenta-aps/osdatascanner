@@ -34,6 +34,7 @@ WHITESPACE_PLUS = string.whitespace + "\0" + "\udcc0\udc80"
 _CLI_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "utilities")
 _PDF_CLEAN_CLI = os.path.join(_CLI_DIR, "_pdf_clean_cli.py")
 _PDF_PAGE_EXTRACT_CLI = os.path.join(_CLI_DIR, "_pdf_page_extract_cli.py")
+_PDF_METADATA_CLI = os.path.join(_CLI_DIR, "_pdf_metadata_cli.py")
 
 
 @Source.mime_handler("application/pdf")
@@ -74,13 +75,51 @@ class PDFSource(DerivedSource):
 
 class PDFPageResource(Resource):
     def _generate_metadata(self):
-        pdf = open_pdf_wrapped(self._sm.open(self.handle.source))
-        # Some PDF authoring tools helpfully stick null bytes into the
-        # author field. Make sure we remove these
-        author = pdf.metadata.get("author", "").strip(WHITESPACE_PLUS)
-        pdf.close()
-        if author:
+        """Yields the document-level metadata associated with this page.
+
+        Read from the pre-processed document when there is one and from the
+        original otherwise, which give the same answer but not in the same
+        place: an original is untrusted input, and goes to a subprocess."""
+        source = self.handle.source
+        if source in self._sm:
+            author = self._read_author(self._sm.open(source))
+        else:
+            # make_path rather than make_stream: pymupdf needs a path, and a
+            # stream only carries one for local files.
+            with source.handle.follow(self._sm).make_path() as path:
+                author = self._read_author_isolated(path)
+
+        # Some PDF authoring tools helpfully stick null bytes into the author
+        # field. Make sure we remove these
+        if author := author.strip(WHITESPACE_PLUS):
             yield "pdf-author", str(author)
+
+    @staticmethod
+    def _read_author(path) -> str:
+        """Reads the author out of a pre-processed document in this process.
+
+        Safe here because the file is MuPDF's own output: PDFSource.handles()
+        and PDFPageResource.check() open it in this process too."""
+        pdf = open_pdf_wrapped(path)
+        try:
+            return pdf.metadata.get("author") or ""
+        finally:
+            pdf.close()
+
+    @staticmethod
+    def _read_author_isolated(path) -> str:
+        """Reads the author out of an original document in a subprocess."""
+        with TemporaryDirectory() as outputdir:
+            author_path = os.path.join(outputdir, "author")
+
+            run_custom(
+                    [sys.executable, _PDF_METADATA_CLI, path, author_path],
+                    stdout=DEVNULL, stderr=DEVNULL,
+                    timeout=engine2_settings.subprocess["timeout"],
+                    kill_group=True, isolate_tmp=True, check=True)
+
+            with open(author_path, "rb") as fp:
+                return fp.read().decode("utf-8", "surrogatepass")
 
     def check(self) -> bool:
         page = int(self.handle.relative_path)

@@ -114,6 +114,33 @@ services:
       start_period: 30s
       retries: 3
 
+  dedup_store:
+    # Claim and result store for conversion deduplication.
+    # Credentials match [pipeline.worker.dedup] in
+    # dev-environment/engine/dev-settings.toml.
+    image: valkey/valkey:9-alpine
+    command: >
+      valkey-server
+      --save ""
+      --appendonly yes
+      --appendfsync everysec
+      --maxmemory 512mb
+      --maxmemory-policy allkeys-lru
+      --user default off
+      --user osds on '>osds' '~*' '+@all'
+    volumes:
+      - dedup_store_data:/data
+    ports:
+      # Bound to the loopback interface: the store holds match contexts and
+      # document paths from whatever this developer is scanning.
+      - "127.0.0.1:8036:6379"  # For local attachment during IDE debugging
+    healthcheck:
+      test: ["CMD", "valkey-cli", "--no-auth-warning",
+             "--user", "osds", "--pass", "osds", "ping"]
+      interval: 5s
+      start_period: 10s
+      retries: 3
+
   frontend:
     build:
       context: .
@@ -805,6 +832,7 @@ x-disabled:
 
 
 volumes:
+  dedup_store_data:
   pgdata_16:
   frontend-bundles:
   postgres-data:

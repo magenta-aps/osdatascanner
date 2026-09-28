@@ -13,12 +13,14 @@ from os2datascanner.engine2.model.core.utilities import SourceManager
 from .utilities.stage import dispatch
 from .. import settings
 from ..model.core import Source
+from ..utilities import mime
 from ..utilities.backoff import TimeoutRetrier
 from ..conversions import convert, conversion_exists
 from ..conversions.abort import current_abort_check
 from ..conversions.types import OutputType, encode_dict
 from ..conversions.utilities.navigable import make_navigable
 from . import messages
+from .utilities import deduplication
 logger = structlog.get_logger("processor")
 
 
@@ -60,12 +62,19 @@ def format_exception_message(ex: Exception, conversion: messages.ConversionMessa
     return exception_message
 
 
-def message_received(
+def message_received(  # noqa: CCR001
         conversion: messages.ConversionMessage,
         sm: SourceManager,
         *,
         _check: bool = True,
-        should_abort=None) -> Generator[messages.SerialisableMessage]:
+        should_abort=None,
+        # Coordinate this object's content before converting it, yielding the
+        # outcomes in utilities/deduplication.py rather than converting when
+        # another worker has the content in hand. Off by default: the outcomes
+        # are decisions for the caller rather than pipeline messages, so only a
+        # caller that acts on them should ask for them.
+        coordinate: bool = False) -> Generator[
+            messages.SerialisableMessage | deduplication.OUTCOME]:
     tr = TimeoutRetrier(
         seconds=settings.pipeline["op_timeout"],
         max_tries=settings.pipeline["op_tries"]
@@ -94,12 +103,30 @@ def message_received(
 
         # Make the worker's abort check reachable from deep converters (like OCR)
         # without adding a parameter to every function in between.
-        # The callable is wired in by worker.process(); it returns True when an
+        # The callable is wired in by worker.convert(); it returns True when an
         # abort command for this scan_tag has been broadcast and recorded in worker._cancelled_tags.
         token = current_abort_check.set(should_abort)
         try:
             resource = conversion.handle.follow(sm)
-            representation = do_conversion(resource, conversion, tr, sm)
+            required = conversion.progress.rule.split()[0].operates_on
+
+            if coordinate:
+                match deduplication.plan_conversion(
+                        conversion, resource, required):
+                    case deduplication.Claimed() as claim:
+                        # Before converting, so that the caller holds the lease
+                        # for the whole of it and captures what it produces.
+                        yield claim
+                    case None:
+                        pass
+                    case outcome:
+                        # Stored/Contended
+                        # Converted elsewhere already, or being converted now.
+                        yield outcome
+                        return
+
+            representation = do_conversion(
+                    resource, conversion, required, tr, sm)
 
             yield from emit_representation(conversion, representation)
         finally:
@@ -123,21 +150,16 @@ def message_received_raw(body, channel, source_manager, *, _check=True):
             (messages.ScanSpecMessage, ["os2ds_scan_specs"]))
 
 
-def do_conversion(resource, conversion, retrier, source_manager):  # noqa, CCR001 Cognitive complexity
-    required = conversion.progress.rule.split()[0].operates_on
+def do_conversion(resource, conversion, required, retrier, source_manager):  # noqa, CCR001
     configuration = conversion.scan_spec.configuration
     skip_mime_types = configuration.get("skip_mime_types", [])
 
     mime_type = resource.compute_type()
 
     # Check if we're supposed to handle images (OCR)
-    if required in (OutputType.Text, OutputType.MRZ):
-        for mt in skip_mime_types:
-            if (mt.endswith("*") and mime_type.startswith(mt[:-1])) or (mime_type == mt):
-                # mt is a simple wildcard ("image/*") that matches the
-                # computed MIME type of this file.
-                # If that, or mt matches the computed MIME type of this file exactly then ...
-                return None  # ... skip conversion
+    if required in (OutputType.Text, OutputType.MRZ) and mime.is_one_of(
+            mime_type, skip_mime_types):
+        return None  # ... skip conversion
 
     # If we have an appropriate conversion registered, go ahead.
     if conversion_exists(resource, required):

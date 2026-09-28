@@ -7,9 +7,66 @@ import pytest
 import os.path
 
 from os2datascanner.engine2.rules.cpr import CPRRule
+from os2datascanner.engine2.rules.rule import Rule
 from os2datascanner.engine2.model.core import Source, SourceManager
 from os2datascanner.engine2.model.file import FilesystemHandle
 from .test_compound_sources import try_apply
+
+
+class TestSerialisation:
+    """A CPRRule holds its words in sets, which iterate in an order that varies
+    from process to process, so it sorts them on the way to JSON. Nothing about
+    what it matches may depend on that."""
+
+    TEXT = "Borgerens CPR er 1111111118 og sagsnr 2222222222."
+    BLACKLISTED = "ordrenummer 1111111118"
+
+    def hits(self, rule, text):
+        return [m["match"] for m in (rule.match(text) or ())]
+
+    @pytest.mark.parametrize("rule", [
+        CPRRule(),
+        CPRRule(exceptions=["1111111118", "0101010101"]),
+        CPRRule(surrounding_exceptions=["sagsnr", "journalnr"]),
+        CPRRule(blacklist=["ordrenummer", "p-nr"]),
+        CPRRule(whitelist=["cpr", "personnummer"]),
+    ])
+    @pytest.mark.parametrize("text", [TEXT, "CPR: 1111111118", BLACKLISTED])
+    def test_a_round_trip_finds_the_same_things(self, rule, text):
+        restored = Rule.from_json_object(rule.to_json_object())
+
+        assert self.hits(restored, text) == self.hits(rule, text)
+
+    def test_an_excepted_number_stays_excepted(self):
+        """The case that would be worst to get wrong: an exception list is a
+        list of real CPR numbers, and losing one turns a suppressed finding
+        into a false positive."""
+        rule = CPRRule(exceptions=["1111111118"])
+        restored = Rule.from_json_object(rule.to_json_object())
+
+        assert self.hits(rule, self.TEXT) == []
+        assert self.hits(restored, self.TEXT) == []
+
+    def test_the_sets_that_become_a_string_reach_json_sorted(self):
+        """A set iterates in an order that varies from process to process, and
+        these two reach JSON as one string that nothing downstream can reorder,
+        so two workers would otherwise write two different strings for one rule.
+        The lists beside them need no such help: whatever reads a list can sort
+        it.
+
+        Long enough lists that a set happening to iterate in sorted order is not
+        a plausible way for this to pass."""
+        words = ["sagsnr", "journalnr", "cvr", "p-nummer", "ordrenr",
+                 "bilagsnr", "faknr", "varenr", "licensnr", "kundenr"]
+        numbers = ["3333333333", "1111111118", "2222222222", "4444444444",
+                   "5555555555"]
+        emitted = CPRRule(
+                exceptions=numbers,
+                surrounding_exceptions=words).to_json_object()
+
+        for field in ("exceptions", "surrounding_exceptions"):
+            parts = emitted[field].split(",")
+            assert parts == sorted(parts), f"{field}: {parts}"
 
 
 class TestCPRRule:

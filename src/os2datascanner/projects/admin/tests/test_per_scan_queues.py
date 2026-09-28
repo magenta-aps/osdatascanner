@@ -104,6 +104,42 @@ class TestQueueDeletionOnCompletion:
 
         mock_delete.assert_called_once_with(scan_tag)
 
+    def test_dedup_store_cleared_on_finish(self, basic_scanner):
+        """The pipeline holds deduplication entries namespaced per scan, which
+        nothing can read once it has finished, so it is asked to delete
+        them."""
+        scan_tag = basic_scanner._construct_scan_tag().to_json_object()
+
+        ScanStatus.objects.create(
+            scanner=basic_scanner,
+            scan_tag=scan_tag,
+            total_sources=1,
+            explored_sources=1,
+            total_objects=5,
+            scanned_objects=4,
+        )
+
+        body = self._make_finishing_status_message(scan_tag).to_json_object()
+
+        with (
+            patch(
+                "os2datascanner.projects.admin.adminapp"
+                ".management.commands.status_collector.delete_per_scan_queue"
+            ),
+            patch(
+                "os2datascanner.projects.admin.adminapp"
+                ".management.commands.status_collector.clear_dedup_store"
+            ) as mock_discard,
+            patch(
+                "os2datascanner.projects.admin.adminapp"
+                ".management.commands.status_collector"
+                ".FinishedScannerNotificationEmail"
+            ),
+        ):
+            [_ for _ in status_message_received_raw(body)]
+
+        mock_discard.assert_called_once_with(scan_tag)
+
     def test_delete_not_called_when_scan_not_finished(self, basic_scanner):
         """Queue deletion must NOT happen if the scan is still in progress."""
         scan_tag_obj = basic_scanner._construct_scan_tag()

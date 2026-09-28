@@ -44,6 +44,7 @@ pysmbc@git+https://github.com/magenta-aps/pysmbc.git@T2
 python-dateutil
 python-magic
 pytz
+redis
 regex
 requests
 sqlalchemy

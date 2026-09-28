@@ -118,6 +118,13 @@ class Source(TypePropertyEquality, JSONSerialisable):
         return _mime_handler
 
     @staticmethod
+    def mime_handler_exists(mime: str) -> bool:
+        """Indicates whether or not the registry of MIME handlers has a handler
+        that might be able to reinterpret an object of this type as a Source of
+        its own, as an archive or a mail can."""
+        return mime in Source.__mime_handlers
+
+    @staticmethod
     def from_handle(handle, sm=None):
         """Tries to create a Source from a Handle.
 

@@ -263,8 +263,9 @@ class CPRRule(RegexRule):
             examine_context=self._examine_context,
             whitelist=list(self._whitelist),
             blacklist=list(self._blacklist),
-            exceptions=",".join(self._exceptions),
-            surrounding_exceptions=",".join(self._surrounding_exceptions)
+            exceptions=",".join(sorted(self._exceptions)),
+            surrounding_exceptions=",".join(
+                    sorted(self._surrounding_exceptions))
         )
 
     @staticmethod

@@ -7,6 +7,35 @@ import pytest
 from io import BytesIO
 from requests.models import Response
 from os2datascanner.engine2.model.core.utilities import SourceManager
+from os2datascanner.engine2.pipeline.utilities import deduplication
+
+
+@pytest.fixture
+def dedup_client():
+    """A connection to the deduplication store named by the engine settings,
+    with the database emptied before and after.
+
+    Built the way the worker builds its own, so the settings the development
+    stack and the deployments are configured with are what the tests below
+    connect with. Skipped when there is no store to connect to, but a store that
+    rejects those settings is a failure."""
+    redis = pytest.importorskip("redis")
+
+    conf = deduplication._dedup_settings()
+    client = deduplication.build_client(conf)
+    if client is None:
+        pytest.skip("no deduplication store configured")
+
+    try:
+        client.ping()
+    except redis.AuthenticationError:
+        raise
+    except redis.ConnectionError:
+        pytest.skip(f"no claim store reachable at {conf['host']}")
+
+    client.flushdb()
+    yield client
+    client.flushdb()
 
 
 @pytest.fixture
