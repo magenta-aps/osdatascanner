@@ -4,10 +4,11 @@
 
 ### New in this release
 
-- Show a snackbar message when results are handled + if the status of a handled result is changed
-  or reverted.
-
-- Show a snackbar message when the visibility state is toggled for organizational units.
+- Show a snackbar message when:
+  - Results are handled.
+  - The status of a handled result is changed or reverted.
+  - Withheld results are released.
+  - The visibility state is toggled for organizational units.
 
 - Workers can now coordinate through a shared store so that content appearing in several places
   is converted only once per scan instead of once per copy. Every location is still reported
