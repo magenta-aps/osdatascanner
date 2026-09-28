@@ -4,7 +4,9 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django.db.models import Q, Count, Prefetch
+from django.contrib import messages
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.utils.translation import gettext as _
 
 from ...adminapp.views.views import RestrictedListView
 from ..models import (OrganizationalUnit, Account, Position,
@@ -159,6 +161,9 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, PermissionRequiredMixin
         context['paginate_by'] = int(self.request.GET.get('paginate_by', self.paginate_by))
         context['paginate_by_options'] = self.paginate_by_options
 
+        context['all_units_visible'] = not self.object_list.filter(hidden=True).exists()
+        context['all_units_hidden'] = not self.object_list.filter(hidden=False).exists()
+
         return context
 
     def get_paginate_by(self, queryset):
@@ -186,15 +191,39 @@ class OrganizationalUnitEditVisibility(ClientAdminMixin, PermissionRequiredMixin
                 org_unit.update(hidden=Q(hidden=False))
                 self.update_hidden_state_for_org_unit(org_unit)
 
+                updated_unit = org_unit.first()
+                if updated_unit.hidden:
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        _('"%(name)s" was marked as "hidden"') % {"name": updated_unit.name},
+                        extra_tags="auto_close")
+                else:
+                    messages.add_message(
+                        request,
+                        messages.SUCCESS,
+                        _('"%(name)s" was marked as "visible"') % {"name": updated_unit.name},
+                        extra_tags="auto_close")
+
             # Change all OUs to visible
             elif htmx_trigger == "unhide_all_orgunits":
                 self.object_list.update(hidden=False)
                 self.update_hidden_state_for_org_unit(self.object_list)
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    _('All organizational units were marked as "visible"'),
+                    extra_tags="auto_close")
 
             # Change all OUs to hidden
             elif htmx_trigger == "hide_all_orgunits":
                 self.object_list.update(hidden=True)
                 self.update_hidden_state_for_org_unit(self.object_list)
+                messages.add_message(
+                    request,
+                    messages.SUCCESS,
+                    _('All organizational units were marked as "hidden"'),
+                    extra_tags="auto_close")
 
         context = self.get_context_data()
         return self.render_to_response(context)
