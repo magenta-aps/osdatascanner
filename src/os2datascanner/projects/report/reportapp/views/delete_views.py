@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView
 
 from .base_views import HTMXEndpointView, BaseMassView
-from .utilities.ews_utilities import try_ews_delete
+from .utilities.ews_utilities import try_ews_delete, try_ewscalendar_delete
 from .utilities.google_utilities import try_gmail_delete, try_gdrive_delete
 from .utilities.smb_utilities import try_smb_delete_1
 from .utilities.msgraph_utilities import try_msgraph_mail_delete, try_msgraph_file_delete
@@ -105,6 +105,16 @@ class DeleteEWSMailView(BaseDeleteView):
 class MassDeleteEWSMailView(BaseMassDeleteView):
     """View for deleting multiple EWS mails."""
     delete_fn = staticmethod(try_ews_delete)
+
+
+class DeleteEWSCalendarView(BaseDeleteView):
+    """View for deleting an EWS calendar event."""
+    delete_fn = staticmethod(try_ewscalendar_delete)
+
+
+class MassDeleteEWSCalendarView(BaseMassDeleteView):
+    """View for deleting multiple EWS calendar events."""
+    delete_fn = staticmethod(try_ewscalendar_delete)
 
 
 class DeleteGmailView(BaseDeleteView):

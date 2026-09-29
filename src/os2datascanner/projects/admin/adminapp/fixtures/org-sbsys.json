@@ -30,6 +30,7 @@
       "onedrive_delete_permission": true,
       "smb_delete_permission": true,
       "exchange_delete_permission": true,
+      "exchange_calendar_delete_permission": true,
       "gmail_delete_permission": true,
       "gdrive_delete_permission": true,
       "leadertab_access": "M",

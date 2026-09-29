@@ -84,6 +84,7 @@ class Command(BaseCommand):
                                             "onedrive_delete_permission": True,
                                             "smb_delete_permission": True,
                                             "exchange_delete_permission": True,
+                                            "exchange_calendar_delete_permission": True,
                                             "gmail_delete_permission": True,
                                             "gdrive_delete_permission": True
                                            })

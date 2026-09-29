@@ -14,6 +14,8 @@
   separately: a worker that skips the conversion reports the first worker's findings against its
   own copy, and extracts that copy's own metadata. Disabled by default.
 
+- Added delete button and organization flag to allow Exchange Calendar result deletion.
+
 ### General improvements
 
 - Upgrade RabbitMQ version to 4.2

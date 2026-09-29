@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-23 16:02+0200\n"
+"POT-Creation-Date: 2026-09-29 13:24+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -4864,6 +4864,10 @@ msgstr "Filer på lokalt drev"
 #: organizations/templates/organizations/org_update.html
 msgid "Mails on Exchange server"
 msgstr "Mails på Exchangescanner"
+
+#: organizations/templates/organizations/org_update.html
+msgid "calendar events on Exchange server"
+msgstr "kalender events på Exchangescanner"
 
 #: organizations/templates/organizations/org_update.html
 msgid "Mails on Microsoft Online"

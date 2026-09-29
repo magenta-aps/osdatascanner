@@ -146,6 +146,11 @@ class Organization(models.Model):
         verbose_name=_("allow deletion of emails on Exchange server directly")
     )
 
+    exchange_calendar_delete_permission = models.BooleanField(
+        default=False,
+        verbose_name=_("allow deletion of calendar events on Exchange server directly")
+    )
+
     # Gmail settings
     gmail_delete_permission = models.BooleanField(
         default=False,
@@ -315,6 +320,7 @@ class OrganizationSerializer(BaseSerializer):
             'outlook_categorize_email_permission',
             'smb_delete_permission',
             'exchange_delete_permission',
+            'exchange_calendar_delete_permission',
             'outlook_delete_email_permission',
             'onedrive_delete_permission',
             'gmail_delete_permission',

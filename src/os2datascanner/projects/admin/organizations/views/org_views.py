@@ -122,6 +122,7 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         'onedrive_delete_permission',
         'smb_delete_permission',
         'exchange_delete_permission',
+        'exchange_calendar_delete_permission',
         'gmail_delete_permission',
         'gdrive_delete_permission',
         'email_header_banner',
@@ -152,6 +153,9 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
 
         if not settings.ENABLE_EXCHANGESCAN:
             form.fields.pop('exchange_delete_permission', None)
+
+        if not settings.ENABLE_EXCHANGECALENDARSCAN:
+            form.fields.pop('exchange_calendar_delete_permission', None)
 
         if not settings.ENABLE_MSGRAPH_MAILSCAN:
             form.fields.pop('outlook_delete_email_permission', None)
@@ -208,6 +212,7 @@ class UpdateOrganizationView(PermissionRequiredMixin, RestrictedUpdateView):
         context["show_delete_fields"] = any([field_name in form.fields.keys() for field_name in [
             "smb_delete_permission",
             "exchange_delete_permission",
+            "exchange_calendar_delete_permission",
             "outlook_delete_email_permission",
             "onedrive_delete_permission",
             "gmail_delete_permission",
