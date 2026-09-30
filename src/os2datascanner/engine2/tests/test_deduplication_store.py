@@ -123,7 +123,7 @@ class TestClaims:
 
 class TestResults:
     def test_a_result_is_visible_to_another_worker(self, worker_a, worker_b):
-        worker_a.store_result(SCAN, CID, {"root": {}, "results": []})
+        assert worker_a.store_result(SCAN, CID, {"root": {}, "results": []})
 
         assert worker_b.get_result(SCAN, CID) == {"root": {}, "results": []}
 
@@ -346,15 +346,15 @@ class TestUnreachableStore:
                 socket_timeout=0.25, socket_connect_timeout=0.25)
         return ClaimStore(c, lease_ms=LEASE_MS, result_ttl=60, owner="lonely")
 
-    def test_claim_succeeds_so_the_work_still_happens(self, unreachable):
+    def test_claim_does_not_read_as_contended(self, unreachable):
         """If a failed claim read as "someone else has it", every worker would
         wait for a conversion that nobody is doing."""
-        assert unreachable.claim(SCAN, CID) is True
+        assert unreachable.claim(SCAN, CID) is None
 
     def test_result_lookup_is_a_miss(self, unreachable):
         assert unreachable.get_result(SCAN, CID) is None
 
     def test_renew_release_and_store_do_not_raise(self, unreachable):
         unreachable.renew(SCAN, CID)
-        unreachable.store_result(SCAN, CID, {"root": {}, "results": []})
+        assert unreachable.store_result(SCAN, CID, {"root": {}, "results": []}) is False
         unreachable.release(SCAN, CID)

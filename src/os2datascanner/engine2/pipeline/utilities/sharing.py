@@ -92,9 +92,15 @@ def share(
                         "could not encode deduplication result",
                         handle=str(message.handle), exc_info=True)
 
-        store.store_result(claim.scan_id, claim.key, result)
+        stored = store.store_result(claim.scan_id, claim.key, result)
 
-        if result is deduplication.UNSHAREABLE_RESULT:
+        if not stored:
+            # Nothing reached the store.
+            logger.info(
+                    "conversion could not be published, no copy can reuse it",
+                    handle=str(message.handle),
+                    results=len(capture.results))
+        elif result is deduplication.UNSHAREABLE_RESULT:
             # Tell the other copies not to wait for a result that is never
             # coming, so they convert now rather than cycling through the
             # deferral queues until their budget expires.
