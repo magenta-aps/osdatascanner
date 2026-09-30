@@ -1,99 +1,84 @@
-{% load i18n l10n %}
+{% extends "components/feedback/modals/modal-dialog.html" %}
 
-<dialog id="distribute-results-modal"
-        class="modal-dialog modal-dialog--distribute"
-        aria-labelledby="distribute-results-title"
-        aria-modal="true">
-  <div class="modal-dialog__container">
+{% load i18n l10n static %}
 
-    <div class="modal-dialog__header">
-      <div class="title-close__wrapper">
-        <h2 id="distribute-results-title" class="header__title">{% trans "release results to users"|capfirst %}</h2>
+{% block modal_scripts %}
+  {{ block.super }}
+  <script src="{% static "js/reports/distributeElement.js" %}"></script>
+{% endblock modal_scripts %}
 
-        <button type="button"
-                class="button button--transparent-button button--icon-button"
-                aria-label="{% trans "Close the window without releasing results." %}"
-                title="{% trans "Close the window without releasing results." %}"
-                data-close-dialog>
-          <i id="close" class="material-symbols">close</i>
-        </button>
-      </div>
+{% block modal_modifier %}modal-dialog--distribute{% endblock %}
 
-      <p class="header__subtitle">
-        {% blocktrans trimmed %}
-          Choose the scanner jobs from the list below to include in the release. The targeted 
-          results will be made available immediately for the users when you click on &quot;release&quot;. 
-          This action cannot be reversed.
-        {% endblocktrans %}
-      </p>
+{% block modal_title %}
+  {% trans "release results to users"|capfirst %}
+{% endblock %}
+
+{% block modal_subtitle %}
+  <p class="header__subtitle">
+    {% blocktrans trimmed %}
+      Choose the scanner jobs from the list below to include in the release. The targeted
+      results will be made available immediately for the users when you click on &quot;release&quot;.
+      This action cannot be reversed.
+    {% endblocktrans %}
+  </p>
+{% endblock modal_subtitle %}
+
+{% block modal_body %}
+  <div class="body__header">
+    <div class="search_field_wrapper">
+      <input type="search"
+             id="search-bar"
+             placeholder="{% trans "search"|capfirst %}"
+             autofocus
+             autocomplete="off">
     </div>
 
-    <div class="modal-dialog__body">
-      <div class="body__header">
-        <div class="search_field_wrapper">
-          <input type="search"
-                 id="search-bar"
-                 placeholder="{% trans "search"|capfirst %}"
-                 autofocus
-                 autocomplete="off">
-        </div>
-
-        <button type="button"
-                class="button button--modal-ui button--transparent-button button--text-button"
-                id="clear-distribute-selection"
-                aria-label="{% trans "Clear all selected scannerjobs." %}"
-                title="{% trans "Clear all selected scannerjobs." %}"
-                disabled>{% trans "clear selected"|capfirst %}</button>
-      </div>
-
-      <fieldset class="distribute-withheld-list__wrapper form__fieldset">
-        <div class="distribute-withheld-list__container">
-          <ul id="scannerjob-list" class="distribute__list">
-            {% for scan in undistributed_scannerjobs %}
-              <li class="distribute__item">
-                <div class="ds-checkbox">
-                  <input type="checkbox"
-                         class="distribute__checkbox"
-                         name="distribute-to"
-                         id="select-{{ scan.scanner_pk }}"
-                         value="{{ scan.scanner_pk|unlocalize }}"
-                         autocomplete="off">
-                  <label for="select-{{ scan.scanner_pk }}">
-                    <span title="{% trans "Select this scannerjob for release." %}">{{ scan.scanner_name }} ({{ scan.total }})</span>
-                  </label>
-                </div>
-              </li>
-            {% endfor %}
-          </ul>
-        </div>
-      </fieldset>
-    </div>
-
-    <div class="modal-dialog__footer">
-      <button type="button"
-              class="button button--modal-ui button--outline-button button--text-button"
-              aria-label="{% trans "Close the window without releasing results." %}"
-              title="{% trans "Close the window without releasing results." %}"
-              data-close-dialog>
-        <span>{% trans "cancel"|capfirst %}</span>
-      </button>
-
-      <button type="button"
-              class="button button--modal-ui button--cta-button button--text-button"
-              id="distribute-matches"
-              name="distribute-matches"
-              aria-label="{% trans "Release results from the selected scannerjobs." %}"
-              title="{% trans "Release results from the selected scannerjobs." %}"
-              hx-confirm="{% trans "Are you sure you want to release the selected results to the users? This action cannot be reversed." %}"
-              hx-target="this"
-              hx-trigger="click"
-              hx-swap="afterend"
-              hx-post="{% url 'distribute' %}"
-              hx-include="[name='distribute-to']:checked"
-              hx-push-url="false"
-              disabled>
-        <span>{% trans "release"|capfirst %}</span>
-      </button>
-    </div>
+    <button type="button"
+            class="button button--modal-ui button--transparent-button button--text-button"
+            id="clear-distribute-selection"
+            aria-label="{% trans "Clear all selected scannerjobs." %}"
+            title="{% trans "Clear all selected scannerjobs." %}"
+            disabled>{% trans "clear selected"|capfirst %}</button>
   </div>
-</dialog>
+
+  <fieldset class="distribute-withheld-list__wrapper form__fieldset">
+    <div class="distribute-withheld-list__container">
+      <ul id="scannerjob-list" class="distribute__list">
+        {% for scan in undistributed_scannerjobs %}
+          <li class="distribute__item">
+            <div class="ds-checkbox">
+              <input type="checkbox"
+                     class="distribute__checkbox"
+                     name="distribute-to"
+                     id="select-{{ scan.scanner_pk }}"
+                     value="{{ scan.scanner_pk|unlocalize }}"
+                     autocomplete="off">
+              <label for="select-{{ scan.scanner_pk }}">
+                <span title="{% trans "Select this scannerjob for release." %}">{{ scan.scanner_name }} ({{ scan.total }})</span>
+              </label>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </fieldset>
+{% endblock modal_body %}
+
+{% block modal_footer_actions %}
+  <button type="button"
+          class="button button--modal-ui button--cta-button button--text-button"
+          id="distribute-matches"
+          name="distribute-matches"
+          aria-label="{% trans "Release results from the selected scannerjobs." %}"
+          title="{% trans "Release results from the selected scannerjobs." %}"
+          hx-confirm="{% trans "Are you sure you want to release the selected results to the users? This action cannot be reversed." %}"
+          hx-target="this"
+          hx-trigger="click"
+          hx-swap="afterend"
+          hx-post="{% url 'distribute' %}"
+          hx-include="[name='distribute-to']:checked"
+          hx-push-url="false"
+          disabled>
+    <span>{% trans "release"|capfirst %}</span>
+  </button>
+{% endblock modal_footer_actions %}
