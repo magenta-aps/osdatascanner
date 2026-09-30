@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Case, Count, F, Q, When
+from django.db.models import Count, F, Q
 from django.http import Http404
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, DetailView
@@ -66,12 +66,11 @@ class ReportView(LoginRequiredMixin, ListView):
             reports = reports.exclude(source_type__in=self.exclude_types)
         return reports
 
-    def get_base_queryset(self, handled=None):
+    def get_base_queryset(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
-            reports = acct.get_report(
-                    self.report_type, handled if handled is not None else self.handled)
+            reports = acct.get_report(self.report_type, self.handled)
             return self.apply_source_type_filters(reports)
         except Account.DoesNotExist:
             logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
@@ -88,8 +87,7 @@ class ReportView(LoginRequiredMixin, ListView):
             "raw_matches",
             "datasource_last_modified",
             "raw_problem",
-            "number_of_matches",
-            "container",
+            "number_of_matches"
             )
 
     @staticmethod
@@ -372,7 +370,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
     permission_required = "organizations.view_withheld_results"
     template_name = "report_content--undistributed.html"
 
-    def get_base_queryset(self, handled=None):
+    def get_base_queryset(self):
         # This is the only ReportView subclass that doesn't use Aliases to get
         # results, so it doesn't use the Account.get_report() mechanism
         try:
@@ -383,7 +381,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
                 scanner_job__organization=self.org,
                 only_notify_superadmin=True,
                 number_of_matches__gte=1,
-                resolution_status__isnull=not (handled if handled is not None else self.handled),
+                resolution_status__isnull=not self.handled,
             )
 
             return self.apply_source_type_filters(reports)
@@ -413,11 +411,12 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
 
 
 class SBSYSMixin:
-    """Turns SBSYS (source_type='sbsys-db') results into a case-grouped
-    view: paginates by case instead of by document (see paginate_queryset),
-    and builds `case_groups` in the context data -- one entry per case,
-    holding its `case_handle`/`case_number`/`case_title`, `deviations`, and
-    `reports`."""
+    """
+    - Opt into source_type='sbsys-db' via filter_types/exclude_types on ReportView.
+    - Attaches these onto each report in the page:
+        - `deviations`
+        - `case_number`
+    """
 
     filter_types = ["sbsys-db"]
     exclude_types = []
@@ -444,90 +443,19 @@ class SBSYSMixin:
                     queryset = queryset.order_by(F(order_by).desc(nulls_last=True), "pk")
         return queryset
 
-    def paginate_queryset(self, queryset, page_size):
-        """Paginates by case (grouping via ContainerReport) rather than by
-        individual DocumentReport, so a case never gets split across two
-        pages. @page_size means "cases per page", not "reports per page"."""
-        ordered_reports = list(queryset)
-
-        keys_in_order = []
-        reports_by_key = {}
-        for report in ordered_reports:
-            key = report.container_id or f"report-{report.pk}"
-            if key not in reports_by_key:
-                reports_by_key[key] = []
-                keys_in_order.append(key)
-            reports_by_key[key].append(report)
-
-        if self.handled:
-            # A case stays on the unhandled tab until all its documents are.
-            still_open_containers = set(
-                self.get_base_queryset(handled=False)
-                .exclude(container__isnull=True).values_list("container_id", flat=True))
-            keys_in_order = [
-                key for key in keys_in_order
-                if not (isinstance(key, int) and key in still_open_containers)]
-
-        # Delegate to ListView's own pagination instead of reimplementing it.
-        paginator, page, _, _ = super().paginate_queryset(keys_in_order, page_size)
-
-        container_ids = [key for key in page.object_list if isinstance(key, int)]
-        fallback_pks = [
-            reports_by_key[key][0].pk for key in page.object_list if not isinstance(key, int)]
-
-        # Rebuilt as a queryset, not a list: get_context_data calls
-        # .values_list() on page_obj.object_list. Case/When keeps the
-        # per-page order established above.
-        order_index = {key: i for i, key in enumerate(page.object_list)}
-        group_order = Case(
-            *[When(container_id=cid, then=order_index[cid]) for cid in container_ids],
-            *[When(pk=pk, then=order_index[f"report-{pk}"]) for pk in fallback_pks],
-            default=len(page.object_list),
-        )
-        # Account-scoped, not the raw manager, so this can't render a
-        # report outside what the viewer is entitled to see.
-        own_reports = self.get_base_queryset(handled=True) | self.get_base_queryset(handled=False)
-        object_list = own_reports.filter(
-            Q(container_id__in=container_ids) | Q(pk__in=fallback_pks)
-        ).annotate(_group_order=group_order).order_by("_group_order", "pk")
-        page.object_list = object_list
-        return (paginator, page, object_list, page.has_other_pages())
-
     def get_context_data(self, **kwargs):
-        from os2datascanner.engine2.model._staging.sbsysdb import find_case_handle  # noqa
+        from os2datascanner.engine2.model._staging import sbsysdb  # noqa
 
         context = super().get_context_data(**kwargs)
-
-        # Groups this page's reports by their ContainerReport so the
-        # template can show one row per case instead of one per document.
-        # Reports without a container (not yet linked, or not an SBSYS
-        # handle at all) fall back to their own single-report group.
-        groups = {}
-        order = []
         for report in context["page_obj"].object_list:
             report.deviations = get_deviations(report)
 
-            case_handle = find_case_handle(report.matches.handle)
-            report.case_number = case_handle.relative_path if case_handle else None
-
-            key = report.container_id or f"report-{report.pk}"
-            if key not in groups:
-                groups[key] = {
-                    "case_number": report.case_number,
-                    "case_title": case_handle.title if case_handle else None,
-                    "case_handle": case_handle,
-                    "container_id": report.container_id,
-                    "reports": [],
-                    "deviations": [],
-                }
-                order.append(key)
-            group = groups[key]
-            group["reports"].append(report)
-            for deviation in report.deviations:
-                if deviation not in group["deviations"]:
-                    group["deviations"].append(deviation)
-
-        context["case_groups"] = [groups[key] for key in order]
+            for h in report.matches.handle.walk_up():
+                if isinstance(h, sbsysdb.SBSYSDBHandles.Case):
+                    report.case_number = h.relative_path
+                    break
+            else:
+                report.case_number = None
         return context
 
     def dispatch(self, request, *args, **kwargs):
