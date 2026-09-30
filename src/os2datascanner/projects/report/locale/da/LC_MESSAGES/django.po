@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:20+0200\n"
+"POT-Creation-Date: 2026-09-30 14:53+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -499,10 +499,6 @@ msgid "release results to users"
 msgstr "frigiv resultater til brugere"
 
 #: reportapp/templates/components/modals/modal__distribute-results.html
-msgid "Close the window without releasing results."
-msgstr "Luk vinduet uden at frigive resultater."
-
-#: reportapp/templates/components/modals/modal__distribute-results.html
 msgid ""
 "Choose the scanner jobs from the list below to include in the release. The "
 "targeted results will be made available immediately for the users when you "
@@ -527,10 +523,6 @@ msgstr "ryd valgte"
 #: reportapp/templates/components/modals/modal__distribute-results.html
 msgid "Select this scannerjob for release."
 msgstr "Markér dette scannerjob til frigivelse."
-
-#: reportapp/templates/components/modals/modal__distribute-results.html
-msgid "cancel"
-msgstr "annullér"
 
 #: reportapp/templates/components/modals/modal__distribute-results.html
 msgid "Release results from the selected scannerjobs."
@@ -908,8 +900,8 @@ msgid ""
 "You are about to delete the selected calendar event from your Exchange "
 "server. OSdatascanner cannot reverse this action. Are you sure?"
 msgstr ""
-"Du er ved at slette valgte kalender event fra din Exchange server. Denne handling kan "
-"ikke fortrydes i OSdatascanner. Er du sikker?"
+"Du er ved at slette valgte kalender event fra din Exchange server. Denne "
+"handling kan ikke fortrydes i OSdatascanner. Er du sikker?"
 
 #: reportapp/templates/components/report_table/row_base.html
 msgid "Deletes mail from Gmail"
@@ -2154,6 +2146,11 @@ msgstr ""
 msgid "distribute results"
 msgstr "frigiv resultater"
 
+#: reportapp/templates/report_content--undistributed.html
+#: reportapp/templates/report_content--undistributed_sbsys.html
+msgid "Close the window without releasing results."
+msgstr "Luk vinduet uden at frigive resultater."
+
 #: reportapp/templates/scannerjobs/scannerjob_list.html
 msgid "Scannerjobs"
 msgstr "Scannerjob"
@@ -2737,18 +2734,3 @@ msgstr "Kunne ikke slette fil! Fejlkode: {status_code}"
 #: reportapp/views/utilities/smb_utilities.py
 msgid "Target file is not on a Windows network drive"
 msgstr "Den valgte fil er ikke fra et Windows netværksdrev"
-
-#~ msgid "no deviations found"
-#~ msgstr "ingen afvigelser fundet"
-
-#~ msgid "Revert handle status and return this result to the result overview"
-#~ msgstr ""
-#~ "Fortryd håndteringsstatus og returnér dette resultat til "
-#~ "resultatoverblikket"
-
-#~ msgid ""
-#~ "You are about to handle this result by marking it as a false positive. "
-#~ "This action does not change the file, that the result is about."
-#~ msgstr ""
-#~ "Du er ved at håndtere det markerede resultat som falsk positiv. Denne "
-#~ "handling ændrer ikke på filen, som resultatet handler om."
