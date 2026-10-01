@@ -116,8 +116,10 @@ class MSGraphGrantForm(forms.ModelForm):
         required=False,
         label=_("Client secret"),
         help_text=_("To acquire a new client secret, navigate to your Azure Portal and find the "
-                    "application created for OSdatascanner. "
-                    "Once you've found your application, you can follow the instructions in ")
+                    "application created for OSdatascanner. Once you've found your application, "
+                    "follow steps 7 and 8 in the "
+                    "<a href='https://os2datascanner.readthedocs.io/azure/azure-setup-guide/'>"
+                    "Azure setup guide</a>.")
     )
     expiry_date = forms.DateField(widget=forms.widgets.DateInput(
         attrs={"type": "date", }, format="%Y-%m-%d",),

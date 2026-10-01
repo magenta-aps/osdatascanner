@@ -1193,6 +1193,17 @@ input[type="file"]::file-selector-button:hover {
       opacity: 50%;
     }
 
+    // Help text shown under the field (the "inline" help_text_variant of form__fieldset.html):
+    &__help-text {
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+
+      a {
+        color: var(--color-primary);
+        text-decoration: underline;
+      }
+    }
+
     &__error {
       padding-left: 3rem;
       list-style-type: "⚠️";

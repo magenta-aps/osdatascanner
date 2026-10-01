@@ -8,7 +8,9 @@
     • nested?   – boolean; if true, adds the `fieldset--nested` modifier
 
   Optional params:
-    • title     – the legend text; without it, no legend is rendered
+    • title              – the legend text; without it, no legend is rendered
+    • help_text_variant  – "tooltip" (default): help texts as the tooltip of an info icon
+                           "inline": help texts as text under the field (links work here)
 {% endcomment %}
 
 <fieldset class="fieldset {% if nested %}fieldset--nested{% endif %}">
@@ -29,7 +31,7 @@
       {% if item.type == "group" %}
 
         {# recursive include for sub-groups #}
-        {% include "components/forms/form__fieldset.html" with title=item.title items=item.items nested=True only %}
+        {% include "components/forms/form__fieldset.html" with title=item.title items=item.items nested=True help_text_variant=help_text_variant only %}
  
       {% else %}
 
@@ -49,7 +51,7 @@
                 </div>
  
                 {# Only render the icon if help_text isn't empty. #}
-                {% if bf.help_text %}
+                {% if bf.help_text and help_text_variant != "inline" %}
                   <div class="form-widget__help-icon-wrapper">
                     <span class="form-widget__help-icon material-symbols"
                           title="{{ bf.help_text }}"
@@ -71,7 +73,7 @@
                 {{ bf }}
 
                 {# Only render the icon if help_text isn't empty. #}
-                {% if bf.help_text %}
+                {% if bf.help_text and help_text_variant != "inline" %}
                   <div class="form-widget__help-icon-wrapper">
                     <span class="form-widget__help-icon material-symbols"
                           title="{{ bf.help_text }}"
@@ -81,7 +83,12 @@
               </div>
 
             {% endif %}
- 
+
+            {# The id matches the aria-describedby that Django adds to fields with a help text: #}
+            {% if bf.help_text and help_text_variant == "inline" %}
+              <span id="{{ bf.auto_id }}_helptext" class="form-widget__help-text">{{ bf.help_text|safe }}</span>
+            {% endif %}
+
             {% if errors %}<div class="form-widget__error">{{ errors }}</div>{% endif %}
           </div>
         {% endwith %}

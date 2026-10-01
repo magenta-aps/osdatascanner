@@ -72,19 +72,7 @@
 
                 {% if field.errors %}{{ field.errors }}{% endif %}
 
-                {% if field.help_text %}
-                  <span class="form__help-text">
-                    {{ field.help_text|safe }}
-                    {% comment %}
-                            More dirty special case handling.
-                            But I'm not sure how you'd pass a link in form field help_text.
-                    {% endcomment %}
-                    {% if field.name == "_client_secret" %}
-                      <a href="https://os2datascanner.readthedocs.io/azure/azure-setup-guide/">{% trans "step 7 and 8 here" %}</a>
-                    {% endif %}
-
-                  </span>
-                {% endif %}
+                {% if field.help_text %}<span class="form__help-text">{{ field.help_text|safe }}</span>{% endif %}
               {% endfor %}
               <div class="form__row__item">{{ extra_form.as_div }}</div>
             </div>
