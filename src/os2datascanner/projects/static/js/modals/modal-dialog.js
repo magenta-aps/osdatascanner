@@ -1,9 +1,18 @@
 /* ***** Shared modal dialog behaviour - used by modal-dialog.html ***** */
 
-// Open:  <button data-open-modal="<modal id>">
+// Open:  <button data-open-modal="<modal id>">, or data-open-on-load on a modal that htmx inserts.
 // Close: any [data-close-modal] inside the modal, a click on the backdrop, or Esc (native).
 
 (function () {
+  const OPEN_ON_LOAD = "dialog[data-open-on-load]:not([open])";
+
+  // NOTE: htmx runs scripts it inserts once they've loaded (which can be after the modal itself
+  // has been inserted).
+  // Open any modal that's already waiting, every time this runs:
+  document.querySelectorAll(OPEN_ON_LOAD).forEach(function (modal) {
+    modal.showModal();
+  });
+
   // Loaded by the component, so it runs once per modal and after every htmx swap.
   // The listeners are on document, so attaching them once covers every modal:
   if (window.modalDialogInitialised) {
@@ -40,6 +49,15 @@
     // <dialog> itself, so check whether the click was outside its box:
     if (e.target instanceof HTMLDialogElement && e.target.open && isBackdropClick(e.target, e)) {
       e.target.close();
+    }
+  });
+
+  // NOTE: htmx fires "htmx:load" on each element it inserts.
+  // Open any modal with data-open-on-load, whether it's the inserted element itself or inside it:
+  document.addEventListener("htmx:load", function (e) {
+    const modal = e.target.matches(OPEN_ON_LOAD) ? e.target : e.target.querySelector(OPEN_ON_LOAD);
+    if (modal) {
+      modal.showModal();
     }
   });
 })();
