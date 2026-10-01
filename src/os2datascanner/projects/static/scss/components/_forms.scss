@@ -965,6 +965,10 @@ input[type="file"]::file-selector-button:hover {
       user-select: none;
     }
 
+    &__checkbox-label {
+      font-size: 0.75em;
+    }
+
     @mixin universal-ui-size--experimental {
       $ui-padding--vertical: 0.75rem;
       padding-top: $ui-padding--vertical;
@@ -1051,6 +1055,7 @@ input[type="file"]::file-selector-button:hover {
     select {
       @include custom-dropdown-icon;
 
+      width: 100%;
       padding-right: 2.25rem;
       box-sizing: border-box;
       font-family: inherit; // Force the `<select>` to listen to the parental typography.

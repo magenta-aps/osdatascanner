@@ -4,21 +4,25 @@
 
 {% comment %}
   Required params:
-    • title     – the legend text
     • items     – a list of { type:"group" or "field", title, items… } or { type:"field", bf, errors }
     • nested?   – boolean; if true, adds the `fieldset--nested` modifier
+
+  Optional params:
+    • title     – the legend text; without it, no legend is rendered
 {% endcomment %}
 
 <fieldset class="fieldset {% if nested %}fieldset--nested{% endif %}">
-  <legend class="fieldset__legend">
- 
-    {% if nested %}
-      <h4 class="title">{{ title }}</h4>
-    {% else %}
-      <h3 class="title">{{ title }}</h3>
-    {% endif %}
+  {% if title %}
+    <legend class="fieldset__legend">
 
-  </legend>
+      {% if nested %}
+        <h4 class="title">{{ title }}</h4>
+      {% else %}
+        <h3 class="title">{{ title }}</h3>
+      {% endif %}
+
+    </legend>
+  {% endif %}
 
   <div class="fieldset__body">
     {% for item in items %}
