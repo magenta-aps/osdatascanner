@@ -6,10 +6,16 @@
 
 ### General improvements
 
-
 - Upgraded dependencies
 
 - Dependencies are now hash pinned
+
+- New grants can now be created in a modal from the "+" next to the grant field on scannerjob forms
+  (SMB, EWS, MsGraph, and Google api), replacing the form that unfolded on the page:
+  - The modal shows help texts under the fields, with working links.
+  - The shared modal dialog component can now open itself when loaded with htmx, and supports
+    Select2 dropdowns.
+  - Creating a grant this way now checks that the user is allowed to add grants.
 
 ### Bugfixes
 
