@@ -352,6 +352,10 @@
       overflow: auto; // Allow scroll inside this element.
     }
   }
+
+  &--create-grant {
+    max-width: 40rem;
+  }
 }
 
 // Prevent scroll on the page underneath the dialog:

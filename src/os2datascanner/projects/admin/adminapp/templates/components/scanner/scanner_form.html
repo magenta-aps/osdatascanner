@@ -43,11 +43,6 @@
       $('.contacts_select2').select2();
     })
   })(jQuery);
-  htmx.onLoad(function(element) {
-    (function($) {
-      $(element).find('select.select2').select2();
-    })(jQuery);
-  });
 
   // Get file name - input[type="file"]
   {% if form.sitemap.name %}
@@ -114,6 +109,8 @@
   <!-- Tree view widget -->
   <link href="{% static "3rdparty/select2/select2-4.0.13.min.css" %}" rel="stylesheet">
   <script src="{% static "3rdparty/select2/select2-4.0.13.min.js" %}"></script>
+  {# Sets up "select.select2" fields loaded with htmx, e.g. in the grant modal: #}
+  <script src="{% static "js/forms/select2.js" %}"></script>
 
   {% if form.org_units %}
     <script src="{% static 'js/scannerjob/dropdowntree.js' %}"></script>
@@ -781,6 +778,9 @@
           </div>
         </div>
       </form>
+
+      {# Grant modals from the "+" buttons are loaded in here, outside the scanner form: #}
+      <div id="grant-modal-slot"></div>
     </div>
   </div>
 {% endblock body %}

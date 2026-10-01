@@ -5,7 +5,7 @@
 
 from django import template
 
-from ...adminapp.views.utils.grant_mixin import grant_permission_map
+from ...adminapp.views.utils.grant_mixin import grant_create_url_map, grant_permission_map
 
 register = template.Library()
 
@@ -20,3 +20,8 @@ def can_edit(perms, class_name: str):
 def can_add(perms, class_name: str):
     perm = f"add_{grant_permission_map(class_name)}"
     return perms["grants"][perm]
+
+
+@register.filter
+def grant_create_url_name(field_name: str):
+    return grant_create_url_map(field_name)

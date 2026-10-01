@@ -7,8 +7,6 @@ import json
 
 from django.forms import ModelChoiceField
 from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.contrib.auth import PermissionDenied
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.organizations.models.grant_extra import (GrantExtra,
@@ -29,31 +27,25 @@ def grant_permission_map(field_name: str) -> str:
     return grant_permission_name_map[field_name]
 
 
+def grant_create_url_map(field_name: str) -> str:
+    grant_create_url_names = {
+        "smb_grant": "smbgrant-create",
+        "ews_grant": "ewsgrant-create",
+        "graph_grant": "msgraphgrant-create",
+        "google_api_grant": "googleapigrant-create",
+    }
+    return grant_create_url_names[field_name]
+
+
 class GrantMixin:
-    """Mixin for dynamic grant form support."""
+    """Sets up the grant dropdowns on the scanner forms.
+
+    New grants are created in a modal from the "+" next to each dropdown (see GrantModalMixin)."""
 
     def get_grant_form_classes(self) -> dict:
         """Override this method to return a dictionary of grant
          form classes and their corresponding field."""
         raise NotImplementedError("Subclasses should implement this method.")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.is_htmx = self.request.headers.get('HX-Request')
-
-        if self.is_htmx == "true":
-            field_name = self.request.GET.get("grant_type")
-            if not self.request.user.has_perm(f"grants.add_{grant_permission_map(field_name)}"):
-                raise PermissionDenied
-            GrantFormClass = self.get_grant_form_classes().get(field_name)
-
-            if GrantFormClass:
-                context["grant_form"] = GrantFormClass(
-                    prefix=field_name,
-                    initial={"organization": self.request.GET.get("organization")}
-                    )
-
-        return context
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -73,46 +65,6 @@ class GrantMixin:
                                                        else True)
 
         return form
-
-    def post(self, request, *args, **kwargs):
-        self.is_htmx = request.headers.get('HX-Request')
-
-        if self.is_htmx == "true":
-            context = {}
-            response = HttpResponse()
-            scanner_form = self.get_form()
-
-            field_name = request.POST.get("grant_type")
-            GrantFormClass = self.get_grant_form_classes().get(field_name)
-
-            grant_form = GrantFormClass(request.POST, prefix=field_name)
-
-            if request.FILES:
-                grant_form.files = request.FILES
-
-            if grant_form.is_valid():
-                grant = grant_form.save()
-                scanner_form.data = scanner_form.data.copy()
-                scanner_form.data[field_name] = grant.pk
-
-                grant_field = scanner_form[field_name]
-                response.write(
-                    render_to_string(
-                        "components/scanner/scanner_form_select_option_field.html",
-                        {
-                            "field": grant_field,
-                            "selected_value": grant.pk,
-                        },
-                        request=request
-                    )
-                )
-                return response
-
-            context["grant_form"] = grant_form
-            context["form"] = scanner_form
-            return self.render_to_response(context)
-
-        return super().post(request, *args, **kwargs)
 
 
 class GrantExtraMixin:
@@ -164,17 +116,30 @@ class GrantModalMixin:
             return [self.modal_template_name]
         return super().get_template_names()
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.is_modal():
+            # The scanner form has fields with the same names (e.g. "organization"), so prefix
+            # the grant form's fields to keep their ids unique on the page:
+            kwargs["prefix"] = "grant"
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.is_modal():
+            # Hidden fields are rendered separately by the template:
+            visible = [*context["form"].visible_fields(), *context["extra_form"].visible_fields()]
+
+            # Start in the first field the user can fill in, rather than on the close button:
+            first = next((bf for bf in visible if not bf.field.disabled), None)
+            if first:
+                first.field.widget.attrs["autofocus"] = True
+
             context |= {
                 "modal_id": self.modal_id,
                 "close_label": _("Close without saving the grant."),
                 "field": self.get_field(),
-                # Hidden fields are rendered separately by the template:
-                "items": [{"type": "field", "bf": bf, "errors": bf.errors}
-                          for bf in [*context["form"].visible_fields(),
-                                     *context["extra_form"].visible_fields()]],
+                "items": [{"type": "field", "bf": bf, "errors": bf.errors} for bf in visible],
             }
         return context
 
