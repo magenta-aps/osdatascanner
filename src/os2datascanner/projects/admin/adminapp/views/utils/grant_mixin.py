@@ -3,10 +3,13 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
+
 from django.forms import ModelChoiceField
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth import PermissionDenied
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.organizations.models.grant_extra import (GrantExtra,
                                                                             GrantExtraForm)
@@ -136,4 +139,53 @@ class GrantExtraMixin:
         else:
             return self.form_invalid(form)
 
+        return response
+
+
+class GrantModalMixin:
+    """Lets a grant create view render inside a modal dialog when it's requested with htmx.
+    Instead of the full page, it renders the form as a modal, and on success it returns
+    204 with a "grantCreated" event rather than redirecting to the grant list."""
+
+    modal_template_name = "components/modals/modal__create-grant.html"
+    modal_id = "grant-modal"
+
+    def get_field(self):
+        """The scanner form field to update once the grant is saved."""
+        return self.request.GET.get("field") or self.request.POST.get("field")
+
+    def is_modal(self):
+        # Only the modal sends "field". Other htmx requests to the view (e.g. the Graph
+        # grant page's "fetch expiry date"), get the normal page:
+        return self.request.headers.get("HX-Request") == "true" and bool(self.get_field())
+
+    def get_template_names(self):
+        if self.is_modal():
+            return [self.modal_template_name]
+        return super().get_template_names()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.is_modal():
+            context |= {
+                "modal_id": self.modal_id,
+                "close_label": _("Close without saving the grant."),
+                "field": self.get_field(),
+                # Hidden fields are rendered separately by the template:
+                "items": [{"type": "field", "bf": bf, "errors": bf.errors}
+                          for bf in [*context["form"].visible_fields(),
+                                     *context["extra_form"].visible_fields()]],
+            }
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # GrantExtraMixin returns form_invalid if the extra form doesn't validate:
+        if self.is_modal() and response.status_code == 302:
+            response = HttpResponse(status=204)
+            response["HX-Trigger"] = json.dumps({"grantCreated": {
+                "field": self.get_field(),
+                "pk": str(self.object.pk),
+                "label": str(self.object),
+            }})
         return response

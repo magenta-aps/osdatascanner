@@ -21,7 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
+                                                                            GrantModalMixin)
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from os2datascanner.projects.admin.organizations.models import Organization
 from requests import HTTPError
@@ -189,8 +190,8 @@ class MSGraphClientSecretExpiryMixin:
         """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
 
-        if self.request.method == "POST" and self.request.headers.get(
-                "HX-Request", False) == "true":
+        if (self.request.method == "POST"
+                and self.request.headers.get("HX-Trigger-Name") == "fetch-expiry-date"):
             # request.POST is an immutable querydict, copying to circumvent.
             post_copy = self.request.POST.copy()
             post_copy["expiry_date"] = self.end_date
@@ -214,7 +215,8 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
 
 
 class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, GrantExtraMixin,  CreateView):
+                             MSGraphClientSecretExpiryMixin, GrantModalMixin,
+                             GrantExtraMixin, CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.add_graphgrant"
@@ -273,8 +275,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
                     )
                 return self.get(request, *args, end_date=end_date)
 
-        else:
-            return super().post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
