@@ -1035,6 +1035,11 @@ input[type="file"]::file-selector-button:hover {
         height: $checkbox_size;
         width: $checkbox_size;
       }
+
+      &[type="date"] {
+        width: fit-content;
+        max-width: 100%;
+      }
     }
 
     @mixin custom-dropdown-icon {
