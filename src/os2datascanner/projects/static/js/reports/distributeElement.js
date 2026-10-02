@@ -34,7 +34,7 @@
         const scannerJobList = document.getElementById("scannerjob-list");
 
         for (const scannerJob of scannerJobList.children) {
-            const scannerJobName = scannerJob.innerHTML.toLowerCase();
+            const scannerJobName = scannerJob.textContent.toLowerCase();
             if (scannerJobName.includes(query)) {
                 scannerJob.style.display = 'block';
             } else {
