@@ -1,0 +1,67 @@
+{% comment %}
+  Modal dialog component
+
+  How to use:
+    • Extend this template and fill in the blocks.
+    • Open it with a button that has data-open-modal="<modal_id>".
+
+  Required context vars:
+    • modal_id     – id of the <dialog>, also used for its title's id.
+    • close_label  – aria-label and title for the close and cancel buttons.
+
+  Blocks:
+    • modal_scripts        – extra scripts; use {{ block.super }} to keep modal-dialog.js
+    • modal_modifier       – modifier class, e.g. "modal-dialog--distribute"
+    • modal_title          – the heading text
+    • modal_subtitle       – optional, e.g. <p class="header__subtitle">
+    • modal_body           – the modal content
+    • modal_footer_actions – any button(s) besides the "Cancel"-button (e.g. the primary action)
+{% endcomment %}
+
+{% load i18n static %}
+
+{% block modal_scripts %}
+  <script src="{% static "js/modals/modal-dialog.js" %}"></script>
+{% endblock modal_scripts %}
+
+<dialog id="{{ modal_id }}"
+        class="modal-dialog {% block modal_modifier %}{% endblock %}"
+        aria-labelledby="{{ modal_id }}-title"
+        aria-modal="true">
+  <div class="modal-dialog__container">
+
+    <div class="modal-dialog__header">
+      <div class="title-close__wrapper">
+        <h2 id="{{ modal_id }}-title" class="header__title">
+          {% block modal_title %}{% endblock %}
+        </h2>
+
+        <button type="button"
+                class="button button--transparent-button button--icon-button"
+                aria-label="{{ close_label }}"
+                title="{{ close_label }}"
+                data-close-modal>
+          <i class="material-symbols">close</i>
+        </button>
+      </div>
+
+      {% block modal_subtitle %}{% endblock %}
+    </div>
+
+    <div class="modal-dialog__body">
+      {% block modal_body %}{% endblock %}
+    </div>
+
+    <div class="modal-dialog__footer">
+      <button type="button"
+              class="button button--modal-ui button--outline-button button--text-button"
+              aria-label="{{ close_label }}"
+              title="{{ close_label }}"
+              data-close-modal>
+        <span>{% trans "cancel"|capfirst %}</span>
+      </button>
+
+      {% block modal_footer_actions %}{% endblock %}
+    </div>
+  </div>
+</dialog>

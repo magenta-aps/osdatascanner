@@ -50,6 +50,9 @@
 - Wired up the snackbar component on Admins base.html, and then removed all the direct includes
   from templates.
 
+- Turned the "distribute results" modal into a shared modal dialog component, which future modals
+  in both Admin and Report can use.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.
@@ -63,6 +66,9 @@
 - Workers no longer prefetch too many messages on prioritization switching.
 
 - Workers now prioritize their subscriptions properly on start up.
+
+- Fixed a bug where the search field in the "distribute results" modal stopped working after
+  filtering or page change on the withheld results view.
 
 ## Version 3.33.0, 26th August 2026
 

@@ -307,6 +307,17 @@
 
   &__header {
     @include layout-vertical(1.5rem);
+
+    .title-close__wrapper {
+      @include layout-horizontal;
+      justify-content: space-between;
+      align-items: stretch;
+    }
+
+    .header__title,
+    .header__subtitle {
+      margin: 0;
+    }
   }
 
   &__body {
@@ -320,16 +331,6 @@
         padding: 0 !important;
       }
     }
-
-    // The list area (fixed min-height + scroll when long):
-    .distribute-withheld-list__container {
-      min-block-size: 22rem; //352px — Prevents shrinking on small data sets.
-      max-block-size: min(
-        55vh,
-        30rem
-      ); // Max-height is whichever is smaller of 55vh and 30rem(480px).
-      overflow: auto; // Allow scroll inside this element.
-    }
   }
 
   &__footer {
@@ -341,15 +342,14 @@
   &--distribute {
     max-width: 75rem;
 
-    .title-close__wrapper {
-      @include layout-horizontal;
-      justify-content: space-between;
-      align-items: stretch;
-    }
-
-    .header__title,
-    .header__subtitle {
-      margin: 0;
+    // The list area (fixed min-height + scroll when long):
+    .distribute-withheld-list__container {
+      min-block-size: 22rem; //352px — Prevents shrinking on small data sets.
+      max-block-size: min(
+        55vh,
+        30rem
+      ); // Max-height is whichever is smaller of 55vh and 30rem(480px).
+      overflow: auto; // Allow scroll inside this element.
     }
   }
 }

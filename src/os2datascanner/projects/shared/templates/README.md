@@ -13,6 +13,6 @@ Please see the folder overview below (or consult the component documentation) fo
 | Input         | allows users to enter data                                    | text fields, checkboxes, radio buttons, dropdowns, toggles, date pickers, file upload |
 | Display       | displays content and information to the user                  | cards, lists, tables, accordions, image carousels                                     |
 | Feedback      | provides feedback to user in response to actions              | alerts, toasts, progress bars, modals, snackbars                                      |
-| Containers    | manages the layout/state of the components they contain       | modal containers, tabs, accordions, panels                                            |
+| Containers    | manages the layout/state of the components they contain       | tabs, accordions, panels                                            |
 | Utility       | provides additional info/options to users in a concise format | toolbars, tooltips, popovers, helper text                                             |
 | Decorative    | primarily used for aesthetic enhancement                      | icons, dividers, decorative banners                                                   |

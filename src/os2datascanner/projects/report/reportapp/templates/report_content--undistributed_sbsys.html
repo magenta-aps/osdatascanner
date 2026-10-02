@@ -14,7 +14,8 @@
       {% if perms.organizations.distribute_withheld_results %}
         <button type="button"
                 class="button button--cta-button button--icon-text-button"
-                id="open-distribute-modal">
+                id="open-distribute-modal"
+                data-open-modal="distribute-results-modal">
           <i id="call_split" class="material-symbols">call_split</i>
           <span>{% trans "distribute results"|capfirst %}</span>
         </button>
@@ -29,6 +30,7 @@
   {% include "components/report_table/sbsys/table.html" %}
 
   {% if perms.organizations.distribute_withheld_results %}
-    {% include "components/modals/modal__distribute-results.html" %}
+    {% translate "Close the window without releasing results." as close_label %}
+    {% include "components/modals/modal__distribute-results.html" with modal_id="distribute-results-modal" close_label=close_label %}
   {% endif %}
 {% endblock content %}
