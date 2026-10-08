@@ -1,0 +1,18 @@
+<div id="{{ widget.attrs.id }}_wrapper"
+     class="grant-select"
+     {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}>
+  {% include "django/forms/widgets/select.html" %}
+
+  {# Like the "+" in components/scanner/scanner_form_grant_select_option_field.html: #}
+  {% if can_add %}
+    <button type="button"
+            class="button button--icon-button"
+            hx-get="{{ create_url }}"
+            hx-vals='{"field": "{{ widget.name }}"}'
+            hx-target="#grant-modal-slot">
+      <svg class="icon button__plus-icon">
+        <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
+      </svg>
+    </button>
+  {% endif %}
+</div>

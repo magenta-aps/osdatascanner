@@ -4,12 +4,15 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from django import forms
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.models import User, Permission
 from django.db.models import Q
 
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
+from os2datascanner.projects.admin.organizations.grant_utils import (grant_create_url_map,
+                                                                     grant_permission_map)
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
@@ -96,6 +99,28 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         context['universal_remediators'] = self.universal_remediators
+        return context
+
+
+class GrantSelectWidget(forms.Select):
+    """Grant dropdown with a "+" for creating a new grant."""
+    template_name = "components/admin_widgets/grant_select.html"
+
+    class Media:
+        js = ["js/forms/grant-select.js"]
+
+    def __init__(self, *args, **kwargs):
+        self.create_url = None
+        self.can_add = False
+        super().__init__(*args, **kwargs)
+
+    def get_context(self, name, value, attrs):
+        context = super().get_context(name, value, attrs)
+        # On organization change, swap the whole widget, not just the dropdown, since the "+"
+        # depends on the organization:
+        context["oob"] = context["widget"]["attrs"].pop("hx-swap-oob", None)
+        context["create_url"] = self.create_url
+        context["can_add"] = self.can_add
         return context
 
 
@@ -284,6 +309,20 @@ class ScannerForm(GroupingModelForm):
             field = self.fields[name]
             field.queryset = field.queryset.filter(organization=self.org)
             field.widget.attrs["hx-swap-oob"] = "true"
+
+        # Grant dropdowns: only the organization's grants, and a way to create new ones there:
+        for name, field in self.fields.items():
+            if isinstance(field.widget, GrantSelectWidget):
+                field.queryset = field.queryset.filter(organization=self.org)
+                # Sorted by name:
+                field.choices = [("", _("Choose %(grant)s") % {"grant": field.label}), *sorted(
+                    ((grant.pk, str(grant)) for grant in field.queryset),
+                    key=lambda choice: choice[1].casefold())]
+                field.widget.attrs["hx-swap-oob"] = "true"
+                field.widget.create_url = reverse(grant_create_url_map(name),
+                                                  kwargs={"org": self.org.pk})
+                field.widget.can_add = self.user.has_perm(
+                    f"grants.add_{grant_permission_map(name)}")
 
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.
