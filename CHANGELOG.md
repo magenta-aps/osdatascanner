@@ -17,6 +17,8 @@
     Select2 dropdowns.
   - Creating a grant this way now checks that the user is allowed to add grants.
 
+- The file scanner form now uses Django forms.
+
 ### Bugfixes
 
 - Fixed an issue causing orphaned `ScannerReference`s. It is important to run the new management
