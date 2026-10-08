@@ -12,7 +12,7 @@ from os2datascanner.engine2 import factory
 from os2datascanner.engine2.model.utilities import sitemap
 
 from ..models.scannerjobs.webscanner import WebScanner
-from .shared import Groups, ScannerForm
+from .shared import Excludes, Groups, ScannerForm
 
 
 class WebScannerForm(ScannerForm):
@@ -113,7 +113,4 @@ class WebScannerForm(ScannerForm):
 
     class Meta:
         model = WebScanner
-        exclude = ("pk", "dtstart", "validation_method",)
-        widgets = {
-            # "name": widgets.PasswordInput(),
-        }
+        exclude = Excludes.BASE + Excludes.ORG_UNITS

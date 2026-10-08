@@ -76,6 +76,14 @@ class Groups:
     )
 
 
+class Excludes:
+    # Model fields no scanner form should show or save:
+    BASE = ("pk", "dtstart", "validation_method", "hidden", "columns")
+
+    # For scanners that don't scan accounts. Forms with ScanScopeMixin keep these:
+    ORG_UNITS = ("org_units", "scan_entire_org")
+
+
 class RemediatorSelectMultipleWidget(forms.SelectMultiple):
     """Select multiple widget with display of universal remediators added."""
     template_name = "components/admin_widgets/remediator_select_multiple.html"
