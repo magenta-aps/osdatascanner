@@ -3,18 +3,13 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from django import forms
-
-from os2datascanner.projects.grants.models import SMBGrant
 from .scanner_views import (
-    ScannerBase,
-    ScannerUpdate,
-    ScannerCopy,
-    ScannerCreate,
-    ScannerList)
-from .utils.grant_mixin import GrantMixin
+    ScannerList,
+    ScannerCreateDf,
+    ScannerUpdateDf,
+    ScannerCopyDf)
+from ..forms.filescanner import FileScannerForm
 from ..models.scannerjobs.filescanner import FileScanner
-from django.utils.translation import gettext_lazy as _
 
 
 class FileScannerList(ScannerList):
@@ -24,93 +19,17 @@ class FileScannerList(ScannerList):
     type = 'file'
 
 
-file_scanner_fields = [
-    'unc',
-    'alias',
-    'skip_super_hidden',
-    'unc_is_home_root',
-    'smb_grant'
-]
-
-
-class FileScannerCreate(GrantMixin, ScannerCreate):
-    """Create a file scanner view."""
-
+class FileScannerCreate(ScannerCreateDf):
     model = FileScanner
-    type = 'file'
-    fields = ScannerBase.fields + file_scanner_fields
-
-    def get_grant_models(self):
-        return {
-            "smb_grant": SMBGrant,
-        }
-
-    def get_form(self, form_class=None):
-        """Adds special field password."""
-        form = super().get_form(form_class)
-        return initialize_form(form)
-
-    def get_success_url(self):
-        """The URL to redirect to after successful creation."""
-        return '/filescanners/%s/created/' % self.object.pk
+    form_class = FileScannerForm
 
 
-class FileScannerUpdate(GrantMixin, ScannerUpdate):
-    """Update a scanner view."""
-
-    model = FileScanner
-    type = 'file'
-    fields = ScannerBase.fields + file_scanner_fields
-
-    def get_grant_models(self):
-        return {
-            "smb_grant": SMBGrant,
-        }
-
-    def get_form(self, form_class=None):
-        """Adds special field password."""
-        form = super().get_form(form_class)
-        return initialize_form(form)
-
-    def get_success_url(self):
-        """The URL to redirect to after successful updating.
-
-        Will redirect the user to the validate view if the form was submitted
-        with the 'save_and_validate' button.
-        """
-        if 'save_and_validate' in self.request.POST:
-            return 'validate/'
-        else:
-            return '/filescanners/%s/saved/' % self.object.pk
-
-
-class FileScannerCopy(GrantMixin, ScannerCopy):
+class FileScannerCopy(ScannerCopyDf):
     """Create a new copy of an existing FileScanner"""
     model = FileScanner
-    type = 'file'
-    fields = ScannerBase.fields + file_scanner_fields
-
-    def get_grant_models(self):
-        return {
-            "smb_grant": SMBGrant,
-        }
-
-    def get_form(self, form_class=None):
-        """Adds special field password."""
-        # This doesn't copy over it's values, as credentials shouldn't
-        # be copyable
-        if form_class is None:
-            form_class = self.get_form_class()
-
-        form = super().get_form(form_class)
-        return initialize_form(form)
+    form_class = FileScannerForm
 
 
-def initialize_form(form):
-    """Initializes the form fields for username and password
-    as they are not part of the file scanner model."""
-
-    form.fields['unc'].widget.attrs['placeholder'] = _('e.g. //network-domain/top-folder')
-    form.fields['alias'] = forms.CharField(max_length=64, required=False, label=_('Drive letter'))
-
-    return form
+class FileScannerUpdate(ScannerUpdateDf):
+    model = FileScanner
+    form_class = FileScannerForm
