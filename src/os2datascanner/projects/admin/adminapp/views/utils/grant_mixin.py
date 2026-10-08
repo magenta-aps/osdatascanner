@@ -13,30 +13,6 @@ from os2datascanner.projects.admin.organizations.models.grant_extra import (Gran
                                                                             GrantExtraForm)
 
 
-def grant_permission_map(field_name: str) -> str:
-    grant_permission_name_map = {
-        "GraphGrant": "graphgrant",
-        "graph_grant": "graphgrant",
-        "SMBGrant": "smbgrant",
-        "smb_grant": "smbgrant",
-        "EWSGrant": "ewsgrant",
-        "ews_grant": "ewsgrant",
-        "GoogleApiGrant": "googleapigrant",
-        "google_api_grant": "googleapigrant"
-    }
-    return grant_permission_name_map[field_name]
-
-
-def grant_create_url_map(field_name: str) -> str:
-    grant_create_url_names = {
-        "smb_grant": "smbgrant-create",
-        "ews_grant": "ewsgrant-create",
-        "graph_grant": "msgraphgrant-create",
-        "google_api_grant": "googleapigrant-create",
-    }
-    return grant_create_url_names[field_name]
-
-
 class GrantMixin:
     """Sets up the grant dropdowns on the scanner forms.
 

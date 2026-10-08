@@ -5,7 +5,7 @@
 
 from django import template
 
-from ...adminapp.views.utils.grant_mixin import grant_create_url_map, grant_permission_map
+from ..grant_utils import grant_create_url_map, grant_permission_map
 
 register = template.Library()
 
