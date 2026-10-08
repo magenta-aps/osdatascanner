@@ -195,12 +195,11 @@ class ClaimStore:
                     "discarding unreadable deduplication result", exc_info=True)
             return None
 
-    def claim(self, scan_id: str, cid: str) -> bool:
+    def claim(self, scan_id: str, cid: str) -> Optional[bool]:
         """Attempts to take the claim on converting this content: True if this
         worker now holds it and should convert, False if another worker does.
 
-        True as well when the store could not be reached, so that an unavailable
-        store has everyone convert rather than everyone wait."""
+        None when the store could not be reached. Callers convert on anything but False."""
         key = self._claim_key(scan_id, cid)
         try:
             pipe = self._client.pipeline(transaction=False)
@@ -213,7 +212,7 @@ class ClaimStore:
             logger.warning(
                     "could not take deduplication claim, will convert",
                     error=f"{type(ex).__name__}: {ex}")
-            return True
+            return None
         return bool(taken)
 
     def renew(self, scan_id: str, cid: str) -> None:
@@ -230,9 +229,9 @@ class ClaimStore:
             logger.debug(
                     "could not renew deduplication lease", error=f"{type(ex).__name__}: {ex}")
 
-    def store_result(self, scan_id: str, cid: str, result: dict) -> None:
+    def store_result(self, scan_id: str, cid: str, result: dict) -> bool:
         """Publishes the result of converting this content, for other copies to
-        replay against their own objects."""
+        replay against their own objects. False when it could not be published."""
         try:
             pipe = self._client.pipeline(transaction=False)
             pipe.set(
@@ -243,6 +242,8 @@ class ClaimStore:
         except Exception as ex:
             logger.warning(
                     "could not store deduplication result", error=f"{type(ex).__name__}: {ex}")
+            return False
+        return True
 
     def purge(self, scan_id: str) -> int:
         """Deletes everything this scan left behind, returning how many keys
@@ -503,7 +504,7 @@ def _check_lease_ms(lease_ms: int) -> bool:
 
 def build_client(conf: dict):
     """Builds a connection to the store @conf describes, or returns None if
-    there is no host to connect to or no redis package to do it with.
+    there is no host to connect to.
 
     Connecting is deferred, so a client comes back whether or not the store is
     up."""
@@ -536,7 +537,9 @@ def _build_store() -> Optional[ClaimStore]:
         return None
 
     if (client := build_client(conf)) is None:
-        logger.info("deduplication enabled but unavailable, disabling")
+        # Connecting is deferred, so the only thing build_client can object to
+        # is a configuration that names no store to connect to.
+        logger.info("deduplication enabled but no store configured, disabling")
         return None
 
     logger.info(
@@ -708,10 +711,11 @@ def plan_conversion(
         # An unshareable marker means nothing is coming. Do not wait for it.
         return None if is_unshareable(payload) else Stored(payload=payload)
 
-    if store.claim(scan_id, key):
-        logger.info(
-                "took the claim on this content, converting for every copy",
-                handle=str(conversion.handle))
+    if (claimed := store.claim(scan_id, key)) is not False:
+        if claimed:
+            logger.info(
+                    "took the claim on this content, converting for every copy",
+                    handle=str(conversion.handle))
         return Claimed(scan_id=scan_id, key=key)
 
     # Read again, the holder may have finished while the claim was attempted.
