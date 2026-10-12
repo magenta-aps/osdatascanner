@@ -266,6 +266,12 @@ class DocumentReport(models.Model):
             models.Index(
                 Upper("owner"),
                 name="alias_creation_query_idx"),
+            models.Index(
+                fields=["scanner_job"],
+                include=["id", "resolution_status", "source_type",
+                         "created_timestamp", "resolution_time"],
+                condition=models.Q(number_of_matches__gte=1),
+                name="documentreport_stats_idx"),
         ]
         constraints = [
             models.UniqueConstraint(

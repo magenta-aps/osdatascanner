@@ -53,6 +53,8 @@
 - Turned the "distribute results" modal into a shared modal dialog component, which future modals
   in both Admin and Report can use.
 
+- Added new index to `DocumentReport` for faster loading of statistics views.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.
