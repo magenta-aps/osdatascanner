@@ -11,6 +11,7 @@ from os2datascanner.engine2.rules.dummy import AlwaysMatchesRule
 from os2datascanner.engine2.pipeline import messages
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.models.documentreport import DocumentReport
+from ..reportapp.models.scanner_reference import ScannerReference
 from ..organizations.models import Alias, Account, Organization, AliasType
 from .generate_test_data import record_match, record_metadata
 
@@ -93,9 +94,20 @@ def lucky_file():
 
 
 @pytest.fixture
-def lucky_scan_spec(lucky_file):
+def lucky_scanner(danish_botanists_organization):
+    return ScannerReference.objects.create(
+        scanner_pk=1,
+        scanner_name="Search for Datas",
+        organization=danish_botanists_organization,
+    )
+
+
+@pytest.fixture
+def lucky_scan_spec(lucky_file, lucky_scanner):
     return messages.ScanSpecMessage(
-        scan_tag=messages.ScanTagFragment.make_dummy(),
+        scan_tag=messages.deep_replace(
+            messages.ScanTagFragment.make_dummy(),
+            scanner__pk=lucky_scanner.scanner_pk),
         source=lucky_file.source,
         rule=AlwaysMatchesRule(),
         configuration={}, progress=None, filter_rule=None)

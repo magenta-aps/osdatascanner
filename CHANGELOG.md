@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 3.3x.x xx November 2026
+
+### Bugfixes
+
+- Fixed an issue causing orphaned `ScannerReference`s. It is important to run the new management
+  command, `sync_scanner_references`, to ensure that all scanners have a corresponding 
+  `ScannerReference`.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"
