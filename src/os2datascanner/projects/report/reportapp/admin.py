@@ -5,6 +5,7 @@
 
 import json
 
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.urls import path, reverse
 from django.utils.translation import gettext_lazy as _
@@ -18,6 +19,7 @@ from .models.scanner_reference import ScannerReference
 
 from os2datascanner.engine2.pipeline import messages  # noqa
 from os2datascanner.projects.report.organizations.models import Organization, Account
+from os2datascanner.projects.report.reportapp.models.container_report import ContainerReport
 from os2datascanner.projects.report.organizations.admin import ReadOnlyAdminMixin
 from os2datascanner.projects.report.reportapp.management.commands import (
         result_collector as r_c)
@@ -99,6 +101,36 @@ class DocumentReportAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         return super(DocumentReportAdmin, self).get_queryset(request).prefetch_related(
             'alias_relations')
+
+
+@admin.register(ContainerReport)
+class ContainerReportAdmin(ReadOnlyAdminMixin, admin.ModelAdmin):
+    list_display = (
+        "case_number",
+        "case_title",
+        "scanner_job",
+        "document_count",
+        "datasource_creation_time",
+        "datasource_last_modified",
+    )
+    list_filter = ("scanner_job", "source_type")
+    search_fields = ("handle__path", "handle__title")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            doc_count=Count("document_reports"))
+
+    @admin.display(description=_("case number"), ordering="handle__path")
+    def case_number(self, cr):
+        return cr.handle.get("path")
+
+    @admin.display(description=_("case title"))
+    def case_title(self, cr):
+        return cr.handle.get("title")
+
+    @admin.display(description=_("documents"), ordering="doc_count")
+    def document_count(self, cr):
+        return cr.doc_count
 
 
 @admin.register(ScannerReference)
