@@ -48,6 +48,14 @@ def get_rules(dr):
 
     return rules if rules["rules"] else None
 
+
+def merge_rules(raw_rules, new_rules):
+    merged = {(r["type"], r.get("name")): r
+              for r in ((raw_rules or {}).get("rules") or [])
+              + ((new_rules or {}).get("rules") or [])}
+    return {"rules": list(merged.values())} if merged else None
+
+
 def attach_batch(ContainerReport, DocumentReport, batch):
     containers = {}
     reports = []
@@ -61,14 +69,21 @@ def attach_batch(ContainerReport, DocumentReport, batch):
                     scanner_job_id=key[0],
                     path=key[1],
                     handle=case_handle.to_json_object(),
-                    raw_rules=get_rules(dr),
                     source_type=dr.source_type,
                     datasource_last_modified=dr.datasource_last_modified,
                     datasource_creation_time=dr.datasource_creation_time)
+        containers[key].raw_rules = merge_rules(containers[key].raw_rules, get_rules(dr))
         reports.append((dr, key))
 
     if not containers:
         return
+
+    # Keep rules from earlier batches
+    for existing in ContainerReport.objects.filter(
+            path__in=[path for _, path in containers]).only("scanner_job", "path", "raw_rules"):
+        if (key := (existing.scanner_job_id, existing.path)) in containers:
+            containers[key].raw_rules = merge_rules(
+                    existing.raw_rules, containers[key].raw_rules)
 
     ContainerReport.objects.bulk_create(
             containers.values(),

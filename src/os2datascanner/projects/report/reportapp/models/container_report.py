@@ -22,7 +22,8 @@ class ContainerReport(models.Model):
 
     handle = models.JSONField()
 
-    # Non-synthetic, renderable rules shared by the attached document reports
+    # Distinct rules matched by the attached document reports. Only ever added to,
+    # see merge_rules in the result collector
     raw_rules = models.JSONField(null=True, blank=True)
 
     scanner_job = models.ForeignKey(

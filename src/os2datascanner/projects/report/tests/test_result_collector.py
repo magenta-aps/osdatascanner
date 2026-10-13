@@ -18,6 +18,7 @@ from os2datascanner.engine2.model.file import (
 from os2datascanner.engine2.rules.dimensions import DimensionsRule
 from os2datascanner.engine2.rules.logical import AndRule
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
+from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 from os2datascanner.engine2.model.smbc import SMBCSource, SMBCHandle
@@ -1057,6 +1058,23 @@ class TestPipelineCollector:
         assert container.raw_rules == {"rules": [common_rule.to_json_object()]}
         assert container.datasource_creation_time == parse_datetime(time0)
         assert container.datasource_last_modified == parse_datetime(time1)
+
+    def test_sbsys_container_collects_distinct_rules_from_its_documents(
+            self, sbsys_match, sbsys_document_handle, common_rule):
+        """A case collects the distinct rules its documents matched, not just
+        the last document's."""
+        other_rule = RegexRule("Hansen", name="Navne")
+        other_document = SBSYSDBHandles.Document(
+                sbsys_document_handle.source, "doc-2", name="notat.docx")
+
+        record_match(sbsys_match)
+        record_match(messages.replace(
+                sbsys_match, handle=other_document,
+                matches=[messages.MatchFragment(
+                        rule=other_rule, matches=[{"dummy": "match object"}])]))
+
+        assert ContainerReport.objects.get().raw_rules == {"rules": [
+                common_rule.to_json_object(), other_rule.to_json_object()]}
 
     def test_non_sbsys_match_gets_no_container(self, positive_match):
         record_match(positive_match)

@@ -123,6 +123,17 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
+# TODO: Rules are only ever added, so a rule that no longer matches stays on the case.
+# Revisit with ScheduledCheckups for SBSYS (#67361, #60255), and before using
+# ContainerReport for other kinds of containers.
+def merge_rules(raw_rules, new_rules) -> dict | None:
+    """Adds @new_rules to @raw_rules, skipping rules already there."""
+    merged = {(r["type"], r.get("name")): r
+              for r in ((raw_rules or {}).get("rules") or [])
+              + ((new_rules or {}).get("rules") or [])}
+    return {"rules": list(merged.values())} if merged else None
+
+
 def update_or_create_container(
         scanner, handle, rules=None, creation_time=None,
         last_modified=None) -> ContainerReport | None:
@@ -139,9 +150,6 @@ def update_or_create_container(
 
     defaults = {}
 
-    if rules:
-        defaults["raw_rules"] = rules
-
     if creation_time:
         defaults["datasource_creation_time"] = creation_time
 
@@ -156,6 +164,10 @@ def update_or_create_container(
             "source_type": source.type_label,
         } | defaults,
     )
+
+    if (merged := merge_rules(container.raw_rules, rules)) != container.raw_rules:
+        container.raw_rules = merged
+        container.save(update_fields=["raw_rules"])
     return container
 
 

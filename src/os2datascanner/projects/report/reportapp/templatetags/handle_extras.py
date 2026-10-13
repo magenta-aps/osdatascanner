@@ -98,7 +98,7 @@ def find_svg_icon(type_label):
 
 
 @register.filter
-def get_deviations(cr: ContainerReport) -> set[str]:
+def get_deviations(cr: ContainerReport) -> list[str]:
     deviations = set()
 
     # raw_rules can be None, or hold {"rules": None} when no rule qualified
@@ -109,7 +109,7 @@ def get_deviations(cr: ContainerReport) -> set[str]:
         except DeserialisationError:
             logger.exception("Could not get deviations for presentation", exc_info=True)
 
-    return deviations or {_("No rule")}
+    return sorted(deviations) or [_("No rule")]
 
 
 @register.simple_tag
