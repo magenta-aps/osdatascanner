@@ -13,7 +13,7 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.paginator import Paginator, EmptyPage
-from django.db.models import Count, F, Q
+from django.db.models import Count, Q
 from django.http import Http404, HttpResponseForbidden
 from django.utils.translation import gettext_lazy as _, ngettext
 from django.views.generic import ListView, DetailView
@@ -22,13 +22,11 @@ from os2datascanner.utils.system_utilities import time_now
 
 from .base_views import HTMXEndpointView, BaseMassView
 from .utilities.document_report_utilities import (
-    handle_report, get_deviations, build_resolution_message,
+    handle_report, build_resolution_message,
 )
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ..models.scanner_reference import ScannerReference
 from ...organizations.models.account import Account
-
-from os2datascanner.core_organizational_structure.models.organization import SBSYSTabConfigChoices
 
 logger = structlog.get_logger("reportapp")
 
@@ -56,22 +54,16 @@ class ReportView(LoginRequiredMixin, ListView):
     report_type: Account.ReportType = None
     handled: bool = False
 
-    filter_types: list[str] = []
-    exclude_types: list[str] = ["sbsys-db"]
-
-    def apply_source_type_filters(self, reports):
-        if self.filter_types:
-            reports = reports.filter(source_type__in=self.filter_types)
-        if self.exclude_types:
-            reports = reports.exclude(source_type__in=self.exclude_types)
-        return reports
+    # SBSYS shouldn't be displayed by ReportViews, as they should always be
+    # displayed on a ContainerReport basis
+    SBSYS_SOURCE = "sbsys-db"
 
     def get_base_queryset(self):
         try:
             acct = self.request.user.account
             self.org = acct.organization
             reports = acct.get_report(self.report_type, self.handled)
-            return self.apply_source_type_filters(reports)
+            return reports.exclude(source_type=self.SBSYS_SOURCE)
         except Account.DoesNotExist:
             logger.warning("unexpected error in ReportView.get_queryset_base", exc_info=True)
             return DocumentReport.objects.none()
@@ -384,7 +376,7 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
                 resolution_status__isnull=not self.handled,
             )
 
-            return self.apply_source_type_filters(reports)
+            return reports.exclude(source_type=self.SBSYS_SOURCE)
 
         except Account.DoesNotExist:
             logger.warning("unexpected error in UndistributedView.get_queryset_base", exc_info=True)
@@ -408,121 +400,6 @@ class UndistributedView(PermissionRequiredMixin, ReportView):
 
     def _allow_handle(self):
         return self.request.user.has_perm("organizations.handle_withheld_results")
-
-
-class SBSYSMixin:
-    """
-    - Opt into source_type='sbsys-db' via filter_types/exclude_types on ReportView.
-    - Attaches these onto each report in the page:
-        - `deviations`
-        - `case_number`
-    """
-
-    filter_types = ["sbsys-db"]
-    exclude_types = []
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        order_by = self.request.GET.get("order_by")
-        order = self.request.GET.get("order")
-
-        # These are SBSYS-specific, the usual ones we get from ReportView-
-        extra_sorting_options = ["case_number", "datasource_creation_time"]
-
-        if order_by in extra_sorting_options and order:
-            if order_by == "case_number":
-                # Extra-extra special, that has no separate field and so has to be derived first.
-                queryset = queryset.annotate(
-                    case_number=F("raw_matches__handle__path")
-                )
-            match order:
-                case "ascending":
-                    queryset = queryset.order_by(order_by, "pk")
-                case "descending":
-                    # Those we don't (maybe _yet_?) go last.
-                    queryset = queryset.order_by(F(order_by).desc(nulls_last=True), "pk")
-        return queryset
-
-    def get_context_data(self, **kwargs):
-        from os2datascanner.engine2.model._staging import sbsysdb  # noqa
-
-        context = super().get_context_data(**kwargs)
-        for report in context["page_obj"].object_list:
-            report.deviations = get_deviations(report)
-
-            for h in report.matches.handle.walk_up():
-                if isinstance(h, sbsysdb.SBSYSDBHandles.Case):
-                    report.case_number = h.relative_path
-                    break
-            else:
-                report.case_number = None
-        return context
-
-    def dispatch(self, request, *args, **kwargs):
-        account = request.user.account
-
-        # Access check:
-        # 1) Org must have SBSYS enabled
-        if not account.sbsystab_access:
-            access_setting = SBSYSTabConfigChoices(account.organization.sbsystab_access)
-
-            # If user doesn't have access, then redirect and show a message:
-            match access_setting:
-                # Visible only with permission:
-                case SBSYSTabConfigChoices.WITH_PERMISSION:
-                    message_text = _(
-                        "The SBSYS tab is enabled for your organization, "
-                        "but you do not have the required permission to view it."
-                    )
-                    message_theme = messages.WARNING
-
-                # Hidden for all:
-                case SBSYSTabConfigChoices.NONE:
-                    message_text = _("The SBSYS tab is not enabled for your organization.")
-                    message_theme = messages.WARNING
-
-                # Invalid or unexpected value:
-                case _:
-                    message_text = _(
-                        "Unexpected error: The system is unable to verify your SBSYS tab access "
-                        "at this time.")
-                    message_theme = messages.ERROR
-
-            messages.add_message(
-                request,
-                message_theme,
-                message_text,
-                extra_tags="manual_close"
-            )
-            return redirect(reverse_lazy("index"))
-
-        # 2) For RemediatorView it will then go through RemediatorView.dispatch,
-        # which checks .is_remediator or superuser.
-        return super().dispatch(request, *args, **kwargs)
-
-
-class SBSYSPersonalView(SBSYSMixin, ReportView):
-    """Presents the user with their personal unhandled SBSYS results."""
-
-    type = "sbsys-personal"
-    template_name = "report_content--personal_sbsys.html"
-    report_type = Account.ReportType.PERSONAL_AND_SHARED
-
-
-class SBSYSRemediatorView(SBSYSMixin, RemediatorView):
-    """Presents a remediator with relevant unhandled SBSYS results."""
-
-    type = "sbsys-remediator"
-    template_name = "report_content--remediator_sbsys.html"
-    report_type = Account.ReportType.REMEDIATOR
-
-
-class SBSYSUndistributedView(SBSYSMixin, UndistributedView):
-    """Presents a superuser with all undistributed unhandled SBSYS results."""
-
-    type = "sbsys-undistributed"
-    template_name = "report_content--undistributed_sbsys.html"
-    permission_required = "organizations.view_withheld_results"
 
 
 class HandledMixin:
@@ -567,18 +444,6 @@ class RemediatorHandledView(HandledMixin, RemediatorView):
 
 class UndistributedHandledView(HandledMixin, UndistributedView):
     """Presents a superuser with all undistributed handled results."""
-
-
-class SBSYSPersonalHandledView(HandledMixin, SBSYSPersonalView):
-    """Presents the user with their personal handled SBSYS results."""
-
-
-class SBSYSRemediatorHandledView(HandledMixin, SBSYSRemediatorView):
-    """Presents the remediator with all relevant handled SBSYS results."""
-
-
-class SBSYSUndistributedHandledView(HandledMixin, SBSYSUndistributedView):
-    """Presents a superuser with all undistributed handled SBSYS results."""
 
 
 class HandleMatchView(HTMXEndpointView, DetailView):

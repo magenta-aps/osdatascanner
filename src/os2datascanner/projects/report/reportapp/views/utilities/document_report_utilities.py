@@ -108,28 +108,3 @@ def build_resolution_message(action, count: int | None = None, was_handled: bool
             'The result was marked as "%(label)s"',
             '%(count)d results were marked as "%(label)s"',
             n) % {"count": n, "label": label}
-
-
-def get_deviations(report: DocumentReport) -> list[str]:
-    """
-    Return a de-duplicated list of human-readable rule labels:
-      - For SBSYSDBRule: "<field> contains '<value>'" (both 'contains' and 'icontains' become
-        'contains')
-      - Else if rule.name or rule._name: that name
-      - Otherwise rule.type_label
-    """
-    seen = set()
-    out: list[str] = []
-
-    for frag in report.matches.matches:
-        if frag.rule.synthetic or not frag.matches:
-            continue
-
-        rule = frag.rule
-        label = str(rule.presentation)
-
-        if label and label not in seen:
-            seen.add(label)
-            out.append(label)
-
-    return out

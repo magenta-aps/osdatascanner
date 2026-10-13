@@ -13,9 +13,15 @@ from django.conf import settings
 
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.smbc import SMBCHandle
+from os2datascanner.projects.report.reportapp.models.container_report import ContainerReport
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.model.core.errors import DeserialisationError
+import structlog
 
 from ..views.report_views import RENDERABLE_RULES
 from django.utils.translation import gettext_lazy as _
+
+logger = structlog.get_logger("reportapp")
 
 register = template.Library()
 
@@ -89,6 +95,21 @@ def find_svg_icon(type_label):
     return os.path.join(
         svg_dir, f"icon-{type_label}.svg") if os.path.exists(full_path) else \
         f"{svg_dir}/icon-default.svg"
+
+
+@register.filter
+def get_deviations(cr: ContainerReport) -> set[str]:
+    deviations = set()
+
+    # raw_rules can be None, or hold {"rules": None} when no rule qualified
+    for r in (cr.raw_rules or {}).get("rules") or []:
+        try:
+            if presentation := Rule.from_json_object(r).presentation:
+                deviations.add(presentation)
+        except DeserialisationError:
+            logger.exception("Could not get deviations for presentation", exc_info=True)
+
+    return deviations or {_("No rule")}
 
 
 @register.simple_tag

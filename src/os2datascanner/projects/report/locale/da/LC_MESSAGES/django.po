@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 11:12+0200\n"
+"POT-Creation-Date: 2026-10-13 11:54+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -208,6 +208,20 @@ msgstr "konto"
 #, python-brace-format
 msgid "{count} JSON messages imported."
 msgstr "Der blev importeret {count} JSON-beskeder."
+
+#: reportapp/admin.py
+#: reportapp/templates/components/report_table/sbsys/table.html
+msgid "case number"
+msgstr "sagsnummer"
+
+#: reportapp/admin.py
+#: reportapp/templates/components/report_table/sbsys/table.html
+msgid "case title"
+msgstr "sagstitel"
+
+#: reportapp/admin.py
+msgid "documents"
+msgstr "dokumenter"
 
 #: reportapp/admin.py
 msgid "Personal info"
@@ -959,7 +973,6 @@ msgid "Anonymized match"
 msgstr "Anonymiseret match"
 
 #: reportapp/templates/components/report_table/row_base.html
-#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Context"
 msgstr "Kontekst"
 
@@ -972,10 +985,8 @@ msgid "Show more matches"
 msgstr "Vis flere matches"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-#, fuzzy
-#| msgid "Select result"
 msgid "Select case"
-msgstr "Vælg resultat"
+msgstr "Vælg sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Untitled case"
@@ -990,7 +1001,7 @@ msgid ""
 msgid_plural ""
 "\n"
 "              %(counter)s deviations on this case\n"
-"              "
+"            "
 msgstr[0] ""
 "\n"
 "              %(counter)s afvigelse på denne sag\n"
@@ -998,7 +1009,7 @@ msgstr[0] ""
 msgstr[1] ""
 "\n"
 "              %(counter)s afvigelser på denne sag\n"
-"              "
+"            "
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click here to open this case in SBSYS"
@@ -1021,30 +1032,24 @@ msgid "Reverts every result on this case to unhandled."
 msgstr "Fortryder alle resultater på denne sag til uhåndteret."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-#, fuzzy
-#| msgid "revert handling"
 msgid "Undo handling"
-msgstr "fortryd håndtering"
+msgstr "Fortryd håndtering"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Marks every result on this case as handled."
 msgstr "Markerer alle resultater på denne sag som håndterede."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-#, fuzzy
-#| msgid "Handle"
 msgid "Handle case"
-msgstr "Håndtér"
+msgstr "Håndtér sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Show/hide the individual results on this case"
 msgstr "Vis/skjul de enkelte resultater for denne sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-#, fuzzy
-#| msgid "document reports"
 msgid "Documents"
-msgstr "dokument rapporter"
+msgstr "Dokumenter"
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
@@ -1063,16 +1068,8 @@ msgid "Select all results."
 msgstr "Vælg alle resultater."
 
 #: reportapp/templates/components/report_table/sbsys/table.html
-msgid "case title"
-msgstr "sagstitel"
-
-#: reportapp/templates/components/report_table/sbsys/table.html
 msgid "deviations"
 msgstr "afvigelser"
-
-#: reportapp/templates/components/report_table/sbsys/table.html
-msgid "case number"
-msgstr "sagsnummer"
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 msgid "Sort the results by case number."
@@ -2335,6 +2332,10 @@ msgid "False positive percentage:"
 msgstr "Falsk positiv procentdel:"
 
 #: reportapp/templatetags/handle_extras.py
+msgid "No rule"
+msgstr "Ingen regel"
+
+#: reportapp/templatetags/handle_extras.py
 msgid "File"
 msgstr "Fil"
 
@@ -2436,7 +2437,7 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
-#: reportapp/views/report_views.py
+#: reportapp/views/sbsys_report_views.py
 msgid ""
 "The SBSYS tab is enabled for your organization, but you do not have the "
 "required permission to view it."
@@ -2444,11 +2445,11 @@ msgstr ""
 "SBSYS-fanen er tilgængelig for din organisation, men du har ikke den "
 "påkrævede tilladelse for at kunne tilgå den."
 
-#: reportapp/views/report_views.py
+#: reportapp/views/sbsys_report_views.py
 msgid "The SBSYS tab is not enabled for your organization."
 msgstr "SBSYS-fanen er ikke tilgængelig for din organisation."
 
-#: reportapp/views/report_views.py
+#: reportapp/views/sbsys_report_views.py
 msgid ""
 "Unexpected error: The system is unable to verify your SBSYS tab access at "
 "this time."

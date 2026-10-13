@@ -18,12 +18,14 @@ from os2datascanner.utils.system_utilities import time_now
 
 from os2datascanner.projects.report.tests.test_utilities import create_reports_for
 
+from ..reportapp.models.container_report import ContainerReport
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.models.scanner_reference import ScannerReference
 from ..reportapp.utils import create_alias_and_match_relations
 from ..reportapp.views.report_views import (
     UserReportView, RemediatorView, UndistributedView,
     UserHandledView, RemediatorHandledView, UndistributedHandledView)
+from ..reportapp.views.sbsys_report_views import SBSYSPersonalView, SBSYSPersonalHandledView
 from ..organizations.models import Account
 
 from importlib import reload, import_module
@@ -1515,3 +1517,34 @@ class TestHandleMatchView:
         assert response.status_code == 200
         assert all([dr.resolution_status == DocumentReport.ResolutionChoices.REMOVED
                     for dr in DocumentReport.objects.all()])
+
+
+@pytest.mark.django_db
+class TestSBSYSReportView:
+
+    @pytest.mark.parametrize("handled", [False, True])
+    def test_case_shows_on_matching_tab(self, handled, rf, egon_account, egon_email_alias):
+        """A case shows up only on the tab matching its state, with its
+        documents in it."""
+        status = DocumentReport.ResolutionChoices.HANDLED if handled else None
+        create_reports_for(egon_email_alias, num=2, source_type="sbsys-db",
+                           resolution_status=status)
+        container = ContainerReport.objects.create(
+            scanner_job=ScannerReference.objects.get(), path="case", handle={},
+            source_type="sbsys-db")
+        DocumentReport.objects.update(container=container)
+
+        matching, other_tab = (
+            (SBSYSPersonalHandledView, SBSYSPersonalView) if handled
+            else (SBSYSPersonalView, SBSYSPersonalHandledView))
+
+        [shown] = self.get_queryset(rf, matching, egon_account)
+        assert len(shown.visible_reports) == 2
+        assert not self.get_queryset(rf, other_tab, egon_account).exists()
+
+    def get_queryset(self, rf, view_class, account):
+        request = rf.get('/')
+        request.user = account.user
+        view = view_class()
+        view.setup(request)
+        return view.get_queryset()
