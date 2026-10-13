@@ -30,6 +30,11 @@ from os2datascanner.projects.report.organizations.models import (
 from ..reportapp.models.documentreport import DocumentReport
 from ..reportapp.management.commands import result_collector
 
+from os2datascanner.engine2.conversions.types import OutputType
+from os2datascanner.engine2.model._staging.sbsysdb import (
+        SBSYSDBSource, SBSYSDBHandles, SBSYSDBSources)
+from ..reportapp.models.container_report import ContainerReport
+
 from .generate_test_data import record_match, record_problem, record_metadata
 
 
@@ -448,6 +453,43 @@ def transient_handle_error_only_rem(scan_tag_only_rem, common_handle):
         source=None,
         handle=common_handle,
         message="Bad command or file name")
+
+
+@pytest.fixture
+def sbsys_document_handle():
+    source = SBSYSDBSource(
+            "sbsys-db-host", 1433, "SbSysNetDrift", "sa", "hunter2",
+            reflect_tables=None, base_weblink=None)
+    case = SBSYSDBHandles.Case(source, "22.13.01-K02-3-13", "Test case", None)
+    return SBSYSDBHandles.Document(
+            SBSYSDBSources.Case(case), "doc-1", name="bankoplysninger.docx")
+
+
+@pytest.fixture
+def sbsys_match(common_scan_spec, scan_tag0, common_rule, sbsys_document_handle):
+    return messages.MatchesMessage(
+        scan_spec=messages.replace(common_scan_spec, scan_tag=scan_tag0),
+        handle=sbsys_document_handle,
+        matched=True,
+        matches=[
+            messages.MatchFragment(
+                rule=common_rule,
+                matches=[{"dummy": "match object"}])
+        ])
+
+
+@pytest.fixture
+def sbsys_metadata(scan_tag0, sbsys_document_handle, time0, time1):
+    # Documents inherit their case's metadata, so these are the case's dates
+    return messages.MetadataMessage(
+        scan_tag=scan_tag0,
+        handle=sbsys_document_handle,
+        metadata={
+            "datasource-creation-time": OutputType.LastModified.encode_json_object(
+                    parse_datetime(time0)),
+            "last-modified": OutputType.LastModified.encode_json_object(
+                    parse_datetime(time1)),
+        })
 
 
 @pytest.mark.django_db
@@ -997,3 +1039,27 @@ class TestPipelineCollector:
         record_problem(transient_handle_error)
 
         assert not DocumentReport.objects.exists()
+
+    @pytest.mark.parametrize("match_first", [True, False])
+    def test_sbsys_container_gets_rules_and_dates(
+            self, match_first, sbsys_match, sbsys_metadata, common_rule, time0, time1):
+        """Match and metadata messages each fill in their own part of the
+        container, whichever of them arrives first."""
+        if match_first:
+            record_match(sbsys_match)
+            record_metadata(sbsys_metadata)
+        else:
+            record_metadata(sbsys_metadata)
+            record_match(sbsys_match)
+
+        container = ContainerReport.objects.get()
+        assert DocumentReport.objects.get().container == container
+        assert container.raw_rules == {"rules": [common_rule.to_json_object()]}
+        assert container.datasource_creation_time == parse_datetime(time0)
+        assert container.datasource_last_modified == parse_datetime(time1)
+
+    def test_non_sbsys_match_gets_no_container(self, positive_match):
+        record_match(positive_match)
+
+        assert DocumentReport.objects.get().container is None
+        assert not ContainerReport.objects.exists()
