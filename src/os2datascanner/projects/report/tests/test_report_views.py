@@ -10,6 +10,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.test import override_settings
 from django.contrib.auth.models import Permission
+from django.contrib.messages import constants as message_levels, get_messages
 from django.core.exceptions import PermissionDenied
 from django.urls import reverse_lazy
 
@@ -1100,6 +1101,15 @@ class TestDistributeMatchesView:
 
         assert response.status_code == 403
 
+    def test_distribute_without_permission_adds_error_message_and_redirects(
+            self, client, egon_account):
+        client.force_login(egon_account.user)
+        response = client.post(self.url, data={}, **self.headers)
+
+        [message] = get_messages(response.wsgi_request)
+        assert message.level == message_levels.ERROR
+        assert response.headers["HX-Redirect"] == reverse_lazy("index")
+
     def test_distribute_matches_no_htmx_header(self, client, egon_account):
         egon_account.user.user_permissions.add(
             Permission.objects.get(codename="distribute_withheld_results"))
@@ -1174,6 +1184,46 @@ class TestDistributeMatchesView:
         assert ScannerReference.objects.get(
             scanner_pk=3).document_reports.filter(
             only_notify_superadmin=True).count() == 5
+
+    def test_distribute_adds_success_message(self, client, egon_account, egon_email_alias):
+        # Arrange
+        create_reports_for(
+            egon_email_alias,
+            num=3,
+            only_notify_superadmin=True,
+            scanner_job_pk=1,
+        )
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_results"))
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(self.url, data={"distribute-to": [1]}, **self.headers)
+
+        # Assert
+        [message] = get_messages(response.wsgi_request)
+        assert message.level == message_levels.SUCCESS
+        assert "3" in str(message)
+
+    def test_distribute_nothing_released_adds_warning_message(self, client, egon_account,
+                                                              egon_email_alias):
+        # Arrange
+        create_reports_for(
+            egon_email_alias,
+            num=3,
+            only_notify_superadmin=False,
+            scanner_job_pk=1,
+        )
+        egon_account.user.user_permissions.add(
+            Permission.objects.get(codename="distribute_withheld_results"))
+        client.force_login(egon_account.user)
+
+        # Act
+        response = client.post(self.url, data={"distribute-to": [1]}, **self.headers)
+
+        # Assert
+        [message] = get_messages(response.wsgi_request)
+        assert message.level == message_levels.WARNING
 
 
 @pytest.mark.django_db
