@@ -11,8 +11,8 @@
                class="datatable-checkbox"
                {% if not allow_handle %}disabled{% endif %} />
         <label for="table-checkbox-case-{{ cr.pk|unlocalize }}"
-               aria-label="{% trans 'Select case' %}"
-               title="{% trans 'Select case' %}"></label>
+               aria-label="{% trans 'select case'|capfirst %}"
+               title="{% trans 'select case'|capfirst %}"></label>
       </div>
     </td>
 
@@ -20,17 +20,17 @@
       <div class="td-content__container sbsys-case-group__title">
         <i class="material-symbols" aria-hidden="true">folder</i>
         <div class="sbsys-case-group__title-text">
-          {% translate "Untitled case" as untitled_case_label %}
+          {% translate "untitled case"|capfirst as untitled_case_label %}
           <div class="tooltip">
             <div class="title overflow-ellipsis">
               <strong data-tooltip-text>{{ cr.handle.title|default:untitled_case_label }}</strong>
             </div>
           </div>
           <div class="subtitle">
-            {% blocktrans count counter=cr.deviation_count %}
-              {{ counter }} deviation on this case
+            {% blocktrans count counter=cr.dr_count %}
+              {{ counter }} finding on this case
             {% plural %}
-              {{ counter }} deviations on this case
+              {{ counter }} findings on this case
             {% endblocktrans %}
           </div>
 
@@ -48,7 +48,7 @@
                        class="button button--text-button sbsys-case-open-link"
                        target="_blank"
                        rel="noopener"
-                       title="{% trans "Click here to open this case in SBSYS" %}">{% trans "Open" %}</a>
+                       title="{% trans "Click here to open this case in SBSYS" %}">{% trans "open case"|capfirst %}</a>
                   </div>
                 </div>
               </div>
@@ -77,7 +77,7 @@
           <button type="button"
                   class="button button--transparent-button click-to-copy"
                   aria-label="{% trans "Click to copy the case number to the clipboard" %}"
-                  title="{% trans "Click to copy to clipboard" %}">
+                  title="{% trans "Click to copy to clipboard." %}">
             <span class="datatable-numeral">{{ cr.handle.path|default:"—" }}</span>
           </button>
         </div>
@@ -111,7 +111,7 @@
                   {% if not allow_handle %}disabled{% endif %}
                   name="revert-case">
             <i class="material-symbols text-secondary" aria-hidden="true">undo</i>
-            <span>{% trans "Undo handling" %}</span>
+            <span>{% trans "undo handling"|capfirst %}</span>
           </button>
         {% else %}
           <button class="button button--icon-text-button"
@@ -131,7 +131,7 @@
                   {% if not allow_handle %}disabled{% endif %}
                   name="handle-case">
             <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
-            <span>{% trans "Handle case" %}</span>
+            <span>{% trans "handle case"|capfirst %}</span>
           </button>
         {% endif %}
 
@@ -149,7 +149,7 @@
       <table class="smaller datatable compressed">
         <thead>
           <tr>
-            <th>{% trans "Documents" %}</th>
+            <th>{% trans "findings"|capfirst %}</th>
           </tr>
         </thead>
 

@@ -48,7 +48,7 @@ class SBSYSReportView(LoginRequiredMixin, ListView):
         ).prefetch_related(
             Prefetch("document_reports", queryset=reports, to_attr="visible_reports"),
         ).annotate(
-            deviation_count=Count("document_reports"),
+            dr_count=Count("document_reports"),
             # Gives the case number a real field name, so it sorts like the others
             case_number=F("handle__path"),
         )

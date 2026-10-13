@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-13 11:54+0200\n"
+"POT-Creation-Date: 2026-10-14 12:08+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -844,7 +844,6 @@ msgid "Select result"
 msgstr "Vælg resultat"
 
 #: reportapp/templates/components/report_table/row_base.html
-#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Open"
 msgstr "Åbn"
 
@@ -985,43 +984,47 @@ msgid "Show more matches"
 msgstr "Vis flere matches"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Select case"
-msgstr "Vælg sag"
+msgid "select case"
+msgstr "vælg sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Untitled case"
-msgstr "Unavngivet sag"
+msgid "untitled case"
+msgstr "unavngiven sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 #, python-format
 msgid ""
 "\n"
-"              %(counter)s deviation on this case\n"
+"              %(counter)s finding on this case\n"
 "            "
 msgid_plural ""
 "\n"
-"              %(counter)s deviations on this case\n"
-"            "
+"              %(counter)s findings on this case\n"
+"          "
 msgstr[0] ""
 "\n"
-"              %(counter)s afvigelse på denne sag\n"
+"              %(counter)s fund på denne sag\n"
 "            "
 msgstr[1] ""
 "\n"
-"              %(counter)s afvigelser på denne sag\n"
-"            "
+"              %(counter)s fund på denne sag\n"
+"          "
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click here to open this case in SBSYS"
 msgstr "Klik her for at åbne den relaterede sag i SBSYS"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
+msgid "open case"
+msgstr "åbn sag"
+
+#: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Click to copy the case number to the clipboard"
 msgstr "Klik for at kopiere sagsnummeret til udklipsholderen"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Click to copy to clipboard"
-msgstr "Klik for at kopiére til udklipsholderen"
+msgid "Click to copy to clipboard."
+msgstr "Klik for at kopiére til udklipsholderen."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "unknown"
@@ -1032,24 +1035,24 @@ msgid "Reverts every result on this case to unhandled."
 msgstr "Fortryder alle resultater på denne sag til uhåndteret."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Undo handling"
-msgstr "Fortryd håndtering"
+msgid "undo handling"
+msgstr "fortryd håndtering"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Marks every result on this case as handled."
 msgstr "Markerer alle resultater på denne sag som håndterede."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Handle case"
-msgstr "Håndtér sag"
+msgid "handle case"
+msgstr "håndtér sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "Show/hide the individual results on this case"
 msgstr "Vis/skjul de enkelte resultater for denne sag"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Documents"
-msgstr "Dokumenter"
+msgid "findings"
+msgstr "fund"
 
 #: reportapp/templates/components/report_table/sbsys/table.html
 #: reportapp/templates/components/report_table/table.html
