@@ -55,6 +55,8 @@
 
 - Added new index to `DocumentReport` for faster loading of statistics views.
 
+- Made the top-right user-menu into a shared component for both Admin and Report.
+
 ### Bugfixes
 
 - Fixed a bug where error, warning and status text could be unreadable.

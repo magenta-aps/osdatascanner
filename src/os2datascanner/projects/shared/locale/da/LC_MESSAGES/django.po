@@ -109,6 +109,18 @@ msgstr "Tak fordi du brugte vores side!"
 msgid "Regards, the OSdatascanner team."
 msgstr "Mvh. OSdatascanner teamet."
 
+#: templates/components/navigation/user_menu.html
+msgid "show profile"
+msgstr "vis profil"
+
+#: templates/components/navigation/user_menu.html
+msgid "change password"
+msgstr "skift adgangskode"
+
+#: templates/components/navigation/user_menu.html
+msgid "log out"
+msgstr "log ud"
+
 #: templates/django/forms/widgets/clearable_file_input.html
 msgid "browse"
 msgstr "gennemse"

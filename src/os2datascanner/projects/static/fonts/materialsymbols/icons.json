@@ -37,6 +37,7 @@
     "info",
     "key",
     "library_add_check",
+    "logout",
     "mail",
     "mark_chat_read",
     "notifications",

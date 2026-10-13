@@ -22,7 +22,7 @@
   {% endif %}
 
   {% if request.user.is_authenticated %}
-    {% include "components/user/user_corner_menu.html" %}
+    {% include "components/navigation/user_menu.html" with account=request.user.account profile_url_name="account-me" %}
     <button id="navigation-toggle" aria-haspopup="true" aria-controls="sidemenu">
       <span class="screen-reader-only">Menu</span>
     </button>

@@ -3,11 +3,13 @@
 {% load get_settings_tag %}
 
 {% block body %}
-  <div class="user-content">
+  <div>
     <h1 class="userprofile-text">{% trans "Account" %}</h1>
 
     <div class="userprofile-content-wrapper user-image">
-      <span class="user__avatar_verybig">{% include "components/decoration/account_image.html" with account=account %}</span>
+      <span class="user__avatar user__avatar--large">
+        {% include "components/decoration/account_image.html" with account=account %}
+      </span>
     </div>
 
     <div class="userprofile-content-wrapper user-tables">
