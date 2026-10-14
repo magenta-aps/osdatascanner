@@ -72,7 +72,7 @@
                 class="button button--transparent-button click-to-copy"
                 aria-label="{% trans "Click to copy the case number to the clipboard" %}"
                 title="{% trans "Click to copy to clipboard." %}">
-          <span class="datatable-numeral">{{ cr.handle.path|default:"—" }}</span>
+          <span class="datatable-numeral">{{ cr.case_number|default:"—" }}</span>
         </button>
       </div>
     </div>
