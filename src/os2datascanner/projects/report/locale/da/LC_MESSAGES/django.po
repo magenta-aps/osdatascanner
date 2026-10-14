@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 12:08+0200\n"
+"POT-Creation-Date: 2026-10-14 14:18+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -1031,16 +1031,16 @@ msgid "unknown"
 msgstr "ukendt"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Reverts every result on this case to unhandled."
-msgstr "Fortryder alle resultater på denne sag til uhåndteret."
+msgid "Reverts this case to unhandled."
+msgstr "Fortryder denne sag til uhåndteret."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "undo handling"
 msgstr "fortryd håndtering"
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
-msgid "Marks every result on this case as handled."
-msgstr "Markerer alle resultater på denne sag som håndterede."
+msgid "Marks this case as handled."
+msgstr "Markerer denne sag som håndteret."
 
 #: reportapp/templates/components/report_table/sbsys/row_group.html
 msgid "handle case"

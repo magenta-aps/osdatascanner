@@ -90,7 +90,7 @@
       {% if is_handled %}
         <button class="button button--icon-text-button"
                 type="button"
-                title="{% trans "Reverts every result on this case to unhandled." %}"
+                title="{% trans "Reverts this case to unhandled." %}"
                 hx-post="{% url 'mass-handle' %}"
                 hx-swap="outerHTML swap:300ms"
                 hx-target="closest tr"
@@ -110,7 +110,7 @@
       {% else %}
         <button class="button button--icon-text-button"
                 type="button"
-                title="{% trans "Marks every result on this case as handled." %}"
+                title="{% trans "Marks this case as handled." %}"
                 hx-post="{% url 'mass-handle' %}"
                 hx-swap="outerHTML swap:300ms"
                 hx-target="closest tr"
