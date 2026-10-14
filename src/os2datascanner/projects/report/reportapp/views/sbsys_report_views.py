@@ -62,7 +62,7 @@ class SBSYSReportView(LoginRequiredMixin, ListView):
             "datasource_last_modified",
         ]
 
-        sort_key = self.request.GET.get("order_by")
+        sort_key = self.request.GET.get("order_by", "")
 
         if sort_key not in allowed_sorting_properties:
             sort_key = "case_number"  # Fallback to case number
