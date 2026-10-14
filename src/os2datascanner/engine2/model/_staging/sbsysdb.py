@@ -403,9 +403,9 @@ class SBSYSDBHandles:
 
         @property
         def presentation_name(self):
-            return _("{draft} document \"{name}\" (attached to {handle})").format(
-                    name=self._name, handle=str(self.source.handle),
-                    draft=_("draft") if self._draft else "").strip()
+            fmt = (_("draft document \"{name}\" (attached to {handle})") if self._draft
+                   else _("document \"{name}\" (attached to {handle})"))
+            return fmt.format(name=self._name, handle=str(self.source.handle))
 
         @property
         def presentation_place(self):
