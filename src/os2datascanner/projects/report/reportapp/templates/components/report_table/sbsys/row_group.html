@@ -1,164 +1,157 @@
 {% load i18n l10n humanize handle_extras %}
-{% with first_report=cr.visible_reports.0 %}
-  <tr class="datatablex__row sbsys-case-group__summary"
-      data-case-id="{{ cr.pk|unlocalize }}">
-    <td class="column--checkbox">
-      <div class="ds-checkbox">
-        <input type="checkbox"
-               id="table-checkbox-case-{{ cr.pk|unlocalize }}"
-               value="{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}"
-               name="table-checkbox"
-               class="datatable-checkbox"
-               {% if not allow_handle %}disabled{% endif %} />
-        <label for="table-checkbox-case-{{ cr.pk|unlocalize }}"
-               aria-label="{% trans 'select case'|capfirst %}"
-               title="{% trans 'select case'|capfirst %}"></label>
-      </div>
-    </td>
+<tr class="datatablex__row sbsys-case-group__summary"
+    data-case-id="{{ cr.pk|unlocalize }}">
+  <td class="column--checkbox">
+    <div class="ds-checkbox">
+      <input type="checkbox"
+             id="table-checkbox-case-{{ cr.pk|unlocalize }}"
+             value="{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}"
+             name="table-checkbox"
+             class="datatable-checkbox"
+             {% if not allow_handle %}disabled{% endif %} />
+      <label for="table-checkbox-case-{{ cr.pk|unlocalize }}"
+             aria-label="{% trans 'select case'|capfirst %}"
+             title="{% trans 'select case'|capfirst %}"></label>
+    </div>
+  </td>
 
-    <td class="column--name">
-      <div class="td-content__container sbsys-case-group__title">
-        <i class="material-symbols" aria-hidden="true">folder</i>
-        <div class="sbsys-case-group__title-text">
-          {% translate "untitled case"|capfirst as untitled_case_label %}
-          <div class="tooltip">
-            <div class="title overflow-ellipsis">
-              <strong data-tooltip-text>{{ cr.handle.title|default:untitled_case_label }}</strong>
-            </div>
+  <td class="column--name">
+    <div class="td-content__container sbsys-case-group__title">
+      <i class="material-symbols" aria-hidden="true">folder</i>
+      <div class="sbsys-case-group__title-text">
+        {% translate "untitled case"|capfirst as untitled_case_label %}
+        <div class="tooltip">
+          <div class="title overflow-ellipsis">
+            <strong data-tooltip-text>{{ cr.handle.title|default:untitled_case_label }}</strong>
           </div>
-          <div class="subtitle">
-            {% blocktrans count counter=cr.dr_count %}
+        </div>
+        <div class="subtitle">
+          {% blocktrans count counter=cr.dr_count %}
               {{ counter }} finding on this case
             {% plural %}
               {{ counter }} findings on this case
-            {% endblocktrans %}
-          </div>
+          {% endblocktrans %}
+        </div>
 
-          {% with case_url=cr.case_handle|present_url %}
-            {% if case_url %}
-              <div class="table-ui__container">
-                <div class="hit-link">
-                  <div class="button-group"
-                       hx-post="{% url 'open-match' first_report.pk|unlocalize %}"
-                       hx-push-url="false"
-                       hx-swap="none"
-                       hx-trigger="click target:.sbsys-case-open-link"
-                       hx-indicator="#report-page-indicator">
-                    <a href="{{ case_url }}"
-                       class="button button--text-button sbsys-case-open-link"
-                       target="_blank"
-                       rel="noopener"
-                       title="{% trans "Click here to open this case in SBSYS" %}">{% trans "open case"|capfirst %}</a>
-                  </div>
+        {% with case_url=cr.case_handle|present_url %}
+          {% if case_url %}
+            <div class="table-ui__container">
+              <div class="hit-link">
+                <div class="button-group">
+                  <a href="{{ case_url }}"
+                     class="button button--text-button"
+                     target="_blank"
+                     rel="noopener"
+                     title="{% trans "Click here to open this case in SBSYS" %}">{% trans "open case"|capfirst %}</a>
                 </div>
               </div>
-            {% endif %}
-          {% endwith %}
-        </div>
-      </div>
-    </td>
-
-    <td class="column--deviations">
-      <div class="td__flex-container">
-        {% for deviation in cr|get_deviations %}
-          <div class="status tooltip">
-            <div class="status__wrapper overflow-ellipsis"
-                 data-status="{{ deviation }}">
-              <span class="status__label" data-tooltip-text>{{ deviation }}</span>
             </div>
+          {% endif %}
+        {% endwith %}
+      </div>
+    </div>
+  </td>
+
+  <td class="column--deviations">
+    <div class="td__flex-container">
+      {% for deviation in cr|get_deviations %}
+        <div class="status tooltip">
+          <div class="status__wrapper overflow-ellipsis"
+               data-status="{{ deviation }}">
+            <span class="status__label" data-tooltip-text>{{ deviation }}</span>
           </div>
-        {% endfor %}
-      </div>
-    </td>
-
-    <td class="column--case-number">
-      <div class="matches_container">
-        <div class="matches">
-          <button type="button"
-                  class="button button--transparent-button click-to-copy"
-                  aria-label="{% trans "Click to copy the case number to the clipboard" %}"
-                  title="{% trans "Click to copy to clipboard." %}">
-            <span class="datatable-numeral">{{ cr.handle.path|default:"—" }}</span>
-          </button>
         </div>
-      </div>
-    </td>
+      {% endfor %}
+    </div>
+  </td>
 
-    <td class="column--datasource_creation_time">
-      {% translate "unknown" as unknown_label %}
-      {{ cr.datasource_creation_time|naturalday:"j. M Y"|default_if_none:unknown_label|capfirst }}
-    </td>
-
-    <td class="column--datasource_last_modified">{{ cr.datasource_last_modified|naturalday:"j. M Y"|capfirst }}</td>
-
-    <td class="column--actions">
-      <div class="button-group text-align-right">
-        {% if is_handled %}
-          <button class="button button--icon-text-button"
-                  type="button"
-                  title="{% trans "Reverts every result on this case to unhandled." %}"
-                  hx-post="{% url 'mass-handle' %}"
-                  hx-swap="outerHTML swap:300ms"
-                  hx-target="closest tr"
-                  hx-indicator="closest tr"
-                  hx-trigger="click"
-                  hx-push-url="false"
-                  hx-include="this"
-                  hx-vals='{"table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
-                  hx-on:htmx:before-request="this.disabled = true"
-                  hx-on:htmx:response-error="this.disabled = false"
-                  hx-on:htmx:send-error="this.disabled = false"
-                  {% if not allow_handle %}disabled{% endif %}
-                  name="revert-case">
-            <i class="material-symbols text-secondary" aria-hidden="true">undo</i>
-            <span>{% trans "undo handling"|capfirst %}</span>
-          </button>
-        {% else %}
-          <button class="button button--icon-text-button"
-                  type="button"
-                  title="{% trans "Marks every result on this case as handled." %}"
-                  hx-post="{% url 'mass-handle' %}"
-                  hx-swap="outerHTML swap:300ms"
-                  hx-target="closest tr"
-                  hx-indicator="closest tr"
-                  hx-trigger="click"
-                  hx-push-url="false"
-                  hx-include="this"
-                  hx-vals='{"action": "6", "table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
-                  hx-on:htmx:before-request="this.disabled = true"
-                  hx-on:htmx:response-error="this.disabled = false"
-                  hx-on:htmx:send-error="this.disabled = false"
-                  {% if not allow_handle %}disabled{% endif %}
-                  name="handle-case">
-            <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
-            <span>{% trans "handle case"|capfirst %}</span>
-          </button>
-        {% endif %}
-
-        <button type="button" class="button button--caret-button sbsys-case-group__toggle" title="{% trans "Show/hide the individual results on this case" %}">
-          <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+  <td class="column--case-number">
+    <div class="matches_container">
+      <div class="matches">
+        <button type="button"
+                class="button button--transparent-button click-to-copy"
+                aria-label="{% trans "Click to copy the case number to the clipboard" %}"
+                title="{% trans "Click to copy to clipboard." %}">
+          <span class="datatable-numeral">{{ cr.handle.path|default:"—" }}</span>
         </button>
       </div>
-    </td>
-  </tr>
+    </div>
+  </td>
 
-  <tr class="datatablex__row datatablex__row--expanded matches-list sbsys-case-group__detail"
-      data-case-id="{{ cr.pk|unlocalize }}"
-      hidden>
-    <td colspan="7">
-      <table class="smaller datatable compressed">
-        <thead>
-          <tr>
-            <th>{% trans "findings"|capfirst %}</th>
-          </tr>
-        </thead>
+  <td class="column--datasource_creation_time">
+    {% translate "unknown" as unknown_label %}
+    {{ cr.datasource_creation_time|naturalday:"j. M Y"|default_if_none:unknown_label|capfirst }}
+  </td>
 
-        <tbody>
-          {% for document_report in cr.visible_reports %}
-            {% include "components/report_table/sbsys/row.html" %}
-          {% endfor %}
-        </tbody>
-      </table>
-    </td>
-  </tr>
-{% endwith %}
+  <td class="column--datasource_last_modified">{{ cr.datasource_last_modified|naturalday:"j. M Y"|capfirst }}</td>
+
+  <td class="column--actions">
+    <div class="button-group text-align-right">
+      {% if is_handled %}
+        <button class="button button--icon-text-button"
+                type="button"
+                title="{% trans "Reverts every result on this case to unhandled." %}"
+                hx-post="{% url 'mass-handle' %}"
+                hx-swap="outerHTML swap:300ms"
+                hx-target="closest tr"
+                hx-indicator="closest tr"
+                hx-trigger="click"
+                hx-push-url="false"
+                hx-include="this"
+                hx-vals='{"table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                hx-on:htmx:before-request="this.disabled = true"
+                hx-on:htmx:response-error="this.disabled = false"
+                hx-on:htmx:send-error="this.disabled = false"
+                {% if not allow_handle %}disabled{% endif %}
+                name="revert-case">
+          <i class="material-symbols text-secondary" aria-hidden="true">undo</i>
+          <span>{% trans "undo handling"|capfirst %}</span>
+        </button>
+      {% else %}
+        <button class="button button--icon-text-button"
+                type="button"
+                title="{% trans "Marks every result on this case as handled." %}"
+                hx-post="{% url 'mass-handle' %}"
+                hx-swap="outerHTML swap:300ms"
+                hx-target="closest tr"
+                hx-indicator="closest tr"
+                hx-trigger="click"
+                hx-push-url="false"
+                hx-include="this"
+                hx-vals='{"action": "6", "table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                hx-on:htmx:before-request="this.disabled = true"
+                hx-on:htmx:response-error="this.disabled = false"
+                hx-on:htmx:send-error="this.disabled = false"
+                {% if not allow_handle %}disabled{% endif %}
+                name="handle-case">
+          <i class="material-symbols text-secondary" aria-hidden="true">archive</i>
+          <span>{% trans "handle case"|capfirst %}</span>
+        </button>
+      {% endif %}
+
+      <button type="button" class="button button--caret-button sbsys-case-group__toggle" title="{% trans "Show/hide the individual results on this case" %}">
+        <i id="expand_more" class="material-symbols" aria-hidden="true">expand_more</i>
+      </button>
+    </div>
+  </td>
+</tr>
+
+<tr class="datatablex__row datatablex__row--expanded matches-list sbsys-case-group__detail"
+    data-case-id="{{ cr.pk|unlocalize }}"
+    hidden>
+  <td colspan="7">
+    <table class="smaller datatable compressed">
+      <thead>
+        <tr>
+          <th>{% trans "findings"|capfirst %}</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for document_report in cr.visible_reports %}
+          {% include "components/report_table/sbsys/row.html" %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </td>
+</tr>
