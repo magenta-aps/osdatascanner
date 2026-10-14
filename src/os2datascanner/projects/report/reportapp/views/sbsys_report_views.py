@@ -46,7 +46,10 @@ class SBSYSReportView(LoginRequiredMixin, ListView):
             source_type="sbsys-db",
             pk__in=reports.values_list("container_id", flat=True),
         ).prefetch_related(
-            Prefetch("document_reports", queryset=reports, to_attr="visible_reports"),
+            Prefetch(
+                "document_reports",
+                queryset=reports.only("pk", "container", "raw_matches", "resolution_status"),
+                to_attr="visible_reports"),
         ).annotate(
             dr_count=Count("document_reports"),
             # Gives the case number a real field name, so it sorts like the others
