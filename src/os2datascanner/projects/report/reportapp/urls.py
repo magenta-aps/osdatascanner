@@ -22,11 +22,12 @@ from .views.statistics import (
 from .views.report_views import (
     UserReportView, UserHandledView,
     RemediatorView, RemediatorHandledView,
-    UndistributedView, UndistributedHandledView,
+    UndistributedView, UndistributedHandledView)
+from .views.user_views import AccountView, AccountOutlookSettingView
+from .views.sbsys_report_views import (
     SBSYSPersonalView, SBSYSPersonalHandledView,
     SBSYSRemediatorView, SBSYSRemediatorHandledView,
     SBSYSUndistributedView, SBSYSUndistributedHandledView)
-from .views.user_views import AccountView, AccountOutlookSettingView
 from .views.scannerjob_views import ScannerjobListView, ScannerjobDeleteView
 from .views.manual_views import ManualMainView
 from .views.support_views import SupportButtonView

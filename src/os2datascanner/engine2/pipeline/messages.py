@@ -562,6 +562,18 @@ class MatchesMessage:
                     return 0
         return max([_cmp(frag) for frag in self.matches])
 
+    @property
+    def container_rules(self):
+        rules: list[Rule] = []
+
+        for match in self.matches:
+            if match.rule.synthetic or not match.matches:
+                continue
+
+            rules.append(match.rule)
+
+        return {"rules": [rule.to_json_object() for rule in rules] if rules else None}
+
     @classmethod
     def from_json_object(cls, obj: dict) -> MatchesMessage:
         # WARNING! Migration 0052 in the report app is dependent on this method.

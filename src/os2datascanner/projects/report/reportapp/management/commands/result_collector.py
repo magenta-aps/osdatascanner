@@ -123,7 +123,20 @@ def outlook_categorize_enabled(owner: str) -> bool:
                         ).filter(num_categories__gte=2).exists()
 
 
-def get_or_create_container(scanner, handle):
+# TODO: Rules are only ever added, so a rule that no longer matches stays on the case.
+# Revisit with ScheduledCheckups for SBSYS (#67361, #60255), and before using
+# ContainerReport for other kinds of containers.
+def merge_rules(raw_rules, new_rules) -> dict | None:
+    """Adds @new_rules to @raw_rules, skipping rules already there."""
+    merged = {(r["type"], r.get("name")): r
+              for r in ((raw_rules or {}).get("rules") or [])
+              + ((new_rules or {}).get("rules") or [])}
+    return {"rules": list(merged.values())} if merged else None
+
+
+def update_or_create_container(
+        scanner, handle, rules=None, creation_time=None,
+        last_modified=None) -> ContainerReport | None:
     """Resolves the ContainerReport for @handle's case, creating it if it
     doesn't exist yet. Returns None if @handle isn't part of an SBSYS case
     at all."""
@@ -134,13 +147,27 @@ def get_or_create_container(scanner, handle):
     source = case_handle.source
     while source.handle:
         source = source.handle.source
-    container, _ = ContainerReport.objects.get_or_create(
+
+    defaults = {}
+
+    if creation_time:
+        defaults["datasource_creation_time"] = creation_time
+
+    if last_modified:
+        defaults["datasource_last_modified"] = last_modified
+
+    container, _ = ContainerReport.objects.update_or_create(
         scanner_job=scanner,
         path=case_handle.crunch(hash=True),
         defaults={
+            "handle": prepare_json_object(case_handle.to_json_object()),
             "source_type": source.type_label,
-        },
+        } | defaults,
     )
+
+    if (merged := merge_rules(container.raw_rules, rules)) != container.raw_rules:
+        container.raw_rules = merged
+        container.save(update_fields=["raw_rules"])
     return container
 
 
@@ -176,9 +203,6 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         "owner": owner,
     }
 
-    if previous_report is None or previous_report.container is None:
-        update_fields["container"] = get_or_create_container(scanner, message.handle)
-
     if "last-modified" in message.metadata:
         update_fields['datasource_last_modified'] = OutputType.LastModified.decode_json_object(
             message.metadata["last-modified"]
@@ -194,6 +218,13 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         update_fields['datasource_creation_time'] = OutputType.LastModified.decode_json_object(
             message.metadata["datasource-creation-time"]
         )
+
+    update_fields["container"] = update_or_create_container(
+        scanner,
+        message.handle,
+        creation_time=update_fields.get("datasource_creation_time"),
+        last_modified=update_fields.get("datasource_last_modified")
+    )
 
     # Specific to Outlook matches - if they have a "False Positive" category set, resolve them.
     outlook_categories = message.metadata.get("outlook-categories", [])
@@ -362,9 +393,9 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 number_of_matches=count_matches(message),
             )
 
-            if prev.container is None:
-                update_fields["container"] = get_or_create_container(
-                        scanner, message.handle)
+            update_fields["container"] = update_or_create_container(
+                    scanner, message.handle, rules=message.container_rules)
+
             DocumentReport.objects.filter(pk=prev.pk).update(**update_fields)
             prev.refresh_from_db()
             return prev
@@ -389,7 +420,11 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
                 raw_matches=prepare_json_object(sort_matches_by_probability(result)),
                 resolution_status=None,
                 resolution_time=None,
-                container=get_or_create_container(scanner, message.handle),
+                container=update_or_create_container(
+                    scanner,
+                    message.handle,
+                    rules=message.container_rules
+                )
             )
             return dr
 

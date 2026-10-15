@@ -40,6 +40,8 @@ class BaseMassView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        pks = self.request.POST.getlist("table-checkbox", [])
+        # A single checkbox can represent several reports with their pks comma-separated
+        pks = [pk for value in self.request.POST.getlist("table-checkbox", [])
+               for pk in value.split(",")]
         reports = qs.filter(pk__in=pks)
         return reports

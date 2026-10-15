@@ -13,9 +13,15 @@ from django.conf import settings
 
 from os2datascanner.engine2.model.core import Handle
 from os2datascanner.engine2.model.smbc import SMBCHandle
+from os2datascanner.projects.report.reportapp.models.container_report import ContainerReport
+from os2datascanner.engine2.rules.rule import Rule
+from os2datascanner.engine2.model.core.errors import DeserialisationError
+import structlog
 
 from ..views.report_views import RENDERABLE_RULES
 from django.utils.translation import gettext_lazy as _
+
+logger = structlog.get_logger("reportapp")
 
 register = template.Library()
 
@@ -91,6 +97,21 @@ def find_svg_icon(type_label):
         f"{svg_dir}/icon-default.svg"
 
 
+@register.filter
+def get_deviations(cr: ContainerReport) -> list[str]:
+    deviations = set()
+
+    # raw_rules can be None, or hold {"rules": None} when no rule qualified
+    for r in (cr.raw_rules or {}).get("rules") or []:
+        try:
+            if presentation := Rule.from_json_object(r).presentation:
+                deviations.add(presentation)
+        except DeserialisationError:
+            logger.exception("Could not get deviations for presentation", exc_info=True)
+
+    return sorted(deviations) or [_("No rule")]
+
+
 @register.simple_tag
 def find_scan_type(type_label):
     match type_label:
@@ -114,6 +135,8 @@ def find_scan_type(type_label):
             return _("Microsoft 365 Calendar")
         case "msgraph-lists":
             return _("MS SharePoint List")
+        case "sbsys-db":
+            return _("SBSYS")
         case _:
             return _("Unrecognized scan type")
 
@@ -143,6 +166,12 @@ def between(lst, interval):
     if interval is None:
         interval = (0, 10)
     return lst[interval[0]:interval[1]]
+
+
+@register.filter
+def comma_join_report_pks(reports):
+    """Given a list of reports, returns a string of their primary keys joined by commas."""
+    return ",".join(str(r.pk) for r in reports)
 
 
 @register.filter

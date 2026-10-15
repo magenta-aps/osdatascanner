@@ -18,7 +18,7 @@
        hx-indicator="#report-page-indicator">
 
     <div class="datatablex__wrapper no-side-scroll">
- 
+
       <table class="datatablex results-table no-side-scroll">
         {% comment %} .no-side-scroll combined with the colgroup is a part of a solution to avoid
         sidescroll on this specific table. This should be refactored if we find, that we don't want
@@ -44,12 +44,12 @@
                   TODO: Remove the dropdown options for SBSYS results. 
                   Users can only "close" their SBSYS cases, so "handle" is the only option needed.
                 {% endcomment %}
- 
+
                 <div class="table-toolbar__content-right">{% comment %} Empty {% endcomment %}</div>
               </div>
             </th>
           </tr>
- 
+
           <tr class="datatablex__row column-headings sticky">
             <th class="column--checkbox">
               <div class="ds-checkbox">
@@ -61,7 +61,7 @@
                        title="{% trans "Select all results." %}"></label>
               </div>
             </th>
- 
+
             <th class="column--name">
               <div class="th__flex-container">{% trans "case title"|capfirst %}</div>
             </th>
@@ -69,13 +69,13 @@
             <th class="column--deviations">
               <div class="th__flex-container">{% trans "deviations"|capfirst %}</div>
             </th>
- 
+
             <th class="column--case-number">
               <div class="th__flex-container">
                 <label class="th-label" for="case_number-caret">
                   <span>{% trans "case number"|capfirst %}</span>
                 </label>
- 
+
                 <button type="button"
                         name="case_number"
                         aria-label="{% trans "Sort the results by case number." %}"
@@ -87,7 +87,7 @@
                 </button>
               </div>
             </th>
- 
+
             <th class="column--datasource_creation_time">
               <div class="th__flex-container">
                 <label class="th-label"
@@ -134,9 +134,9 @@
             </th>
           </tr>
         </thead>
- 
+
         <tbody>
-          {% for group in case_groups %}
+          {% for cr in container_reports %}
             {% include "components/report_table/sbsys/row_group.html" %}
           {% empty %}
             <tr class="datatablex__row">
@@ -144,13 +144,13 @@
             </tr>
           {% endfor %}
         </tbody>
- 
+
         <tfoot>
           {% with colspan=7 %}
-            {% include "components/pagination/pagination.html" with colspan=colspan content_list=case_groups target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
+            {% include "components/pagination/pagination.html" with colspan=colspan target_selector=".content" select_selector=".content" swap_type="outerHTML" %}
           {% endwith %}
         </tfoot>
- 
+
       </table>
     </div>
   </div>

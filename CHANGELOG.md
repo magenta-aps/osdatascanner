@@ -17,6 +17,9 @@
 
 - Added delete button and organization flag to allow Exchange Calendar result deletion.
 
+- SBSYS results are now grouped by case: one result per case, with its documents foldable
+  underneath and a single handle/open action for the whole case.
+
 ### General improvements
 
 - Upgrade RabbitMQ version to 4.2
@@ -108,9 +111,6 @@
 
 - Added a new subtab on the leader overview showing the same statistics as the
   DPO overview, scoped to the departments a leader manages.
-
-- SBSYS results are now grouped by case: one result per case, with its documents foldable
-  underneath and a single handle/open action for the whole case.
 
 ### Bugfixes
 

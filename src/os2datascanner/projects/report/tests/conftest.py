@@ -4,6 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import uuid
+from os2datascanner.engine2.model._staging.sbsysdb import SBSYSDBSource
 import pytest
 
 from django.conf import settings
@@ -38,6 +39,13 @@ def test_org():
         name="test_org",
         uuid=uuid.UUID("d92ff0c9-f066-40dc-a57e-541721b6c23e"),
     )
+
+
+@pytest.fixture
+def sbsys_db_source():
+    return SBSYSDBSource(
+            "sbsys-db-host", 1433, "SbSysNetDrift", "sa", "hunter2",
+            reflect_tables=None, base_weblink=None)
 
 
 @pytest.fixture
