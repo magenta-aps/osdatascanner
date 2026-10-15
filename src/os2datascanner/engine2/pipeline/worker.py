@@ -214,7 +214,7 @@ def process(
         # Scan has been cancelled, stop processing
         return
 
-    for m in (output  := processor_handler(
+    for m in (output := processor_handler(
             msg, sm, _check=check, should_abort=checkpoint,
             coordinate=coordinate)):
         if checkpoint():

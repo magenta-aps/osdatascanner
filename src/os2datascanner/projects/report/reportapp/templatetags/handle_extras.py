@@ -173,6 +173,7 @@ def comma_join_report_pks(reports):
     """Given a list of reports, returns a string of their primary keys joined by commas."""
     return ",".join(str(r.pk) for r in reports)
 
+
 @register.filter
 def merge_renderable_match_fragments(match_fragments: list):
     """ Provided a list of MatchFragment objects, verifies

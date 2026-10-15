@@ -33,7 +33,7 @@ from ..reportapp.management.commands import result_collector
 
 from os2datascanner.engine2.conversions.types import OutputType
 from os2datascanner.engine2.model._staging.sbsysdb import (
-        SBSYSDBSource, SBSYSDBHandles, SBSYSDBSources)
+        SBSYSDBHandles, SBSYSDBSources)
 from ..reportapp.models.container_report import ContainerReport
 
 from .generate_test_data import record_match, record_problem, record_metadata
@@ -457,11 +457,8 @@ def transient_handle_error_only_rem(scan_tag_only_rem, common_handle):
 
 
 @pytest.fixture
-def sbsys_document_handle():
-    source = SBSYSDBSource(
-            "sbsys-db-host", 1433, "SbSysNetDrift", "sa", "hunter2",
-            reflect_tables=None, base_weblink=None)
-    case = SBSYSDBHandles.Case(source, "22.13.01-K02-3-13", "Test case", None)
+def sbsys_document_handle(sbsys_db_source):
+    case = SBSYSDBHandles.Case(sbsys_db_source, "22.13.01-K02-3-13", "Test case", None)
     return SBSYSDBHandles.Document(
             SBSYSDBSources.Case(case), "doc-1", name="bankoplysninger.docx")
 
