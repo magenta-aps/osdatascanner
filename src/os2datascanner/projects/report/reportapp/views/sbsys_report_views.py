@@ -1,3 +1,5 @@
+from typing import override
+
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView
@@ -103,6 +105,7 @@ class SBSYSReportView(LoginRequiredMixin, ListView):
 
         return context
 
+    @override
     def dispatch(self, request, *args, **kwargs):
         # The account lookup below would fail before LoginRequiredMixin gets to run
         if not request.user.is_authenticated:
@@ -145,7 +148,7 @@ class SBSYSReportView(LoginRequiredMixin, ListView):
             )
             return redirect(reverse_lazy("index"))
 
-        # 2) For RemediatorView it will then go through RemediatorView.dispatch,
+        # 2) For SBSYSRemediatorView it will then go through SBSYSRemediatorView.dispatch,
         # which checks .is_remediator or superuser.
         return super().dispatch(request, *args, **kwargs)
 
