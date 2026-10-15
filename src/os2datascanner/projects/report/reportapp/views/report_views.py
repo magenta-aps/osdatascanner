@@ -522,12 +522,14 @@ class MassHandleView(HTMXEndpointView, BaseMassView):
             f"Successfully handled DocumentReports "
             f"{', '.join([str(report) for report in reports])} with "
             f"resolution_status {action}.")
-        messages.add_message(
-            self.request,
-            messages.SUCCESS,
-            build_resolution_message(action, count=count, was_handled=was_handled),
-            extra_tags="auto_close"
-        )
+        # A count of documents would confuse on SBSYS, where whole cases are handled
+        if not reports.filter(source_type="sbsys-db").exists():
+            messages.add_message(
+                self.request,
+                messages.SUCCESS,
+                build_resolution_message(action, count=count, was_handled=was_handled),
+                extra_tags="auto_close"
+            )
 
 
 class OpenMatchView(HTMXEndpointView, DetailView):
