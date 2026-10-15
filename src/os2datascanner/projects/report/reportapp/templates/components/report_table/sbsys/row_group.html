@@ -5,7 +5,7 @@
     <div class="ds-checkbox">
       <input type="checkbox"
              id="table-checkbox-case-{{ cr.pk|unlocalize }}"
-             value="{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}"
+             value="{{ cr.visible_reports|comma_join_report_pks }}"
              name="table-checkbox"
              class="datatable-checkbox"
              {% if not allow_handle %}disabled{% endif %} />
@@ -98,7 +98,7 @@
                 hx-trigger="click"
                 hx-push-url="false"
                 hx-include="this"
-                hx-vals='{"table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
+                hx-vals='{"table-checkbox": "{{ cr.visible_reports|comma_join_report_pks }}"}'
                 hx-on:htmx:before-request="this.disabled = true"
                 hx-on:htmx:response-error="this.disabled = false"
                 hx-on:htmx:send-error="this.disabled = false"
@@ -117,8 +117,8 @@
                 hx-indicator="closest tr"
                 hx-trigger="click"
                 hx-push-url="false"
+                hx-vals='{"action": "6", "table-checkbox": "{{ cr.visible_reports|comma_join_report_pks }}"}'
                 hx-include="this"
-                hx-vals='{"action": "6", "table-checkbox": [{% for r in cr.visible_reports %}{{ r.pk|unlocalize }}{% if not forloop.last %},{% endif %}{% endfor %}]}'
                 hx-on:htmx:before-request="this.disabled = true"
                 hx-on:htmx:response-error="this.disabled = false"
                 hx-on:htmx:send-error="this.disabled = false"
