@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-14 14:18+0200\n"
+"POT-Creation-Date: 2026-10-15 09:58+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2377,6 +2377,10 @@ msgstr "Microsoft 365 Kalender"
 #: reportapp/templatetags/handle_extras.py
 msgid "MS SharePoint List"
 msgstr "MS SharePoint-liste"
+
+#: reportapp/templatetags/handle_extras.py
+msgid "SBSYS"
+msgstr "SBSYS"
 
 #: reportapp/templatetags/handle_extras.py
 msgid "Unrecognized scan type"

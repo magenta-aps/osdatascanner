@@ -135,6 +135,8 @@ def find_scan_type(type_label):
             return _("Microsoft 365 Calendar")
         case "msgraph-lists":
             return _("MS SharePoint List")
+        case "sbsys-db":
+            return _("SBSYS")
         case _:
             return _("Unrecognized scan type")
 
