@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.3x.x  xx September 2026
+## Version 3.34.0  16th October 2026
+
+"Don't Make Me Repeat Myself"
 
 ### New in this release
 
