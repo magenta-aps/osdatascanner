@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-15 09:58+0200\n"
+"POT-Creation-Date: 2026-10-16 12:53+0200\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2444,6 +2444,24 @@ msgstr ""
 "OSdatascanner vil automatisk gennemgå dette resultat som en del af det næste "
 "scan."
 
+#: reportapp/views/report_views.py
+msgid "You do not have permission to release results."
+msgstr "Du har ikke tilladelse til at frigive resultater."
+
+#: reportapp/views/report_views.py
+#, python-format
+msgid "%(count)d result has been released."
+msgid_plural "%(count)d results have been released."
+msgstr[0] "Ét resultat er blevet frigivet."
+msgstr[1] "%(count)d resultater er blevet frigivet."
+
+#: reportapp/views/report_views.py
+msgid ""
+"0 results have been released. They may already have been released or deleted."
+msgstr ""
+"0 resultater er blevet frigivet. De er måske allerede blevet frigivet eller "
+"slettet."
+
 #: reportapp/views/sbsys_report_views.py
 msgid ""
 "The SBSYS tab is enabled for your organization, but you do not have the "
@@ -2463,25 +2481,6 @@ msgid ""
 msgstr ""
 "Uventet fejl: Systemet er ikke i stand til at bekræfte din SBSYS-faneadgang "
 "på nuværende tidspunkt."
-
-#: reportapp/views/report_views.py
-msgid "You do not have permission to release results."
-msgstr "Du har ikke tilladelse til at frigive resultater."
-
-#: reportapp/views/report_views.py
-#, python-format
-msgid "%(count)d result has been released."
-msgid_plural "%(count)d results have been released."
-msgstr[0] "Ét resultat er blevet frigivet."
-msgstr[1] "%(count)d resultater er blevet frigivet."
-
-#: reportapp/views/report_views.py
-msgid ""
-"0 results have been released. They may already have been released or "
-"deleted."
-msgstr ""
-"0 resultater er blevet frigivet. De er måske allerede blevet frigivet eller "
-"slettet."
 
 #: reportapp/views/statistics/leader.py
 msgid "First name"
