@@ -413,6 +413,10 @@ def clear_scan(scan_tag) -> None:
         )
 
 
+# Seconds allowed for each attempt at sniffing an object's type.
+TYPE_TIMEOUT = 10.0
+
+
 def computed_type(handle, resource) -> Optional[str]:
     """The MIME type an object's content will be converted as, or None if it
     could not be computed."""
@@ -420,7 +424,10 @@ def computed_type(handle, resource) -> Optional[str]:
         return _types[crunched]
 
     try:
-        _types[crunched] = TimeoutRetrier(max_tries=3, seconds=10).run(
+        # Opening the containing Source may fetch all of it, so only the
+        # sniff itself is timed.
+        resource._get_cookie()
+        _types[crunched] = TimeoutRetrier(max_tries=3, seconds=TYPE_TIMEOUT).run(
                 resource.compute_type)
     except Exception:
         logger.warning(

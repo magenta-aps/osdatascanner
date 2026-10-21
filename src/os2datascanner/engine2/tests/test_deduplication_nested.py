@@ -19,6 +19,7 @@ import json
 import os
 import shutil
 import tempfile
+import time
 import zipfile
 
 import pytest
@@ -794,3 +795,50 @@ class TestADocumentAnotherWorkerIsConverting:
 
         assert counted_objects(emitted) == 0
         assert scanned_objects(emitted) == 1
+
+
+class SlowZipSource(ZipSource):
+    """A ZipSource whose archive takes a while to arrive, as a large one fetched
+    from a remote drive does."""
+    type_label = "-test-slow-zip"
+    delay = 0.5
+    opened = 0
+
+    def _generate_state(self, sm):
+        SlowZipSource.opened += 1
+        time.sleep(self.delay)
+        yield from super()._generate_state(sm)
+
+
+class TestTypeOfAMemberOfASlowArchive:
+    """Sniffing the type of an object inside a container reads 512 bytes of it,
+    but getting at those bytes means opening the container first. Only the
+    sniff is timed: the container is opened once, however long that takes."""
+
+    @pytest.fixture
+    def archive(self, monkeypatch, tmp_path):
+        # Opening outlasts a single sniff attempt.
+        monkeypatch.setattr(deduplication, "TYPE_TIMEOUT", 0.2)
+        SlowZipSource.opened = 0
+        with zipfile.ZipFile(tmp_path / "baldurs_gate.zip", "w") as zf:
+            zf.writestr("elfsong_tavern/menu.txt", "Minsc og Boo bestiller.\n")
+        yield FilesystemHandle(FilesystemSource(str(tmp_path)), "baldurs_gate.zip")
+        deduplication.forget_delivery()
+
+    def test_a_slow_container_does_not_cost_the_type(self, archive):
+        handle = ZipHandle(SlowZipSource(archive), "elfsong_tavern/menu.txt")
+        with SourceManager() as sm:
+            mime_type = deduplication.computed_type(handle, handle.follow(sm))
+
+        assert mime_type == "text/plain"
+        assert SlowZipSource.opened == 1
+
+    def test_a_container_that_cannot_be_opened_is_not_coordinated(
+            self, tmp_path):
+        missing = FilesystemHandle(
+                FilesystemSource(str(tmp_path)), "candlekeep.zip")
+        handle = ZipHandle(ZipSource(missing), "library/tome.txt")
+        with SourceManager() as sm:
+            assert deduplication.computed_type(
+                    handle, handle.follow(sm)) is None
+        deduplication.forget_delivery()
