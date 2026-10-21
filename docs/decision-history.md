@@ -325,6 +325,115 @@ active scans. When a status message arrives with a file hash:
 The `HashCache` is cleaned up automatically when a scan completes or is
 cancelled, to avoid accumulating stale rows.
 
+## Conversion deduplication
+
+Where the duplicate detection above only *counts* copies, conversion
+deduplication acts on them: with `[pipeline.worker.dedup] enabled`, workers
+coordinate through a shared store so that identical content is converted once per
+scan instead of once per copy. How it works is documented in
+[Conversion deduplication](architecture/deduplication.md); this section records
+why it works that way.
+
+### A claim, not a result cache
+
+Copies of one document are normally dispatched within seconds of each other. A
+plain result cache misses for every copy until the first conversion finishes,
+hours later, so each copy converts in full. A claim lets the other copies wait
+for a result that is known to be coming.
+
+### Valkey rather than Redis
+
+Valkey is BSD-3-Clause under Linux Foundation stewardship; Redis has changed
+licence twice since 2024. The two are wire-compatible and the feature only uses
+commands common to both, so either works.
+
+### Waiting is cheaper than converting again
+
+A copy that loses a claim waits minutes between attempts and up to hours in
+total. That is cheap against what it replaces, a conversion measured in hours.
+The failure to avoid is a copy that gives up too early, because then every copy
+pays in full anyway. The deferral defaults are high on purpose.
+
+Shorter backoff steps do not help either. A delay queue is a timer, not a
+wake-up, and every redelivery identifies the content again, re-reading and
+hashing the whole object.
+
+### The lease is renewed from the abort check
+
+Renewal hangs off the abort check the conversion already calls between units of
+work, so `lease_ms` must outlast the longest stretch without one (see
+[Settings](architecture/deduplication.md#settings)).
+
+Renewing from a background thread or a signal handler was rejected: redis-py
+guards its connection pool with a non-reentrant `threading.Lock`, so a renewal
+arriving inside another store call would deadlock the worker. A long lease only
+costs latency when a worker dies holding a claim, and the waiting copies defer
+rather than block meanwhile.
+
+### Errors of omission are preferred throughout
+
+Every judgement the feature makes leans towards forgoing the optimisation rather
+than risking a wrong result:
+
+* A rule leaf whose `operates_on` is missing or not in
+  `CONTENT_DERIVED_OUTPUT_TYPES`, or a rule that cannot be flattened, counts as
+  unshareable.
+* `OutputType.Size` is unshareable. It is reported by the Resource rather than
+  measured from the bytes, and nothing guarantees every Source reports it the
+  same way.
+* An object of unknown size does not clear the cost gate. Guessing the other way
+  would add a full read to every small object in the scan.
+* A conversion that produced a problem message is not shared at all, even though
+  one unreadable page then stops a large PDF being shared. Telling a failure that
+  recurs for identical bytes from a transient one needs the exception's type,
+  which the problem message does not carry.
+
+### Mail is identified by Message-ID
+
+A mail account's mail is coordinated on its Message-ID, not a hash of its bytes.
+The bytes of one mail differ per mailbox (`Received:` chain, `Delivered-To` and
+gateway stamps), so a byte hash would never match across mailboxes, which is
+where mail duplication is. Message-IDs are treated as globally unique per
+RFC 5322.
+
+### Duplication statistics are reported separately
+
+Coordination identifies content anyway, but it does not report those identifiers
+to the admin module: `CHECK_DUPLICATION` still governs that on its own.
+Coordination only identifies the objects it considers expensive, so statistics
+drawn from it would cover large files alone.
+
+### The content key is canonicalised by its consumer
+
+The key is built from the progress fragment as serialised by the worker. Python
+randomises string hashing per process, so a rule holding part of itself in a set
+serialises differently in every process (`CPRRule` emits its blacklist this way).
+Uncanonicalised, no two workers compute the same key and the feature silently
+does nothing.
+
+Sorting in each rule's `to_json_object` would also work, but nothing would
+enforce it, and a rule added later without that care would switch coordination
+off unnoticed. So the consumer sorts every list at every depth. Only values it
+cannot see into are sorted at the source: `CPRRule` joins its exception lists
+into strings and sorts them in `to_json_object`.
+
+### Containers are walked, not handed back
+
+An object inside a container that loses a claim is set aside until the end of
+the walk rather than republished as a task of its own. Coming back to a
+republished object means opening its container from scratch: so one member of a
+20 GB archive costs a 20 GB download and 20 GB of temporary disk each time, and
+consecutive backups contend on member after member. It would also need the
+scan's object accounting extended for deliveries the explorer never counted.
+
+### Message deferral lives in its own module
+
+The delay-queue mechanism (`pipeline/utilities/deferral.py`) knows nothing about
+claims or content identity, and is tested separately against a real broker. Its
+settings and message-body key still sit under the `dedup` names because
+deduplication is its only caller; if a second one appears, that is the point to
+generalise the naming.
+
 ## Per-scan conversion queues
 
 Earlier versions of OSdatascanner sent conversion messages through *shared*

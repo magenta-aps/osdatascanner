@@ -28,6 +28,7 @@ nav:
   - The engine:
     - Engine/pipeline: architecture/pipeline.md
     - Engine/RabbitMQ: architecture/rabbitmq.md
+    - Conversion deduplication: architecture/deduplication.md
     - The model: engine2.md
     - The rule engine: rules.md
     - Pre-execution of rules (SmartDelta): smartdelta.md
