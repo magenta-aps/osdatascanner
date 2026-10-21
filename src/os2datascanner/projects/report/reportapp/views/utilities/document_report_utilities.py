@@ -61,6 +61,24 @@ def handle_report(account: Account,
                 f"resolution_status {action}.")
 
 
+def format_delete_result(errors: list[str]) -> tuple[bool, str]:
+    """Builds a try_X_delete result: a single error is shown as is, several as a count,
+    with the reason if they all share it."""
+    if not errors:
+        return (True, "ok")
+    if len(errors) == 1:
+        return (False, errors[0])
+    if len(set(errors)) == 1:
+        return (False, ngettext(
+            "%(count)d result could not be deleted: %(reason)s",
+            "%(count)d results could not be deleted: %(reason)s",
+            len(errors)) % {"count": len(errors), "reason": errors[0]})
+    return (False, ngettext(
+        "%(count)d result could not be deleted",
+        "%(count)d results could not be deleted",
+        len(errors)) % {"count": len(errors)})
+
+
 def build_resolution_message(action, count: int | None = None, was_handled: bool = False) -> str:
     """
     Builds a human-readable, status-specific success message for handle/mass-handle

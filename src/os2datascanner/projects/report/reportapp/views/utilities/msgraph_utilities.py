@@ -185,7 +185,7 @@ def try_msgraph_mail_delete(request, pks: list[int]) -> (bool, str):
     """Wraps delete_email with the standard (request, pks) -> (bool, str) interface."""
     from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
-        import validate_delete_request, DeleteRequestError
+        import validate_delete_request, DeleteRequestError, format_delete_result
     user = request.user
     if not user.account.organization.has_msgraph_email_delete_permission():
         logger.warning("MSGraph mail deletion request with function disabled!", user=user)
@@ -194,20 +194,24 @@ def try_msgraph_mail_delete(request, pks: list[int]) -> (bool, str):
         validate_delete_request(user, pks)
     except DeleteRequestError as e:
         return (False, str(e))
-    result = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             delete_email(report, user.account)
         except PermissionDenied as e:
-            result = (False, str(e))
-    return result or (True, "ok")
+            errors.append(str(e))
+        except Exception as ex:
+            logger.exception(f"unexpected error during deletion of report {report.pk}",
+                             exc_info=True)
+            errors.append(f"unexpected error during deletion: {ex}")
+    return format_delete_result(errors)
 
 
 def try_msgraph_file_delete(request, pks: list[int]) -> (bool, str):
     """Wraps delete_file with the standard (request, pks) -> (bool, str) interface."""
     from os2datascanner.projects.report.reportapp.models.documentreport import DocumentReport
     from os2datascanner.projects.report.reportapp.views.utilities.document_report_utilities \
-        import validate_delete_request, DeleteRequestError
+        import validate_delete_request, DeleteRequestError, format_delete_result
     user = request.user
     if not user.account.organization.has_msgraph_file_delete_permission():
         logger.warning("MSGraph file deletion request with function disabled!", user=user)
@@ -216,13 +220,17 @@ def try_msgraph_file_delete(request, pks: list[int]) -> (bool, str):
         validate_delete_request(user, pks)
     except DeleteRequestError as e:
         return (False, str(e))
-    result = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             delete_file(report, user.account)
         except PermissionDenied as e:
-            result = (False, str(e))
-    return result or (True, "ok")
+            errors.append(str(e))
+        except Exception as ex:
+            logger.exception(f"unexpected error during deletion of report {report.pk}",
+                             exc_info=True)
+            errors.append(f"unexpected error during deletion: {ex}")
+    return format_delete_result(errors)
 
 
 def delete_file(document_report, account: Account):

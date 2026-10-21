@@ -20,7 +20,8 @@ from os2datascanner.projects.report.reportapp.models.documentreport import (
         DocumentReport)
 
 from os2datascanner.engine2.model.core import SourceManager
-from .document_report_utilities import validate_delete_request, DeleteRequestError
+from .document_report_utilities import (
+    validate_delete_request, DeleteRequestError, format_delete_result)
 
 logger = structlog.get_logger("reportapp")
 
@@ -109,7 +110,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
             return failure
 
     deleted_matches: list[int] = []
-    result: tuple | None = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         # Find the EWSMailHandle
         handle: Handle | None = None
@@ -121,7 +122,8 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
             logger.warning(
                     "EWS deletion request for non-ews resource!",
                     user=user, handle=str(report.matches.handle))
-            return (False, "target is not connected to an Exchange account!")
+            errors.append("target is not connected to an Exchange account!")
+            continue
 
         try:
             rsrc = get_ews_resource(grant, handle)
@@ -150,7 +152,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
 
-            result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
+            errors.append(f"unexpected error during deletion: {ex}")
 
     # Update the reports to indicate that the file is gone
     DocumentReport.objects.filter(pk__in=deleted_matches).update(
@@ -158,7 +160,7 @@ def try_ews_delete(request, pks: list[int]) -> (bool, str):  # noqa: C901, CCR00
         resolution_time=time_now()
         )
 
-    return result or (True, "ok")
+    return format_delete_result(errors)
 
 
 def try_ewscalendar_delete(request, pks: list[int]) -> tuple[bool, str]:
@@ -181,7 +183,7 @@ def try_ewscalendar_delete(request, pks: list[int]) -> tuple[bool, str]:
             return failure
 
     deleted_matches: list[int] = []
-    result: tuple | None = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         # Find the EWSCalendarHandle
         handle: Handle | None = None
@@ -193,7 +195,8 @@ def try_ewscalendar_delete(request, pks: list[int]) -> tuple[bool, str]:
             logger.warning(
                 "EWS deletion request for non-ews resource!",
                 user=user, handle=str(report.matches.handle))
-            return (False, "target is not connected to an Exchange account!")
+            errors.append("target is not connected to an Exchange account!")
+            continue
 
         try:
             rsrc = get_ews_resource(grant, handle)
@@ -219,7 +222,7 @@ def try_ewscalendar_delete(request, pks: list[int]) -> tuple[bool, str]:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
 
-            result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
+            errors.append(f"unexpected error during deletion: {ex}")
 
     # Update the reports to indicate that the file is gone
     DocumentReport.objects.filter(pk__in=deleted_matches).update(
@@ -227,4 +230,4 @@ def try_ewscalendar_delete(request, pks: list[int]) -> tuple[bool, str]:
         resolution_time=time_now()
     )
 
-    return result or (True, "ok")
+    return format_delete_result(errors)

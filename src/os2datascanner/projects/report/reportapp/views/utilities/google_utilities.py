@@ -19,7 +19,8 @@ from os2datascanner.projects.report.reportapp.views.utilities.msgraph_utilities 
 from os2datascanner.engine2.model.gmail import GmailHandle
 from os2datascanner.engine2.model.googledrive import GoogleDriveHandle
 from os2datascanner.engine2.model.googleshareddrive import GoogleSharedDriveHandle
-from .document_report_utilities import validate_delete_request, DeleteRequestError
+from .document_report_utilities import (
+    validate_delete_request, DeleteRequestError, format_delete_result)
 
 logger = structlog.get_logger("reportapp")
 
@@ -90,7 +91,7 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         user.account, grant, google_service=GoogleService.GMAIL)
 
     deleted_matches: list[int] = []
-    result: tuple | None = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             message_handle = get_handle_from_document_report(report, GmailHandle)
@@ -106,13 +107,12 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
                 logger.exception(f"unexpected HttpError during deletion of report {report.pk}",
                                  exc_info=True)
 
-                result = (False, f"unexpected http error during deletion of report {report.pk}: "
-                          f"{http_error}")
+                errors.append(f"unexpected http error during deletion: {http_error}")
         except Exception as ex:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
 
-            result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
+            errors.append(f"unexpected error during deletion: {ex}")
 
     # Update the reports to indicate that the file is gone
     DocumentReport.objects.filter(pk__in=deleted_matches).update(
@@ -120,7 +120,7 @@ def try_gmail_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         resolution_time=time_now()
         )
 
-    return result or (True, "ok")
+    return format_delete_result(errors)
 
 
 def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
@@ -146,7 +146,7 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         user.account, grant, google_service=GoogleService.GOOGLEDRIVE)
 
     deleted_matches: list[int] = []
-    result: tuple | None = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         try:
             file_handle = None
@@ -176,13 +176,12 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
                 logger.exception(f"unexpected HttpError during deletion of report {report.pk}",
                                  exc_info=True)
 
-                result = (False, f"unexpected http error during deletion of report {report.pk}: "
-                          f"{http_error}")
+                errors.append(f"unexpected http error during deletion: {http_error}")
         except Exception as ex:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
 
-            result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
+            errors.append(f"unexpected error during deletion: {ex}")
 
     # Update the reports to indicate that the file is gone
     DocumentReport.objects.filter(pk__in=deleted_matches).update(
@@ -190,4 +189,4 @@ def try_gdrive_delete(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         resolution_time=time_now()
         )
 
-    return result or (True, "ok")
+    return format_delete_result(errors)

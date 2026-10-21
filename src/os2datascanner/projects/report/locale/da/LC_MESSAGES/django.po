@@ -2421,11 +2421,6 @@ msgstr ""
 msgid "Failed to delete {pn}: {e}"
 msgstr "Kunne ikke slette {pn}: {e}"
 
-#: reportapp/views/delete_views.py
-#, python-brace-format
-msgid "Failed to delete some resources: {e}"
-msgstr "Kunne ikke slette visse ressourcer: {e}"
-
 #: reportapp/views/report_views.py
 msgid "The page does not exist"
 msgstr "Siden eksisterer ikke"
@@ -2701,6 +2696,20 @@ msgid "The result was marked as \"%(label)s\""
 msgid_plural "%(count)d results were marked as \"%(label)s\""
 msgstr[0] "Resultatet blev markeret som \"%(label)s\""
 msgstr[1] "%(count)d resultater blev markeret som \"%(label)s\""
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "%(count)d result could not be deleted: %(reason)s"
+msgid_plural "%(count)d results could not be deleted: %(reason)s"
+msgstr[0] "%(count)d resultat kunne ikke slettes: %(reason)s"
+msgstr[1] "%(count)d resultater kunne ikke slettes: %(reason)s"
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "%(count)d result could not be deleted"
+msgid_plural "%(count)d results could not be deleted"
+msgstr[0] "%(count)d resultat kunne ikke slettes"
+msgstr[1] "%(count)d resultater kunne ikke slettes"
 
 #: reportapp/views/utilities/ews_utilities.py
 #: reportapp/views/utilities/google_utilities.py
