@@ -10,6 +10,8 @@
 - While a scan with several sources, such as mailboxes, is still being indexed, the status page
   shows how many of them have been listed.
 
+- Users can pass results for files they cannot access on to remediators, who can return them.
+
 ### General improvements
 
 - Upgraded dependencies

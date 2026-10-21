@@ -2016,12 +2016,12 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
     }
 
     &--set-status {
-      /* Unhandled results: a Handle button (or dropdown) plus the false positive button. */
+      /* Unhandled results: a Handle button (or dropdown) plus the more actions button. */
 
-      --base_width: 15.75rem; // 6.625rem handle button + 9.125rem false positive button
+      --base_width: 9.25rem; // 6.625rem handle button + 2.625rem more actions button
 
       &.handle-dropdown {
-        --base_width: 17.375rem; // 8.25rem handle dropdown + 9.125rem false positive button
+        --base_width: 10.875rem; // 8.25rem handle dropdown + 2.625rem more actions button
       }
 
       width: calc(var(--base_width) + var(--datatable-cell-padding));

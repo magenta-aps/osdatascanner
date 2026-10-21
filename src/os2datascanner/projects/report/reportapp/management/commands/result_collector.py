@@ -254,7 +254,12 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
         else:
             logger.debug(f"Categorizing mail not enabled for {owner}")
 
-    create_aliases(dr)
+    # An owner status belongs to the owner who set or received it, not to a new owner
+    if (previous_report is not None and previous_report.owner_status is not None
+            and (previous_report.owner or "").lower() != (owner or "").lower()):
+        dr.set_owner_status(None)  # Also redistributes the report
+    else:
+        create_aliases(dr)
 
 
 def create_aliases(dr: DocumentReport):
@@ -279,8 +284,10 @@ def create_aliases(dr: DocumentReport):
 
     # Look for relevant alias(es) and append relation(s) to new_objects.
     aliases = (Alias.objects.filter(_value__iexact=owner)
-               if owner and not dr.only_notify_remediators else Alias.objects.none())
-    # If only_notify_remediators is set, or there are no owner aliases, we must look for remediators
+               if owner and not dr.only_notify_remediators and not dr.owner_rerouted
+               else Alias.objects.none())
+    # If only_notify_remediators is set, the owner is rerouted, or there are no owner aliases,
+    # we must look for remediators
     if not aliases:
         # Alias type must be remediator and value either 0 (all scannerjobs) or remediator
         # for this specific scannerjob.

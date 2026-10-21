@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-16 12:53+0200\n"
+"POT-Creation-Date: 2026-10-28 11:30+0100\n"
 "Language: Danish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -263,6 +263,26 @@ msgstr "kildetype"
 #: reportapp/models/documentreport.py
 msgid "probability"
 msgstr "sandsynlighed"
+
+#: reportapp/models/documentreport.py
+msgid "No access (reported by owner)"
+msgstr "Ingen adgang (meldt af ejer)"
+
+#: reportapp/models/documentreport.py
+msgid "No access (detected automatically)"
+msgstr "Ingen adgang (fundet automatisk)"
+
+#: reportapp/models/documentreport.py
+msgid "Returned to owner"
+msgstr "Returneret til ejer"
+
+#: reportapp/models/documentreport.py
+msgid "owner status"
+msgstr "ejerstatus"
+
+#: reportapp/models/documentreport.py
+msgid "owner status time"
+msgstr "tidspunkt for ejerstatus"
 
 #: reportapp/models/documentreport.py
 msgid "Other"
@@ -766,8 +786,44 @@ msgid "Handle"
 msgstr "Håndtér"
 
 #: reportapp/templates/components/report_table/actions_unhandled.html
+msgid "More actions"
+msgstr "Flere handlinger"
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
 msgid "Handle this result by marking it as a false positive."
 msgstr "Håndtér resultatet ved at markere det som falsk positiv."
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid ""
+"Pass this result on to a remediator, if you can no longer open or edit the "
+"file."
+msgstr ""
+"Send dette resultat videre til en oprydder, hvis du ikke længere kan åbne "
+"eller redigere filen."
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid ""
+"You are about to pass this result on to a remediator, because you do not "
+"have access to the file. It will no longer be shown to you. Are you sure?"
+msgstr ""
+"Du er ved at sende dette resultat videre til en oprydder, fordi du ikke har "
+"adgang til filen. Det vil ikke længere blive vist for dig. Er du sikker?"
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid "No access"
+msgstr "Ingen adgang"
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid "Return this result to its owner."
+msgstr "Returnér dette resultat til ejeren."
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid "You are about to return this result to its owner. Are you sure?"
+msgstr "Du er ved at returnere dette resultat til ejeren. Er du sikker?"
+
+#: reportapp/templates/components/report_table/actions_unhandled.html
+msgid "Return to owner"
+msgstr "Returnér til ejer"
 
 #: reportapp/templates/components/report_table/filters.html
 #: reportapp/templates/leader_statistics_template.html
@@ -2457,6 +2513,24 @@ msgstr ""
 "0 resultater er blevet frigivet. De er måske allerede blevet frigivet eller "
 "slettet."
 
+#: reportapp/views/report_views.py
+msgid ""
+"The result could not be passed on, as its scanner job has no remediator."
+msgstr ""
+"Resultatet kunne ikke sendes videre, da dets scannerjob ikke har en oprydder."
+
+#: reportapp/views/report_views.py
+msgid "The result has been passed on to a remediator."
+msgstr "Resultatet er sendt videre til en oprydder."
+
+#: reportapp/views/report_views.py
+msgid "The result could not be returned, as its owner was not found."
+msgstr "Resultatet kunne ikke returneres, da ejeren ikke blev fundet."
+
+#: reportapp/views/report_views.py
+msgid "The result has been returned to its owner."
+msgstr "Resultatet er returneret til ejeren."
+
 #: reportapp/views/sbsys_report_views.py
 msgid ""
 "The SBSYS tab is enabled for your organization, but you do not have the "
@@ -2647,6 +2721,20 @@ msgstr "Kunne ikke opdatere indstillinger for Outlook-kategorisering."
 
 #: reportapp/views/utilities/document_report_utilities.py
 #, python-format
+msgid "%(count)d result could not be deleted: %(reason)s"
+msgid_plural "%(count)d results could not be deleted: %(reason)s"
+msgstr[0] "%(count)d resultat kunne ikke slettes: %(reason)s"
+msgstr[1] "%(count)d resultater kunne ikke slettes: %(reason)s"
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
+msgid "%(count)d result could not be deleted"
+msgid_plural "%(count)d results could not be deleted"
+msgstr[0] "%(count)d resultat kunne ikke slettes"
+msgstr[1] "%(count)d resultater kunne ikke slettes"
+
+#: reportapp/views/utilities/document_report_utilities.py
+#, python-format
 msgid ""
 "Status was changed to \"unhandled\" and the result has been moved to the "
 "\"Results\" tab."
@@ -2696,20 +2784,6 @@ msgid "The result was marked as \"%(label)s\""
 msgid_plural "%(count)d results were marked as \"%(label)s\""
 msgstr[0] "Resultatet blev markeret som \"%(label)s\""
 msgstr[1] "%(count)d resultater blev markeret som \"%(label)s\""
-
-#: reportapp/views/utilities/document_report_utilities.py
-#, python-format
-msgid "%(count)d result could not be deleted: %(reason)s"
-msgid_plural "%(count)d results could not be deleted: %(reason)s"
-msgstr[0] "%(count)d resultat kunne ikke slettes: %(reason)s"
-msgstr[1] "%(count)d resultater kunne ikke slettes: %(reason)s"
-
-#: reportapp/views/utilities/document_report_utilities.py
-#, python-format
-msgid "%(count)d result could not be deleted"
-msgid_plural "%(count)d results could not be deleted"
-msgstr[0] "%(count)d resultat kunne ikke slettes"
-msgstr[1] "%(count)d resultater kunne ikke slettes"
 
 #: reportapp/views/utilities/ews_utilities.py
 #: reportapp/views/utilities/google_utilities.py

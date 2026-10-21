@@ -8,7 +8,7 @@ import warnings
 import structlog
 from functools import cached_property
 
-from django.db import models
+from django.db import models, transaction
 from django.core.exceptions import ValidationError
 from django.db.models import JSONField
 from django.db.models.functions import Upper
@@ -139,6 +139,58 @@ class DocumentReport(models.Model):
         null=True,
         db_index=True
     )
+
+    @enum.unique
+    class OwnerStatus(models.IntegerChoices):
+        DECLINED = 1, _("No access (reported by owner)")
+        NO_ACCESS = 2, _("No access (detected automatically)")
+        RETURNED = 3, _("Returned to owner")
+
+    # Statuses that route the report to remediators instead of the owner
+    OWNER_REROUTED = (OwnerStatus.DECLINED, OwnerStatus.NO_ACCESS)
+
+    # type_labels of the Sources whose owner can lose access to the scanned object
+    OWNER_DECLINABLE_SOURCES = (
+        "smbc",
+        "msgraph-files",
+        "msgraph-teams-files",
+        "msgraph-lists",
+        "googleshareddrive",
+    )
+
+    owner_status = models.IntegerField(
+        choices=OwnerStatus.choices,
+        null=True,
+        blank=True,
+        db_index=True,
+        verbose_name=_("owner status"),
+    )
+
+    owner_status_time = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name=_("owner status time"),
+    )
+
+    @property
+    def owner_rerouted(self) -> bool:
+        return self.owner_status in self.OWNER_REROUTED
+
+    @property
+    def owner_declinable(self) -> bool:
+        return self.source_type in self.OWNER_DECLINABLE_SOURCES
+
+    def set_owner_status(self, status: OwnerStatus | None):
+        """Sets the owner status, or clears it if @status is None, and redistributes the
+        report accordingly."""
+        # Avoid circular imports
+        from ..management.commands.result_collector import create_aliases
+
+        with transaction.atomic():
+            self.owner_status = status
+            self.owner_status_time = time_now()
+            self.save(update_fields={"owner_status", "owner_status_time"})
+            create_aliases(self)
 
     def __str__(self):
         return self.presentation

@@ -26,7 +26,9 @@ from .utilities.document_report_utilities import (
 )
 from ..models.documentreport import DocumentReport, RENDERABLE_RULES
 from ..models.scanner_reference import ScannerReference
+from ..utils import remediated_scanner_ids
 from ...organizations.models.account import Account
+from ...organizations.models import Alias
 
 logger = structlog.get_logger("reportapp")
 
@@ -79,7 +81,11 @@ class ReportView(LoginRequiredMixin, ListView):
             "raw_matches",
             "datasource_last_modified",
             "raw_problem",
-            "number_of_matches"
+            "number_of_matches",
+            "scanner_job",
+            "source_type",
+            "owner_status",
+            "owner_status_time",
             )
 
     @staticmethod
@@ -333,6 +339,12 @@ class UserReportView(ReportView):
         context = super().get_context_data(**kwargs)
 
         context["include_shared"] = self.request.GET.get('include-shared', 'true')
+        context["remediated_scanner_ids"] = remediated_scanner_ids(self.org)
+        # Only personal results can be declined, not results shown through a shared alias
+        context["personal_report_ids"] = set(
+            self.request.user.account.get_report(Account.ReportType.PERSONAL).filter(
+                pk__in=[report.pk for report in context["object_list"]]
+            ).values_list("pk", flat=True))
 
         return context
 
@@ -624,5 +636,75 @@ class DistributeMatchesView(HTMXEndpointView, PermissionRequiredMixin, ListView)
                     "already have been released or deleted."
                 ),
                 extra_tags="manual_close")
+
+        return response
+
+
+class DeclineOwnershipView(HTMXEndpointView, DetailView):
+    """Endpoint for an owner to pass a report on to the remediators."""
+
+    def get_queryset(self):
+        return self.request.user.account.get_report(
+            Account.ReportType.PERSONAL).filter(
+            source_type__in=DocumentReport.OWNER_DECLINABLE_SOURCES)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        account = request.user.account
+        report = self.get_object()
+
+        if report.scanner_job_id not in remediated_scanner_ids(account.organization):
+            messages.add_message(
+                request,
+                messages.ERROR,
+                _("The result could not be passed on, as its scanner job has no remediator."),
+                extra_tags="manual_close")
+            return response
+
+        report.set_owner_status(DocumentReport.OwnerStatus.DECLINED)
+        logger.info("Owner declined report", report=report.pk, account=str(account))
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            _("The result has been passed on to a remediator."),
+            extra_tags="auto_close")
+
+        return response
+
+
+class ReturnOwnershipView(HTMXEndpointView, DetailView):
+    """Endpoint for a remediator to return a rerouted report to its owner."""
+
+    def get_queryset(self):
+        return self.request.user.account.get_report(
+            Account.ReportType.REMEDIATOR).filter(
+            owner_status__in=DocumentReport.OWNER_REROUTED)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        account = request.user.account
+        report = self.get_object()
+
+        # Mirror the conditions under which create_aliases() hands a report to its owner
+        owner_found = (report.owner
+                       and not report.only_notify_remediators
+                       and Alias.objects.filter(
+                           _value__iexact=report.owner,
+                           account__organization=account.organization).exists())
+        if not owner_found:
+            messages.add_message(
+                request,
+                messages.ERROR,
+                _("The result could not be returned, as its owner was not found."),
+                extra_tags="manual_close")
+            return response
+
+        report.set_owner_status(DocumentReport.OwnerStatus.RETURNED)
+        logger.info("Report returned to owner", report=report.pk, account=str(account))
+        messages.add_message(
+            request,
+            messages.SUCCESS,
+            _("The result has been returned to its owner."),
+            extra_tags="auto_close")
 
         return response

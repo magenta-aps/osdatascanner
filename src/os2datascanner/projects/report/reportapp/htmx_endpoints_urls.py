@@ -7,7 +7,7 @@ from django.urls import path
 
 from .views.report_views import (
     HandleMatchView, MassHandleView, OpenMatchView, ShowMoreMatchesView,
-    DistributeMatchesView)
+    DistributeMatchesView, DeclineOwnershipView, ReturnOwnershipView)
 from .views.delete_views import (
     DeleteMailView, MassDeleteMailView,
     DeleteFileView, MassDeleteFileView,
@@ -23,6 +23,8 @@ urlpatterns = [
     path('open_match/<int:pk>/', OpenMatchView.as_view(), name='open-match'),
     path('show_more_matches/<int:pk>/', ShowMoreMatchesView.as_view(), name='show-more-matches'),
     path('distribute/', DistributeMatchesView.as_view(), name='distribute'),
+    path('decline_ownership/<int:pk>/', DeclineOwnershipView.as_view(), name='decline-ownership'),
+    path('return_ownership/<int:pk>/', ReturnOwnershipView.as_view(), name='return-ownership'),
     path('delete_mail/<int:pk>', DeleteMailView.as_view(), name='delete-mail'),
     path('mass_delete_mail/', MassDeleteMailView.as_view(), name="mass-delete-mail"),
     path('delete_file/<int:pk>', DeleteFileView.as_view(), name="delete-file"),

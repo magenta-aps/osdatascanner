@@ -47,26 +47,74 @@
 
       {% endif %}
 
-      <button class="matches-handle button button--icon-text-button"
-              id="false-positive-button"
-              type="button"
-              title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"
-              hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
+      <div class="more-actions">
+        <button class="matches-handle expand button button--icon-button more-actions__toggle"
+                type="button"
+                aria-label="{% trans "More actions" %}"
+                title="{% trans "More actions" %}"
+                {% if not allow_handle %}disabled{% endif %}>
+          <i class="material-symbols" aria-hidden="true">more_horiz</i>
+        </button>
+
+        <div class="dropdown-container">
+          <ul class="more-actions__menu"
               hx-swap="outerHTML swap:300ms"
               hx-target="closest tr"
               hx-indicator="closest tr"
-              hx-trigger="click"
-              hx-push-url="false"
-              hx-vals='{"action":"4"}'
-              hx-on:htmx:before-request="this.disabled = true"
-              hx-on:htmx:response-error="this.disabled = false"
-              hx-on:htmx:send-error="this.disabled = false"
-              {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
-              {% if not allow_handle %}disabled{% endif %}
-              name="handle-match-false-positive">
-        <i class="material-symbols" aria-hidden="true">block</i>
-        <span>{% trans "false positive"|capfirst %}</span>
-      </button>
+              hx-push-url="false">
+            <li>
+              <button class="more-actions__item"
+                      id="false-positive-button"
+                      type="button"
+                      title="{% blocktrans %}Handle this result by marking it as a false positive.{% endblocktrans %}"
+                      hx-post="{% url 'handle-match' document_report.pk|unlocalize %}"
+                      hx-vals='{"action":"4"}'
+                      hx-on:htmx:before-request="this.disabled = true"
+                      hx-on:htmx:response-error="this.disabled = false"
+                      hx-on:htmx:send-error="this.disabled = false"
+                      {% if request.user.account.time_since_last_handle > 172800 %} hx-confirm="{% trans "You are about to handle this result. This action does not change the file, that the result is about. Please do not handle a result before action has been manually taken to the file." %}" {% endif %}
+                      name="handle-match-false-positive">
+                <i class="material-symbols" aria-hidden="true">block</i>
+                <span>{% trans "false positive"|capfirst %}</span>
+              </button>
+            </li>
+
+            {% if view.type == "personal" and document_report.pk in personal_report_ids and document_report.scanner_job_id in remediated_scanner_ids and document_report.owner_declinable %}
+              <li>
+                <button class="more-actions__item"
+                        type="button"
+                        title="{% trans "Pass this result on to a remediator, if you can no longer open or edit the file." %}"
+                        hx-post="{% url 'decline-ownership' document_report.pk|unlocalize %}"
+                        hx-on:htmx:before-request="this.disabled = true"
+                        hx-on:htmx:response-error="this.disabled = false"
+                        hx-on:htmx:send-error="this.disabled = false"
+                        hx-confirm="{% trans "You are about to pass this result on to a remediator, because you do not have access to the file. It will no longer be shown to you. Are you sure?" %}"
+                        name="decline-ownership">
+                  <i class="material-symbols" aria-hidden="true">lock</i>
+                  <span>{% trans "No access" %}</span>
+                </button>
+              </li>
+            {% endif %}
+
+            {% if view.type == "remediator" and document_report.owner_rerouted %}
+              <li>
+                <button class="more-actions__item"
+                        type="button"
+                        title="{{ document_report.get_owner_status_display }} {{ document_report.owner_status_time|date:"SHORT_DATE_FORMAT" }}. {% trans "Return this result to its owner." %}"
+                        hx-post="{% url 'return-ownership' document_report.pk|unlocalize %}"
+                        hx-on:htmx:before-request="this.disabled = true"
+                        hx-on:htmx:response-error="this.disabled = false"
+                        hx-on:htmx:send-error="this.disabled = false"
+                        hx-confirm="{% trans "You are about to return this result to its owner. Are you sure?" %}"
+                        name="return-ownership">
+                  <i class="material-symbols" aria-hidden="true">undo</i>
+                  <span>{% trans "Return to owner" %}</span>
+                </button>
+              </li>
+            {% endif %}
+          </ul>
+        </div>
+      </div>
     </div>
   </td>
 {% endblock %}
