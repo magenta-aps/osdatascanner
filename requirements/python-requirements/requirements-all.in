@@ -8,11 +8,9 @@ gunicorn
 gunicorn[gevent]
 
 # Common
-colorama
 click
 google-api-python-client
 more_itertools
-oauth2client
 pika>=1.2.0
 rich
 sortedcontainers
@@ -25,7 +23,7 @@ termtables
 certifi>=2026.1.4  # Keep updated for newer CA certificates
 chardet
 defusedxml
-dropbox>=10.3.0
+dropbox>=12.0.0
 exchangelib==5.4.0  # Brittle API; do /not/ bump without checking for changes!
 lxml
 odfpy
@@ -48,18 +46,13 @@ redis
 regex
 requests
 sqlalchemy
-xattr
 xlrd
 click
 pysbd
 
-# Lint
-pycodestyle
-
 # Report
 mozilla-django-oidc
-psutil
-python3-saml
+josepy>=2.0.0  # josepy 1.x needs OpenSSL.crypto.X509Req, removed in pyOpenSSL 26.3
 
 # Test
 faker
@@ -74,8 +67,8 @@ requests-mock
 
 # Django
 ipython
-Django==5.2.1
-django-model-utils
+Django==5.2.18
+django-model-utils>=4.4.0
 django-treebeard
 django-prometheus
 django-recurrence
@@ -110,8 +103,10 @@ pydantic>=2.11.0
 pydantic-settings>=2.6.1
 sqlalchemy>=2.0.31
 pymssql>=2.3.1
-xmlsec>=1.3.15
 psycopg2-binary>=2.9.10
 cffi>=1.17.0
 ipython>=9.0
 parso>=0.8.4
+
+# httplib2 needs PySocks to connect through HTTP(S)_PROXY
+PySocks

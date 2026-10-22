@@ -8,10 +8,6 @@ libmagic1
 libxml2-dev
 libxslt-dev
 
-# xmlsec
-libxmlsec1-dev
-xmlsec1
-
 # Django
 libpq-dev
 gettext
