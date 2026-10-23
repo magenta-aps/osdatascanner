@@ -39,6 +39,9 @@ from ..reportapp.models.container_report import ContainerReport
 from .generate_test_data import record_match, record_problem, record_metadata
 
 
+pytestmark = pytest.mark.usefixtures("dummy_scanner_reference")
+
+
 @pytest.fixture
 def scan_tag2(time2, org_frag):
     return messages.ScanTagFragment(

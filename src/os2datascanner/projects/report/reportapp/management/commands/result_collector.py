@@ -17,7 +17,7 @@ from os2datascanner.engine2.model.msgraph import MSGraphMailSource
 from os2datascanner.engine2.pipeline import messages
 from os2datascanner.engine2.pipeline.utilities.pika import PikaPipelineThread
 from os2datascanner.engine2.rules.last_modified import LastModifiedRule
-from os2datascanner.projects.report.organizations.models import Alias, AliasType, Organization
+from os2datascanner.projects.report.organizations.models import Alias, AliasType
 from os2datascanner.utils.system_utilities import time_now
 from prometheus_client import Summary, start_http_server
 
@@ -176,19 +176,9 @@ def handle_metadata_message(scan_tag, result):  # noqa: CCR001 too high cognitiv
     path = message.handle.crunch(hash=True)
     owner = owner_from_metadata(message)
 
-    org = get_org_from_scantag(scan_tag)
-    if not org:
-        logger.warning("Received message without an organization. Discarding")
+    scanner = get_scanner_reference(scan_tag)
+    if not scanner:
         return
-
-    scanner, _ = ScannerReference.objects.get_or_create(
-        scanner_pk=scan_tag.scanner.pk,
-        defaults={
-            "scanner_name": scan_tag.scanner.name,
-            "organization": org,
-            "only_notify_superadmin": scan_tag.scanner.test,
-        }
-    )
 
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
     # The queryset is evaluated and locked here.
@@ -332,19 +322,10 @@ def handle_match_message(scan_tag, result):  # noqa: CCR001, E501 too high cogni
     """
     locked_qs = DocumentReport.objects.select_for_update(of=('self',))
 
-    org = get_org_from_scantag(scan_tag)
-    if not org:
-        logger.warning("Received message without an organization. Discarding")
+    scanner = get_scanner_reference(scan_tag)
+    if not scanner:
         return None
 
-    scanner, _ = ScannerReference.objects.get_or_create(
-        scanner_pk=scan_tag.scanner.pk,
-        defaults={
-            "scanner_name": scan_tag.scanner.name,
-            "organization": org,
-            "only_notify_superadmin": scan_tag.scanner.test,
-        }
-    )
     message = messages.MatchesMessage.from_json_object(result)
     path = message.handle.crunch(hash=True)
 
@@ -512,19 +493,9 @@ def handle_problem_message(scan_tag, result):  # noqa: CCR001 too high cognitive
 
     path = obj.crunch(hash=True) if obj else None
 
-    org = get_org_from_scantag(scan_tag)
-    if not org:
-        logger.warning("Received message without an organization. Discarding")
+    scanner = get_scanner_reference(scan_tag)
+    if not scanner:
         return None
-
-    scanner, _ = ScannerReference.objects.get_or_create(
-        scanner_pk=scan_tag.scanner.pk,
-        defaults={
-            "scanner_name": scan_tag.scanner.name,
-            "organization": org,
-            "only_notify_superadmin": scan_tag.scanner.test,
-        }
-    )
 
     # Queryset is evaluated and locked here.
     previous_report = (locked_qs.filter(
@@ -634,8 +605,17 @@ def _identify_message(result):
         return None, None
 
 
-def get_org_from_scantag(scan_tag):
-    return Organization.objects.filter(uuid=scan_tag.organisation.uuid).first()
+def get_scanner_reference(scan_tag) -> ScannerReference | None:
+    """Returns a scanner reference if it exists."""
+    try:
+        return ScannerReference.objects.get(scanner_pk=scan_tag.scanner.pk)
+    except ScannerReference.DoesNotExist:
+        logger.warning(
+            "Received message for unknown scanner. Discarding",
+            scanner_pk=scan_tag.scanner.pk,
+            scanner_name=scan_tag.scanner.name,
+        )
+        return None
 
 
 class ResultCollectorRunner(PikaPipelineThread):

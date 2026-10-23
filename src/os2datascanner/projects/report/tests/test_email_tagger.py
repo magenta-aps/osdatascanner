@@ -11,6 +11,9 @@ from os2datascanner.projects.report.reportapp.management.commands import (
 from .generate_test_data import record_match
 
 
+pytestmark = pytest.mark.usefixtures("dummy_scanner_reference")
+
+
 @pytest.fixture
 def dummy_graphgrant(*, test_org):
     return GraphGrant.objects.create(

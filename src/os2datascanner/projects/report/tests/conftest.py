@@ -16,6 +16,7 @@ from os2datascanner.engine2.rules.regex import RegexRule
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 
 from os2datascanner.projects.report.organizations.models import Organization
+from os2datascanner.projects.report.reportapp.models.scanner_reference import ScannerReference
 
 
 @pytest.fixture
@@ -46,6 +47,15 @@ def sbsys_db_source():
     return SBSYSDBSource(
             "sbsys-db-host", 1433, "SbSysNetDrift", "sa", "hunter2",
             reflect_tables=None, base_weblink=None)
+
+
+@pytest.fixture
+def dummy_scanner_reference(test_org):
+    return ScannerReference.objects.create(
+        scanner_pk=22,
+        scanner_name="Dummy test scanner",
+        organization=test_org,
+    )
 
 
 @pytest.fixture
