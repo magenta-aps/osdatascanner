@@ -38,7 +38,7 @@ pydantic
 pydantic-settings
 pymssql
 pymupdf>=1.27.2.3
-pysmbc@git+https://github.com/magenta-aps/pysmbc.git@T2
+pysmbc @ https://github.com/magenta-aps/pysmbc/archive/f5b969cda1e2d3491750394abb60a62732497cdd.tar.gz
 python-dateutil
 python-magic
 pytz
