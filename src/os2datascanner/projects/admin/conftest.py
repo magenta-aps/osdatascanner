@@ -40,6 +40,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
     ExchangeScanner)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.gmail import GmailScanner
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.sbsysdb import SBSYSDBScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import (
     MSGraphMailScanner, MSGraphFileScanner, MSGraphCalendarScanner)
 from os2datascanner.projects.grants.models import EWSGrant, GoogleApiGrant, GraphGrant, SMBGrant
@@ -169,6 +170,15 @@ def web_scanner(test_org, basic_rule):
         name=f"SomeWebScanner-{test_org.name}",
         organization=test_org,
         url="http://www.example.com/",
+        rule=basic_rule
+    )
+
+
+@pytest.fixture
+def sbsysdb_scanner(test_org, basic_rule):
+    return SBSYSDBScanner.objects.create(
+        name=f"SBSYS i {test_org.name}",
+        organization=test_org,
         rule=basic_rule
     )
 

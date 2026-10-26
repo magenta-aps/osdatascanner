@@ -18,7 +18,8 @@ all_scanner_create_urls = [
         reverse_lazy('msgraphcalendarscanner_add'),
         reverse_lazy('msgraphfilescanner_add'),
         reverse_lazy('msgraphmailscanner_add'),
-        reverse_lazy('msgraphteamsfilescanner_add')
+        reverse_lazy('msgraphteamsfilescanner_add'),
+        reverse_lazy('sbsysscanner_add')
     ]
 
 

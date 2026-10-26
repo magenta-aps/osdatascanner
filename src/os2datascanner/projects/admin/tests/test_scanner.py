@@ -27,8 +27,6 @@ from os2datascanner.projects.admin.organizations.models import OrganizationalUni
 from os2datascanner.engine2.utilities.datetime import parse_datetime
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner \
     import Scanner, ScheduledCheckup
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.sbsysdb import (
-    SBSYSDBScanner)
 from os2datascanner.engine2.pipeline import messages
 from ..adminapp.models.scannerjobs.scanner_helpers import CoveredAccount, ScanStatus, ScanStage
 
@@ -525,15 +523,6 @@ def accounts_with_emails(fritz, günther, hansi):
     for acc in accounts:
         assert acc.email
     return accounts
-
-
-@pytest.fixture
-def sbsysdb_scanner(test_org, basic_rule):
-    return SBSYSDBScanner.objects.create(
-        name=f"SBSYS i {test_org.name}",
-        organization=test_org,
-        rule=basic_rule
-    )
 
 
 @pytest.mark.django_db

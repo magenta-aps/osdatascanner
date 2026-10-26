@@ -178,7 +178,7 @@ class ScannerUpdateDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMix
         }
 
 
-class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, LoginRequiredMixin, _FormMixin,
+class ScannerCopyDf(PermissionRequiredMixin, _AdminOnlyMixin, OrgRestrictedMixin, _FormMixin,
                     CreateView):
     scanner_view_type = ScannerViewType.COPY
     template_name = "components/forms/grouping_model_form_wrapper.html"
