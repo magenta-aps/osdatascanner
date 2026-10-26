@@ -5,8 +5,11 @@
 
 import structlog
 import requests
+from collections import defaultdict
+from itertools import batched
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from requests import HTTPError
 
 from os2datascanner.projects.grants.models import GraphGrant
 from os2datascanner.projects.admin.organizations.publish import get_pika_thread
@@ -71,6 +74,7 @@ class MSGraphImportJob(BackgroundJob):
         hierarchy = list()
         group_info = dict()
         group_members = list()
+        purpose_pending = defaultdict(list)
 
         self.status = "Initializing MSGraph AAD Import..."
         self.save()
@@ -110,7 +114,7 @@ class MSGraphImportJob(BackgroundJob):
                             userinfo = gc.get(
                                 f'/users/{member_id}/?$expand=manager($select=id, '
                                 f'givenName, surname ,userPrincipalName)').json()
-                            group_members.append({
+                            member_dict = {
                                 "type": "user",
                                 "uuid": member.get("id"),
                                 "givenName": member.get("givenName"),
@@ -121,7 +125,11 @@ class MSGraphImportJob(BackgroundJob):
                                 "userPrincipalName": member.get(
                                         "userPrincipalName"),
                                 "manager": userinfo.get("manager"),
-                            })
+                            }
+                            group_members.append(member_dict)
+                            # Without a mail address there is no mailbox to ask about
+                            if member.get("mail"):
+                                purpose_pending[member_id].append(member_dict)
                         else:
                             # Not an object of interest. Pass.
                             pass
@@ -131,6 +139,10 @@ class MSGraphImportJob(BackgroundJob):
                     hierarchy.append(group_info.copy())
                     group_info.clear()
                     group_members.clear()
+
+            self.status = "Fetching mailbox settings..."
+            self.save()
+            self._fill_user_purposes(gc, purpose_pending)
 
         from ...organizations.msgraph_import_actions import perform_msgraph_import
 
@@ -157,6 +169,40 @@ class MSGraphImportJob(BackgroundJob):
 
         from ..utils import post_import_cleanup
         post_import_cleanup()
+
+    def _fill_user_purposes(self, gc, pending: dict[str, list[dict]]):
+        """Sets userPurpose on every member dict of each pending user,
+        from their mailbox settings. If a lookup fails, that user doesn't key get the key and
+        keeps their current state."""
+
+        denied = 0
+        for ids in batched(pending, 20):  # Graph's $batch limit
+            batch = [{"id": uid, "method": "GET", "url": f"/users/{uid}/mailboxSettings"}
+                     for uid in ids]
+            try:
+                responses = gc.post("$batch", json={"requests": batch}).json()["responses"]
+            except HTTPError:
+                logger.warning("could not get mailbox settings batch", users=ids, exc_info=True)
+                continue
+
+            for resp in responses:
+                match resp["status"]:
+                    case 200:
+                        for member in pending[resp["id"]]:
+                            member["userPurpose"] = resp["body"].get("userPurpose")
+                    case 403:
+                        # 403, Forbidden
+                        denied += 1
+                    case 404:
+                        # 404, Not found, No mailbox, so certainly not a shared one
+                        for member in pending[resp["id"]]:
+                            member["userPurpose"] = None
+                    case status:
+                        logger.warning("could not get mailbox settings",
+                                       user=resp["id"], status=status)
+        if denied:
+            logger.warning("denied access to mailbox settings, check MailboxSettings.Read",
+                           denied=denied, total=len(pending))
 
     def finish(self):
         if (pe := get_pika_thread(init=False)):
