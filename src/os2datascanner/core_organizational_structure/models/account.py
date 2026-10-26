@@ -78,6 +78,10 @@ class Account(models.Model):
         verbose_name=_('universal dpo status'),
         default=False
     )
+    is_shared = models.BooleanField(
+        verbose_name=_('represents a shared mailbox'),
+        default=False
+    )
     is_superuser = models.BooleanField(
         verbose_name=_('superuser_status'),
         default=False
@@ -190,6 +194,7 @@ class AccountSerializer(serializers.ModelSerializer):
             "is_superuser",
             "email",
             "is_universal_dpo",
+            "is_shared",
             "permissions"]
 
     def get_unique_together_validators(self):
