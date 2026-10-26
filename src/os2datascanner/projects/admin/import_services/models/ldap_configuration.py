@@ -75,6 +75,15 @@ class LDAPUPNAttributeMapper(LDAPUserAttributeMapper):
                          user_attr="userPrincipalName")
 
 
+class LDAPRecipientTypeMapper(LDAPUserAttributeMapper):
+    def __init__(self):
+        # Exchange attribute, so unlike UPN and SID there's no name to configure. Users
+        # without an Exchange recipient (or non-AD servers) simply won't have it.
+        super().__init__(name="msExchRecipientTypeDetails",
+                         ldap_attr="msExchRecipientTypeDetails",
+                         user_attr="msExchRecipientTypeDetails")
+
+
 class LDAPGroupFilterMapper:
     def __init__(self, dn, prefix):
         self.name = "group_filter_mapper"

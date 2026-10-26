@@ -3,7 +3,9 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import structlog
 from django.db import models
+from requests import RequestException
 
 from os2datascanner.utils.ldap import RDN
 
@@ -11,6 +13,9 @@ from os2datascanner.projects.admin.organizations.publish import get_pika_thread
 from ...core.models.background_job import BackgroundJob, JobState
 from .realm import Realm
 from os2datascanner.projects.admin.import_services.models.errors import LDAPNothingImportedWarning
+from .ldap_configuration import LDAPConfig, LDAPRecipientTypeMapper
+
+logger = structlog.get_logger("import_services")
 
 
 class LDAPImportJob(BackgroundJob):
@@ -41,6 +46,8 @@ class LDAPImportJob(BackgroundJob):
         self.status = "Building LDAP hierarchy..."
         self.save()
 
+        self._ensure_recipient_type_mapper()
+
         def _callback(action, *args):
             self.refresh_from_db()
             if action == "diff_computed":
@@ -64,6 +71,18 @@ class LDAPImportJob(BackgroundJob):
 
         from ..utils import post_import_cleanup
         post_import_cleanup()
+
+    def _ensure_recipient_type_mapper(self):
+        # Configurations saved before shared mailbox detection existed lack this mapper, and
+        # nobody re-saves a working configuration.
+        if not (config := LDAPConfig.objects.filter(pk=self.realm.organization_id).first()):
+            return
+        try:
+            config.update_or_create_mapper(LDAPRecipientTypeMapper())
+        except RequestException:
+            # Not worth failing the import over. Accounts just keep their shared state
+            logger.warning("could not ensure recipient type mapper",
+                           realm=self.realm.realm_id, exc_info=True)
 
     def finish(self):
         if (pe := get_pika_thread(init=False)):

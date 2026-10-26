@@ -4,11 +4,13 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 import json
+from unittest.mock import patch
 
 import pytest
 from django.utils.timezone import now
+from requests import HTTPError
 
-from ..models import Realm, LDAPConfig
+from ..models import Realm, LDAPConfig, LDAPImportJob
 
 
 @pytest.fixture
@@ -42,3 +44,22 @@ class TestLDAPConfigTest:
     def test_payload(self, ldap_conf):
         expected_json = '{"name": "ldap", "providerId": "ldap", "providerType": "org.keycloak.storage.UserStorageProvider", "parentId": "test_org", "id": "3d6d288f-b75f-43e2-be33-a43803cd1243", "config": {"enabled": ["true"], "priority": ["0"], "fullSyncPeriod": ["-1"], "changedSyncPeriod": ["-1"], "cachePolicy": ["DEFAULT"], "evictionDay": [], "evictionHour": [], "evictionMinute": [], "maxLifespan": [], "batchSizeForSync": ["1000"], "editMode": ["READ_ONLY"], "importEnabled": ["true"], "syncRegistrations": ["false"], "vendor": ["other"], "usePasswordModifyExtendedOp": [], "usernameLDAPAttribute": ["cn"], "rdnLDAPAttribute": ["cn"], "uuidLDAPAttribute": ["uidNumber"], "userObjectClasses": ["inetOrgPerson, organizationalPerson"], "connectionUrl": ["ldap://ldap-server:389"], "usersDn": ["ou=TestUnit,dc=magenta,dc=test"], "authType": ["simple"], "startTls": [], "bindDn": ["cn=admin,dc=magenta,dc=test"], "bindCredential": ["testMAG"], "customUserSearchFilter": [null], "searchScope": ["2"], "validatePasswordPolicy": ["false"], "trustEmail": ["false"], "useTruststoreSpi": ["ldapsOnly"], "connectionPooling": ["true"], "connectionPoolingAuthentication": [], "connectionPoolingDebug": [], "connectionPoolingInitSize": [], "connectionPoolingMaxSize": [], "connectionPoolingPrefSize": [], "connectionPoolingProtocol": [], "connectionPoolingTimeout": [], "connectionTimeout": [], "readTimeout": [], "pagination": ["true"], "allowKerberosAuthentication": ["false"], "serverPrincipal": [], "keyTab": [], "kerberosRealm": [], "debug": ["false"], "useKerberosForPasswordAuthentication": ["false"]}}'  # noqa
         assert json.dumps(ldap_conf.get_payload_dict()) == expected_json
+
+
+@pytest.mark.django_db
+class TestLDAPImportJob:
+
+    def test_import_survives_mapper_failure(self, ldap_conf):
+        """Failing to ensure the mapper should not stop the import."""
+        # Arrange
+        job = LDAPImportJob(realm=ldap_conf.realm)
+
+        # Act
+        with (patch.object(LDAPConfig, "update_or_create_mapper", side_effect=HTTPError),
+              patch("os2datascanner.projects.admin.organizations.keycloak_actions"
+                    ".KeycloakImporter") as importer,
+              patch("os2datascanner.projects.admin.import_services.utils.post_import_cleanup")):
+            job.run()
+
+        # Assert - perform_import is called after mapper creation.
+        importer.return_value.perform_import.assert_called_once()

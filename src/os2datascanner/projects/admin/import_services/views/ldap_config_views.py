@@ -20,7 +20,7 @@ from os2datascanner.projects.admin.import_services.models import LDAPConfig, Rea
 from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
         LDAPUsernameAttributeMapper, LDAPSIDMapper,
         LDAPFirstNameAttributeMapper, LDAPGroupFilterMapper,
-        LDAPUPNAttributeMapper)
+        LDAPUPNAttributeMapper, LDAPRecipientTypeMapper)
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from os2datascanner.projects.admin.import_services.views.keycloak_api_views import (
     verify_authentication, verify_connection)
@@ -193,6 +193,9 @@ def _keycloak_creation(config_instance):
         )
         config_instance.update_or_create_mapper(upn_attr_mapper)
 
+    # Create recipient type mapper, used to recognise shared mailboxes.
+    config_instance.update_or_create_mapper(LDAPRecipientTypeMapper())
+
     # Create group filter mapper - if one is set.
     if config_instance.import_into == "group":
         group_filter_mapper = LDAPGroupFilterMapper(config_instance.users_dn,
@@ -238,6 +241,9 @@ def _keycloak_update(config_instance):
         group_filter_mapper = LDAPGroupFilterMapper(config_instance.users_dn,
                                                     config_instance.group_filter)
         config_instance.update_or_create_mapper(group_filter_mapper)
+
+    # Update or create recipient type mapper, used to recognise shared mailboxes.
+    config_instance.update_or_create_mapper(LDAPRecipientTypeMapper())
 
     # If there exists a memberOf mapper, it should be removed
     config_instance.delete_mapper("memberOf")

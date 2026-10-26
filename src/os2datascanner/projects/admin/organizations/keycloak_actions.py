@@ -24,6 +24,8 @@ ALIAS_TYPE_IMPORTED_ID_SUFFIX = {
     AliasType.SID: "/sid",
     AliasType.USER_PRINCIPAL_NAME: "/upn",
 }
+# msExchRecipientTypeDetails values for SharedMailbox and RemoteSharedMailbox
+SHARED_MAILBOX_RECIPIENT_TYPES = {4, 34359738368}
 
 
 def keycloak_dn_selector(d):
@@ -275,6 +277,13 @@ class KeycloakImporter:
         email = node.properties.get("email", "")
         dn = node.properties["attributes"]["LDAP_ENTRY_DN"][0]
 
+        # Missing means no Exchange recipient at all.
+        match node.properties:
+            case {"attributes": {"msExchRecipientTypeDetails": [recipient_type]}}:
+                is_shared = int(recipient_type) in SHARED_MAILBOX_RECIPIENT_TYPES
+            case _:
+                is_shared = False
+
         base_filter = Q(organization=self.org, imported=True)
         query_methods = (
             # Standard identifying method:
@@ -311,7 +320,8 @@ class KeycloakImporter:
                 ("username", username),
                 ("first_name", first_name),
                 ("last_name", last_name),
-                ("email", email)):
+                ("email", email),
+                ("is_shared", is_shared)):
             if getattr(account, attr_name) != expected:
                 setattr(account, attr_name, expected)
                 self.to_update.append((account, (attr_name,)))
