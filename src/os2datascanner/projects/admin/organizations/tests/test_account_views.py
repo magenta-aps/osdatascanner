@@ -6,6 +6,8 @@
 import pytest
 import urllib
 
+from django.contrib import messages
+from django.contrib.messages import get_messages
 from django.urls import reverse_lazy
 
 from os2datascanner.projects.admin.organizations.models import Alias, Organization, \
@@ -33,6 +35,18 @@ def christophers(test_org):
         Account.objects.create(organization=test_org, first_name="Christofer",
                                last_name="Hansen", username="C4"),
     ]
+
+
+@pytest.fixture
+def shared_mailbox(test_org):
+    return Account.objects.create(organization=test_org, username="all", first_name="Alle",
+                                  email="all@nisserne.gl", is_shared=True)
+
+
+@pytest.fixture
+def fritz_shared_access(fritz, shared_mailbox):
+    return Alias.objects.create(account=fritz, _alias_type="email",
+                                _value=shared_mailbox.email, shared=True)
 
 
 @pytest.mark.django_db
@@ -672,3 +686,143 @@ class TestDPODropdownView:
         # Assert
         assert fritz not in accounts
         assert hansi in accounts
+
+
+@pytest.mark.django_db
+class TestManageSharedAccountListView:
+
+    @pytest.fixture
+    def url(self, test_org):
+        return reverse_lazy('manage-shared', kwargs={'org_slug': test_org.slug})
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("superuser", 200),
+        ("admin", 200),
+        ("regular_user", 404),
+        ("other_admin", 404),
+        ("anonymous", 302),
+    ])
+    def test_access(self, access_user, expected_code, url, client, user_types):
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(url)
+
+        # Assert
+        assert response.status_code == expected_code
+
+    def test_access_count(self, test_org, user_admin, url, shared_mailbox, fritz_shared_access,
+                          hansi, client):
+        # Arrange
+        client.force_login(user_admin)
+        # Case-insensitive - so rocking ALL here.
+        Alias.objects.create(account=hansi, _alias_type="email", _value="ALL@nisserne.gl",
+                             shared=True)
+        unused_mailbox = Account.objects.create(
+            organization=test_org, username="none", email="none@nisserne.gl", is_shared=True)
+
+        # Act
+        response = client.get(url)
+        counts = {acc: acc.access_count for acc in response.context['shared_accounts']}
+
+        # Assert
+        assert counts == {shared_mailbox: 2, unused_mailbox: 0}
+
+    def test_search_email(self, test_org, user_admin, url, shared_mailbox, client):
+        # Arrange
+        client.force_login(user_admin)
+        Account.objects.create(
+            organization=test_org, username="lon", email="lon@regnskab.gl", is_shared=True)
+        query = urllib.parse.urlencode({"search_field": "all@nisserne.gl"})
+
+        # Act
+        response = client.get(url + '?' + query)
+
+        # Assert
+        assert list(response.context['shared_accounts']) == [shared_mailbox]
+
+
+@pytest.mark.django_db
+class TestManageSharedAccessView:
+
+    @pytest.fixture
+    def url(self, test_org, shared_mailbox):
+        return reverse_lazy('manage-shared-access',
+                            kwargs={'org_slug': test_org.slug, 'acc_uuid': shared_mailbox.uuid})
+
+    @pytest.mark.parametrize("access_user,expected_code", [
+        ("superuser", 200),
+        ("admin", 200),
+        ("regular_user", 404),
+        ("other_admin", 404),
+        ("anonymous", 302),
+    ])
+    def test_access(self, access_user, expected_code, url, client, user_types):
+        # Arrange
+        if access_user == "anonymous":
+            client.logout()
+        else:
+            client.force_login(user_types[access_user])
+
+        # Act
+        response = client.get(url)
+
+        # Assert
+        assert response.status_code == expected_code
+
+    def test_not_shared_account(self, test_org, user_admin, fritz, client):
+        # Arrange
+        client.force_login(user_admin)
+        url = reverse_lazy('manage-shared-access',
+                           kwargs={'org_slug': test_org.slug, 'acc_uuid': fritz.uuid})
+
+        # Act
+        response = client.get(url)
+
+        # Assert
+        assert response.status_code == 404
+
+    def test_post_grants_and_revokes(
+            self, user_admin, url, shared_mailbox, fritz, fritz_shared_access, hansi, client):
+        # Arrange
+        client.force_login(user_admin)
+
+        # Act - revokes fritz, shares for hansi.
+        client.post(url, {"accounts": [hansi.uuid]})
+
+        # Assert
+        shared = Alias.objects.filter(_value=shared_mailbox.email, shared=True)
+        assert list(shared.values_list("account", flat=True)) == [hansi.uuid]
+
+    @pytest.mark.parametrize("account_fixture", ["shared_mailbox", "egon"])
+    def test_post_invalid_account(self, user_admin, url, account_fixture, client, request):
+        """Neither shared accounts nor accounts from other organizations can be granted
+        access."""
+        # Arrange
+        client.force_login(user_admin)
+        account = request.getfixturevalue(account_fixture)
+
+        # Act
+        response = client.post(url, {"accounts": [account.uuid]})
+
+        # Assert
+        assert response.status_code == 400
+        assert not Alias.objects.filter(account=account, shared=True).exists()
+
+    def test_post_conflicting_alias(self, user_admin, url, shared_mailbox, fritz, client):
+        """An existing, non-shared alias with the mailbox's address blocks and warns."""
+        # Arrange
+        client.force_login(user_admin)
+        Alias.objects.create(account=fritz, _alias_type="email", _value=shared_mailbox.email)
+
+        # Act
+        response = client.post(url, {"accounts": [fritz.uuid]})
+
+        # Assert
+        assert not Alias.objects.filter(account=fritz, shared=True).exists()
+        [message] = get_messages(response.wsgi_request)
+        assert message.level == messages.WARNING

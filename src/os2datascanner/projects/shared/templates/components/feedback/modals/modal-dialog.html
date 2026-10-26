@@ -18,6 +18,7 @@
     • modal_subtitle       – optional, e.g. <p class="header__subtitle">
     • modal_body           – the modal content
     • modal_footer_actions – any button(s) besides the "Cancel"-button (e.g. the primary action)
+    • modal_cancel_label   – text of the "Cancel"-button, e.g. "Close"
 {% endcomment %}
 
 {% load i18n static %}
@@ -61,7 +62,11 @@
               aria-label="{{ close_label }}"
               title="{{ close_label }}"
               data-close-modal>
-        <span>{% trans "cancel"|capfirst %}</span>
+        <span>
+          {% block modal_cancel_label %}
+            {% trans "cancel"|capfirst %}
+          {% endblock %}
+        </span>
       </button>
 
       {% block modal_footer_actions %}{% endblock %}

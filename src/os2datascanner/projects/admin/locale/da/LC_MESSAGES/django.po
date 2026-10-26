@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-02 14:27+0100\n"
+"POT-Creation-Date: 2026-11-09 16:19+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -1745,6 +1745,10 @@ msgid "accounts"
 msgstr "konti"
 
 #: adminapp/templates/components/common/breadcrumb.html
+msgid "administer shared mailboxes"
+msgstr "administrér fællespostkasser"
+
+#: adminapp/templates/components/common/breadcrumb.html
 msgid "add LDAP configuration"
 msgstr "tilføj LDAP-konfiguration"
 
@@ -3098,6 +3102,7 @@ msgid "Sort table by path name"
 msgstr "Sortér tabel efter sti navn"
 
 #: adminapp/templates/error_log.html
+#: organizations/templates/organizations/manage_shared_account_list.html
 msgid "actions"
 msgstr "handlinger"
 
@@ -4504,6 +4509,40 @@ msgstr "Luk uden at gemme ændringer"
 msgid "Save and close"
 msgstr "Gem alias og luk"
 
+#: organizations/templates/components/modals/manage_shared_access.html
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "administer access"
+msgstr "administrér adgang"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+#: organizations/templates/organizations/manage_shared_account_list.html
+#, python-format
+msgid "%(n)s person has access"
+msgid_plural "%(n)s people have access"
+msgstr[0] "%(n)s person har adgang"
+msgstr[1] "%(n)s personer har adgang"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+msgid "grant access"
+msgstr "giv adgang"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+msgid "search for person"
+msgstr "søg efter person"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+#, python-format
+msgid "%(shown)s of %(total)s shown"
+msgstr "%(shown)s af %(total)s vises"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+msgid "close"
+msgstr "luk"
+
+#: organizations/templates/components/modals/manage_shared_access.html
+msgid "save"
+msgstr "gem"
+
 #: organizations/templates/components/modals/modal__create-grant.html
 #: organizations/templates/grants/grant_update.html
 msgid "create grant"
@@ -4778,6 +4817,35 @@ msgstr "udløbsdato"
 msgid "no grants found"
 msgstr "ingen bevillinger fundet"
 
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "shared mailboxes"
+msgstr "fællespostkasser"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+#, python-format
+msgid "Shared mailboxes for %(name)s"
+msgstr "Fællespostkasser for %(name)s"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "search for shared mailbox"
+msgstr "søg efter fællespostkasse"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "username"
+msgstr "brugernavn"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "email"
+msgstr "email"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "this account has no email address"
+msgstr "denne konto har ingen email adresse"
+
+#: organizations/templates/organizations/manage_shared_account_list.html
+msgid "no shared accounts found"
+msgstr "ingen delte konti fundet"
+
 #: organizations/templates/organizations/org_add.html
 msgid "create new organization"
 msgstr "opret ny organisation"
@@ -4881,6 +4949,10 @@ msgstr "Redigér Single SignOn-konfiguration"
 #: organizations/templates/organizations/org_table.html
 msgid "Configure Single SignOn"
 msgstr "Konfigurér Single SignOn"
+
+#: organizations/templates/organizations/org_table.html
+msgid "configure shared mailboxes"
+msgstr "konfigurér fællespostkasser"
 
 #: organizations/templates/organizations/org_table.html
 msgid "no organization added"
@@ -5131,6 +5203,23 @@ msgstr "Vælg ny leder"
 #: organizations/views/account_views.py
 msgid "Choose new DPO"
 msgstr "Vælg ny DPO"
+
+#: organizations/views/account_views.py
+msgid "Close without saving access."
+msgstr "Luk uden at gemme adgang."
+
+#: organizations/views/account_views.py
+msgid "Access updated!"
+msgstr "Adgang opdateret"
+
+#: organizations/views/account_views.py
+#, python-brace-format
+msgid ""
+"Could not grant access to {names}, as they already have an alias with this "
+"address."
+msgstr ""
+"Kunne ikke give adgang til {names}, da de allerede har et alias med denne "
+"adresse."
 
 #: organizations/views/googleapi_views.py
 msgid "Service Account JSON File"

@@ -27,6 +27,15 @@
 
 - The file scanner form now uses Django forms.
 
+- Shared mailboxes are now recognised on MSGraph and LDAP import, and administrators can choose who gets access
+  to their results:
+  - Accounts are marked as shared mailboxes from Entra / MS Graph (`userPurpose`) and LDAP
+    (`msExchRecipientTypeDetails`) imports.
+  - A new page under organizations lists the shared mailboxes, with a modal for granting and
+    revoking access for each.
+  - **Note that**: MS Graph imports need the `MailboxSettings.Read` application permission to detect shared
+    mailboxes. Without it, the import still runs, but no accounts are marked as shared.
+
 ### Bugfixes
 
 - Fixed a bug where the estimated completion time of a running scan could jump far off right

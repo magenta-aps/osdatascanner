@@ -40,4 +40,10 @@ urlpatterns = [
     path('grants/<str:type>/<uuid:pk>/edit/',
          views.GrantRedirectUpdateView.as_view(),
          name='edit-grant'),
+    path('<slug:org_slug>/accounts/manage/shared/',
+         views.ManageSharedAccountListView.as_view(),
+         name='manage-shared'),
+    path('<slug:org_slug>/accounts/<uuid:acc_uuid>/shared-access/',
+         views.ManageSharedAccessView.as_view(),
+         name='manage-shared-access'),
 ]

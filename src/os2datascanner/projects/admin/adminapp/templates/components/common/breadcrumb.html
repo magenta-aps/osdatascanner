@@ -69,6 +69,10 @@
     <span class="text-grey">{{ account.get_full_name }}</span>
   {% endif %}
 
+  {% if page == 'manage_shared' %}
+    <span class="text-grey">{% trans "administer shared mailboxes"|capfirst %}</span>
+  {% endif %}
+
   {% if page == 'ldap' %}
     {% if is_new %}
       <span class="text-grey">{% trans "add LDAP configuration"|capfirst %}</span>
