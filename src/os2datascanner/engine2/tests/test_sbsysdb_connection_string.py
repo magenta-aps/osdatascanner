@@ -19,13 +19,13 @@ def _make_source(
 
 
 def test_connection_string_uses_pymssql_driver():
-    url = make_url(_make_source()._make_connection_string())
+    url = make_url(_make_source()._make_connection_url())
 
     assert url.drivername == "mssql+pymssql"
 
 
 def test_connection_string_components():
-    url = make_url(_make_source()._make_connection_string())
+    url = make_url(_make_source()._make_connection_url())
 
     assert url.host == "sbsys.example.com"
     assert url.port == 1433
@@ -47,7 +47,7 @@ def test_connection_string_components():
 def test_connection_string_credentials_round_trip(user, password):
     url = make_url(
             _make_source(user=user, password=password)
-            ._make_connection_string())
+            ._make_connection_url())
 
     assert url.username == user
     assert url.password == password

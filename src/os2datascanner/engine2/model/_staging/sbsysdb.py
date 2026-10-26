@@ -12,7 +12,7 @@ from dateutil import tz
 import structlog
 from contextlib import contextmanager
 
-from sqlalchemy import select, MetaData, create_engine
+from sqlalchemy import select, MetaData, create_engine, URL
 from sqlalchemy.sql.expression import func as sql_func, text as sql_text
 
 from os2datascanner.engine2 import settings
@@ -93,14 +93,19 @@ class SBSYSDBSource(Source):
                 wrapper=WebRetrier().run,
                 post_timeout=settings.utils["oauth2"]["cc_token_timeout"])
 
-    def _make_connection_string(self):
-        return ("mssql+pymssql://"
-                f"{self._user}:{self._password}"
-                f"@{self._server}:{self._port}/{self._db}")
+    def _make_connection_url(self) -> URL:
+        return URL.create(
+            "mssql+pymssql",
+            username=self._user,
+            password=self._password,
+            host=self._server,
+            port=self._port,
+            database=self._db,
+        )
 
     def _generate_state(self, sm: SourceManager):
         engine = create_engine(
-                self._make_connection_string(),
+                self._make_connection_url(),
                 # This Engine gets cached, so make sure it aggressively checks
                 # for connection validity
                 pool_pre_ping=True)
