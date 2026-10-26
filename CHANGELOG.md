@@ -2,11 +2,14 @@
 
 ## Version 3.3x.x xx November 2026
 
-""
-
 ### New in this release
 
 ### General improvements
+
+
+- Upgraded dependencies
+
+- Dependencies are now hash pinned
 
 ### Bugfixes
 
