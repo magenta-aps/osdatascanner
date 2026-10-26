@@ -15,7 +15,8 @@ from os2datascanner.engine2.model.smbc import SMBCHandle
 from os2datascanner.projects.grants.models.smbgrant import SMBGrant
 from os2datascanner.projects.report.reportapp.models.documentreport import (
         DocumentReport)
-from .document_report_utilities import validate_delete_request, DeleteRequestError
+from .document_report_utilities import (
+    validate_delete_request, DeleteRequestError, format_delete_result)
 
 
 logger = structlog.get_logger("reportapp")
@@ -49,7 +50,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         return (grant.domain, grant.username, grant.password)
 
     deleted_matches: list[int] = []
-    result: tuple | None = None
+    errors: list[str] = []
     for report in DocumentReport.objects.filter(pk__in=pks):
         # Find the SMBCHandle object in this DocumentReport
         handle: Handle | None = None
@@ -60,7 +61,8 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
             logger.warning(
                     "SMB deletion request for non-SMB resource!",
                     user=user, handle=str(report.matches.handle))
-            return (False, _("Target file is not on a Windows network drive"))
+            errors.append(_("Target file is not on a Windows network drive"))
+            continue
 
         # Get a smb:// URL to the file we've discovered (without authentication
         # details)...
@@ -83,7 +85,7 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         except Exception as ex:
             logger.exception(f"unexpected error during deletion of report {report.pk}",
                              exc_info=True)
-            result = (False, f"unexpected error during deletion of report {report.pk}: {ex}")
+            errors.append(f"unexpected error during deletion: {ex}")
 
     # Update the reports to indicate that the file is gone
     DocumentReport.objects.filter(pk__in=deleted_matches).update(
@@ -91,4 +93,4 @@ def try_smb_delete_1(request, pks: list[int]) -> (bool, str):  # noqa: CCR001
         resolution_time=time_now()
         )
 
-    return result or (True, "ok")
+    return format_delete_result(errors)
