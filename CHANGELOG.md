@@ -17,6 +17,8 @@
 - Fixed a bug where mass-deletion of results only showed the error from the last failed
   deletion. Multiple failures are now reported as a count, with the reason if they share one.
 
+- Fixed a bug causing files to be downloaded excessively for deduplication.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"

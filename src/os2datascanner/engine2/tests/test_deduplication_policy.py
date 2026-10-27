@@ -859,6 +859,9 @@ class _CountingResource:
         self.mime_type = mime_type
         self.digest_attempts = 0
 
+    def _get_cookie(self):
+        return None
+
     def compute_type(self):
         return self.mime_type
 
