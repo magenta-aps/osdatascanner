@@ -22,7 +22,7 @@ USER node
 # NB! Watches for changes, so no automatic exit!
 CMD ["npm", "run", "dev", "--prefix", "static"]
 
-FROM python:3.13.9-trixie as base
+FROM python:3.13.17-trixie as base
 
 # Force the stdout and stderr streams from python to be unbuffered. See
 # https://docs.python.org/3/using/cmdline.html#cmdoption-u
@@ -37,8 +37,8 @@ COPY requirements/sys-requirements/sys-requirements-all.txt \
 COPY requirements/python-requirements/requirements-all.txt \
      ./python-requirements/
 
-ARG SUPERCRONIC_VERSION=v0.1.12
-ARG SUPERCRONIC_SHA1SUM=048b95b48b708983effb2e5c935a1ef8483d9e3e
+ARG SUPERCRONIC_VERSION=v0.2.51
+ARG SUPERCRONIC_SHA1SUM=1692066e350a88ff4d7d6474fe3c7a6c41ec5e89
 
 # hadolint ignore=DL3008,SC2046,DL4006
 RUN set -ex \

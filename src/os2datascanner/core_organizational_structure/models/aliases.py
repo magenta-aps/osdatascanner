@@ -160,3 +160,7 @@ class Alias(models.Model):
 class AliasSerializer(BaseSerializer):
     class Meta:
         fields = ["pk", "account", "_value", "_alias_type", "shared"]
+
+    def get_unique_together_validators(self):
+        # Uniqueness is enforced by the database constraint.
+        return []

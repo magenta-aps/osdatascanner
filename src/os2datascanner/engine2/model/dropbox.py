@@ -8,7 +8,7 @@ from io import BytesIO
 
 import dropbox
 from dropbox.files import GetMetadataError
-from dropbox.dropbox import create_session
+from dropbox.dropbox_client import create_session
 from dropbox.exceptions import ApiError
 from .core import Source, Handle, FileResource
 

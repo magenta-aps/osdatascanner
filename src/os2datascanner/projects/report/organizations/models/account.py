@@ -707,7 +707,7 @@ class AccountBulkSerializer(BaseBulkSerializer):
         model = Account
 
     def create(self, validated_data):
-        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        permissions = [obj_attrs.pop("permissions", None) for obj_attrs in validated_data]
         accs = super().create(validated_data)
         for acc, perm in zip(accs, permissions):
             acc_perms = get_permissions_from_codenames(perm)
@@ -715,7 +715,7 @@ class AccountBulkSerializer(BaseBulkSerializer):
         return accs
 
     def update(self, instances, validated_data):
-        permissions = [obj_attrs.pop("permissions") for obj_attrs in validated_data]
+        permissions = [obj_attrs.pop("permissions", None) for obj_attrs in validated_data]
         accs = super().update(instances, validated_data)
         for acc, perm in zip(accs, permissions):
             acc_perms = get_permissions_from_codenames(perm)

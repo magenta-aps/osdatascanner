@@ -130,3 +130,7 @@ class Position(models.Model):
 class PositionSerializer(BaseSerializer):
     class Meta:
         fields = ["pk", "account", "unit", "role"]
+
+    def get_unique_together_validators(self):
+        # Uniqueness is enforced by the database constraint.
+        return []

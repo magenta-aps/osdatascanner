@@ -177,7 +177,7 @@ class PermissionSerializer(serializers.ModelSerializer):
 
 
 class AccountSerializer(serializers.ModelSerializer):
-    permissions = PermissionSerializer(many=True, allow_null=True, default=None)
+    permissions = PermissionSerializer(many=True, required=False, allow_null=True)
 
     class Meta:
         fields = [
