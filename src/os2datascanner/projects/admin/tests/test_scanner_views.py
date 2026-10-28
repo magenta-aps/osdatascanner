@@ -6,10 +6,14 @@
 import pytest
 
 from django.urls import reverse_lazy
+from django.conf import settings
+from django.utils.translation import gettext
 from django.contrib.auth.models import Permission
 
 from ..adminapp.views.scanner_views import RemovedScannersView
 from ..adminapp.models.scannerjobs.scanner import Scanner
+from ..adminapp.models.scannerjobs.sbsysdb import SBSYSDBScanner
+from ..organizations.models import Alias, AliasType
 
 
 @pytest.mark.django_db
@@ -444,3 +448,169 @@ class TestIndexView:
             expected_model_type = models[first_setting_index(enabled_scanners)].get_type()
 
             assert response.context["view"].model.get_type() == expected_model_type
+
+
+@pytest.mark.django_db
+class TestSBSYSDBScannerViewsAuth:
+    @pytest.mark.parametrize("url_name", ["sbsysscanner_update", "sbsysscanner_copy"])
+    def test_anonymous_redirected_to_login(self, client, sbsysdb_scanner, url_name):
+        response = client.get(reverse_lazy(url_name, kwargs={"pk": sbsysdb_scanner.pk}))
+
+        assert response.status_code == 302
+        assert response.url.startswith(settings.LOGIN_URL)
+
+    def test_anonymous_cannot_update(self, client, sbsysdb_scanner):
+        name = sbsysdb_scanner.name
+        response = client.post(
+            reverse_lazy("sbsysscanner_update", kwargs={"pk": sbsysdb_scanner.pk}),
+            {"name": "Tomb of Horrors"})
+
+        assert response.status_code == 302
+        assert response.url.startswith(settings.LOGIN_URL)
+        sbsysdb_scanner.refresh_from_db()
+        assert sbsysdb_scanner.name == name
+
+    def test_anonymous_cannot_create(self, client, test_org, basic_rule):
+        response = client.post(
+            reverse_lazy("sbsysscanner_add"),
+            {"name": "Castle Ravenloft", "organization": test_org.uuid, "rule": basic_rule.pk})
+
+        assert response.status_code == 302
+        assert response.url.startswith(settings.LOGIN_URL)
+        assert not SBSYSDBScanner.objects.filter(name="Castle Ravenloft").exists()
+
+    def test_anonymous_cannot_copy(self, client, sbsysdb_scanner):
+        response = client.post(
+            reverse_lazy("sbsysscanner_copy", kwargs={"pk": sbsysdb_scanner.pk}),
+            {"name": "Castle Ravenloft", "organization": sbsysdb_scanner.organization.uuid,
+             "rule": sbsysdb_scanner.rule.pk})
+
+        assert response.status_code == 302
+        assert response.url.startswith(settings.LOGIN_URL)
+        assert SBSYSDBScanner.objects.count() == 1
+
+    @pytest.mark.parametrize("url_name", ["sbsysscanner_update", "sbsysscanner_copy"])
+    def test_user_without_permission_denied(self, client, user, sbsysdb_scanner, url_name):
+        client.force_login(user)
+        response = client.get(reverse_lazy(url_name, kwargs={"pk": sbsysdb_scanner.pk}))
+
+        assert response.status_code == 403
+
+
+@pytest.mark.django_db
+class TestScannerDfOrgRestriction:
+    @pytest.mark.parametrize("url_name,codename", [
+        ("webscanner_update", "change_scanner"),
+        ("webscanner_copy", "add_scanner"),
+    ])
+    def test_admin_cannot_access_other_org_scanner(
+            self, client, user_admin, other_web_scanner, url_name, codename):
+        user_admin.user_permissions.add(Permission.objects.get(codename=codename))
+        client.force_login(user_admin)
+        response = client.get(reverse_lazy(url_name, kwargs={"pk": other_web_scanner.pk}))
+
+        assert response.status_code == 404
+
+    def test_admin_cannot_copy_other_org_scanner_by_post(
+            self, client, user_admin, test_org, basic_rule, other_web_scanner):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+        response = client.post(
+            reverse_lazy("webscanner_copy", kwargs={"pk": other_web_scanner.pk}),
+            {"name": "Barovia", "organization": test_org.uuid, "rule": basic_rule.pk,
+             "url": "http://www.example.com/"})
+
+        assert response.status_code == 404
+        assert not Scanner.objects.filter(name="Barovia").exists()
+
+
+@pytest.fixture(params=["web", "sbsys"])
+def df_case(request, test_org, basic_rule):
+    """A scanner, its URL name prefix and the POST data its form needs to validate."""
+    base = {"organization": test_org.uuid, "rule": basic_rule.pk}
+    if request.param == "web":
+        scanner = request.getfixturevalue("web_scanner")
+        extra = {"url": "http://www.example.com/"}
+    else:
+        scanner = request.getfixturevalue("sbsysdb_scanner")
+        extra = {"grant": request.getfixturevalue("smb_grant").pk,
+                 "db_server": "sbsys.waterdeep.internal", "db_port": 1433,
+                 "db_name": "SbSysNetDrift", "owner_field": AliasType.USER_PRINCIPAL_NAME.value,
+                 "scan_scope_mode": "all"}
+    return scanner, request.param, base | extra
+
+
+def _remediator_accounts(scanner):
+    return {a.account for a in Alias.objects.filter(
+        _alias_type=AliasType.REMEDIATOR.value, _value=str(scanner.pk))}
+
+
+@pytest.mark.django_db
+class TestScannerDfViews:
+
+    def test_create(self, client, user_admin, test_org, oluf, df_case):
+        scanner, prefix, data = df_case
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+
+        response = client.post(
+            reverse_lazy(f"{prefix}scanner_add"),
+            data | {"name": "Neverwinter", "remediators": [oluf.pk]})
+
+        assert response.status_code == 302
+        created = type(scanner).objects.get(name="Neverwinter")
+        assert created.organization == test_org
+        assert _remediator_accounts(created) == {oluf}
+
+    def test_update(self, client, user_admin, oluf, df_case):
+        scanner, prefix, data = df_case
+        user_admin.user_permissions.add(Permission.objects.get(codename="change_scanner"))
+        client.force_login(user_admin)
+
+        response = client.post(
+            reverse_lazy(f"{prefix}scanner_update", kwargs={"pk": scanner.pk}),
+            data | {"name": "Baldur's Gate", "remediators": [oluf.pk]})
+
+        assert response.status_code == 302
+        scanner.refresh_from_db()
+        assert scanner.name == "Baldur's Gate"
+        assert type(scanner).objects.count() == 1
+        assert _remediator_accounts(scanner) == {oluf}
+
+    def test_copy_initial(self, client, user_admin, oluf, df_case):
+        scanner, prefix, _data = df_case
+        Alias.objects.create(
+            account=oluf, _alias_type=AliasType.REMEDIATOR.value, _value=str(scanner.pk))
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+
+        response = client.get(reverse_lazy(f"{prefix}scanner_copy", kwargs={"pk": scanner.pk}))
+
+        assert response.status_code == 200
+        initial = response.context_data["form"].initial
+        assert initial["name"] == f"{scanner.name} {gettext('Copy')}"
+        assert initial["validation_status"] == Scanner.INVALID
+        assert list(initial["remediators"]) == [oluf]
+
+    def test_copy(self, client, user_admin, oluf, df_case):
+        scanner, prefix, data = df_case
+        scanner.validation_status = Scanner.VALID
+        scanner.save()
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+
+        response = client.post(
+            reverse_lazy(f"{prefix}scanner_copy", kwargs={"pk": scanner.pk}),
+            data | {"name": "Icewind Dale", "remediators": [oluf.pk]})
+
+        assert response.status_code == 302
+        copy = type(scanner).objects.get(name="Icewind Dale")
+        assert copy.pk != scanner.pk
+        assert copy.validation_status == Scanner.INVALID
+        assert _remediator_accounts(copy) == {oluf}
+
+        original_name = scanner.name
+        scanner.refresh_from_db()
+        assert scanner.name == original_name
+        assert scanner.validation_status == Scanner.VALID
+        assert _remediator_accounts(scanner) == set()

@@ -22,6 +22,8 @@
 
 - Fixed a bug causing files to be downloaded excessively for deduplication.
 
+- Fixed a bug where `SBSYS` forms would be accessible without the proper authentication.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"
