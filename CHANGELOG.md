@@ -4,6 +4,9 @@
 
 ### New in this release
 
+- The estimated completion time of a running scan is now shown as a range, such as "about 2 to 4
+  hours", which changes far less often than the exact time did.
+
 ### General improvements
 
 - Upgraded dependencies

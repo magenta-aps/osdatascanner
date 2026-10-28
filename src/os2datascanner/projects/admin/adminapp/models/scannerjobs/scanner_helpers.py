@@ -260,6 +260,41 @@ class ActiveObjectSummary(NamedTuple):
     max_seconds: int
 
 
+_MINUTE, _HOUR, _DAY, _WEEK, _MONTH = 60, 3600, 86400, 604800, 30.44 * 86400
+
+
+class EstimateStep(NamedTuple):
+    """A bucket for the estimate on the status page: shown when the time left
+    is below `below` seconds."""
+    below: float
+    label: str
+
+
+ESTIMATE_STEPS = [
+    EstimateStep(10 * _MINUTE, _("less than 10 minutes")),
+    EstimateStep(30 * _MINUTE, _("about 10 to 30 minutes")),
+    EstimateStep(_HOUR, _("about 30 minutes to an hour")),
+    EstimateStep(2 * _HOUR, _("about 1 to 2 hours")),
+    EstimateStep(4 * _HOUR, _("about 2 to 4 hours")),
+    EstimateStep(8 * _HOUR, _("about 4 to 8 hours")),
+    EstimateStep(_DAY, _("about 8 to 24 hours")),
+    EstimateStep(2 * _DAY, _("about 1 to 2 days")),
+    EstimateStep(4 * _DAY, _("about 2 to 4 days")),
+    EstimateStep(_WEEK, _("about 4 to 7 days")),
+    EstimateStep(2 * _WEEK, _("about 1 to 2 weeks")),
+    EstimateStep(4 * _WEEK, _("about 2 to 4 weeks")),
+    EstimateStep(2 * _MONTH, _("about 1 to 2 months")),
+    EstimateStep(4 * _MONTH, _("about 2 to 4 months")),
+    EstimateStep(float("inf"), _("more than 4 months")),
+]
+
+
+def pick_estimate_step(seconds_left: float) -> int:
+    """Returns the index into ESTIMATE_STEPS for the time left."""
+    return next(i for i, step in enumerate(ESTIMATE_STEPS)
+                if max(seconds_left, 0) < step.below)
+
+
 class ScanStatus(AbstractScanStatus):
     """A ScanStatus object collects the status messages received from the
     pipeline for a given scan."""
@@ -309,6 +344,14 @@ class ScanStatus(AbstractScanStatus):
         max_length=64,
         blank=True,
     )
+
+    @property
+    def estimate_text(self) -> str | None:
+        """Returns the estimated time left as text for the status page, or None."""
+        end = self.estimated_completion_time
+        if end is None:
+            return None
+        return ESTIMATE_STEPS[pick_estimate_step((end - time_now()).total_seconds())].label
 
     @property
     def estimated_completion_time(self) -> datetime.datetime | None:

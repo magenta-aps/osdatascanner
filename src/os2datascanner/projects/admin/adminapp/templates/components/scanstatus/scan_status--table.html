@@ -83,9 +83,11 @@
                           </div>
                         {% endwith %}
 
-                        {% with completion_time=status.estimated_completion_time %}
-                          {% if completion_time %}
-                            {% trans "Estimated finished" %} {{ completion_time|naturaltime }}
+                        {% with estimate=status.estimate_text %}
+                          {% if estimate %}
+                            {% blocktranslate with left=estimate trimmed %}
+                              Estimated to finish in {{ left }}
+                            {% endblocktranslate %}
                           {% endif %}
                         {% endwith %}
 

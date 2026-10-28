@@ -10,7 +10,7 @@ from django.conf import settings
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
-    ScanStatusSnapshot, average_speed_end, fitted_end)
+    ESTIMATE_STEPS, ScanStatusSnapshot, average_speed_end, fitted_end, pick_estimate_step)
 from os2datascanner.projects.admin.adminapp.notification import (
     FinishedScannerNotificationEmail, get_scanner_time)
 
@@ -53,6 +53,16 @@ def test_fitted_end_with_identical_snapshot_times():
 def test_average_speed_end():
     # 450 objects in the 90 seconds since the first snapshot, 500 left
     assert average_speed_end((10, 50), 500, 1000, 100) == pytest.approx(200)
+
+
+@pytest.mark.parametrize("seconds_left, step", [
+    (5 * 60, 0),                          # less than 10 minutes
+    (15 * 60, 1),                         # about 10 to 30 minutes
+    (3 * 3600, 4),                        # about 2 to 4 hours
+    (200 * 86400, len(ESTIMATE_STEPS) - 1),  # more than 4 months
+])
+def test_estimate_step(seconds_left, step):
+    assert pick_estimate_step(seconds_left) == step
 
 
 @pytest.mark.django_db
