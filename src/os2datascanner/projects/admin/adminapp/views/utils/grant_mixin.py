@@ -101,6 +101,7 @@ class GrantModalMixin:
 
     modal_template_name = "components/modals/modal__create-grant.html"
     modal_id = "grant-modal"
+    modal_field_actions = {}
 
     def get_field(self):
         """The scanner form field to update once the grant is saved."""
@@ -116,13 +117,12 @@ class GrantModalMixin:
             return [self.modal_template_name]
         return super().get_template_names()
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
+    def get_prefix(self):
         if self.is_modal():
             # The scanner form has fields with the same names (e.g. "organization"), so prefix
             # the grant form's fields to keep their ids unique on the page:
-            kwargs["prefix"] = "grant"
-        return kwargs
+            return "grant"
+        return super().get_prefix()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -139,7 +139,8 @@ class GrantModalMixin:
                 "modal_id": self.modal_id,
                 "close_label": _("Close without saving the grant."),
                 "field": self.get_field(),
-                "items": [{"type": "field", "bf": bf, "errors": bf.errors} for bf in visible],
+                "items": [{"type": "field", "bf": bf, "errors": bf.errors,
+                           "action": self.modal_field_actions.get(bf.name)} for bf in visible],
             }
         return context
 

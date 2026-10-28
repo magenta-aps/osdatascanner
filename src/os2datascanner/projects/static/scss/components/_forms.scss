@@ -1173,12 +1173,14 @@ input[type="file"]::file-selector-button:hover {
     }
 
     &__input-wrapper {
-      @include layout-horizontal(0.5rem) {
-        justify-content: space-between;
-      }
+      @include layout-horizontal(0.5rem);
 
       .checkbox-wrapper {
         @include layout-horizontal(0.25rem);
+      }
+
+      > .form-widget__help-icon-wrapper {
+        margin-left: auto;
       }
 
       &:has(> .recurrence-widget) textarea#id_schedule {

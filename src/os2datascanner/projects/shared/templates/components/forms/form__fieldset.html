@@ -4,7 +4,7 @@
 
 {% comment %}
   Required params:
-    • items     – a list of { type:"group" or "field", title, items… } or { type:"field", bf, errors }
+    • items     – a list of { type:"group" or "field", title, items… } or { type:"field", bf, errors, action }
     • nested?   – boolean; if true, adds the `fieldset--nested` modifier
 
   Optional params:
@@ -71,6 +71,10 @@
  
               <div class="form-widget__input-wrapper">
                 {{ bf }}
+
+                {% if item.action %}
+                  {% include item.action %}
+                {% endif %}
 
                 {# Only render the icon if help_text isn't empty. #}
                 {% if bf.help_text and help_text_variant != "inline" %}

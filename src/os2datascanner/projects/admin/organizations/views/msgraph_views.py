@@ -188,6 +188,11 @@ class MSGraphClientSecretExpiryMixin:
         self.end_date = kwargs.get("end_date")
         return super().get(request, *args, **kwargs)
 
+    def add_prefix(self, field_name):
+        """The field's name as it's posted, i.e. with the form's prefix (as Form.add_prefix)."""
+        prefix = self.get_prefix()
+        return f"{prefix}-{field_name}" if prefix else field_name
+
     def get_form_kwargs(self, *args, **kwargs):
         """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
@@ -196,7 +201,7 @@ class MSGraphClientSecretExpiryMixin:
                 and self.request.headers.get("HX-Trigger-Name") == "fetch-expiry-date"):
             # request.POST is an immutable querydict, copying to circumvent.
             post_copy = self.request.POST.copy()
-            post_copy["expiry_date"] = self.end_date
+            post_copy[self.add_prefix("expiry_date")] = self.end_date
             kwargs.update({
                 'data': post_copy,
             })
@@ -224,6 +229,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
     permission_required = "grants.add_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
+    modal_field_actions = {"expiry_date": "grants/fetch_expiry_date_button.html"}
 
     def get_form(self, form_class=None):
         # TODO: Maybe allow edits of app & tenant id in general, then this override can be removed.
@@ -248,9 +254,9 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
             htmx_trigger = self.request.headers.get("HX-Trigger-Name")
             if htmx_trigger == "fetch-expiry-date":
                 gg = GraphGrant(
-                    app_id=request.POST.get("app_id"),
-                    tenant_id=request.POST.get("tenant_id"),
-                    client_secret=request.POST.get("_client_secret")
+                    app_id=request.POST.get(self.add_prefix("app_id")),
+                    tenant_id=request.POST.get(self.add_prefix("tenant_id")),
+                    client_secret=request.POST.get(self.add_prefix("_client_secret"))
 
                 )
                 end_date = gg.expiry_date  # Defining variable, as it's used in the return

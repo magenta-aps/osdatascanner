@@ -13,6 +13,9 @@
 {% block modal_subtitle %}<p class="header__subtitle">{{ form.instance.verbose_name }}</p>{% endblock %}
 
 {% block modal_body %}
+  {# Swapped out of band into the snackbars, e.g. for the Graph grant's "fetch expiry date": #}
+  {% include "components/feedback/snackbar.html" %}
+
   {# Only "form--new": the old ".form" styles would add margins the modal doesn't reset. #}
   <form id="{{ modal_id }}-form"
         class="form--new"

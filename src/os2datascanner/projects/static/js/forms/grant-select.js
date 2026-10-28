@@ -28,8 +28,9 @@
     // The event fires on the modal's form:
     const modal = e.target.closest("dialog");
     if (modal) {
+      // Removed once it's closed, so modal-dialog.js has moved the snackbars out of it first:
+      modal.addEventListener("close", () => modal.remove(), { once: true });
       modal.close();
-      modal.remove();
     }
   });
 })();
