@@ -8,19 +8,8 @@ import pytest
 from django.urls import reverse_lazy
 from django.utils import timezone
 
-from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner import ScanStatus
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
         ActiveObjectStatus)
-
-
-@pytest.fixture
-def running_status(db, basic_scanner):
-    # total_sources > explored_sources keeps the scan in a running (indexing)
-    # stage so it shows up in the status overview without being "completed".
-    tag = basic_scanner._construct_scan_tag().to_json_object()
-    return ScanStatus.objects.create(
-            scanner=basic_scanner, scan_tag=tag,
-            total_sources=10, explored_sources=2)
 
 
 def _add_active(status, key, path, minutes, current_path=""):

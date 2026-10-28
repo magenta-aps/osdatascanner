@@ -2864,6 +2864,11 @@ msgstr "Der skete en fejl under dette scan"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
+msgid "%(listed)s of %(total)s sources listed"
+msgstr "%(listed)s af %(total)s kilder indekseret"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#, python-format
 msgid "A large %(on)s is being processed (%(duration)s so far)"
 msgstr "En stor %(on)s bliver behandlet (%(duration)s indtil videre)"
 

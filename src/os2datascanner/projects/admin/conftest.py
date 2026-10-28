@@ -618,6 +618,16 @@ def basic_scanstatus(basic_scanner):
 
 
 @pytest.fixture
+def running_status(db, basic_scanner):
+    # total_sources > explored_sources keeps the scan in a running (indexing)
+    # stage so it shows up in the status overview without being "completed".
+    tag = basic_scanner._construct_scan_tag().to_json_object()
+    return ScanStatus.objects.create(
+            scanner=basic_scanner, scan_tag=tag,
+            total_sources=10, explored_sources=2)
+
+
+@pytest.fixture
 def basic_scanstatus_old(basic_scanner):
     ss = ScanStatus.objects.create(
         scanner=basic_scanner,

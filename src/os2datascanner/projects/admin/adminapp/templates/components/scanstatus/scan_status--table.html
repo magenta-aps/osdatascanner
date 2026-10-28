@@ -98,6 +98,14 @@
                         {% trans "An error occurred during this scan" %}
                       {% endif %}
 
+                      {% if status.stage.value < 2 and status.total_sources > 1 %}
+                        <div class="listing-progress">
+                          {% blocktranslate with listed=status.explored_sources total=status.total_sources trimmed %}
+                            {{ listed }} of {{ total }} sources listed
+                          {% endblocktranslate %}
+                        </div>
+                      {% endif %}
+
                       {% with summary=status.active_object_summary %}
                         {% if summary %}
                           <div class="active-objects-summary">

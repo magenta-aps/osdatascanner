@@ -7,6 +7,9 @@
 - The estimated completion time of a running scan is now shown as a range, such as "about 2 to 4
   hours", which changes far less often than the exact time did.
 
+- While a scan with several sources, such as mailboxes, is still being indexed, the status page
+  shows how many of them have been listed.
+
 ### General improvements
 
 - Upgraded dependencies
