@@ -21,6 +21,9 @@
 
 ### Bugfixes
 
+- Fixed a bug where the estimated completion time of a running scan could jump far off right
+  after indexing finished, or disappear once the estimated time had passed.
+
 - Fixed an issue causing orphaned `ScannerReference`s. It is important to run the new management
   command, `sync_scanner_references`, to ensure that all scanners have a corresponding 
   `ScannerReference`.

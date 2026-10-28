@@ -3,9 +3,14 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from datetime import timedelta
+
 import pytest
 from django.conf import settings
+from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.projects.admin.adminapp.management.commands import status_collector
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers import (
+    ScanStatusSnapshot, average_speed_end, fitted_end)
 from os2datascanner.projects.admin.adminapp.notification import (
     FinishedScannerNotificationEmail, get_scanner_time)
 
@@ -15,6 +20,39 @@ def record_status(status):
     the administration system's pipeline collector."""
     return list(status_collector.status_message_received_raw(
             status.to_json_object()))
+
+
+@pytest.fixture
+def scanning_status(basic_scanstatus):
+    """basic_scanstatus 100 seconds into a scan, done listing and half scanned."""
+    basic_scanstatus.scan_tag["time"] = (time_now() - timedelta(seconds=100)).isoformat()
+    basic_scanstatus.explored_sources = 1
+    basic_scanstatus.total_objects = 1000
+    basic_scanstatus.scanned_objects = 500
+    basic_scanstatus.save()
+    return basic_scanstatus
+
+
+def add_snapshots(status, points):
+    """Adds a snapshot for each (seconds into the scan, scanned, total)."""
+    for seconds, scanned, total in points:
+        ScanStatusSnapshot.objects.create(
+                scan_status=status, scanned_objects=scanned, total_objects=total,
+                time_stamp=status.start_time + timedelta(seconds=seconds))
+
+
+def test_fitted_end_reaches_the_current_total():
+    # 5 objects a second, so 1000 objects at 200 seconds
+    assert fitted_end([(t, 5 * t) for t in range(10, 101, 10)], 1000, 100) == pytest.approx(200)
+
+
+def test_fitted_end_with_identical_snapshot_times():
+    assert fitted_end([(50, 250)] * 10, 1000, 100) is None
+
+
+def test_average_speed_end():
+    # 450 objects in the 90 seconds since the first snapshot, 500 left
+    assert average_speed_end((10, 50), 500, 1000, 100) == pytest.approx(200)
 
 
 @pytest.mark.django_db
@@ -121,3 +159,10 @@ class TestStatus:
 
         assert not basic_scanstatus_completed.cancelled
         assert basic_scanstatus_completed.finished
+
+    def test_estimate_falls_back_to_average_speed_instead_of_hiding(self, scanning_status):
+        # Stalled for the whole fitting window
+        add_snapshots(scanning_status,
+                      [(t, min(20 * t, 500), 1000) for t in range(5, 101, 5)])
+
+        assert scanning_status.estimated_completion_time > time_now()
