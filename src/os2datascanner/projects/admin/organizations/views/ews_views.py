@@ -22,13 +22,6 @@ class EWSGrantForm(EWSGrantAdminForm):
         self.fields["organization"].disabled = True
 
 
-class EWSGrantScannerForm(EWSGrantAdminForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = EWSGrant
-        fields = ('__all__')
-
-
 class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantModalMixin,
                          GrantExtraMixin, CreateView):
     model = EWSGrant

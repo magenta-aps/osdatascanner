@@ -42,9 +42,9 @@ class GrantMixin:
 
     New grants are created in a modal from the "+" next to each dropdown (see GrantModalMixin)."""
 
-    def get_grant_form_classes(self) -> dict:
+    def get_grant_models(self) -> dict:
         """Override this method to return a dictionary of grant
-         form classes and their corresponding field."""
+         fields and their corresponding grant model."""
         raise NotImplementedError("Subclasses should implement this method.")
 
     def get_form(self, form_class=None):
@@ -54,14 +54,14 @@ class GrantMixin:
         form = super().get_form(form_class)
         user = UserWrapper(self.request.user)
 
-        for field_name, GrantFormClass in self.get_grant_form_classes().items():
-            grant_qs = GrantFormClass.Meta.model.objects.filter(user.make_org_Q())
+        for field_name, GrantModel in self.get_grant_models().items():
+            grant_qs = GrantModel.objects.filter(user.make_org_Q())
             # Conditionally required. Should be required when there's only one option, but can't
             # be, when there's two or more. (F.e. ExchangeScanner)
             form.fields[field_name] = ModelChoiceField(grant_qs, empty_label=None,
                                                        label=form.fields[field_name].label,
                                                        required=False if
-                                                       len(self.get_grant_form_classes()) >= 2
+                                                       len(self.get_grant_models()) >= 2
                                                        else True)
 
         return form

@@ -33,13 +33,6 @@ class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantModal
         return {"organization": self.kwargs.get('org')}
 
 
-class SMBGrantScannerForm(SMBGrantAdminForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = SMBGrant
-        fields = ('__all__')
-
-
 class SMBGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, UpdateView):
     model = SMBGrant
     form_class = SMBGrantForm

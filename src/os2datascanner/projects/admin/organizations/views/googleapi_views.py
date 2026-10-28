@@ -43,19 +43,6 @@ class GoogleApiGrantForm(forms.ModelForm):
             self.fields["last_updated"].label = ""
 
 
-class GoogleApiScannerForm(GoogleApiGrantForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = GoogleApiGrant
-        fields = ["organization", "_service_account"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["organization"].disabled = False
-        self.fields["_service_account"].disabled = False
-        self.fields["_service_account"].initial = ""
-
-
 class GoogleApiGrantCreateView(
         PermissionRequiredMixin,
         LoginRequiredMixin,
