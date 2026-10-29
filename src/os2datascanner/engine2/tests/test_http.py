@@ -372,6 +372,14 @@ class HTTPTestRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header("Allow", "GET")
         self.end_headers()
 
+    def _untyped_response(self, content_type=None):
+        """Answers without a Content-Type header unless one is given, like a
+        server that only works the type out while generating the body."""
+        self.send_response(200)
+        if content_type:
+            self.send_header("Content-Type", content_type)
+        self.end_headers()
+
     def _gone_response(self):
         self.send_response(410)
         self.end_headers()
@@ -421,6 +429,10 @@ class HTTPTestRequestHandler(http.server.SimpleHTTPRequestHandler):
             self._normal_response()
         elif self.path.startswith("/headless/false"):
             self._not_found_response()
+        elif self.path.startswith("/untyped/head"):
+            self._untyped_response("text/html")
+        elif self.path.startswith("/untyped/always"):
+            self._untyped_response()
         elif self.path.startswith("/not_found"):
             self._not_found_response()
         elif self.path.startswith("/gone"):
@@ -456,6 +468,8 @@ class HTTPTestRequestHandler(http.server.SimpleHTTPRequestHandler):
             self._trap_redirect_response()
         elif self.path.startswith("/headless"):
             self._no_head_response()
+        elif self.path.startswith("/untyped"):
+            self._untyped_response()
         elif self.path.startswith("/eredirect"):
             self._error_redirect()
         elif self.path.startswith("/error"):
@@ -992,29 +1006,32 @@ class Engine2HTTPResourceTest(Engine2HTTPSetup, unittest.TestCase):
                     "WebResource.check() didn't handle 405 correctly")
 
     def test_missing_headers(self):
+        """A server that never says what a resource is, on HEAD or on GET,
+        gets the generic fallback type and a fresh Last-Modified."""
+        untyped = WebHandle(site["source"], "/untyped/always")
         with SourceManager() as sm:
-            first_thing = None
-            with contextlib.closing(site["source"].handles(sm)) as handles:
-                first_thing = next(handles)
-            r = first_thing.follow(sm)
+            r = untyped.follow(sm)
 
             now = time_now()
-
-            # It is not documented anywhere that WebResource.get_header()
-            # returns a live dictionary, so don't depend on this behaviour
-            header = r.unpack_header()
-            for name in ("content-type", OutputType.LastModified, ):
-                if name in header:
-                    del header[name]
 
             self.assertEqual(
                     r.compute_type(),
                     "application/octet-stream",
-                    "{0}: unexpected backup MIME type".format(first_thing))
+                    f"{untyped}: unexpected backup MIME type")
             self.assertGreaterEqual(
                     r.get_last_modified(),
                     now,
-                    "{0}: Last-Modified not fresh".format(first_thing))
+                    f"{untyped}: Last-Modified not fresh")
+
+    def test_head_without_content_type(self):
+        """A HEAD response without a Content-Type is retried as a GET, which
+        does say what the resource is."""
+        untyped_head = WebHandle(site["source"], "/untyped/head")
+        with SourceManager() as sm:
+            self.assertEqual(
+                    untyped_head.follow(sm).compute_type(),
+                    "text/html",
+                    f"{untyped_head}: type from GET not used")
 
     def test_mixed_links_resource(self):
         "site mixed with external-, unresponsive- and non-http links"
