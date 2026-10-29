@@ -10,6 +10,11 @@ from os2datascanner.projects.report.organizations.models.organizational_unit imp
 
 
 class ScannerReference(models.Model):
+    """Report-side stand-in for an admin Scanner.
+
+    Used to tie results to the scanner that produced them, and to filter
+    or group results by scanner, organization or organizational unit.
+    Managed by the event collector from admin module broadcast events."""
     scanner_pk = models.IntegerField(
         primary_key=True
     )
