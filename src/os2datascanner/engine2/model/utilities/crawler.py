@@ -195,10 +195,10 @@ class WebCrawler(Crawler):
     def visit_one(self, url: str, ttl: int, hints):  # noqa CCR001
         if ttl > 0 and self.is_crawlable(url) and not self._frozen:
             response = self.head(url)
-
-            if response.status_code == 405:
-                # The server doesn't support HEAD requests? That's odd. Oh,
-                # well, let's use GET instead
+            if response.status_code == 405 or (
+                    response.status_code == 200 and "content-type" not in response.headers):
+                # Either HEAD isn't supported, or it didn't say what the page is
+                # (RFC 9110 lets servers leave that out). GET will tell us
                 response = self.get(url)
 
             if response.status_code == 200:

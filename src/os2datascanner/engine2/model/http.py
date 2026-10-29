@@ -77,15 +77,21 @@ def remove_userinfo(url: str) -> str:
 
 def make_head_fallback(context):
     """Returns a function equivalent to context.head -- unless the resulting
-    HEAD request fails with HTTP/1.1 405 Method Not Supported, in which case
-    it converts the request to a GET."""
+    HEAD request fails with HTTP/1.1 405 Method Not Supported, or if Content-Type is not
+    present in the response, in which cases it converts the request to a GET."""
     def _make_head_fallback(url, **kwargs):
         r = context.head(url, **kwargs)
-        if r.status_code == 405:
-            logger.warning(
-                    f"HTTP HEAD method not available for {url},"
-                    " trying GET instead")
-            r = context.get(url, **kwargs)
+        match r.status_code:
+            case 405:
+                logger.warning("HTTP HEAD not available, trying GET instead", url=url)
+            case _ if r.ok and "content-type" not in r.headers:
+                # RFC 9110 (9.3.2) lets a server leave out of a HEAD response
+                # the headers it only works out while generating the content
+                logger.info("HTTP HEAD gave no Content-Type, trying GET instead", url=url)
+            case _:
+                return r
+        r = context.get(url, stream=True, **kwargs)
+        r.close()
         return r
 
     return _make_head_fallback
