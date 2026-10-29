@@ -26,6 +26,9 @@
 
 - Fixed the time axis on completed scan timeline graphs showing half the actual duration.
 
+- Fixed Webscanner skipping or failing pages, when the server's HEAD response had no `Content-Type`.
+  The scanner now asks for them with a GET request instead in that case.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"
