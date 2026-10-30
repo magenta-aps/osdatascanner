@@ -29,6 +29,9 @@
 - Fixed Webscanner skipping or failing pages, when the server's HEAD response had no `Content-Type`.
   The scanner now asks for them with a GET request instead in that case.
 
+- Fixed the Microsoft 365 file scanner including the client secret in the error raised when a
+  drive had neither a drive ID nor a user account.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"

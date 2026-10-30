@@ -183,8 +183,7 @@ class MSGraphDriveSource(DerivedSource):
         elif user_principal_name := self.handle._user_account:
             return f"users/{user_principal_name}/drive"
         else:
-            raise ValueError("Object didn't contain any driveId or UPN!:"
-                             f" {self.to_json_object()}")
+            raise ValueError(f"Object didn't contain any driveId or UPN!: {self.handle}")
 
     def filter_last_modified(self, folder, cutoff=None):
         ts = cutoff.astimezone(timezone.utc)
