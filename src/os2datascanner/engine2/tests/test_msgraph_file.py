@@ -6,6 +6,8 @@
 from ..model.msgraph.files import MSGraphDriveHandle, MSGraphFilesSource, MSGraphDriveSource
 from datetime import datetime, timezone
 
+import pytest
+
 
 class TestMSGraphDriveHandle:
     def test_equaliy_properties(self):
@@ -77,3 +79,14 @@ class TestMSGraphDriveSource:
         assert len(filtered_folder) == 1
         assert fake_folder != filtered_folder
         assert filtered_folder[0]['id'] == 2
+
+    def test_drive_path_error_does_not_leak_client_secret(self):
+        secret = "Vecna's eye and hand"
+        source = MSGraphFilesSource("Mordenkainen", "Greyhawk", secret)
+        handle = MSGraphDriveHandle(source, "", "Tomb of Horrors", "Acererak")
+        drive_source = MSGraphDriveSource(handle)
+
+        with pytest.raises(ValueError) as exc_info:
+            drive_source.drive_path
+
+        assert secret not in str(exc_info.value)
