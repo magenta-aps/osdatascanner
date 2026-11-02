@@ -13,7 +13,6 @@ from rest_framework.generics import ListAPIView
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
 from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
-from os2datascanner.projects.admin.organizations.views import MSGraphGrantScannerForm
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
 from ..models.scannerjobs.msgraph import MSGraphMailScanner
@@ -81,8 +80,8 @@ class _MSGraphMailScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraph-mail'
     fields = ScannerBase.fields + msgraph_mail_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -99,8 +98,8 @@ class MSGraphMailScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'msgraph-mailscanners'
     fields = ScannerBase.fields + msgraph_mail_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -115,8 +114,8 @@ class MSGraphMailScannerCopy(GrantMixin, ScannerCopy):
     type = 'msgraph-mail'
     fields = ScannerBase.fields + msgraph_mail_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
 
 class MSGraphMailScannerCleanup(ScannerCleanupStaleAccounts):
@@ -161,8 +160,8 @@ class _MSGraphFileScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraph-file'
     fields = ScannerBase.fields + msgraph_file_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -179,8 +178,8 @@ class MSGraphFileScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'msgraph-filescanners'
     fields = ScannerBase.fields + msgraph_file_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -195,8 +194,8 @@ class MSGraphFileScannerCopy(GrantMixin, ScannerCopy):
     type = 'msgraph-file'
     fields = ScannerBase.fields + msgraph_file_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
 
 class MSGraphFileScannerCleanup(ScannerCleanupStaleAccounts):
@@ -239,8 +238,8 @@ class _MSGraphCalendarScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraph-calendar'
     fields = ScannerBase.fields + msgraph_calendar_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -257,8 +256,8 @@ class MSGraphCalendarScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'msgraph-calendarscanners'
     fields = ScannerBase.fields + msgraph_calendar_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -273,8 +272,8 @@ class MSGraphCalendarScannerCopy(GrantMixin, ScannerCopy):
     type = 'msgraph-calendar'
     fields = ScannerBase.fields + msgraph_calendar_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
 
 class MSGraphCalendarScannerCleanup(ScannerCleanupStaleAccounts):
@@ -315,8 +314,8 @@ class _MSGraphTeamsFileScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraph-teams-file'
     fields = ScannerBase.fields + msgraph_teams_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -333,8 +332,8 @@ class MSGraphTeamsFileScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'msgraph-teams-filescanners'
     fields = ScannerBase.fields + msgraph_teams_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -349,8 +348,8 @@ class MSGraphTeamsFileScannerCopy(GrantMixin, ScannerCopy):
     type = 'msgraph-teams-file'
     fields = ScannerBase.fields + msgraph_teams_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
 
 class MSGraphSharepointList(ScannerList):
@@ -383,8 +382,8 @@ class _MSGraphSharepointScannerCreate(GrantMixin, ScannerCreate):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))
@@ -410,8 +409,8 @@ class MSGraphSharepointCopy(GrantMixin, ScannerCopy):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
 
 class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
@@ -419,8 +418,8 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'msgraphsharepoint'
     fields = ScannerBase.fields + msgraph_sharepoint_scanner_fields
 
-    def get_grant_form_classes(self):
-        return {"graph_grant": MSGraphGrantScannerForm}
+    def get_grant_models(self):
+        return {"graph_grant": GraphGrant}
 
     def get_form(self, form_class=None):
         return patch_form(self, super().get_form(form_class))

@@ -3,7 +3,8 @@
 
   How to use:
     • Extend this template and fill in the blocks.
-    • Open it with a button that has data-open-modal="<modal_id>".
+    • Open it with a button that has data-open-modal="<modal_id>",
+      or put data-open-on-load in modal_attrs to open it as soon as htmx inserts it.
 
   Required context vars:
     • modal_id     – id of the <dialog>, also used for its title's id.
@@ -11,6 +12,7 @@
 
   Blocks:
     • modal_scripts        – extra scripts; use {{ block.super }} to keep modal-dialog.js
+    • modal_attrs          – extra attributes on the <dialog>, e.g. data-open-on-load
     • modal_modifier       – modifier class, e.g. "modal-dialog--distribute"
     • modal_title          – the heading text
     • modal_subtitle       – optional, e.g. <p class="header__subtitle">
@@ -27,7 +29,8 @@
 <dialog id="{{ modal_id }}"
         class="modal-dialog {% block modal_modifier %}{% endblock %}"
         aria-labelledby="{{ modal_id }}-title"
-        aria-modal="true">
+        aria-modal="true"
+        {% block modal_attrs %}{% endblock %}>
   <div class="modal-dialog__container">
 
     <div class="modal-dialog__header">

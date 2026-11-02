@@ -1,0 +1,41 @@
+{% extends "components/feedback/modals/modal-dialog.html" %}
+
+{% load i18n %}
+
+{% block modal_attrs %}data-open-on-load{% endblock %}
+
+{% block modal_modifier %}modal-dialog--create-grant{% endblock %}
+
+{% block modal_title %}
+  {% trans "create grant"|capfirst %}
+{% endblock %}
+
+{% block modal_subtitle %}<p class="header__subtitle">{{ form.instance.verbose_name }}</p>{% endblock %}
+
+{% block modal_body %}
+  {# Swapped out of band into the snackbars, e.g. for the Graph grant's "fetch expiry date": #}
+  {% include "components/feedback/snackbar.html" %}
+
+  {# Only "form--new": the old ".form" styles would add margins the modal doesn't reset. #}
+  <form id="{{ modal_id }}-form"
+        class="form--new"
+        hx-post="{{ request.path }}"
+        hx-target="closest .modal-dialog__container"
+        hx-select=".modal-dialog__container"
+        hx-swap="outerHTML"
+        {% if form.is_multipart %}hx-encoding="multipart/form-data"{% endif %}>
+    {% csrf_token %}
+    <input type="hidden" name="field" value="{{ field }}">
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    {{ form.non_field_errors }}
+    {% include "components/forms/form__fieldset.html" with items=items nested=False help_text_variant="inline" %}
+  </form>
+{% endblock modal_body %}
+
+{% block modal_footer_actions %}
+  <button type="submit"
+          form="{{ modal_id }}-form"
+          class="button button--modal-ui button--cta-button button--text-button">
+    <span>{% trans "save Grant"|capfirst %}</span>
+  </button>
+{% endblock modal_footer_actions %}

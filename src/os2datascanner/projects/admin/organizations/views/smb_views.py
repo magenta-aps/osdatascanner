@@ -8,7 +8,8 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView, CreateView
 from os2datascanner.projects.grants.admin import SMBGrantAdminForm
 from os2datascanner.projects.grants.models.smbgrant import SMBGrant
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
+                                                                            GrantModalMixin)
 
 
 class SMBGrantForm(SMBGrantAdminForm):
@@ -20,7 +21,8 @@ class SMBGrantForm(SMBGrantAdminForm):
         self.fields["organization"].disabled = True
 
 
-class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, CreateView):
+class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantModalMixin,
+                         GrantExtraMixin, CreateView):
     model = SMBGrant
     form_class = SMBGrantForm
     permission_required = "grants.add_smbgrant"
@@ -29,13 +31,6 @@ class SMBGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtra
 
     def get_initial(self):
         return {"organization": self.kwargs.get('org')}
-
-
-class SMBGrantScannerForm(SMBGrantAdminForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = SMBGrant
-        fields = ('__all__')
 
 
 class SMBGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, UpdateView):

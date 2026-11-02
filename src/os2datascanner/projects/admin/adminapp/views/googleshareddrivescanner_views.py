@@ -4,7 +4,7 @@
 # obtain one at http://mozilla.org/MPL/2.0/.
 
 from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantMixin
-from os2datascanner.projects.admin.organizations.views.googleapi_views import GoogleApiScannerForm
+from os2datascanner.projects.grants.models import GoogleApiGrant
 from ..models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScanner
 from .scanner_views import (
     ScannerBase,
@@ -37,8 +37,8 @@ class GoogleSharedDriveScannerCreate(GrantMixin, ScannerCreate):
         """The URL to redirect to after successful creation."""
         return '/googleshareddrivescanners/%s/created/' % self.object.pk
 
-    def get_grant_form_classes(self):
-        return {"google_api_grant": GoogleApiScannerForm}
+    def get_grant_models(self):
+        return {"google_api_grant": GoogleApiGrant}
 
 
 class GoogleSharedDriveScannerUpdate(GrantMixin, ScannerUpdate):
@@ -58,8 +58,8 @@ class GoogleSharedDriveScannerUpdate(GrantMixin, ScannerUpdate):
         else:
             return '/googleshareddrivescanners/%s/saved/' % self.object.pk
 
-    def get_grant_form_classes(self):
-        return {"google_api_grant": GoogleApiScannerForm}
+    def get_grant_models(self):
+        return {"google_api_grant": GoogleApiGrant}
 
 
 class GoogleSharedDriveScannerCopy(ScannerCopy):

@@ -10,7 +10,8 @@ from django.views.generic import UpdateView, CreateView
 from django import forms
 from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
 from os2datascanner.projects.grants.admin import AutoEncryptedFileField
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
+                                                                            GrantModalMixin)
 
 
 class GoogleApiGrantForm(forms.ModelForm):
@@ -42,22 +43,10 @@ class GoogleApiGrantForm(forms.ModelForm):
             self.fields["last_updated"].label = ""
 
 
-class GoogleApiScannerForm(GoogleApiGrantForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = GoogleApiGrant
-        fields = ["organization", "_service_account"]
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["organization"].disabled = False
-        self.fields["_service_account"].disabled = False
-        self.fields["_service_account"].initial = ""
-
-
 class GoogleApiGrantCreateView(
         PermissionRequiredMixin,
         LoginRequiredMixin,
+        GrantModalMixin,
         GrantExtraMixin,
         CreateView):
     model = GoogleApiGrant

@@ -5,7 +5,7 @@
 
 from django import forms
 
-from os2datascanner.projects.admin.organizations.views import SMBGrantScannerForm
+from os2datascanner.projects.grants.models import SMBGrant
 from .scanner_views import (
     ScannerBase,
     ScannerUpdate,
@@ -40,9 +40,9 @@ class FileScannerCreate(GrantMixin, ScannerCreate):
     type = 'file'
     fields = ScannerBase.fields + file_scanner_fields
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         return {
-            "smb_grant": SMBGrantScannerForm,
+            "smb_grant": SMBGrant,
         }
 
     def get_form(self, form_class=None):
@@ -62,9 +62,9 @@ class FileScannerUpdate(GrantMixin, ScannerUpdate):
     type = 'file'
     fields = ScannerBase.fields + file_scanner_fields
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         return {
-            "smb_grant": SMBGrantScannerForm,
+            "smb_grant": SMBGrant,
         }
 
     def get_form(self, form_class=None):
@@ -90,9 +90,9 @@ class FileScannerCopy(GrantMixin, ScannerCopy):
     type = 'file'
     fields = ScannerBase.fields + file_scanner_fields
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         return {
-            "smb_grant": SMBGrantScannerForm,
+            "smb_grant": SMBGrant,
         }
 
     def get_form(self, form_class=None):

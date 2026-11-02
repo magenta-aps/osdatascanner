@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-29 13:24+0200\n"
+"POT-Creation-Date: 2026-10-01 14:37+0200\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -3437,6 +3437,10 @@ msgstr "Scan tidspunkt"
 msgid "Scanner job"
 msgstr "Scannerjob"
 
+#: adminapp/views/utils/grant_mixin.py
+msgid "Close without saving the grant."
+msgstr "Luk uden at gemme bevillingen."
+
 #: adminapp/views/utils/middleware.py
 #, python-brace-format
 msgid "Microsoft Graph-grant for Tenant: {tenant} is about to expire!"
@@ -4420,6 +4424,16 @@ msgstr "Luk uden at gemme ændringer"
 msgid "Save and close"
 msgstr "Gem alias og luk"
 
+#: organizations/templates/components/modals/modal__create-grant.html
+#: organizations/templates/grants/grant_update.html
+msgid "create grant"
+msgstr "opret bevilling"
+
+#: organizations/templates/components/modals/modal__create-grant.html
+#: organizations/templates/grants/grant_update.html
+msgid "save Grant"
+msgstr "gem bevilling"
+
 #: organizations/templates/components/uni_dpo_dropdown.html
 msgid "Add universal DPO"
 msgstr "Tilføj universel DPO"
@@ -4464,20 +4478,6 @@ msgstr ""
 #: organizations/templates/organizations/grants_list.html
 msgid "edit grant"
 msgstr "redigér bevillinger"
-
-#: organizations/templates/grants/grant_update.html
-msgid "create grant"
-msgstr "opret bevilling"
-
-#: organizations/templates/grants/grant_update.html
-#: organizations/templates/grants/grant_update_partial.html
-msgid "step 7 and 8 here"
-msgstr "trin 7 og 8 her"
-
-#: organizations/templates/grants/grant_update.html
-#: organizations/templates/grants/grant_update_partial.html
-msgid "save Grant"
-msgstr "gem bevilling"
 
 #: organizations/templates/grants/graphgrant_update.html
 msgid "fetch expiry date"
@@ -5082,11 +5082,13 @@ msgstr "Client secret"
 msgid ""
 "To acquire a new client secret, navigate to your Azure Portal and find the "
 "application created for OSdatascanner. Once you've found your application, "
-"you can follow the instructions in "
+"follow steps 7 and 8 in the <a href='https://os2datascanner.readthedocs.io/"
+"azure/azure-setup-guide/'>Azure setup guide</a>."
 msgstr ""
-"For at få en ny 'client secret' navigerer man til Azure-portalen og finder "
-"applikationen, som er oprettet til OSdatascanner. Derefter følges "
-"instruktionerne i "
+"Du får en ny client secret på Azure-portalen: Find den app, der er oprettet "
+"til OSdatascanner, og følg trin 7 og 8 i <a href='https://os2datascanner."
+"readthedocs.io/azure/azure-setup-guide/'>vejledningen til "
+"Azure-opsætning</a>."
 
 #: organizations/views/msgraph_views.py
 msgid "Expiry date"

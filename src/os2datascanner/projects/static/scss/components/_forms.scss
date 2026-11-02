@@ -965,6 +965,10 @@ input[type="file"]::file-selector-button:hover {
       user-select: none;
     }
 
+    &__checkbox-label {
+      font-size: 0.75em;
+    }
+
     @mixin universal-ui-size--experimental {
       $ui-padding--vertical: 0.75rem;
       padding-top: $ui-padding--vertical;
@@ -1031,6 +1035,11 @@ input[type="file"]::file-selector-button:hover {
         height: $checkbox_size;
         width: $checkbox_size;
       }
+
+      &[type="date"] {
+        width: fit-content;
+        max-width: 100%;
+      }
     }
 
     @mixin custom-dropdown-icon {
@@ -1051,6 +1060,7 @@ input[type="file"]::file-selector-button:hover {
     select {
       @include custom-dropdown-icon;
 
+      width: 100%;
       padding-right: 2.25rem;
       box-sizing: border-box;
       font-family: inherit; // Force the `<select>` to listen to the parental typography.
@@ -1163,12 +1173,14 @@ input[type="file"]::file-selector-button:hover {
     }
 
     &__input-wrapper {
-      @include layout-horizontal(0.5rem) {
-        justify-content: space-between;
-      }
+      @include layout-horizontal(0.5rem);
 
       .checkbox-wrapper {
         @include layout-horizontal(0.25rem);
+      }
+
+      > .form-widget__help-icon-wrapper {
+        margin-left: auto;
       }
 
       &:has(> .recurrence-widget) textarea#id_schedule {
@@ -1186,6 +1198,17 @@ input[type="file"]::file-selector-button:hover {
     &__help-icon {
       color: var(--color-primary);
       opacity: 50%;
+    }
+
+    // Help text shown under the field (the "inline" help_text_variant of form__fieldset.html):
+    &__help-text {
+      color: var(--color-text-secondary);
+      font-size: 0.75rem;
+
+      a {
+        color: var(--color-primary);
+        text-decoration: underline;
+      }
     }
 
     &__error {

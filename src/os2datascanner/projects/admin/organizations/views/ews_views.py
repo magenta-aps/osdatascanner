@@ -9,7 +9,8 @@ from django.views.generic import UpdateView, CreateView
 
 from os2datascanner.projects.grants.admin import EWSGrantAdminForm
 from os2datascanner.projects.grants.models.ewsgrant import EWSGrant
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
+                                                                            GrantModalMixin)
 
 
 class EWSGrantForm(EWSGrantAdminForm):
@@ -21,14 +22,8 @@ class EWSGrantForm(EWSGrantAdminForm):
         self.fields["organization"].disabled = True
 
 
-class EWSGrantScannerForm(EWSGrantAdminForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = EWSGrant
-        fields = ('__all__')
-
-
-class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, CreateView):
+class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantModalMixin,
+                         GrantExtraMixin, CreateView):
     model = EWSGrant
     form_class = EWSGrantForm
     permission_required = "grants.add_ewsgrant"

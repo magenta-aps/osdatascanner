@@ -21,7 +21,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import GrantExtraMixin
+from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
+                                                                            GrantModalMixin)
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from os2datascanner.projects.admin.organizations.models import Organization
 from requests import HTTPError
@@ -115,8 +116,10 @@ class MSGraphGrantForm(forms.ModelForm):
         required=False,
         label=_("Client secret"),
         help_text=_("To acquire a new client secret, navigate to your Azure Portal and find the "
-                    "application created for OSdatascanner. "
-                    "Once you've found your application, you can follow the instructions in ")
+                    "application created for OSdatascanner. Once you've found your application, "
+                    "follow steps 7 and 8 in the "
+                    "<a href='https://os2datascanner.readthedocs.io/azure/azure-setup-guide/'>"
+                    "Azure setup guide</a>.")
     )
     expiry_date = forms.DateField(widget=forms.widgets.DateInput(
         attrs={"type": "date", }, format="%Y-%m-%d",),
@@ -161,22 +164,6 @@ class MSGraphGrantForm(forms.ModelForm):
         self.fields["app_id"].disabled = True
 
 
-class MSGraphGrantScannerForm(MSGraphGrantForm):
-    """ Form for use in Scanner Create/Update. """
-    class Meta:
-        model = GraphGrant
-        exclude = ('last_email_date',)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields["_client_secret"].initial = ""
-        self.fields["tenant_id"].initial = ""
-        self.fields["app_id"].initial = ""
-        self.fields["organization"].disabled = False
-        self.fields["tenant_id"].disabled = False
-        self.fields["app_id"].disabled = False
-
-
 class MSGraphClientSecretExpiryMixin:
     """Mixin supporting HTMX updates of form values,
      specifically the expiry date field for MSGraphGrant."""
@@ -185,15 +172,20 @@ class MSGraphClientSecretExpiryMixin:
         self.end_date = kwargs.get("end_date")
         return super().get(request, *args, **kwargs)
 
+    def add_prefix(self, field_name):
+        """The field's name as it's posted, i.e. with the form's prefix (as Form.add_prefix)."""
+        prefix = self.get_prefix()
+        return f"{prefix}-{field_name}" if prefix else field_name
+
     def get_form_kwargs(self, *args, **kwargs):
         """Return the keyword arguments for instantiating the form."""
         kwargs = super().get_form_kwargs()
 
-        if self.request.method == "POST" and self.request.headers.get(
-                "HX-Request", False) == "true":
+        if (self.request.method == "POST"
+                and self.request.headers.get("HX-Trigger-Name") == "fetch-expiry-date"):
             # request.POST is an immutable querydict, copying to circumvent.
             post_copy = self.request.POST.copy()
-            post_copy["expiry_date"] = self.end_date
+            post_copy[self.add_prefix("expiry_date")] = self.end_date
             kwargs.update({
                 'data': post_copy,
             })
@@ -214,12 +206,14 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
 
 
 class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, GrantExtraMixin,  CreateView):
+                             MSGraphClientSecretExpiryMixin, GrantModalMixin,
+                             GrantExtraMixin, CreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.add_graphgrant"
     template_name = "grants/graphgrant_update.html"
     success_url = reverse_lazy('grant-list')
+    modal_field_actions = {"expiry_date": "grants/fetch_expiry_date_button.html"}
 
     def get_form(self, form_class=None):
         # TODO: Maybe allow edits of app & tenant id in general, then this override can be removed.
@@ -244,9 +238,9 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
             htmx_trigger = self.request.headers.get("HX-Trigger-Name")
             if htmx_trigger == "fetch-expiry-date":
                 gg = GraphGrant(
-                    app_id=request.POST.get("app_id"),
-                    tenant_id=request.POST.get("tenant_id"),
-                    client_secret=request.POST.get("_client_secret")
+                    app_id=request.POST.get(self.add_prefix("app_id")),
+                    tenant_id=request.POST.get(self.add_prefix("tenant_id")),
+                    client_secret=request.POST.get(self.add_prefix("_client_secret"))
 
                 )
                 end_date = gg.expiry_date  # Defining variable, as it's used in the return
@@ -273,8 +267,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
                     )
                 return self.get(request, *args, end_date=end_date)
 
-        else:
-            return super().post(request, *args, **kwargs)
+        return super().post(request, *args, **kwargs)
 
 
 class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,

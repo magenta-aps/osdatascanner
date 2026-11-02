@@ -3,10 +3,11 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import json
+
 from django.forms import ModelChoiceField
 from django.http import HttpResponse
-from django.template.loader import render_to_string
-from django.contrib.auth import PermissionDenied
+from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.organizations.models.grant_extra import (GrantExtra,
                                                                             GrantExtraForm)
@@ -26,31 +27,25 @@ def grant_permission_map(field_name: str) -> str:
     return grant_permission_name_map[field_name]
 
 
+def grant_create_url_map(field_name: str) -> str:
+    grant_create_url_names = {
+        "smb_grant": "smbgrant-create",
+        "ews_grant": "ewsgrant-create",
+        "graph_grant": "msgraphgrant-create",
+        "google_api_grant": "googleapigrant-create",
+    }
+    return grant_create_url_names[field_name]
+
+
 class GrantMixin:
-    """Mixin for dynamic grant form support."""
+    """Sets up the grant dropdowns on the scanner forms.
 
-    def get_grant_form_classes(self) -> dict:
+    New grants are created in a modal from the "+" next to each dropdown (see GrantModalMixin)."""
+
+    def get_grant_models(self) -> dict:
         """Override this method to return a dictionary of grant
-         form classes and their corresponding field."""
+         fields and their corresponding grant model."""
         raise NotImplementedError("Subclasses should implement this method.")
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        self.is_htmx = self.request.headers.get('HX-Request')
-
-        if self.is_htmx == "true":
-            field_name = self.request.GET.get("grant_type")
-            if not self.request.user.has_perm(f"grants.add_{grant_permission_map(field_name)}"):
-                raise PermissionDenied
-            GrantFormClass = self.get_grant_form_classes().get(field_name)
-
-            if GrantFormClass:
-                context["grant_form"] = GrantFormClass(
-                    prefix=field_name,
-                    initial={"organization": self.request.GET.get("organization")}
-                    )
-
-        return context
 
     def get_form(self, form_class=None):
         if form_class is None:
@@ -59,57 +54,17 @@ class GrantMixin:
         form = super().get_form(form_class)
         user = UserWrapper(self.request.user)
 
-        for field_name, GrantFormClass in self.get_grant_form_classes().items():
-            grant_qs = GrantFormClass.Meta.model.objects.filter(user.make_org_Q())
+        for field_name, GrantModel in self.get_grant_models().items():
+            grant_qs = GrantModel.objects.filter(user.make_org_Q())
             # Conditionally required. Should be required when there's only one option, but can't
             # be, when there's two or more. (F.e. ExchangeScanner)
             form.fields[field_name] = ModelChoiceField(grant_qs, empty_label=None,
                                                        label=form.fields[field_name].label,
                                                        required=False if
-                                                       len(self.get_grant_form_classes()) >= 2
+                                                       len(self.get_grant_models()) >= 2
                                                        else True)
 
         return form
-
-    def post(self, request, *args, **kwargs):
-        self.is_htmx = request.headers.get('HX-Request')
-
-        if self.is_htmx == "true":
-            context = {}
-            response = HttpResponse()
-            scanner_form = self.get_form()
-
-            field_name = request.POST.get("grant_type")
-            GrantFormClass = self.get_grant_form_classes().get(field_name)
-
-            grant_form = GrantFormClass(request.POST, prefix=field_name)
-
-            if request.FILES:
-                grant_form.files = request.FILES
-
-            if grant_form.is_valid():
-                grant = grant_form.save()
-                scanner_form.data = scanner_form.data.copy()
-                scanner_form.data[field_name] = grant.pk
-
-                grant_field = scanner_form[field_name]
-                response.write(
-                    render_to_string(
-                        "components/scanner/scanner_form_select_option_field.html",
-                        {
-                            "field": grant_field,
-                            "selected_value": grant.pk,
-                        },
-                        request=request
-                    )
-                )
-                return response
-
-            context["grant_form"] = grant_form
-            context["form"] = scanner_form
-            return self.render_to_response(context)
-
-        return super().post(request, *args, **kwargs)
 
 
 class GrantExtraMixin:
@@ -136,4 +91,67 @@ class GrantExtraMixin:
         else:
             return self.form_invalid(form)
 
+        return response
+
+
+class GrantModalMixin:
+    """Lets a grant create view render inside a modal dialog when it's requested with htmx.
+    Instead of the full page, it renders the form as a modal, and on success it returns
+    204 with a "grantCreated" event rather than redirecting to the grant list."""
+
+    modal_template_name = "components/modals/modal__create-grant.html"
+    modal_id = "grant-modal"
+    modal_field_actions = {}
+
+    def get_field(self):
+        """The scanner form field to update once the grant is saved."""
+        return self.request.GET.get("field") or self.request.POST.get("field")
+
+    def is_modal(self):
+        # Only the modal sends "field". Other htmx requests to the view (e.g. the Graph
+        # grant page's "fetch expiry date"), get the normal page:
+        return self.request.headers.get("HX-Request") == "true" and bool(self.get_field())
+
+    def get_template_names(self):
+        if self.is_modal():
+            return [self.modal_template_name]
+        return super().get_template_names()
+
+    def get_prefix(self):
+        if self.is_modal():
+            # The scanner form has fields with the same names (e.g. "organization"), so prefix
+            # the grant form's fields to keep their ids unique on the page:
+            return "grant"
+        return super().get_prefix()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if self.is_modal():
+            # Hidden fields are rendered separately by the template:
+            visible = [*context["form"].visible_fields(), *context["extra_form"].visible_fields()]
+
+            # Start in the first field the user can fill in, rather than on the close button:
+            first = next((bf for bf in visible if not bf.field.disabled), None)
+            if first:
+                first.field.widget.attrs["autofocus"] = True
+
+            context |= {
+                "modal_id": self.modal_id,
+                "close_label": _("Close without saving the grant."),
+                "field": self.get_field(),
+                "items": [{"type": "field", "bf": bf, "errors": bf.errors,
+                           "action": self.modal_field_actions.get(bf.name)} for bf in visible],
+            }
+        return context
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        # GrantExtraMixin returns form_invalid if the extra form doesn't validate:
+        if self.is_modal() and response.status_code == 302:
+            response = HttpResponse(status=204)
+            response["HX-Trigger"] = json.dumps({"grantCreated": {
+                "field": self.get_field(),
+                "pk": str(self.object.pk),
+                "label": str(self.object),
+            }})
         return response

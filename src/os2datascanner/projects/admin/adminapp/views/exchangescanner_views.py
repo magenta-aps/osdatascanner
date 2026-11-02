@@ -9,8 +9,7 @@ from django.views import View
 from rest_framework.generics import ListAPIView
 import re
 
-from os2datascanner.projects.admin.organizations.views import EWSGrantScannerForm
-from os2datascanner.projects.admin.organizations.views import MSGraphGrantScannerForm
+from os2datascanner.projects.grants.models import EWSGrant, GraphGrant
 from os2datascanner.projects.admin.utilities import UserWrapper
 from .utils.grant_mixin import GrantMixin
 
@@ -87,14 +86,14 @@ class ExchangeScannerCreate(ExchangeScannerBase, GrantMixin, ScannerCreate):
         fields.append("graph_grant")
     type = 'exchange'
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -123,14 +122,14 @@ class ExchangeScannerCopy(ExchangeScannerBase, GrantMixin, ScannerCopy):
     model = ExchangeScanner
     fields = ScannerBase.fields + exchange_scanner_fields
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
@@ -167,14 +166,14 @@ class ExchangeScannerUpdate(ExchangeScannerBase, GrantMixin, ScannerUpdate):
         fields.append("graph_grant")
     type = 'exchange'
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.
@@ -321,14 +320,14 @@ class ExchangeCalendarScannerCreate(ExchangeCalendarScannerBase, GrantMixin, Sca
         fields.append("graph_grant")
     type = 'exchangecalendar'
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     def get_success_url(self):
         """The URL to redirect to after successful creation."""
@@ -357,14 +356,14 @@ class ExchangeCalendarScannerCopy(ExchangeCalendarScannerBase, GrantMixin, Scann
     model = ExchangeCalendarScanner
     fields = ScannerBase.fields + exchange_calendar_scanner_fields
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     if settings.MSGRAPH_EWS_AUTH:
         fields.append("graph_grant")
@@ -401,14 +400,14 @@ class ExchangeCalendarScannerUpdate(ExchangeCalendarScannerBase, GrantMixin, Sca
         fields.append("graph_grant")
     type = 'exchangecalendar'
 
-    def get_grant_form_classes(self):
+    def get_grant_models(self):
         if settings.MSGRAPH_EWS_AUTH:
             return {
-                "ews_grant": EWSGrantScannerForm,
-                "graph_grant": MSGraphGrantScannerForm
+                "ews_grant": EWSGrant,
+                "graph_grant": GraphGrant
             }
 
-        return {"ews_grant": EWSGrantScannerForm}
+        return {"ews_grant": EWSGrant}
 
     def get_success_url(self):
         """The URL to redirect to after successful updating.

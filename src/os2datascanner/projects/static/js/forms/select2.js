@@ -1,7 +1,11 @@
 (($) => {
   htmx.onLoad(() => {
     // Initiate Select2 on all selects:
-    const $selects = $("select.select2").select2();
+    const $selects = $("select.select2").each(function () {
+      // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
+      const $dialog = $(this).closest("dialog");
+      $(this).select2($dialog.length ? { dropdownParent: $dialog } : {});
+    });
 
     // Translations:
     const PLACEHOLDER_TEXT = gettext("Search...");
