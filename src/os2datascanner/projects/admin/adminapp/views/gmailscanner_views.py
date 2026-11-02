@@ -66,15 +66,14 @@ class GmailScannerUpdate(GrantMixin, ScannerUpdate):
         return {"google_api_grant": GoogleApiGrant}
 
 
-class GmailScannerCopy(ScannerCopy):
+class GmailScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing GmailScanner"""
 
     model = GmailScanner
     fields = ScannerBase.fields + gmail_scanner_fields
 
-    def get_initial(self):
-        initial = super(GmailScannerCopy, self).get_initial()
-        return initial
+    def get_grant_models(self):
+        return {"google_api_grant": GoogleApiGrant}
 
 
 class GmailScannerCleanup(ScannerCleanupStaleAccounts):

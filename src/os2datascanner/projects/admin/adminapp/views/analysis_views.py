@@ -7,7 +7,6 @@ import structlog
 from django.shortcuts import HttpResponseRedirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import TemplateView
-from django.views.generic.detail import DetailView
 
 from os2datascanner.projects.admin.core.models import Administrator
 from os2datascanner.projects.admin.organizations.models import Organization
@@ -17,6 +16,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.msgraph import MS
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
     ExchangeScanner)
 from os2datascanner.projects.admin.core.models.background_job import JobState
+from os2datascanner.projects.admin.adminapp.views.views import RestrictedDetailView
 import json
 
 logger = structlog.get_logger("adminapp")
@@ -90,7 +90,7 @@ def start_analysis_job(scanner: Scanner):
         logger.info(f"It is not possible to start analysis job for {scanner}")
 
 
-class AnalysisJobRunView(LoginRequiredMixin, DetailView):
+class AnalysisJobRunView(RestrictedDetailView):
     """Base class for view that handles starting of an analysis job"""
 
     model = Scanner

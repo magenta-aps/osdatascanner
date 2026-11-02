@@ -21,13 +21,15 @@ from django.forms import ModelMultipleChoiceField, ModelChoiceField
 from django.utils.translation import gettext_lazy as _
 from django.views.generic.edit import CreateView, UpdateView
 
-from os2datascanner.projects.admin.organizations.models import Organization, Account, Alias
+from os2datascanner.projects.admin.organizations.models import (
+    Organization, OrganizationalUnit, Account, Alias)
 from os2datascanner.projects.admin.utilities import UserWrapper
 
 from .views import RestrictedListView, RestrictedCreateView, \
     RestrictedUpdateView, RestrictedDetailView, RestrictedDeleteView, \
     OrgRestrictedMixin
 from ..models.rules import Rule
+from ..models.MSGraphSharePointSite import MSGraphSharePointSite
 from ..models.scannerjobs.scanner import Scanner
 from ..models.scannerjobs.filescanner import FileScanner
 from ..models.scannerjobs.webscanner import WebScanner
@@ -47,6 +49,16 @@ from .utils.remediators import reconcile_remediators
 from ...organizations.models.aliases import AliasType
 
 logger = structlog.get_logger("adminapp")
+
+
+def get_possible_contacts(orgs):
+    """Returns the users who can be contacts for scanners in the given organizations."""
+    return get_user_model().objects.filter(
+        Q(administrator_for__client__in=orgs.values("client")) |
+        Q(groups__permissions__codename="view_client") |
+        Q(user_permissions__codename="view_client") |
+        Q(is_superuser=True)
+    ).distinct()
 
 
 class ScannerViewType(Enum):
@@ -251,6 +263,14 @@ class ScannerBase(object):
             validators=ModelMultipleChoiceField.default_validators,
         )
 
+        form.fields["contacts"].queryset = get_possible_contacts(org_qs)
+        if "org_units" in form.fields:
+            form.fields["org_units"].queryset = OrganizationalUnit.objects.filter(
+                organization__in=org_qs)
+        if "sharepoint_sites" in form.fields:
+            form.fields["sharepoint_sites"].queryset = MSGraphSharePointSite.objects.filter(
+                organization__in=org_qs)
+
         return form
 
     def get_selected_org(self, org_qs):
@@ -291,9 +311,10 @@ class ScannerBase(object):
                 _value=self.object.pk).exclude(
                 account__uuid__in=remediator_uuids).delete()
             # Create new remediator aliases
-            for remediator_uuid in remediator_uuids:
+            for account in Account.objects.filter(
+                    uuid__in=remediator_uuids, organization=self.object.organization):
                 Alias.objects.get_or_create(
-                    account=Account.objects.get(uuid=remediator_uuid),
+                    account=account,
                     _alias_type=AliasType.REMEDIATOR,
                     _value=self.object.pk)
 
@@ -313,12 +334,7 @@ class ScannerBase(object):
         context["universal_remediators"] = Account.objects.filter(Q(organization=selected_org) & Q(
             aliases___alias_type=AliasType.REMEDIATOR) & Q(aliases___value=0))
 
-        context["possible_contacts"] = get_user_model().objects.filter(
-            Q(administrator_for__client=selected_org.client) |
-            Q(groups__permissions__codename="view_client") |
-            Q(user_permissions__codename="view_client") |
-            Q(is_superuser=True)
-        ).distinct()
+        context["possible_contacts"] = get_possible_contacts(orgs.filter(pk=selected_org.pk))
 
         context["supports_rule_preexec"] = getattr(
                 self.model, "supports_rule_preexec", False)
@@ -471,7 +487,7 @@ class ScannerDelete(PermissionRequiredMixin, RestrictedDeleteView):
         return response
 
 
-class ScannerCopy(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
+class ScannerCopy(PermissionRequiredMixin, ScannerBase, OrgRestrictedMixin, RestrictedCreateView):
     """Creates a copy of an existing scanner. """
     scanner_view_type = ScannerViewType.COPY
 
@@ -654,11 +670,10 @@ class RecreateScannerView(PermissionRequiredMixin, RestrictedUpdateView):
     permission_required = "os2datascanner.unhide_scanner"
     model = Scanner
 
+    queryset = Scanner.objects.unfiltered().filter(hidden=True)
+
     def get_success_url(self):
         return reverse_lazy("removed_scanners")
-
-    def get_queryset(self):
-        return Scanner.objects.unfiltered().filter(hidden=True)
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
