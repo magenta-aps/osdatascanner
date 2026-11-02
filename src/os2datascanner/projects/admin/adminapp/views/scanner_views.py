@@ -10,8 +10,7 @@ from json import dumps
 from pika.exceptions import AMQPError
 
 from django.db.models import Q
-from django.core.exceptions import PermissionDenied
-from django.contrib.auth import get_user_model
+from django.core.exceptions import PermissionDenied, ValidationError
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
@@ -44,21 +43,12 @@ from ..models.scannerjobs.googleshareddrivescannner import GoogleSharedDriveScan
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
 
 from ..models.scannerjobs.scanner_helpers import CoveredAccount
+from ..forms.shared import get_possible_contacts
 from ..utils import CleanAccountMessage
 from .utils.remediators import reconcile_remediators
 from ...organizations.models.aliases import AliasType
 
 logger = structlog.get_logger("adminapp")
-
-
-def get_possible_contacts(orgs):
-    """Returns the users who can be contacts for scanners in the given organizations."""
-    return get_user_model().objects.filter(
-        Q(administrator_for__client__in=orgs.values("client")) |
-        Q(groups__permissions__codename="view_client") |
-        Q(user_permissions__codename="view_client") |
-        Q(is_superuser=True)
-    ).distinct()
 
 
 class ScannerViewType(Enum):
@@ -273,8 +263,17 @@ class ScannerBase(object):
 
         return form
 
+    def get_posted_org(self, org_qs):
+        """Returns the organization submitted in the form, if the user may
+        administer it."""
+        try:
+            return org_qs.filter(pk=self.request.POST.get("organization")).first()
+        except ValidationError:
+            return None
+
     def get_selected_org(self, org_qs):
-        return self.get_object().organization or \
+        return self.get_posted_org(org_qs) or \
+            self.get_object().organization or \
             org_qs.filter(pk=self.request.GET.get("organization")).first() or \
             org_qs.first()
 
@@ -358,6 +357,21 @@ class ScannerBase(object):
                                _("You should either choose organizational units to scan, "
                                  "or choose to scan the entire organization."))
                 return super().form_invalid(form)
+
+        org = data["organization"]
+        if "org_units" in data and data["org_units"].exclude(organization=org).exists():
+            form.add_error("org_units", _("Must belong to the selected organization."))
+        if data.get("contacts") and data["contacts"].exclude(
+                pk__in=get_possible_contacts(Organization.objects.filter(pk=org.pk))).exists():
+            form.add_error("contacts", _("Must belong to the selected organization."))
+        # SharePoint sites are synchronised under the organization of their grant
+        if data.get("sharepoint_sites") and data.get("graph_grant") and data[
+                "sharepoint_sites"].exclude(organization=data["graph_grant"].organization).exists():
+            form.add_error("sharepoint_sites",
+                           _("Must belong to the organization of the selected grant."))
+        if form.errors:
+            return super().form_invalid(form)
+
         return super().form_valid(form)
 
 
@@ -373,7 +387,9 @@ class ScannerCreate(PermissionRequiredMixin, ScannerBase, RestrictedCreateView):
         return response
 
     def get_selected_org(self, org_qs):
-        return org_qs.filter(pk=self.request.GET.get("organization")).first() or org_qs.first()
+        return self.get_posted_org(org_qs) or \
+            org_qs.filter(pk=self.request.GET.get("organization")).first() or \
+            org_qs.first()
 
 
 class ScannerUpdate(PermissionRequiredMixin, ScannerBase, RestrictedUpdateView):
