@@ -1,11 +1,16 @@
 (($) => {
-  htmx.onLoad(() => {
-    // Initiate Select2 on all selects:
-    const $selects = $("select.select2").each(function () {
-      // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
-      const $dialog = $(this).closest("dialog");
-      $(this).select2($dialog.length ? { dropdownParent: $dialog } : {});
-    });
+  htmx.onLoad((elt) => {
+    // Initiate Select2 on the selects in what htmx just loaded (the whole page on the first
+    // load), skipping those already set up (select2 marks them select2-hidden-accessible):
+    const $selects = $(elt)
+      .find("select.select2")
+      .addBack("select.select2")
+      .not(".select2-hidden-accessible")
+      .each(function () {
+        // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
+        const $dialog = $(this).closest("dialog");
+        $(this).select2($dialog.length ? { dropdownParent: $dialog } : {});
+      });
 
     // Translations:
     const PLACEHOLDER_TEXT = gettext("Search...");

@@ -1211,6 +1211,19 @@ input[type="file"]::file-selector-button:hover {
       }
     }
 
+    // Grant dropdown with its "+" (GrantSelectWidget):
+    .grant-select {
+      @include layout-horizontal(0.5rem);
+
+      flex: 1;
+      min-width: 0;
+
+      select {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
     &__error {
       padding-left: 3rem;
       list-style-type: "⚠️";

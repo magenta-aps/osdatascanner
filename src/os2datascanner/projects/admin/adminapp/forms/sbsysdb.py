@@ -6,7 +6,7 @@
 from django.utils.translation import gettext_lazy as _
 
 from ..models.scannerjobs.sbsysdb import SBSYSDBScanner
-from .shared import Groups, ScannerForm, ScanScopeMixin
+from .shared import Excludes, Groups, ScannerForm, ScanScopeMixin
 
 
 class SBSYSDBScannerForm(ScanScopeMixin, ScannerForm):
@@ -50,7 +50,4 @@ class SBSYSDBScannerForm(ScanScopeMixin, ScannerForm):
 
     class Meta:
         model = SBSYSDBScanner
-        exclude = ("pk", "dtstart", "validation_method",)
-        widgets = {
-            # "name": widgets.PasswordInput(),
-        }
+        exclude = Excludes.BASE

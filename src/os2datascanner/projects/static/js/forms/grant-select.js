@@ -1,4 +1,4 @@
-/* ***** Grant select - used by scanner_form_grant_select_option_field.html ***** */
+/* ***** Grant select - used by scanner_form_grant_select_option_field.html and grant_select.html ***** */
 
 // The "+" next to a grant dropdown loads a modal for creating a new grant. When the grant
 // is saved, the server sends a "grantCreated" event, and this adds it to the dropdown.

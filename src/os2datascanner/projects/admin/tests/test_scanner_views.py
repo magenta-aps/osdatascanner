@@ -12,6 +12,7 @@ from django.contrib.auth.models import Permission
 
 from ..adminapp.views.scanner_views import RemovedScannersView
 from ..adminapp.models.scannerjobs.scanner import Scanner
+from ..adminapp.models.scannerjobs.filescanner import FileScanner
 from ..adminapp.models.scannerjobs.sbsysdb import SBSYSDBScanner
 from ..organizations.models import Alias, AliasType
 
@@ -524,13 +525,17 @@ class TestScannerDfOrgRestriction:
         assert not Scanner.objects.filter(name="Barovia").exists()
 
 
-@pytest.fixture(params=["web", "sbsys"])
+@pytest.fixture(params=["web", "file", "sbsys"])
 def df_case(request, test_org, basic_rule):
     """A scanner, its URL name prefix and the POST data its form needs to validate."""
     base = {"organization": test_org.uuid, "rule": basic_rule.pk}
     if request.param == "web":
         scanner = request.getfixturevalue("web_scanner")
         extra = {"url": "http://www.example.com/"}
+    elif request.param == "file":
+        scanner = request.getfixturevalue("file_scanner")
+        extra = {"unc": "//candlekeep/library",
+                 "smb_grant": request.getfixturevalue("smb_grant").pk}
     else:
         scanner = request.getfixturevalue("sbsysdb_scanner")
         extra = {"grant": request.getfixturevalue("smb_grant").pk,
@@ -614,3 +619,41 @@ class TestScannerDfViews:
         assert scanner.name == original_name
         assert scanner.validation_status == Scanner.VALID
         assert _remediator_accounts(scanner) == set()
+
+
+@pytest.mark.django_db
+class TestScannerDfGrants:
+
+    def test_only_organization_grants_possible(
+            self, client, user_admin, smb_grant, other_smb_grant):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+
+        response = client.get(reverse_lazy("filescanner_add"))
+
+        assert list(response.context_data["form"].fields["smb_grant"].queryset) == [smb_grant]
+
+    def test_other_organization_grant_rejected(
+            self, client, user_admin, test_org, basic_rule, other_smb_grant):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        client.force_login(user_admin)
+
+        response = client.post(
+            reverse_lazy("filescanner_add"),
+            {"name": "Barovia", "organization": test_org.uuid, "rule": basic_rule.pk,
+             "unc": "//candlekeep/library", "smb_grant": other_smb_grant.pk})
+
+        assert response.status_code == 200
+        assert "smb_grant" in response.context_data["form"].errors
+        assert not FileScanner.objects.filter(name="Barovia").exists()
+
+    @pytest.mark.parametrize("has_perm", [True, False])
+    def test_create_grant_button_follows_permission(self, client, user_admin, has_perm):
+        user_admin.user_permissions.add(Permission.objects.get(codename="add_scanner"))
+        if has_perm:
+            user_admin.user_permissions.add(Permission.objects.get(codename="add_smbgrant"))
+        client.force_login(user_admin)
+
+        response = client.get(reverse_lazy("filescanner_add"))
+
+        assert response.context_data["form"].fields["smb_grant"].widget.can_add is has_perm

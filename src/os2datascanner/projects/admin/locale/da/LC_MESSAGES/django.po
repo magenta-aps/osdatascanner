@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 14:37+0200\n"
+"POT-Creation-Date: 2026-11-02 14:27+0100\n"
 "PO-Revision-Date: 2021-08-07 09:10+0200\n"
 "Last-Translator: Magenta Aps\n"
 "Language-Team: 2. sal\n"
@@ -88,6 +88,27 @@ msgstr "Sæt fjernet-status til False"
 msgid "Changed {qs_count} elements resolved-status to False"
 msgstr "Ændrede {qs_count} elementers ny-status til False"
 
+#: adminapp/forms/filescanner.py
+msgid "e.g. //network-domain/top-folder"
+msgstr "f.eks. //network-domain/top-folder"
+
+#: adminapp/forms/filescanner.py
+msgid "e.g. P"
+msgstr "f.eks. P"
+
+#: adminapp/forms/filescanner.py
+msgid "File scanner settings"
+msgstr "Filscannerindstillinger"
+
+#: adminapp/forms/filescanner.py
+msgid "Advanced file scanner settings"
+msgstr "Avancerede filscannerindstillinger"
+
+#: adminapp/forms/filescanner.py adminapp/forms/sbsysdb.py
+#: adminapp/forms/webscanner.py
+msgid "Scan settings"
+msgstr "Scanindstillinger"
+
 #: adminapp/forms/sbsysdb.py
 msgid "e.g. https://sbsip.vstkom.internal/a-sag/"
 msgstr "fx https://sbsip.vstkom.internal/a-sag/"
@@ -103,10 +124,6 @@ msgstr "Indstillinger for SBSYS-databaseforbindelsen"
 #: adminapp/forms/sbsysdb.py
 msgid "Advanced SBSYS scan settings"
 msgstr "Avancerede SBSYS-indstillinger"
-
-#: adminapp/forms/sbsysdb.py adminapp/forms/webscanner.py
-msgid "Scan settings"
-msgstr "Scanindstillinger"
 
 #: adminapp/forms/shared.py
 #: organizations/templates/organizations/org_update.html
@@ -190,6 +207,11 @@ msgstr ""
 #: adminapp/forms/shared.py
 msgid "E.g. 10"
 msgstr "F.eks. 10"
+
+#: adminapp/forms/shared.py
+#, python-format
+msgid "Choose %(grant)s"
+msgstr "Vælg %(grant)s"
 
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
@@ -3325,14 +3347,6 @@ msgstr "Domænet er ugyldigt"
 msgid "e.g. @example.com"
 msgstr "f.eks. @example.com"
 
-#: adminapp/views/filescanner_views.py
-msgid "e.g. //network-domain/top-folder"
-msgstr "f.eks. //network-domain/top-folder"
-
-#: adminapp/views/filescanner_views.py
-msgid "Drive letter"
-msgstr "Drevbogstav"
-
 #: adminapp/views/miniscanner_views.py adminapp/views/rule_views.py
 msgid ""
 "The 'exceptions'-string must be a comma-separated list of 10-digit numbers."
@@ -3377,13 +3391,13 @@ msgstr "Formateringsfejl"
 msgid "This rule cannot be deleted, because it's associated with a scanner."
 msgstr "Denne regel kan ikke slettes, da den bliver benyttet af en scanner."
 
-#: adminapp/views/sbsysdb.py adminapp/views/scanner_views.py
-msgid "Copy"
-msgstr "Kopi"
-
 #: adminapp/views/scanner_views.py
 msgid "User is not administrator for any client"
 msgstr "Brugeren er ikke administrator for en kunde"
+
+#: adminapp/views/scanner_views.py tests/test_scanner_views.py
+msgid "Copy"
+msgstr "Kopi"
 
 #: adminapp/views/scanner_views.py
 msgid ""
@@ -4451,6 +4465,11 @@ msgstr ""
 "autentificering mod Office 365, men en korrekt konfigureret Graph bevilling "
 "kan."
 
+#: organizations/templates/grants/fetch_expiry_date_button.html
+#: organizations/templates/grants/graphgrant_update.html
+msgid "fetch expiry date"
+msgstr "hent udløbsdato"
+
 #: organizations/templates/grants/googleapigrant_update.html
 msgid ""
 "A Google API Grant represents a service account with access to your Google "
@@ -4478,10 +4497,6 @@ msgstr ""
 #: organizations/templates/organizations/grants_list.html
 msgid "edit grant"
 msgstr "redigér bevillinger"
-
-#: organizations/templates/grants/graphgrant_update.html
-msgid "fetch expiry date"
-msgstr "hent udløbsdato"
 
 #: organizations/templates/grants/graphgrant_update.html
 msgid ""
@@ -5086,8 +5101,8 @@ msgid ""
 "azure/azure-setup-guide/'>Azure setup guide</a>."
 msgstr ""
 "Du får en ny client secret på Azure-portalen: Find den app, der er oprettet "
-"til OSdatascanner, og følg trin 7 og 8 i <a href='https://os2datascanner."
-"readthedocs.io/azure/azure-setup-guide/'>vejledningen til "
+"til OSdatascanner, og følg trin 7 og 8 i <a href='https://"
+"os2datascanner.readthedocs.io/azure/azure-setup-guide/'>vejledningen til "
 "Azure-opsætning</a>."
 
 #: organizations/views/msgraph_views.py
