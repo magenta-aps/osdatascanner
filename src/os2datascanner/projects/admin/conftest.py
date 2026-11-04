@@ -37,6 +37,7 @@ from os2datascanner.projects.admin.adminapp.models.scannerjobs.scanner_helpers i
         ScanStatus, ScheduledCheckup, MIMETypeProcessStat)
 from os2datascanner.projects.admin.adminapp.models.usererrorlog import UserErrorLog
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.webscanner import WebScanner
+from os2datascanner.projects.admin.adminapp.models.scannerjobs.filescanner import FileScanner
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.exchangescanner import (
     ExchangeScanner)
 from os2datascanner.projects.admin.adminapp.models.scannerjobs.gmail import GmailScanner
@@ -184,6 +185,16 @@ def sbsysdb_scanner(test_org, basic_rule):
 
 
 @pytest.fixture
+def file_scanner(test_org, basic_rule):
+    return FileScanner.objects.create(
+        name=f"SomeFileScanner-{test_org.name}",
+        organization=test_org,
+        unc="//candlekeep/library",
+        rule=basic_rule
+    )
+
+
+@pytest.fixture
 def web_scanner_execution(web_scanner):
     return ScanStatus.objects.create(
         scan_tag=ScanTagFragment(
@@ -293,6 +304,15 @@ def smb_grant(test_org):
         username="MrMicrosoft",
         password="secretPassword",
         organization=test_org,
+    )
+
+
+@pytest.fixture
+def other_smb_grant(other_org):
+    return SMBGrant.objects.create(
+        username="MrOtherMicrosoft",
+        password="otherSecretPassword",
+        organization=other_org,
     )
 
 
