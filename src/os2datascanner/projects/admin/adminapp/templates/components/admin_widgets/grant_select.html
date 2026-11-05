@@ -14,6 +14,7 @@
   {# Like django/forms/widgets/select.html, but with select2 instead: #}
   <select class="custom-field custom-field--select select2"
           name="{{ widget.name }}"
+          data-selected-first
           data-empty-message="{{ empty_message }}"
           {% if not can_add %}data-empty-note="{{ empty_note }}"{% endif %}
           {% include "django/forms/widgets/attrs.html" %}>

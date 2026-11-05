@@ -16,6 +16,13 @@
         $(this).select2({
           // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
           ...($dialog.length ? { dropdownParent: $dialog } : {}),
+          // A select marked data-selected-first lists its choice first:
+          ...("selectedFirst" in this.dataset ? {
+            sorter: (results) => [
+              ...results.filter((data) => data.element.selected),
+              ...results.filter((data) => !data.element.selected),
+            ],
+          } : {}),
           matcher: (params, data) => (isAction(data) ? data : defaultMatcher(params, data)),
           templateResult: (data, container) => {
             if (isAction(data)) {
