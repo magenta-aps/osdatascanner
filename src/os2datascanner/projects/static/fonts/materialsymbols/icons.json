@@ -51,6 +51,7 @@
     "query_stats",
     "report",
     "rocket",
+    "search",
     "settings",
     "step_over",
     "sync",
