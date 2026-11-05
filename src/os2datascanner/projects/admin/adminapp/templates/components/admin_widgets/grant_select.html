@@ -1,7 +1,16 @@
 <div id="{{ widget.attrs.id }}_wrapper"
      class="grant-select"
      {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}>
-  {% include "django/forms/widgets/select.html" %}
+  {# Like django/forms/widgets/select.html, but with select2 instead: #}
+  <select class="custom-field custom-field--select select2"
+          name="{{ widget.name }}"
+          {% include "django/forms/widgets/attrs.html" %}>
+    {% for group_name, group_choices, group_index in widget.optgroups %}
+      {% for option in group_choices %}
+        {% include option.template_name with widget=option %}
+      {% endfor %}
+    {% endfor %}
+  </select>
 
   {# Like the "+" in components/scanner/scanner_form_grant_select_option_field.html: #}
   {% if can_add %}

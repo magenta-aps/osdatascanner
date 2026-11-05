@@ -112,15 +112,18 @@ class GrantSelectWidget(forms.Select):
     def __init__(self, *args, **kwargs):
         self.create_url = None
         self.can_add = False
+        self.grant_label = ""
         super().__init__(*args, **kwargs)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
+        widget_attrs = context["widget"]["attrs"]
         # On organization change, swap the whole widget, not just the dropdown, since the "+"
         # depends on the organization:
-        context["oob"] = context["widget"]["attrs"].pop("hx-swap-oob", None)
+        context["oob"] = widget_attrs.pop("hx-swap-oob", None)
         context["create_url"] = self.create_url
         context["can_add"] = self.can_add
+        widget_attrs["data-placeholder"] = _("Choose %(grant)s") % {"grant": self.grant_label}
         return context
 
 
@@ -314,8 +317,8 @@ class ScannerForm(GroupingModelForm):
         for name, field in self.fields.items():
             if isinstance(field.widget, GrantSelectWidget):
                 field.queryset = field.queryset.filter(organization=self.org)
-                # Sorted by name:
-                field.choices = [("", _("Choose %(grant)s") % {"grant": field.label}), *sorted(
+                # Sorted by name, after an empty option for select2's placeholder:
+                field.choices = [("", ""), *sorted(
                     ((grant.pk, str(grant)) for grant in field.queryset),
                     key=lambda choice: choice[1].casefold())]
                 field.widget.attrs["hx-swap-oob"] = "true"
@@ -323,6 +326,7 @@ class ScannerForm(GroupingModelForm):
                                                   kwargs={"org": self.org.pk})
                 field.widget.can_add = self.user.has_perm(
                     f"grants.add_{grant_permission_map(name)}")
+                field.widget.grant_label = field.label
 
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.
