@@ -10,6 +10,14 @@
         // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
         const $dialog = $(this).closest("dialog");
         $(this).select2($dialog.length ? { dropdownParent: $dialog } : {});
+        const inst = $(this).data("select2");
+
+        // The list is attached to <body>, so mark the single selects' lists for styling:
+        if (!this.multiple) {
+          inst.$dropdown[0]
+            .querySelector(".select2-dropdown")
+            .classList.add("select2-dropdown--single");
+        }
       });
 
     // Translations:
