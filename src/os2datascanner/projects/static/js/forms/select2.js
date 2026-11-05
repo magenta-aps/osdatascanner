@@ -34,9 +34,41 @@
           li.textContent = text;
           return li;
         };
+
+        // Highlight nothing, and tell screen readers so:
+        const clearHighlight = () => {
+          inst.$dropdown[0]
+            .querySelectorAll(".select2-results__option--highlighted")
+            .forEach((option) => option.classList.remove("select2-results__option--highlighted"));
+          inst.$dropdown[0]
+            .querySelector(".select2-search__field")
+            .removeAttribute("aria-activedescendant");
+          inst.$container[0]
+            .querySelector(".select2-selection")
+            .removeAttribute("aria-activedescendant");
+        };
+
+        // An action is only highlighted while the mouse is on it (or the keyboard has moved to it):
+        inst.$dropdown[0].addEventListener("mouseout", (e) => {
+          const action = e.target.closest(".select2-results__option--action");
+          if (action && !action.contains(e.relatedTarget)) {
+            clearHighlight();
+          }
+        });
+
         inst.on("results:all", ({ data, query }) => {
           const list = inst.$dropdown[0].querySelector(".select2-results__options");
           const searching = Boolean((query.term || "").trim());
+
+          // Like a native select, highlight nothing on open when nothing is chosen, and never
+          // highlight an action unless the user goes to it:
+          const highlighted = list.querySelector(".select2-results__option--highlighted");
+          if (!this.multiple && highlighted && (
+            highlighted.classList.contains("select2-results__option--action") ||
+            (!searching && !list.querySelector('[aria-selected="true"]'))
+          )) {
+            clearHighlight();
+          }
 
           // The placeholder's empty option is in the results too, though select2 doesn't show it:
           if (data.results.some((result) => !isAction(result) && result.id !== "")) {
