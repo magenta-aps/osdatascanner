@@ -107,6 +107,14 @@
             .querySelector(".select2-dropdown")
             .classList.add("select2-dropdown--single");
         }
+
+        // Remove old classes so each dropdown opening picks a direction with a fresh assessment:
+        inst.on("close", () => {
+          inst.$dropdown[0]
+            .querySelector(".select2-dropdown")
+            .classList.remove("select2-dropdown--above", "select2-dropdown--below");
+          inst.$container[0].classList.remove("select2-container--above", "select2-container--below");
+        });
       });
 
     // Translations:
