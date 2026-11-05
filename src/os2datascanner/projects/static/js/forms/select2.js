@@ -30,6 +30,8 @@
             }
             return data.text;
           },
+          // select2's own messages are only in English:
+          language: { noResults: () => gettext("No results found") },
         });
 
         // Messages for when there's nothing to choose:
