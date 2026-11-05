@@ -12,7 +12,8 @@ from django.db.models import Q
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
 from os2datascanner.projects.admin.organizations.grant_utils import (grant_create_url_map,
-                                                                     grant_permission_map)
+                                                                     grant_permission_map,
+                                                                     grant_plural_label_map)
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
@@ -116,6 +117,7 @@ class GrantSelectWidget(forms.Select):
         self.create_url = None
         self.can_add = False
         self.grant_label = ""
+        self.grant_label_plural = ""
         super().__init__(*args, **kwargs)
 
     def get_context(self, name, value, attrs):
@@ -127,6 +129,7 @@ class GrantSelectWidget(forms.Select):
         context["create_url"] = self.create_url
         context["can_add"] = self.can_add
         context["grant_label"] = self.grant_label
+        context["grant_label_plural"] = self.grant_label_plural
         widget_attrs["data-placeholder"] = _("Choose %(grant)s") % {"grant": self.grant_label}
         return context
 
@@ -331,6 +334,7 @@ class ScannerForm(GroupingModelForm):
                 field.widget.can_add = self.user.has_perm(
                     f"grants.add_{grant_permission_map(name)}")
                 field.widget.grant_label = field.label
+                field.widget.grant_label_plural = grant_plural_label_map(name)
 
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.

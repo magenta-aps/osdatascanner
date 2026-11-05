@@ -24,7 +24,50 @@
             return data.text;
           },
         });
+
+        // Messages for when there's nothing to choose:
         const inst = $(this).data("select2");
+        const { emptyMessage, emptyNote } = this.dataset;
+        const row = (className, text) => {
+          const li = document.createElement("li");
+          li.className = `select2-results__option ${className}`;
+          li.textContent = text;
+          return li;
+        };
+        inst.on("results:all", ({ data, query }) => {
+          const list = inst.$dropdown[0].querySelector(".select2-results__options");
+          const searching = Boolean((query.term || "").trim());
+
+          // The placeholder's empty option is in the results too, though select2 doesn't show it:
+          if (data.results.some((result) => !isAction(result) && result.id !== "")) {
+            return;
+          }
+
+          if (searching) {
+            // Actions match every search, so select2 doesn't say "No results found" itself:
+            if (data.results.some(isAction)) {
+              const message = row(
+                "select2-results__message",
+                inst.options.get("translations").get("noResults")()
+              );
+              message.setAttribute("role", "alert");
+              message.setAttribute("aria-live", "assertive");
+              list.prepend(message);
+            }
+          } else if (emptyMessage) {
+            // No options at all: show the select's own message (and note) instead of the search:
+            list.querySelectorAll(".select2-results__message").forEach((own) => own.remove());
+            const message = row("select2-results__message", emptyMessage);
+            list.prepend(message);
+            if (emptyNote) {
+              message.after(row("select2-results__note", emptyNote));
+            }
+            // select2's own class for a search field it doesn't show:
+            inst.$dropdown[0]
+              .querySelector(".select2-search--dropdown")
+              .classList.add("select2-search--hide");
+          }
+        });
 
         // The list is attached to <body>, so mark the single selects' lists for styling:
         if (!this.multiple) {
