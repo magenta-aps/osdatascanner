@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-08-14 13:24+0200\n"
+"POT-Creation-Date: 2026-11-05 14:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,6 +56,10 @@ msgstr "Ingen data"
 #: dist/js/forms/clearUploadedFile.js js/forms/clearUploadedFile.js
 msgid "No file chosen"
 msgstr "Ingen valgt fil"
+
+#: dist/js/forms/select2.js js/forms/select2.js
+msgid "No results found"
+msgstr "Ingen resultater fundet"
 
 #: dist/js/forms/select2.js js/forms/select2.js
 msgid "Search..."
