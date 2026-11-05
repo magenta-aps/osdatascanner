@@ -1,6 +1,10 @@
+{% load i18n %}
+
 <div id="{{ widget.attrs.id }}_wrapper"
      class="grant-select"
-     {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}>
+     {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}
+     {% if can_add %}data-grant-create-url="{{ create_url }}" data-grant-field="{{ widget.name }}"{% endif %}>
+
   {# Like django/forms/widgets/select.html, but with select2 instead: #}
   <select class="custom-field custom-field--select select2"
           name="{{ widget.name }}"
@@ -10,18 +14,11 @@
         {% include option.template_name with widget=option %}
       {% endfor %}
     {% endfor %}
+    {% if can_add %}
+      {# A button triggering the "create new grant" modal: #}
+      <option value="create" data-action>
+        {% blocktrans with grant=grant_label %}Create new {{ grant }}{% endblocktrans %}
+      </option>
+    {% endif %}
   </select>
-
-  {# Like the "+" in components/scanner/scanner_form_grant_select_option_field.html: #}
-  {% if can_add %}
-    <button type="button"
-            class="button button--icon-button"
-            hx-get="{{ create_url }}"
-            hx-vals='{"field": "{{ widget.name }}"}'
-            hx-target="#grant-modal-slot">
-      <svg class="icon button__plus-icon">
-        <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-      </svg>
-    </button>
-  {% endif %}
 </div>

@@ -1,4 +1,9 @@
 (($) => {
+  // Options marked data-action (like "Create new …") will be seen as actions instead of choices:
+  const isAction = (data) =>
+    data.element instanceof HTMLOptionElement && "action" in data.element.dataset;
+  const defaultMatcher = $.fn.select2.defaults.defaults.matcher;
+
   htmx.onLoad((elt) => {
     // Initiate Select2 on the selects in what htmx just loaded (the whole page on the first
     // load), skipping those already set up (select2 marks them select2-hidden-accessible):
@@ -7,9 +12,18 @@
       .addBack("select.select2")
       .not(".select2-hidden-accessible")
       .each(function () {
-        // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
         const $dialog = $(this).closest("dialog");
-        $(this).select2($dialog.length ? { dropdownParent: $dialog } : {});
+        $(this).select2({
+          // Inside a modal, the dropdown has to be part of the <dialog>, or the modal covers it:
+          ...($dialog.length ? { dropdownParent: $dialog } : {}),
+          matcher: (params, data) => (isAction(data) ? data : defaultMatcher(params, data)),
+          templateResult: (data, container) => {
+            if (isAction(data)) {
+              container.classList.add("select2-results__option--action");
+            }
+            return data.text;
+          },
+        });
         const inst = $(this).data("select2");
 
         // The list is attached to <body>, so mark the single selects' lists for styling:
@@ -73,6 +87,21 @@
 
       // Also reapply "remove selection"-button tooltips in case dropdown rendering touched them:
       addRemoveTooltip(inst);
+    });
+
+    // Choosing an action fires a native "select2-action" event instead, so other listeners don't
+    // need jQuery:
+    $selects.on("select2:selecting", function (e) {
+      const data = e.params.args.data;
+      if (!isAction(data)) {
+        return;
+      }
+      e.preventDefault();
+      $(this).select2("close");
+      this.dispatchEvent(new CustomEvent("select2-action", {
+        bubbles: true,
+        detail: { option: data.element },
+      }));
     });
 
     // After each select/unselect, reapply "remove selection"-button tooltips:

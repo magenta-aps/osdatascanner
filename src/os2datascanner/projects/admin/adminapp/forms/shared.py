@@ -103,7 +103,10 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
 
 
 class GrantSelectWidget(forms.Select):
-    """Grant dropdown with a "+" for creating a new grant."""
+    """A select2-based grant dropdown whose list ends with a "Create new …" action, opening the
+    create-grant modal, if the user has the permission to create grants. create_url, can_add,
+    and labels are set in the ScannerForm's __init__, since they depend on the selected
+    organization and the user."""
     template_name = "components/admin_widgets/grant_select.html"
 
     class Media:
@@ -118,11 +121,12 @@ class GrantSelectWidget(forms.Select):
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
         widget_attrs = context["widget"]["attrs"]
-        # On organization change, swap the whole widget, not just the dropdown, since the "+"
-        # depends on the organization:
+        # The create action depends on the organization, so the whole widget is swapped when the
+        # selected organization changes:
         context["oob"] = widget_attrs.pop("hx-swap-oob", None)
         context["create_url"] = self.create_url
         context["can_add"] = self.can_add
+        context["grant_label"] = self.grant_label
         widget_attrs["data-placeholder"] = _("Choose %(grant)s") % {"grant": self.grant_label}
         return context
 
