@@ -9,24 +9,14 @@ from django.utils.timezone import now
 
 from os2datascanner.projects.admin.core.models.background_job import (
     BackgroundJob, CounterJob, JobState)
-from os2datascanner.projects.admin.core.views import JOB_ORGANIZATION_PATHS
 from os2datascanner.projects.admin.import_services.models import (
     LDAPImportJob, OS2moImportJob, Realm)
 
-# BackgroundJob subclasses that have no organization.
-JOBS_WITHOUT_ORGANIZATION = {CounterJob}
-
 
 def test_every_job_type_has_organization_path():
-    """Each BackgroundJob subclass must either appear in
-    JOB_ORGANIZATION_PATHS or be listed as having no organization."""
-    covered = {path.split("__")[0] for path in JOB_ORGANIZATION_PATHS}
-
     for job_type in BackgroundJob.__subclasses__():
-        if job_type in JOBS_WITHOUT_ORGANIZATION:
-            continue
-        assert job_type._meta.model_name in covered, (
-            f"{job_type.__name__} has no entry in JOB_ORGANIZATION_PATHS")
+        assert hasattr(job_type, "organization_path"), (
+            f"{job_type.__name__} does not define organization_path")
 
 
 @pytest.fixture
@@ -59,7 +49,9 @@ class TestBackgroundJobViews:
     def test_own_job_status_is_shown(self, client, user_admin, waterdeep_job):
         client.force_login(user_admin)
 
-        assert client.get(status_url(waterdeep_job)).status_code == 200
+        response = client.get(status_url(waterdeep_job))
+        assert response.status_code == 200
+        assert response.context["job"].pk == waterdeep_job.pk
 
     def test_other_client_job_is_404(
             self, client, user_admin, baldurs_gate_job):
@@ -81,12 +73,20 @@ class TestBackgroundJobViews:
         assert client.get(cancel_url(waterdeep_job)).status_code == 405
         assert waterdeep_job.exec_state == JobState.WAITING
 
-        assert client.post(cancel_url(waterdeep_job)).status_code == 200
+        response = client.post(cancel_url(waterdeep_job))
+        assert response.status_code == 200
+        assert response.context["job"].pk == waterdeep_job.pk
+        assert response.context["job"].exec_state == JobState.CANCELLED
         assert waterdeep_job.exec_state == JobState.CANCELLED
 
     def test_superuser_sees_all_jobs(
             self, client, superuser, waterdeep_job, baldurs_gate_job):
         client.force_login(superuser)
 
-        assert client.get(status_url(waterdeep_job)).status_code == 200
-        assert client.get(status_url(baldurs_gate_job)).status_code == 200
+        response = client.get(status_url(waterdeep_job))
+        assert response.status_code == 200
+        assert response.context["job"].pk == waterdeep_job.pk
+
+        response = client.get(status_url(baldurs_gate_job))
+        assert response.status_code == 200
+        assert response.context["job"].pk == baldurs_gate_job.pk

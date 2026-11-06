@@ -51,6 +51,11 @@ class BackgroundJob(models.Model):
 
     objects = InheritanceManager()
 
+    # Path from the subclass to its Organization, or None if it has none.
+    # Jobs without an Organization are only visible to users with access to
+    # all organizations. Every subclass must define this.
+    organization_path: str | None
+
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
     created_at = models.DateTimeField(
@@ -127,6 +132,8 @@ class BackgroundJob(models.Model):
 class CounterJob(BackgroundJob):
     """A CounterJob is an example of how to use BackgroundJob. Its very
     exciting background task is to increment a counter by one every second."""
+    organization_path = None
+
     count_to = models.IntegerField()
     counted_to = models.IntegerField(blank=True, null=True, default=0)
 

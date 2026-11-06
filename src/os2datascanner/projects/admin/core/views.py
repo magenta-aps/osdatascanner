@@ -16,25 +16,16 @@ from os2datascanner.utils.system_utilities import time_now
 from ..utilities import UserWrapper
 from .models.background_job import BackgroundJob, JobState
 
-# Paths from BackgroundJob to the Organization of each subclass that has one.
-# Jobs of other subclasses are only visible to users with access to all
-# organizations.
-JOB_ORGANIZATION_PATHS = (
-    "ldapimportjob__realm__organization",
-    "msgraphimportjob__organization",
-    "os2moimportjob__organization",
-    "googleworkspaceimportjob__organization",
-    "analysisjob__scanner__organization",
-)
-
 
 def get_user_job_or_404(user, pk: UUID) -> BackgroundJob:
     """Returns the BackgroundJob with the given primary key if it belongs to
     an organization the user may administer, and raises Http404 otherwise."""
     wrapper = UserWrapper(user)
     org_q = Q()
-    for path in JOB_ORGANIZATION_PATHS:
-        org_q |= wrapper.make_org_Q(path)
+    for job_type in BackgroundJob.__subclasses__():
+        if job_type.organization_path:
+            org_q |= wrapper.make_org_Q(
+                f"{job_type._meta.model_name}__{job_type.organization_path}")
     return get_object_or_404(BackgroundJob.objects.filter(org_q), pk=pk)
 
 

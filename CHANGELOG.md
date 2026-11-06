@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 3.3x.x xx November 2026
+
+### Bugfixes
+
+- Fixed background job status and cancel endpoints (imports and analyses) being reachable without
+  logging in and across clients. They now require login, only expose the user's own client's
+  jobs, and cancelling requires a POST request.
+
 ## Version 3.34.1 10th November 2026
 
 "Wrong Bird"
