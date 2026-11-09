@@ -226,8 +226,31 @@ class AbstractScanStatus(models.Model):
         abstract = True
 
 
-def inv_linear_func(y, a, b):
-    return (y - b)/a if a != 0 else None
+def fitted_end(snapshots, total, now) -> float | None:
+    """Returns when a linear fit to the last 20% of the snapshots, as (seconds
+    since the start, scanned objects) pairs, reaches total, or None if it
+    doesn't after now."""
+    # At least ten points, to iron out the worst local phenomena
+    window = snapshots[-max(int(len(snapshots) * 0.2), 10):]
+    # linear_regression needs two distinct times
+    if len({t for t, _ in window}) < 2:
+        return None
+    a, b = linear_regression([t for t, _ in window], [n for _, n in window])
+    if a <= 0:
+        return None
+    end = (total - b) / a
+    return end if end > now else None
+
+
+def average_speed_end(first_snapshot, scanned, total, now) -> float | None:
+    """Returns when the scan ends at its average speed since the first
+    snapshot, in seconds since the start."""
+    first_t, first_n = first_snapshot
+    elapsed = now - first_t
+    done = scanned - first_n
+    if elapsed <= 0 or done <= 0:
+        return None
+    return now + (total - scanned) * elapsed / done
 
 
 class ActiveObjectSummary(NamedTuple):
@@ -235,6 +258,41 @@ class ActiveObjectSummary(NamedTuple):
     in flight and how long the oldest has been running."""
     count: int
     max_seconds: int
+
+
+_MINUTE, _HOUR, _DAY, _WEEK, _MONTH = 60, 3600, 86400, 604800, 30.44 * 86400
+
+
+class EstimateStep(NamedTuple):
+    """A bucket for the estimate on the status page: shown when the time left
+    is below `below` seconds."""
+    below: float
+    label: str
+
+
+ESTIMATE_STEPS = [
+    EstimateStep(10 * _MINUTE, _("less than 10 minutes")),
+    EstimateStep(30 * _MINUTE, _("about 10 to 30 minutes")),
+    EstimateStep(_HOUR, _("about 30 minutes to an hour")),
+    EstimateStep(2 * _HOUR, _("about 1 to 2 hours")),
+    EstimateStep(4 * _HOUR, _("about 2 to 4 hours")),
+    EstimateStep(8 * _HOUR, _("about 4 to 8 hours")),
+    EstimateStep(_DAY, _("about 8 to 24 hours")),
+    EstimateStep(2 * _DAY, _("about 1 to 2 days")),
+    EstimateStep(4 * _DAY, _("about 2 to 4 days")),
+    EstimateStep(_WEEK, _("about 4 to 7 days")),
+    EstimateStep(2 * _WEEK, _("about 1 to 2 weeks")),
+    EstimateStep(4 * _WEEK, _("about 2 to 4 weeks")),
+    EstimateStep(2 * _MONTH, _("about 1 to 2 months")),
+    EstimateStep(4 * _MONTH, _("about 2 to 4 months")),
+    EstimateStep(float("inf"), _("more than 4 months")),
+]
+
+
+def pick_estimate_step(seconds_left: float) -> int:
+    """Returns the index into ESTIMATE_STEPS for the time left."""
+    return next(i for i, step in enumerate(ESTIMATE_STEPS)
+                if max(seconds_left, 0) < step.below)
 
 
 class ScanStatus(AbstractScanStatus):
@@ -288,50 +346,37 @@ class ScanStatus(AbstractScanStatus):
     )
 
     @property
+    def estimate_text(self) -> str | None:
+        """Returns the estimated time left as text for the status page, or None."""
+        end = self.estimated_completion_time
+        if end is None:
+            return None
+        return ESTIMATE_STEPS[pick_estimate_step((end - time_now()).total_seconds())].label
+
+    @property
     def estimated_completion_time(self) -> datetime.datetime | None:
         """Returns an estimate of the completion time of the scan, based on a
-        linear fit to the last 20% of the existing ScanStatusSnapshot objects."""
+        linear fit to the scanned objects in the last 20% of the existing
+        ScanStatusSnapshot objects, or on the average speed if the fit doesn't
+        end in the future."""
 
         if (self.fraction_scanned is None
                 or self.fraction_scanned < settings.ESTIMATE_AFTER):
             return None
-        else:
-            snapshots = list(ScanStatusSnapshot.objects.filter(
+
+        snapshots = [
+            ((s["time_stamp"] - self.start_time).total_seconds(), s["scanned_objects"])
+            for s in ScanStatusSnapshot.objects.filter(
                 scan_status=self, total_objects__isnull=False).values(
-                "time_stamp", "scanned_objects", "total_objects").order_by("time_stamp"))
+                "time_stamp", "scanned_objects").order_by("time_stamp")]
+        if not snapshots:
+            return None
+        now = (time_now() - self.start_time).total_seconds()
 
-            # To give an estimate of completion, the number of snapshots _must_
-            # be 2 or more.
-            if len(snapshots) < 2:
-                return None
-
-            width = 0.2  # Percentage of all data points
-
-            # The window function needs to include at least two points, but it's
-            # better to include at least ten, to iron out the worst local
-            # phenomena.
-            window = max([int(len(snapshots)*width), 10])
-
-            time_data = [(obj.get("time_stamp") - self.start_time).total_seconds()
-                         for obj in snapshots[-window:]]
-            frac_scanned = [obj.get("scanned_objects")/obj.get("total_objects")
-                            for obj in snapshots[-window:]]
-
-            a, b = linear_regression(time_data, frac_scanned)
-
-            try:
-                end_time_guess = timedelta(
-                    seconds=inv_linear_func(
-                        1.0, a, b)) + self.start_time
-            except Exception as e:
-                logger.exception(
-                    f'Exception while calculating end time for scan {self.scanner}: {e}')
-                return None
-
-            if end_time_guess > time_now():
-                return end_time_guess
-            else:
-                return None
+        end = fitted_end(snapshots, self.total_objects, now)
+        if end is None:
+            end = average_speed_end(snapshots[0], self.scanned_objects, self.total_objects, now)
+        return self.start_time + timedelta(seconds=end) if end is not None else None
 
     @property
     def start_time(self) -> datetime.datetime:

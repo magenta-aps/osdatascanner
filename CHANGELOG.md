@@ -4,6 +4,12 @@
 
 ### New in this release
 
+- The estimated completion time of a running scan is now shown as a range, such as "about 2 to 4
+  hours", which changes far less often than the exact time did.
+
+- While a scan with several sources, such as mailboxes, is still being indexed, the status page
+  shows how many of them have been listed.
+
 ### General improvements
 
 - Upgraded dependencies
@@ -20,6 +26,9 @@
 - The file scanner form now uses Django forms.
 
 ### Bugfixes
+
+- Fixed a bug where the estimated completion time of a running scan could jump far off right
+  after indexing finished, or disappear once the estimated time had passed.
 
 - Fixed an issue causing orphaned `ScannerReference`s. It is important to run the new management
   command, `sync_scanner_references`, to ensure that all scanners have a corresponding 

@@ -35,6 +35,20 @@ class TestStatusViews:
         response = client.get(reverse_lazy("status"))
         assert response.status_code == 200
 
+    @pytest.mark.parametrize("total_sources, shown", [(10, True), (1, False)])
+    def test_listing_progress_only_with_several_sources(
+            self, client, superuser, running_status, total_sources, shown):
+        running_status.total_sources = total_sources
+        running_status.explored_sources = 0
+        running_status.save()
+        client.force_login(superuser)
+        response = client.get(
+                reverse_lazy("status"),
+                {"reload": "#status_table_poll", "scans": 1},
+                HTTP_HX_REQUEST="true",
+                HTTP_HX_TRIGGER_NAME="status_table_poll")
+        assert ('class="listing-progress"' in response.content.decode()) == shown
+
     def test_status_timeline_as_superuser(self, client, superuser, basic_scanstatus):
         client.force_login(superuser)
         response = client.get(reverse_lazy("status-timeline", kwargs={"pk": basic_scanstatus.pk}))

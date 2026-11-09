@@ -878,6 +878,66 @@ msgid "cancelled"
 msgstr "annulleret"
 
 #: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "less than 10 minutes"
+msgstr "under 10 minutter"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 10 to 30 minutes"
+msgstr "ca. 10 til 30 minutter"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 30 minutes to an hour"
+msgstr "ca. 30 minutter til en time"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 1 to 2 hours"
+msgstr "ca. 1 til 2 timer"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 2 to 4 hours"
+msgstr "ca. 2 til 4 timer"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 4 to 8 hours"
+msgstr "ca. 4 til 8 timer"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 8 to 24 hours"
+msgstr "ca. 8 til 24 timer"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 1 to 2 days"
+msgstr "ca. 1 til 2 dage"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 2 to 4 days"
+msgstr "ca. 2 til 4 dage"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 4 to 7 days"
+msgstr "ca. 4 til 7 dage"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 1 to 2 weeks"
+msgstr "ca. 1 til 2 uger"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 2 to 4 weeks"
+msgstr "ca. 2 til 4 uger"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 1 to 2 months"
+msgstr "ca. 1 til 2 måneder"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "about 2 to 4 months"
+msgstr "ca. 2 til 4 måneder"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
+msgid "more than 4 months"
+msgstr "over 4 måneder"
+
+#: adminapp/models/scannerjobs/scanner_helpers.py
 #: import_services/models/exported_mixin.py
 msgid "last modified"
 msgstr "senest opdateret"
@@ -2790,8 +2850,9 @@ msgid "%(obj)s out of %(total)s %(onp)s scanned"
 msgstr "%(obj)s ud af %(total)s %(onp)s scannet"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
-msgid "Estimated finished"
-msgstr "Forventes afsluttet"
+#, python-format
+msgid "Estimated to finish in %(left)s"
+msgstr "Forventes afsluttet om %(left)s"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "The sources do not contain any scannable objects"
@@ -2800,6 +2861,11 @@ msgstr "Datakilden indeholder ikke nogle objekter"
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 msgid "An error occurred during this scan"
 msgstr "Der skete en fejl under dette scan"
+
+#: adminapp/templates/components/scanstatus/scan_status--table.html
+#, python-format
+msgid "%(listed)s of %(total)s sources listed"
+msgstr "%(listed)s af %(total)s kilder indekseret"
 
 #: adminapp/templates/components/scanstatus/scan_status--table.html
 #, python-format
