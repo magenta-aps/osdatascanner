@@ -280,7 +280,7 @@
   input[type="text"]:focus,
   input[type="password"]:focus,
   input[type="email"]:focus {
-    box-shadow: inset 0 0 0 4px #5ca4cd40;
+    box-shadow: var(--box-shadow-focus);
   }
 
   select {
@@ -353,7 +353,7 @@
     width: 90%;
 
     &:focus {
-      box-shadow: inset 0 0 0 4px #5ca4cd40;
+      box-shadow: var(--box-shadow-focus);
     }
   }
 
@@ -371,7 +371,7 @@
   }
 
   textarea:focus {
-    box-shadow: inset 0 0 0 4px #5ca4cd40;
+    box-shadow: var(--box-shadow-focus);
     outline: none;
   }
 
@@ -1006,7 +1006,7 @@ input[type="file"]::file-selector-button:hover {
       }
 
       &:focus {
-        box-shadow: inset 0 0 0 4px #5ca4cd40;
+        box-shadow: var(--box-shadow-focus);
       }
     }
 
@@ -1085,6 +1085,28 @@ input[type="file"]::file-selector-button:hover {
             @include form-input-box-styles;
           }
 
+          &--single {
+            @include custom-dropdown-icon;
+
+            &::after,
+            .select2-selection__arrow {
+              display: none;
+            }
+
+            padding: 0 !important;
+            border-radius: var(--border-radius-s) !important;
+
+            .select2-selection__rendered {
+              align-items: center;
+              padding-left: 0.75rem !important;
+              font-size: 0.875rem;
+            }
+
+            .select2-selection__placeholder {
+              color: var(--color-icon);
+            }
+          }
+
           &__rendered {
             display: inline-flex !important;
             flex-wrap: wrap;
@@ -1154,10 +1176,186 @@ input[type="file"]::file-selector-button:hover {
         }
       }
 
+      // Like a native select, the field keeps the focus ring while the list is open:
+      &.select2-container--open .select2-selection--single {
+        box-shadow: var(--box-shadow-focus) !important;
+      }
+
       &.select2-container--disabled,
       &.select2-container--disabled * {
         cursor: not-allowed;
         opacity: 0.75;
+      }
+    }
+
+    // Select2 attaches single selects' lists outside the form (to <body> or the <dialog>),
+    // so they're styled from the root (but nested here, to use the form mixins):
+    @at-root .select2-dropdown--single {
+      $row: 2rem;
+      $row-gap: 0.25rem;
+      $inset: 0.5rem; // Options' padding, and the search icon's left
+      $icon: 1.25rem;
+      $icon-gap: 0.25rem; // Between icon and label
+      $padding: 0.5rem;
+      $section-gap: 0.625rem; // Between the search, the list, the line and the action
+      $action-margin: $section-gap - $padding; // Make the action $section-gap from the bottom as well
+
+      overflow: hidden;
+      box-shadow: var(--box-shadow-filter), var(--box-shadow--form-widget) !important;
+      padding: $padding;
+
+      .select2-container--open &.select2-dropdown {
+        border-radius: var(--border-radius-s);
+      }
+
+      &.select2-dropdown--below {
+        margin-top: -0.125rem;
+      }
+
+      &.select2-dropdown--above {
+        margin-top: 0;
+      }
+
+      .select2-search--dropdown {
+        position: relative;
+        padding: 0 !important;
+        margin-bottom: $section-gap;
+
+        &::before {
+          @include pseudo-icon("search", $icon);
+
+          position: absolute;
+          z-index: 1;
+          top: 50%;
+          left: $inset;
+          transform: translateY(-50%);
+          color: var(--color-icon);
+          pointer-events: none;
+        }
+
+        .select2-search__field {
+          @include form-input-box-styles;
+
+          height: $row;
+          padding-left: $inset + $icon + $icon-gap !important;
+          outline: none;
+
+          &::placeholder {
+            color: var(--color-icon);
+            opacity: 1;
+          }
+
+          // No focus ring. Like a native select, it's kept on the field while the list is open:
+          &:focus {
+            box-shadow: var(--box-shadow--form-widget);
+          }
+        }
+      }
+
+      .select2-results {
+        position: relative;
+
+        &:has(.select2-results__option--action) {
+          padding-bottom: $row + $action-margin;
+        }
+
+        &:has(.select2-results__option--action:not(:first-child)) {
+          padding-bottom: $row + $action-margin + 2 * $section-gap;
+
+          &::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: $row + $action-margin + $section-gap;
+            border-top: 1px solid var(--color-border-neutral);
+          }
+        }
+      }
+
+      .select2-results__options {
+        @include layout-vertical($row-gap);
+
+        position: static;
+        max-width: none !important;
+        max-height: 10 * ($row + $row-gap) + $row * 0.5 !important;
+      }
+
+      .select2-results .select2-results__option {
+        @include layout-horizontal($icon-gap);
+
+        min-height: $row;
+        padding: 0 $inset;
+        border-radius: var(--border-radius-xs);
+        font-size: 0.875rem;
+
+        // Icon column (checkmark, action icon or empty), so the labels visually line up:
+        &::before {
+          @include pseudo-icon($size: $icon);
+
+          color: var(--color-primary-dark);
+        }
+
+        &[aria-selected="true"] {
+          background-color: var(--color-btn-neutral);
+
+          &::before {
+            content: "check" / "";
+          }
+        }
+
+        &--highlighted[aria-selected] {
+          color: var(--color-text-main);
+          background-color: var(--color-btn-neutral-hover);
+        }
+
+        &--action[aria-selected] {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          border-radius: var(--border-radius-s);
+          // Right: balanced against the "add" icon's built-in space (5 of its 24 units):
+          padding: 0 calc(#{$inset} + #{$icon} * 5 / 24 + 0.125rem) 0 $inset;
+          color: var(--color-primary-dark);
+          background-color: var(--color-widget-bg);
+          margin-bottom: $action-margin;
+
+          &.select2-results__option--highlighted {
+            box-shadow: inset 0 0 0 1px var(--color-primary-dark);
+            background-color: var(--color-widget-bg);
+          }
+
+          &::before {
+            content: "add" / "";
+            color: inherit;
+          }
+        }
+
+        &.select2-results__message {
+          justify-content: center;
+          text-align: center;
+          color: var(--color-text-secondary);
+
+          &::before {
+            display: none;
+          }
+        }
+
+        &.select2-results__note {
+          align-items: flex-start;
+          min-height: 0;
+          padding: 1rem $inset 0.5rem;
+          border-top: 1px solid var(--color-border-neutral);
+          border-radius: 0;
+          line-height: $icon;
+          color: var(--color-text-secondary);
+
+          &::before {
+            content: "info" / "";
+            text-align: center;
+            color: inherit;
+          }
+        }
       }
     }
 
@@ -1211,17 +1409,10 @@ input[type="file"]::file-selector-button:hover {
       }
     }
 
-    // Grant dropdown with its "+" (GrantSelectWidget):
+    // Grant dropdown (GrantSelectWidget):
     .grant-select {
-      @include layout-horizontal(0.5rem);
-
       flex: 1;
       min-width: 0;
-
-      select {
-        flex: 1;
-        min-width: 0;
-      }
     }
 
     &__error {

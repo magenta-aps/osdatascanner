@@ -155,6 +155,11 @@ msgid "File settings"
 msgstr "Filindstillinger"
 
 #: adminapp/forms/shared.py
+#, python-format
+msgid "Choose %(grant)s"
+msgstr "Vælg %(grant)s"
+
+#: adminapp/forms/shared.py
 msgid "Scan all accounts in organization"
 msgstr "Scan alle konti i organisationen"
 
@@ -207,11 +212,6 @@ msgstr ""
 #: adminapp/forms/shared.py
 msgid "E.g. 10"
 msgstr "F.eks. 10"
-
-#: adminapp/forms/shared.py
-#, python-format
-msgid "Choose %(grant)s"
-msgstr "Vælg %(grant)s"
 
 #: adminapp/forms/webscanner.py
 msgid "e.g. https://example.com/"
@@ -1464,6 +1464,23 @@ msgstr "I mellemtiden kan du forsøge at genindlæse siden eller"
 #: adminapp/templates/500.html
 msgid "go to the front page"
 msgstr "gå til forsiden"
+
+#: adminapp/templates/components/admin_widgets/grant_select.html
+#, python-format
+msgid "There are currently no %(grants)s connected to the organization."
+msgstr "Der er i øjeblikket ingen %(grants)s tilknyttet organisationen."
+
+#: adminapp/templates/components/admin_widgets/grant_select.html
+msgid ""
+"You don't have access to create grants. Ask an administrator to create one."
+msgstr ""
+"Du har ikke adgang til at oprette bevillinger. Spørg en administrator om at "
+"oprette en."
+
+#: adminapp/templates/components/admin_widgets/grant_select.html
+#, python-format
+msgid "Create new %(grant)s"
+msgstr "Opret ny %(grant)s"
 
 #: adminapp/templates/components/admin_widgets/remediator_select_multiple.html
 #: adminapp/templates/components/scanner/scanner_form.html
@@ -4441,6 +4458,22 @@ msgstr "Systemregler"
 #: organizations/admin.py organizations/templates/organizations/org_update.html
 msgid "Deletion settings"
 msgstr "Indstillinger for sletning"
+
+#: organizations/grant_utils.py
+msgid "SMB grants"
+msgstr "SMB bevillinger"
+
+#: organizations/grant_utils.py
+msgid "EWS grants"
+msgstr "EWS bevillinger"
+
+#: organizations/grant_utils.py
+msgid "Graph grants"
+msgstr "Graph bevillinger"
+
+#: organizations/grant_utils.py
+msgid "Google API grants"
+msgstr "Google API bevillinger"
 
 #: organizations/keycloak_actions.py
 #, python-brace-format

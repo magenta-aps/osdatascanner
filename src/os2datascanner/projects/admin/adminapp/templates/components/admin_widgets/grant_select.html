@@ -1,18 +1,33 @@
+{% load i18n %}
+
 <div id="{{ widget.attrs.id }}_wrapper"
      class="grant-select"
-     {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}>
-  {% include "django/forms/widgets/select.html" %}
+     {% if oob %}hx-swap-oob="{{ oob }}"{% endif %}
+     {% if can_add %}data-grant-create-url="{{ create_url }}" data-grant-field="{{ widget.name }}"{% endif %}>
 
-  {# Like the "+" in components/scanner/scanner_form_grant_select_option_field.html: #}
-  {% if can_add %}
-    <button type="button"
-            class="button button--icon-button"
-            hx-get="{{ create_url }}"
-            hx-vals='{"field": "{{ widget.name }}"}'
-            hx-target="#grant-modal-slot">
-      <svg class="icon button__plus-icon">
-        <use xlink:href="/static/svg/symbol-defs.svg#icon-plus"></use>
-      </svg>
-    </button>
+  {# Shown by js/forms/select2.js when there are no grants: #}
+  {% blocktrans asvar empty_message with grants=grant_label_plural %}There are currently no {{ grants }} connected to the organization.{% endblocktrans %}
+  {% if not can_add %}
+    {% blocktrans asvar empty_note %}You don't have access to create grants. Ask an administrator to create one.{% endblocktrans %}
   {% endif %}
+
+  {# Like django/forms/widgets/select.html, but with select2 instead: #}
+  <select class="custom-field custom-field--select select2"
+          name="{{ widget.name }}"
+          data-selected-first
+          data-empty-message="{{ empty_message }}"
+          {% if not can_add %}data-empty-note="{{ empty_note }}"{% endif %}
+          {% include "django/forms/widgets/attrs.html" %}>
+    {% for group_name, group_choices, group_index in widget.optgroups %}
+      {% for option in group_choices %}
+        {% include option.template_name with widget=option %}
+      {% endfor %}
+    {% endfor %}
+    {% if can_add %}
+      {# A button triggering the "create new grant" modal: #}
+      <option value="create" data-action>
+        {% blocktrans with grant=grant_label %}Create new {{ grant }}{% endblocktrans %}
+      </option>
+    {% endif %}
+  </select>
 </div>

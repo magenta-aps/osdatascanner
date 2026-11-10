@@ -424,7 +424,7 @@ tr.htmx-request .matches-handle.expand + .dropdown-container {
   /* Focus style */
   > select:focus {
     /* It'd be nice to use -webkit-focus-ring-color here but it doesn't work on box-shadow */
-    box-shadow: inset 0 0 0 4px #5ca4cd40;
+    box-shadow: var(--box-shadow-focus);
     outline: none;
   }
 

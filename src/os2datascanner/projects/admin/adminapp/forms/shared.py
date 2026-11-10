@@ -12,7 +12,8 @@ from django.db.models import Q
 from os2datascanner.projects.shared.forms import GroupingModelForm
 from os2datascanner.projects.admin.organizations.models import Account, Organization
 from os2datascanner.projects.admin.organizations.grant_utils import (grant_create_url_map,
-                                                                     grant_permission_map)
+                                                                     grant_permission_map,
+                                                                     grant_plural_label_map)
 from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
@@ -103,7 +104,10 @@ class RemediatorSelectMultipleWidget(forms.SelectMultiple):
 
 
 class GrantSelectWidget(forms.Select):
-    """Grant dropdown with a "+" for creating a new grant."""
+    """A select2-based grant dropdown whose list ends with a "Create new …" action, opening the
+    create-grant modal, if the user has the permission to create grants. create_url, can_add,
+    and labels are set in the ScannerForm's __init__, since they depend on the selected
+    organization and the user."""
     template_name = "components/admin_widgets/grant_select.html"
 
     class Media:
@@ -112,15 +116,21 @@ class GrantSelectWidget(forms.Select):
     def __init__(self, *args, **kwargs):
         self.create_url = None
         self.can_add = False
+        self.grant_label = ""
+        self.grant_label_plural = ""
         super().__init__(*args, **kwargs)
 
     def get_context(self, name, value, attrs):
         context = super().get_context(name, value, attrs)
-        # On organization change, swap the whole widget, not just the dropdown, since the "+"
-        # depends on the organization:
-        context["oob"] = context["widget"]["attrs"].pop("hx-swap-oob", None)
+        widget_attrs = context["widget"]["attrs"]
+        # The create action depends on the organization, so the whole widget is swapped when the
+        # selected organization changes:
+        context["oob"] = widget_attrs.pop("hx-swap-oob", None)
         context["create_url"] = self.create_url
         context["can_add"] = self.can_add
+        context["grant_label"] = self.grant_label
+        context["grant_label_plural"] = self.grant_label_plural
+        widget_attrs["data-placeholder"] = _("Choose %(grant)s") % {"grant": self.grant_label}
         return context
 
 
@@ -314,8 +324,8 @@ class ScannerForm(GroupingModelForm):
         for name, field in self.fields.items():
             if isinstance(field.widget, GrantSelectWidget):
                 field.queryset = field.queryset.filter(organization=self.org)
-                # Sorted by name:
-                field.choices = [("", _("Choose %(grant)s") % {"grant": field.label}), *sorted(
+                # Sorted by name, after an empty option for select2's placeholder:
+                field.choices = [("", ""), *sorted(
                     ((grant.pk, str(grant)) for grant in field.queryset),
                     key=lambda choice: choice[1].casefold())]
                 field.widget.attrs["hx-swap-oob"] = "true"
@@ -323,6 +333,8 @@ class ScannerForm(GroupingModelForm):
                                                   kwargs={"org": self.org.pk})
                 field.widget.can_add = self.user.has_perm(
                     f"grants.add_{grant_permission_map(name)}")
+                field.widget.grant_label = field.label
+                field.widget.grant_label_plural = grant_plural_label_map(name)
 
         # Only allow the user to choose between remediators related to the organization.
         # Exclude accounts which are already designated universal remediators.

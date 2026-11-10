@@ -36,6 +36,16 @@
   - **Note that**: MS Graph imports need the `MailboxSettings.Read` application permission to detect shared
     mailboxes. Without it, the import still runs, but no accounts are marked as shared.
 
+- Grant fields on all scanner forms using Django forms are now Select2 dropdowns:
+  - New grants are created from a "Create new …" action at the bottom of the list, instead of
+    the "+" next to the field.
+  - The list says when the organization has no grants yet, and tells users who can create
+    scannerjobs but can't create grants to ask an administrator.
+
+- Single-select Select2 dropdowns now look and behave more like browser native dropdowns:
+  - The field keeps its focus ring while the list is open.
+  - Nothing is highlighted when the list opens, until an option has been chosen.
+
 ### Bugfixes
 
 - Fixed a bug where the estimated completion time of a running scan could jump far off right
@@ -61,6 +71,9 @@
   drive had neither a drive ID nor a user account.
 
 - Fixed the missing checkmark icon in the probability toggle on Report.
+
+- Prevent Select2 dropdowns from staying locked to the direction they first opened in. They now
+  pick the best direction each time they open.
 
 ## Version 3.34.0  16th October 2026
 
