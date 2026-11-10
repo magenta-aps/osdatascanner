@@ -1,0 +1,115 @@
+{% extends 'components/common/base.html' %}
+{% load static %}
+{% load i18n %}
+{% load tz %}
+{% load grant_tags %}
+
+{% block title %}
+  {% trans "shared mailboxes"|capfirst %}
+{% endblock title %}
+
+{% block body %}
+  {% include "components/common/header.html" %}
+  <main class="wrapper">
+    {% include "components/common/main.html" with active_tab="organizations" %}
+
+    <svg class="page-indicator"
+         id="organization-page-indicator"
+         viewbox="0 0 100 100">
+      <circle id="circle" cx="50" cy="50" r="45"></circle>
+    </svg>
+
+    <ul>
+      <div class="content">
+
+        <div class="content-header">
+          {% include "components/common/breadcrumb.html" with page="manage_shared" %}
+          <h1 class="page-title">
+            {% blocktrans trimmed with name=organization.name %}
+                Shared mailboxes for {{ name }}
+            {% endblocktrans %}
+          </h1>
+        </div>
+
+        <form name="account_filters"
+              id="account_filters"
+              class="account_filtering_wrapper"
+              onsubmit="return false"
+              hx-get="{% url "manage-shared" organization.slug %}"
+              hx-trigger="keyup delay:200ms from:#search_field, search from:#search_field"
+              hx-swap="outerHTML"
+              hx-include="[id='dropdown_options']"
+              hx-target=".account_content"
+              hx-select=".account_content"
+              hx-push-url="true">
+          <div class="search_field_wrapper">
+            <input type="search"
+                   name="search_field"
+                   id="search_field"
+                   placeholder="{% trans "search for shared mailbox"|capfirst %}"
+                   value="{{ request.GET.search_field }}"
+                   autocomplete="off" />
+          </div>
+        </form>
+
+        <div class="datatable-wrapper card lg account_content">
+          <div class="datatablex__wrapper">
+            <table class="datatable middle">
+              <thead>
+                <tr>
+                  <th class="column column--name">{% trans "username"|capfirst %}</th>
+                  <th class="column column--aliases">{% trans "email"|capfirst %}</th>
+                  <th class="column column--actions">{% trans "actions"|capfirst %}</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for shared_acc in shared_accounts %}
+                  <tr class="datatablex__row">
+                    <td class="column column--name">{{ shared_acc.username }}</td>
+
+                    <td class="column column--aliases">{{ shared_acc.email }}</td>
+
+                    <td class="column">
+                      <button type="button"
+                              class="button button--outline-button"
+                              {% if shared_acc.email %} data-open-modal="shared-access-{{ shared_acc.uuid }}" {% else %} disabled title="{% trans 'this account has no email address'|capfirst %}" {% endif %}>
+                        {% trans "administer access"|capfirst %}
+                      </button>
+                      {% if shared_acc.email %}
+                        <div hx-get="{% url 'manage-shared-access' organization.slug shared_acc.uuid %}"
+                             hx-swap="outerHTML"
+                             hx-trigger="intersect once"
+                             hx-target="this"></div>
+                        <div class="info__label">
+                          <p>
+                            {% blocktrans count n=shared_acc.access_count trimmed %}
+                              {{ n }} person has access
+                            {% plural %}
+                              {{ n }} people have access
+                            {% endblocktrans %}
+                          </p>
+                        </div>
+                      {% endif %}
+
+                    </td>
+                  </tr>
+                {% empty %}
+                  <tr class="datatablex__row">
+                    <td class="column nothing_found_row" colspan="3">{% trans "no shared accounts found"|capfirst %}</td>
+                  </tr>
+                {% endfor %}
+
+              </tbody>
+              <tfoot>
+                {% include "components/datatables/pagination.html" with colspan=3 content_list=page_obj.object_list target_selector=".content" select_selector=".content" swap_type="outerHTML" include_selector="[id='dropdown_options'], [id='account_filters']" %}
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </ul>
+  </main>
+
+{% endblock body %}

@@ -1,0 +1,93 @@
+{% extends "components/feedback/modals/modal-dialog.html" %}
+
+{% load i18n %}
+
+{% block modal_modifier %}modal-dialog--shared-access{% endblock %}
+
+{% block modal_title %}
+  {% trans "administer access"|capfirst %}
+{% endblock %}
+
+{% block modal_subtitle %}<p class="header__subtitle">{{ shared_account.email }}</p>{% endblock %}
+
+{% block modal_body %}
+  <form id="{{ modal_id }}-form"
+        class="form--new"
+        hx-post="{% url 'manage-shared-access' organization.slug shared_account.uuid %}">
+    {% csrf_token %}
+
+    <div id="{{ modal_id }}-members" class="form-widget">
+      <span class="form-widget__label">
+        {% blocktrans count n=selected_accounts|length trimmed %}
+          {{ n }} person has access
+        {% plural %}
+          {{ n }} people have access
+        {% endblocktrans %}
+      </span>
+      <div class="shared-access__members">
+        {% for account in selected_accounts %}
+          <div class="ds-checkbox">
+            <input type="checkbox"
+                   name="accounts"
+                   value="{{ account.uuid }}"
+                   id="{{ modal_id }}-{{ account.uuid }}"
+                   checked>
+            <label for="{{ modal_id }}-{{ account.uuid }}"
+                   class="form-widget__checkbox-label">{{ account.get_full_name|default:account.username }}</label>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="form-widget">
+      <label for="{{ modal_id }}-search" class="form-widget__label">{% trans "grant access"|capfirst %}</label>
+      {# Same search box as the shared mailbox list behind the modal: #}
+      <div class="search_field_wrapper">
+        <input type="search"
+               id="{{ modal_id }}-search"
+               name="search_field"
+               placeholder="{% trans "search for person"|capfirst %}"
+               autocomplete="off"
+               hx-get="{% url 'manage-shared-access' organization.slug shared_account.uuid %}"
+               hx-trigger="input changed delay:300ms, search"
+               hx-include="closest form"
+               hx-target="#{{ modal_id }}-results"
+               hx-select="#{{ modal_id }}-results"
+               hx-select-oob="#{{ modal_id }}-members"
+               hx-swap="outerHTML">
+      </div>
+
+      <div id="{{ modal_id }}-results">
+        {% if search_results is not None %}
+          <p class="form-widget__help-text">
+            {% blocktrans trimmed with shown=search_results|length total=search_result_count %}
+              {{ shown }} of {{ total }} shown
+            {% endblocktrans %}
+          </p>
+          {% for account in search_results %}
+            <div class="ds-checkbox">
+              <input type="checkbox"
+                     name="accounts"
+                     value="{{ account.uuid }}"
+                     id="{{ modal_id }}-{{ account.uuid }}">
+              <label for="{{ modal_id }}-{{ account.uuid }}"
+                     class="form-widget__checkbox-label">{{ account.get_full_name|default:account.username }}</label>
+            </div>
+          {% endfor %}
+        {% endif %}
+      </div>
+    </div>
+  </form>
+{% endblock modal_body %}
+
+{% block modal_cancel_label %}
+  {% trans "close"|capfirst %}
+{% endblock %}
+
+{% block modal_footer_actions %}
+  <button type="submit"
+          form="{{ modal_id }}-form"
+          class="button button--modal-ui button--cta-button button--text-button">
+    <span>{% trans "save"|capfirst %}</span>
+  </button>
+{% endblock modal_footer_actions %}

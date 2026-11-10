@@ -106,8 +106,10 @@ class AccountAdmin(ImportedAdmin):
     fields = ('username', 'first_name', 'last_name', 'email',
               'organization', 'manager', 'imported_id', 'last_import',
               'permissions',
-              'is_universal_dpo', 'is_superuser',
+              'is_universal_dpo', 'is_superuser', 'is_shared',
               )
+    # Set by imports, which would overwrite any manual change
+    readonly_fields = ImportedAdmin.readonly_fields + ('is_shared',)
     list_display = ('username', 'first_name', 'last_name', 'email',
                     'organization', 'last_import',
                     )

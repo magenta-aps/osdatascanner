@@ -356,6 +356,33 @@
   &--create-grant {
     max-width: 40rem;
   }
+
+  &--shared-access {
+    max-width: 40rem;
+
+    .modal-dialog__header {
+      gap: 0.5rem;
+    }
+
+    .header__subtitle {
+      color: var(--color-text-secondary);
+      font-weight: 600;
+    }
+
+    .form-widget__label {
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+
+    .search_field_wrapper {
+      width: 100%;
+    }
+
+    .shared-access__members {
+      max-block-size: 7.5rem;
+      overflow: auto;
+    }
+  }
 }
 
 // Prevent scroll on the page underneath the dialog:

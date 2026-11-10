@@ -302,6 +302,15 @@
                         </div>
                       </a>
                     {% endif %}
+                    {% if client.import_source == IMPORT_SOURCE.MS_GRAPH or client.import_source == IMPORT_SOURCE.LDAP %}
+                      <a href="{% url 'manage-shared' organization.slug %}"
+                         class="button button--icon-button"
+                         id="manage-shared-button"
+                         aria-label="{% trans "configure shared mailboxes"|capfirst %}"
+                         title="{% trans "configure shared mailboxes"|capfirst %}">
+                        <i id="forward_to_inbox" class="material-symbols">forward_to_inbox</i>
+                      </a>
+                    {% endif %}
                   </div>
                 </td>
               </tr>

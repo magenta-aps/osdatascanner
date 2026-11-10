@@ -3,21 +3,25 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import override
+
+import structlog
+
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.postgres.search import TrigramSimilarity
 from django.views.generic import DetailView, CreateView, DeleteView
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseBadRequest
 from django.urls import reverse_lazy
 from django.core.exceptions import ValidationError, PermissionDenied
 from django.forms import ModelForm
 from django.shortcuts import get_object_or_404
 from django.utils.translation import gettext_lazy as _
-from django.db.models.functions import Concat, Greatest
-from django.db.models import CharField, Value, Max
+from django.db.models.functions import Coalesce, Concat, Greatest
+from django.db.models import CharField, Value, Max, Q, OuterRef, Subquery, Count
 from django.contrib.auth.models import Permission
 from django import forms
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 
 from ..models import Account, Alias, OrganizationalUnit, SyncedPermission
 from ..models.aliases import AliasType
@@ -25,6 +29,28 @@ from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.utils.pagination import EmptyPagePaginator
 from ..utils import ClientAdminMixin
+
+logger = structlog.get_logger("admin_organizations")
+
+
+def search_accounts(qs, search, fields=("full_name", "username")):
+    """Fuzzy-matches accounts against search, annotating each result with its
+    best trigram similarity as 'search' """
+    qs = qs.annotate(
+        full_name=Concat('first_name', Value(' '), 'last_name',
+                         output_field=CharField())
+    ).annotate(
+        search=Greatest(*(TrigramSimilarity(field, search) for field in fields))
+    ).exclude(search=0)
+    if qs.exists():
+        max_similarity = qs.aggregate(Max("search", default=0))['search__max']
+        # We only want accounts whose similarity to the search word is at least,
+        # 0.3 times as similar as the most similar one.
+        # As such a user won't recieve an empty list of results.
+        # 0.3 has been chosen, as this threshold should include all instances of a name,
+        # including different spellings, such as "Christopher", "Cristofer", etc.
+        qs = qs.filter(search__gte=max_similarity * 0.3)
+    return qs
 
 
 class AccountListView(ClientAdminMixin, RestrictedListView):
@@ -34,6 +60,7 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
     template_name = "organizations/account_list.html"
     context_object_name = "accounts"
     paginate_by_options = [10, 25, 50, 100, 250]
+    search_fields = ("full_name", "username")
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -56,26 +83,8 @@ class AccountListView(ClientAdminMixin, RestrictedListView):
         return qs
 
     def search_queryset(self, qs):
-
         if search := self.request.GET.get('search_field'):
-            qs = qs.annotate(
-                full_name=Concat('first_name', Value(' '), 'last_name',
-                                 output_field=CharField())
-            ).annotate(
-                search=Greatest(
-                    TrigramSimilarity("full_name", search),
-                    TrigramSimilarity("username", search)
-                )
-            ).exclude(search=0)
-            if qs.exists():
-                max_similarity = qs.aggregate(Max("search", default=0))['search__max']
-                # We only want accounts whose similarity to the search word is at least,
-                # 0.3 times as similar as the most similar one.
-                # As such a user won't recieve an empty list of results.
-                # 0.3 has been chosen, as this threshold should include all instances of a name,
-                # including different spellings, such as "Christopher", "Cristofer", etc.
-                qs = qs.filter(search__gte=max_similarity * 0.3)
-
+            qs = search_accounts(qs, search, self.search_fields)
         return qs
 
     def order_queryset(self, qs):
@@ -320,3 +329,126 @@ class OrgDPODropdownView(ClientAdminMixin, RestrictedListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class ManageSharedAccountListView(AccountListView):
+    template_name = "organizations/manage_shared_account_list.html"
+    context_object_name = "shared_accounts"
+    search_fields = AccountListView.search_fields + ("email",)
+    queryset = Account.objects.filter(is_shared=True)
+
+    @override
+    def get_queryset(self):
+        shared_alias_count = Alias.objects.filter(
+            account__organization=OuterRef("organization"),
+            account__is_shared=False,
+            _alias_type=AliasType.EMAIL,
+            shared=True,
+            _value__iexact=OuterRef("email"),
+        ).order_by().values("account__organization").annotate(n=Count("pk")).values("n")
+
+        return super().get_queryset().annotate(
+            access_count=Coalesce(Subquery(shared_alias_count), 0))
+
+
+class SharedAccessForm(forms.Form):
+    accounts = forms.ModelMultipleChoiceField(
+        queryset=Account.objects.none(), to_field_name="uuid", required=False)
+
+    def __init__(self, *args, candidates, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["accounts"].queryset = candidates
+
+
+class ManageSharedAccessView(LoginRequiredMixin, ClientAdminMixin, DetailView):
+    """Grants accounts access to a shared mailbox's results by giving them a
+    shared email alias with the mailbox's address."""
+    model = Account
+    pk_url_kwarg = "acc_uuid"
+    template_name = "components/modals/manage_shared_access.html"
+    context_object_name = "shared_account"
+    max_search_results = 15
+
+    def get_queryset(self):
+        return Account.objects.filter(
+            organization=self.kwargs['org'], is_shared=True).exclude(Q(email=None) | Q(email=""))
+
+    def shared_aliases(self):
+        return Alias.objects.filter(
+            account__organization=self.kwargs['org'],
+            account__is_shared=False,
+            _alias_type=AliasType.EMAIL,
+            _value__iexact=self.object.email,
+            shared=True)
+
+    def candidates(self):
+        return Account.objects.filter(organization=self.kwargs['org'], is_shared=False)
+
+    def members(self):
+        return self.candidates().filter(aliases__in=self.shared_aliases()).distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context |= {
+            "organization": self.kwargs['org'],
+            "modal_id": f"shared-access-{self.object.uuid}",
+            "close_label": _("Close without saving access."),
+        }
+
+        if "search_field" in self.request.GET:
+            form = SharedAccessForm(self.request.GET, candidates=self.candidates())
+            selected = (form.cleaned_data["accounts"] if form.is_valid()
+                        else self.candidates().none())
+        else:
+            selected = self.members()
+        context["selected_accounts"] = selected.order_by("first_name", "last_name")
+
+        if search := self.request.GET.get("search_field"):
+            results = search_accounts(
+                self.candidates().exclude(uuid__in=selected.values("uuid")), search
+            ).order_by("-search", "first_name", "last_name")
+            context["search_results"] = results[:self.max_search_results]
+            context["search_result_count"] = results.count()
+
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = SharedAccessForm(request.POST, candidates=self.candidates())
+        if not form.is_valid():
+            return HttpResponseBadRequest()
+        ticked = form.cleaned_data["accounts"]
+        members = self.members()
+
+        self.shared_aliases().filter(account__in=members.exclude(uuid__in=ticked)).delete()
+
+        failed = []
+        for account in ticked.exclude(uuid__in=members):
+            try:
+                with transaction.atomic():
+                    Alias.objects.create(
+                        account=account,
+                        _alias_type=AliasType.EMAIL.value,
+                        _value=self.object.email,
+                        shared=True)
+            except IntegrityError:
+                # The account already has a non-shared alias with the same value
+                logger.warning(
+                    "could not create shared alias", account=account.uuid,
+                    value=self.object.email, exc_info=True)
+                failed.append(account.get_full_name() or account.username)
+
+        match failed:
+            case []:
+                messages.add_message(
+                    request, messages.SUCCESS, _("Access updated!"), extra_tags="auto_close")
+            case _:
+                messages.add_message(
+                    request, messages.WARNING,
+                    _("Could not grant access to {names}, as they already have an alias with "
+                      "this address.").format(names=", ".join(failed)),
+                    extra_tags="manual_close")
+        response = HttpResponse()
+        response['HX-Redirect'] = reverse_lazy(
+            'manage-shared', kwargs={'org_slug': self.kwargs['org_slug']})
+        return response

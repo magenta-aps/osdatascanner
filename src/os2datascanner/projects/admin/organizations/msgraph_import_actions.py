@@ -87,18 +87,25 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
             last_name = member.get("surname", "")
             manager_info = member.get("manager")
             email = member.get("email")
+            # "shared" is what documentation says to expect for a shared mailbox:
+            # https://learn.microsoft.com/en-us/graph/api/resources/mailboxsettings?view=graph-rest-1.0#userpurpose-values
+            shared = member.get("userPurpose") == "shared"
 
             account = accounts.get(imported_id)
             if account is None:
                 try:
                     account = Account.objects.get(
                         organization=organization, imported_id=imported_id)
-                    for attr_name, expected in (
-                            ("username", username),
-                            ("first_name", first_name),
-                            ("last_name", last_name),
-                            ("email", email),
-                    ):
+                    expected_values = {
+                        "username": username,
+                        "first_name": first_name,
+                        "last_name": last_name,
+                        "email": email,
+                    } | (
+                        # A missing userPurpose means the mailbox lookup failed. Keep what
+                        # we knew rather than "un-sharing" the account
+                        {"is_shared": shared} if "userPurpose" in member else {})
+                    for attr_name, expected in expected_values.items():
                         if getattr(account, attr_name) != expected:
                             setattr(account, attr_name, expected)
                             to_update.append((account, (attr_name,)))
@@ -111,6 +118,7 @@ def perform_msgraph_import(data: list,  # noqa: C901, CCR001
                         first_name=first_name,
                         last_name=last_name,
                         email=email,
+                        is_shared=shared,
                     )
                     to_add.append(account)
 

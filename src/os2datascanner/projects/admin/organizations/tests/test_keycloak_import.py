@@ -649,3 +649,38 @@ class TestKeycloakImport:
             _alias_type="email",
             _value=ted_dict["email"],
         ).exists()
+
+    @pytest.mark.parametrize("recipient_type,expected", [
+        (["4"], True),  # SharedMailbox
+        (["34359738368"], True),  # RemoteSharedMailbox
+        (["1"], False),  # UserMailbox
+        (None, False),  # No Exchange recipient
+    ])
+    def test_shared_mailbox_import(self, TEST_CORP, test_org, recipient_type, expected):
+        """Accounts should be marked as shared when their recipient type is a (remote) shared
+        mailbox."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        if recipient_type is not None:
+            ted_dict["attributes"]["msExchRecipientTypeDetails"] = recipient_type
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert<
+        assert Account.objects.get(uuid=ted_dict["id"]).is_shared is expected
+
+    def test_shared_mailbox_unshared_on_reimport(self, TEST_CORP, test_org):
+        """An account that stops being a shared mailbox should be unmarked on the next
+        import."""
+        # Arrange
+        ted_dict = TEST_CORP[0]
+        ted_dict["attributes"]["msExchRecipientTypeDetails"] = ["4"]
+        self.perform_ou_import(TEST_CORP, test_org)
+        ted_dict["attributes"]["msExchRecipientTypeDetails"] = ["1"]
+
+        # Act
+        self.perform_ou_import(TEST_CORP, test_org)
+
+        # Assert
+        assert not Account.objects.get(uuid=ted_dict["id"]).is_shared

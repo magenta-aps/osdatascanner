@@ -6,7 +6,10 @@
 import datetime
 import pytest
 from copy import deepcopy
-from os2datascanner.projects.admin.import_services.models import MSGraphConfiguration
+from unittest.mock import MagicMock
+from requests import HTTPError
+from os2datascanner.projects.admin.import_services.models import MSGraphConfiguration, \
+    MSGraphImportJob
 from os2datascanner.core_organizational_structure.models.aliases import AliasType
 from ..models import Account, OrganizationalUnit, Alias, Position
 from .. import msgraph_import_actions
@@ -421,3 +424,106 @@ class TestMSGraphImport:
         guy.refresh_from_db()
         nina = Account.objects.get(username="nina@darwindomain.onmicrosoft.com")
         assert guy.manager == nina
+
+    @pytest.mark.parametrize("user_purpose,expected", [
+        ("shared", True),
+        ("user", False),
+    ])
+    def test_shared_mailbox_created(self, TEST_CORP, test_org, user_purpose, expected):
+        # Arrange
+        UPDATED_CORP = deepcopy(TEST_CORP)
+        UPDATED_CORP[0]["members"].append({
+            "type": "user",
+            "uuid": "abcdef12-0000-4000-8000-000000000002",
+            "givenName": "Shared",
+            "surname": "Mailbox",
+            "userPrincipalName": "faelles@darwindomain.onmicrosoft.com",
+            "email": "faelles@darwindomain.onmicrosoft.com",
+            "userPurpose": user_purpose,
+        })
+
+        # Act
+        msgraph_import_actions.perform_msgraph_import(UPDATED_CORP, test_org)
+
+        # Assert
+        assert Account.objects.get(
+            imported_id="abcdef12-0000-4000-8000-000000000002").is_shared is expected
+
+    @pytest.mark.parametrize("reimport_purpose,expected", [
+        ("user", False),
+        # A failed mailbox lookup leaves userPurpose out, which must not unshare the account
+        (None, True),
+    ])
+    def test_shared_mailbox_reimport(self, TEST_CORP, test_org, reimport_purpose, expected):  # noqa CCR001
+        # Arrange
+        UPDATED_CORP = deepcopy(TEST_CORP)
+        for ou in UPDATED_CORP:
+            for member in ou["members"]:
+                if member["uuid"] == "93f2f74e-3811-476f-ac56-e7f0d3007fcc":
+                    member["userPurpose"] = "shared"
+        msgraph_import_actions.perform_msgraph_import(UPDATED_CORP, test_org)
+
+        for ou in UPDATED_CORP:
+            for member in ou["members"]:
+                if member["uuid"] == "93f2f74e-3811-476f-ac56-e7f0d3007fcc":
+                    if reimport_purpose:
+                        member["userPurpose"] = reimport_purpose
+                    else:
+                        member.pop("userPurpose")
+
+        # Act
+        msgraph_import_actions.perform_msgraph_import(UPDATED_CORP, test_org)
+
+        # Assert
+        assert Account.objects.get(
+            imported_id="93f2f74e-3811-476f-ac56-e7f0d3007fcc").is_shared is expected
+
+
+class TestFillUserPurposes:
+
+    @staticmethod
+    def batch_response(*responses):
+        response = MagicMock()
+        response.json.return_value = {"responses": [
+            {"id": uid, "status": status, "body": body} for uid, status, body in responses]}
+        return response
+
+    def test_purpose_by_status(self):
+        # Arrange
+        pending = {
+            "shared": [{}, {}],  # Member of two groups
+            "no_mailbox": [{}],
+            "denied": [{}],
+            "throttled": [{}],
+        }
+        gc = MagicMock()
+        gc.post.return_value = self.batch_response(
+            ("shared", 200, {"userPurpose": "shared"}),
+            ("no_mailbox", 404, {}),
+            ("denied", 403, {}),
+            ("throttled", 429, {}))
+
+        # Act
+        MSGraphImportJob()._fill_user_purposes(gc, pending)
+
+        # Assert
+        assert pending["shared"] == [{"userPurpose": "shared"}, {"userPurpose": "shared"}]
+        assert pending["no_mailbox"] == [{"userPurpose": None}]
+        assert pending["denied"] == [{}]
+        assert pending["throttled"] == [{}]
+
+    def test_failed_batch_skipped(self):
+        """A failing batch should leave its users untouched without stopping the next batch."""
+        # Arrange
+        pending = {f"user{i}": [{}] for i in range(21)}
+        gc = MagicMock()
+        gc.post.side_effect = [
+            HTTPError(),
+            self.batch_response(("user20", 200, {"userPurpose": "user"}))]
+
+        # Act
+        MSGraphImportJob()._fill_user_purposes(gc, pending)
+
+        # Assert
+        assert all(pending[f"user{i}"] == [{}] for i in range(20))
+        assert pending["user20"] == [{"userPurpose": "user"}]
