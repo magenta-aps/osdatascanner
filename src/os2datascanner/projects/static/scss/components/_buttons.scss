@@ -441,7 +441,7 @@
 
   &[aria-pressed="false"] {
     &::before {
-      content: "clear";
+      content: "close";
       color: var(--color-error);
       background-color: #f7b0b0;
       padding-left: 1em;
@@ -450,7 +450,7 @@
 
   &[aria-pressed="true"] {
     &::before {
-      content: "done";
+      content: "check";
       color: var(--color-ok-dark);
       background-color: #cbf7e3;
       padding-right: calc(1em + 3px);
