@@ -60,6 +60,8 @@
 - Fixed the Microsoft 365 file scanner including the client secret in the error raised when a
   drive had neither a drive ID nor a user account.
 
+- Fixed the missing checkmark icon in the probability toggle on Report.
+
 ## Version 3.34.0  16th October 2026
 
 "Don't Make Me Repeat Myself"
