@@ -68,7 +68,7 @@ label + .input {
   z-index: 100;
 
   @media (min-width: $break-lg) {
-    top: 2rem;
+    top: 100%;
   }
 
   // Apply this to make z-index work on iPad OS
@@ -109,7 +109,7 @@ label + .input {
 
   position: relative;
   z-index: 100;
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
   padding: 1rem;
   width: 15.25rem;
   box-shadow: var(--box-shadow-widget);
@@ -156,6 +156,67 @@ label + .input {
   &:hover,
   &:active {
     display: block;
+  }
+}
+
+.more-actions {
+  position: relative;
+
+  &__toggle {
+    @include flex-center;
+    width: 2.125rem;
+    height: 2.125rem;
+  }
+
+  // Flush with the toggle, so the pointer can move onto the menu without leaving the hover area
+  .dropdown-container {
+    top: 100%;
+
+    &:focus-within {
+      display: block;
+    }
+  }
+
+  &__menu {
+    margin: 0.25rem 0 0;
+    padding: 0.5rem;
+    list-style: none;
+    box-shadow: var(--box-shadow-widget);
+    border-radius: var(--border-radius-default);
+    background-color: var(--color-widget-bg);
+
+    li {
+      margin-left: 0;
+    }
+
+    li + li {
+      margin-top: 0.25rem;
+      padding-top: 0.25rem;
+      border-top: 1px solid var(--color-border-neutral);
+    }
+  }
+
+  &__item {
+    @include layout-horizontal(0.75rem);
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: var(--border-radius-button);
+    background: none;
+    color: var(--color-text-main);
+    font-family: inherit;
+    font-size: 0.906rem;
+    white-space: nowrap;
+    cursor: pointer;
+
+    &:hover:not(:disabled),
+    &:focus-visible {
+      background-color: var(--color-primary-lightest);
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 }
 
@@ -271,7 +332,7 @@ label + .input {
   }
 }
 
-tr.htmx-request .macthes-handle.expand + .dropdown-container {
+tr.htmx-request .matches-handle.expand + .dropdown-container {
   display: none;
 }
 

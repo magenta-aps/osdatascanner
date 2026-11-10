@@ -20,6 +20,7 @@ from django.utils.translation import gettext_lazy as _
 
 from os2datascanner.engine2.pipeline import messages
 from .models.documentreport import DocumentReport
+from .models.scanner_reference import ScannerReference
 
 from os2datascanner.engine2.utilities.equality import TypePropertyEquality
 from os2datascanner.projects.report.organizations.models import (
@@ -286,14 +287,14 @@ def create_alias_and_match_relations(sub_alias: Alias) -> int:
     # Although RFC 5321 says that the local part of an email address
     # -- the bit to the left of the @ --
     # is case sensitive, the real world disagrees..
-    # Exclude reports from remediator-only scanners: even though owner holds a real value,
-    # these reports must not be assigned to regular users via the sync path.
+    # Exclude reports from remediator-only scanners and rerouted reports: even though owner
+    # holds a real value, these reports must not be assigned to regular users via the sync path.
+    owner_reports = all_reports.filter(only_notify_remediators=False).exclude(
+        owner_status__in=DocumentReport.OWNER_REROUTED)
     if sub_alias.alias_type == AliasType.EMAIL:
-        reports = all_reports.filter(
-            owner__iexact=sub_alias.value, only_notify_remediators=False)
+        reports = owner_reports.filter(owner__iexact=sub_alias.value)
     else:
-        reports = all_reports.filter(
-            owner=sub_alias.value, only_notify_remediators=False)
+        reports = owner_reports.filter(owner=sub_alias.value)
 
     # If we've found reports above, we should make sure no remediator alias exist
     # for those.
@@ -328,6 +329,17 @@ def create_alias_and_match_relations(sub_alias: Alias) -> int:
         tm.objects.bulk_create(tm_create_list, ignore_conflicts=True)
 
     return reports.count()
+
+
+def remediated_scanner_ids(org: Organization) -> set[int]:
+    """Returns the pks of @org's ScannerReferences that have at least one remediator."""
+    values = set(Alias.objects.filter(
+        _alias_type=AliasType.REMEDIATOR, account__organization=org
+    ).values_list("_value", flat=True))
+    scanners = ScannerReference.objects.filter(organization=org)
+    if "0" not in values:
+        scanners = scanners.filter(scanner_pk__in=[int(v) for v in values if v.isdigit()])
+    return set(scanners.values_list("pk", flat=True))
 
 
 def get_msg(query):
