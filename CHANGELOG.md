@@ -1,6 +1,8 @@
 # Changelog
 
-## Version 3.3x.x xx November 2026
+## Version 3.34.1 10th November 2026
+
+"Wrong Bird"
 
 ### New in this release
 
