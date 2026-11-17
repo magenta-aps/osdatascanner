@@ -3,10 +3,11 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+import structlog
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
+from django.views.generic.detail import SingleObjectMixin
 from django.views.generic.edit import CreateView, UpdateView
 from django.views import View
 from django.contrib import messages
@@ -15,19 +16,23 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from ...organizations.models import Organization
+from os2datascanner.projects.grants.models import GoogleApiGrant
+from ...adminapp.views.views import OrgRestrictedMixin
+from ...organizations.views.mixins import UserOrgFromURLMixin
 from ..models.google_workspace_configuration import GoogleWorkspaceConfig
-from ...utilities import UserWrapper
+
+logger = structlog.get_logger("import_services")
 
 
 class GoogleWorkspaceEditForm(forms.ModelForm):
     required_css_class = 'required-form'
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, grants, **kwargs):
         super(GoogleWorkspaceEditForm, self).__init__(*args, **kwargs)
         # organization field is pre-filled and readonly
         if 'organization' in self.fields:
             self.fields['organization'].disabled = True
+        self.fields['grant'].queryset = grants
 
     class Meta:
         model = GoogleWorkspaceConfig
@@ -39,29 +44,20 @@ class GoogleWorkspaceEditForm(forms.ModelForm):
         ]
 
 
-class GoogleWorkspaceAddView(LoginRequiredMixin, CreateView):
+class GoogleWorkspaceAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
 
     model = GoogleWorkspaceConfig
     form_class = GoogleWorkspaceEditForm
     template_name = "import_services/googleworkspace_edit.html"
     success_url = reverse_lazy('organization-list')
 
-    def setup(self, request, *args, **kwargs):
-        # set initial organization based on URL org_id
-        org = get_object_or_404(Organization, uuid=kwargs['org_id'])
-        self.initial = {"organization": org}
-        kwargs["organization"] = org
-        return super().setup(request, *args, **kwargs)
+    def get_initial(self):
+        return super().get_initial() | {"organization": self.kwargs["organization"]}
 
-    def get_form(self):
-        form = super().get_form()
-
-        user = self.request.user
-        org_q = UserWrapper(user).make_org_Q("pk")
-        orgs = Organization.objects.filter(org_q)
-
-        form.fields["organization"].queryset = orgs
-        return form
+    def get_form_kwargs(self):
+        return super().get_form_kwargs() | {
+            "grants": GoogleApiGrant.objects.filter(organization=self.kwargs["organization"])
+        }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,19 +66,22 @@ class GoogleWorkspaceAddView(LoginRequiredMixin, CreateView):
         return context
 
     def form_valid(self, form):
-        form.instance.organization = get_object_or_404(
-            Organization, uuid=self.kwargs['org_id']
-        )
+        form.instance.organization = self.kwargs["organization"]
         if not form.instance.last_modified:
             form.instance.last_modified = timezone.now()
         return super().form_valid(form)
 
 
-class GoogleWorkspaceUpdateView(LoginRequiredMixin, UpdateView):
+class GoogleWorkspaceUpdateView(OrgRestrictedMixin, UpdateView):
     model = GoogleWorkspaceConfig
     form_class = GoogleWorkspaceEditForm
     template_name = "import_services/googleworkspace_edit.html"
     success_url = reverse_lazy("organization-list")
+
+    def get_form_kwargs(self):
+        return super().get_form_kwargs() | {
+            "grants": GoogleApiGrant.objects.filter(organization=self.object.organization)
+        }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,14 +89,13 @@ class GoogleWorkspaceUpdateView(LoginRequiredMixin, UpdateView):
         context['organization'] = self.object.organization
         return context
 
-    def form_valid(self, form):
-        return super().form_valid(form)
-
 
 @method_decorator(csrf_exempt, name="dispatch")
-class GoogleWorkspaceImportView(View):
-    def post(self, request, pk):
-        config = get_object_or_404(GoogleWorkspaceConfig, pk=pk)
+class GoogleWorkspaceImportView(OrgRestrictedMixin, SingleObjectMixin, View):
+    model = GoogleWorkspaceConfig
+
+    def post(self, request, *args, **kwargs):
+        config = self.get_object()
 
         # Ensure required credentials are configured
         if not config.delegated_admin_email:
@@ -109,7 +107,7 @@ class GoogleWorkspaceImportView(View):
             config.start_import()
             messages.success(request, "Google Workspace import job created")
         except Exception as e:
-            print(f"[ERROR] Failed to create import job: {e}")
+            logger.exception("Failed to create import job", config=config.pk)
             messages.error(request, f"Failed to create import job: {e}")
 
         return redirect(request.META.get('HTTP_REFERER', reverse_lazy('organization-list')))

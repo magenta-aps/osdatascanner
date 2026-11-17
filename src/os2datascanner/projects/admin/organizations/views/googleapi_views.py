@@ -3,15 +3,12 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import UpdateView, CreateView
 from django import forms
 from os2datascanner.projects.grants.models.googleapigrant import GoogleApiGrant
 from os2datascanner.projects.grants.admin import AutoEncryptedFileField
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
-                                                                            GrantModalMixin)
+from .grant_base_views import GrantCreateView, GrantUpdateView
 
 
 class GoogleApiGrantForm(forms.ModelForm):
@@ -43,29 +40,15 @@ class GoogleApiGrantForm(forms.ModelForm):
             self.fields["last_updated"].label = ""
 
 
-class GoogleApiGrantCreateView(
-        PermissionRequiredMixin,
-        LoginRequiredMixin,
-        GrantModalMixin,
-        GrantExtraMixin,
-        CreateView):
+class GoogleApiGrantCreateView(GrantCreateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
     permission_required = "grants.add_googleapigrant"
     template_name = "grants/googleapigrant_update.html"
     success_url = reverse_lazy('grant-list')
 
-    def get_initial(self):
-        return {
-            "organization": self.kwargs.get('org'),
-        }
 
-
-class GoogleApiGrantUpdateView(
-        PermissionRequiredMixin,
-        LoginRequiredMixin,
-        GrantExtraMixin,
-        UpdateView):
+class GoogleApiGrantUpdateView(GrantUpdateView):
     model = GoogleApiGrant
     form_class = GoogleApiGrantForm
     permission_required = "grants.change_googleapigrant"

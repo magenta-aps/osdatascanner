@@ -15,19 +15,17 @@ from django.contrib import messages
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.views import View
-from django.views.generic import UpdateView, CreateView
 from django.views.generic.base import TemplateView
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils.dateparse import parse_datetime
 from django.utils.translation import gettext_lazy as _
 from os2datascanner.projects.admin.utilities import UserWrapper
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
-                                                                            GrantModalMixin)
 from os2datascanner.projects.grants.admin import AutoEncryptedField, choose_field_value
 from os2datascanner.projects.admin.organizations.models import Organization
 from requests import HTTPError
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
+from .grant_base_views import GrantCreateView, GrantUpdateView
 
 
 def make_consent_url(state):
@@ -205,9 +203,7 @@ def get_secret_end_date(client_secret, end_date, graph_caller, graph_grant):
     return end_date
 
 
-class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, GrantModalMixin,
-                             GrantExtraMixin, CreateView):
+class MSGraphGrantCreateView(MSGraphClientSecretExpiryMixin, GrantCreateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.add_graphgrant"
@@ -223,8 +219,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
         return form
 
     def get_initial(self):
-        return {
-            "organization": self.kwargs.get('org'),
+        return super().get_initial() | {
             "_client_secret": None,
             "app_id": None,
             "tenant_id": None,
@@ -270,8 +265,7 @@ class MSGraphGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin,
         return super().post(request, *args, **kwargs)
 
 
-class MSGraphGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin,
-                             MSGraphClientSecretExpiryMixin, GrantExtraMixin, UpdateView):
+class MSGraphGrantUpdateView(MSGraphClientSecretExpiryMixin, GrantUpdateView):
     model = GraphGrant
     form_class = MSGraphGrantForm
     permission_required = "grants.change_graphgrant"

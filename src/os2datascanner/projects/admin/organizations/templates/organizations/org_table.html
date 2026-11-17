@@ -101,7 +101,8 @@
                                   title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url "import-ldap" pk=organization.pk %}"
+                                  hx-post="{% url "import-ldap" pk=organization.pk %}"
+                                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -140,7 +141,8 @@
                                   title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url "import-os2mo" pk=organization.pk %}"
+                                  hx-post="{% url "import-os2mo" pk=organization.pk %}"
+                                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>
@@ -189,7 +191,8 @@
                                   title="{% trans "sync"|capfirst %}"
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
-                                  hx-get="{% url "import-msgraph" pk=organization.pk %}"
+                                  hx-post="{% url "import-msgraph" pk=organization.pk %}"
+                                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>

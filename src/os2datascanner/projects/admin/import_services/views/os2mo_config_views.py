@@ -12,15 +12,15 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import View
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import SingleObjectMixin
 
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.adminapp.views.views import OrgRestrictedMixin
+from os2datascanner.projects.admin.organizations.views.mixins import UserOrgFromURLMixin
 from ..models.os2mo_configuration import OS2moConfiguration
 
 
@@ -59,7 +59,7 @@ class OS2moAddView(View):
         return handler(request, *args, **kwargs)
 
 
-class _OS2moAddView(LoginRequiredMixin, CreateView):
+class _OS2moAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     """
     View for adding a configuration for importing organizations through
     OS2mo. Only needs organization uuid.
@@ -68,13 +68,8 @@ class _OS2moAddView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('organization-list')
     form_class = OS2moEditForm
 
-    def setup(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, pk=kwargs['org_id'])
-        self.initial = {
-            "organization": org.pk,
-        }
-        kwargs["organization"] = org
-        return super().setup(request, *args, **kwargs)
+    def get_initial(self):
+        return super().get_initial() | {"organization": self.kwargs["organization"].pk}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -90,7 +85,7 @@ class _OS2moAddView(LoginRequiredMixin, CreateView):
         return result
 
 
-class OS2moUpdateView(LoginRequiredMixin, UpdateView):
+class OS2moUpdateView(OrgRestrictedMixin, UpdateView):
 
     model = OS2moConfiguration
     template_name = 'import_services/os2mo_edit.html'
@@ -113,17 +108,14 @@ class _OS2moErrorView(LoginRequiredMixin, TemplateView):
     redirect_kwargs = None
 
 
-class OS2moImportView(LoginRequiredMixin, DetailView):
+class OS2moImportView(OrgRestrictedMixin, SingleObjectMixin, View):
     """
     View for creating background import jobs with OS2mo.
     """
 
     model = OS2moConfiguration
 
-    def __init__(self):
-        self.object = None
-
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Initiates importation of an organization through OS2mo.
         """

@@ -3,14 +3,11 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
-from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
-from django.views.generic import UpdateView, CreateView
 
 from os2datascanner.projects.grants.admin import EWSGrantAdminForm
 from os2datascanner.projects.grants.models.ewsgrant import EWSGrant
-from os2datascanner.projects.admin.adminapp.views.utils.grant_mixin import (GrantExtraMixin,
-                                                                            GrantModalMixin)
+from .grant_base_views import GrantCreateView, GrantUpdateView
 
 
 class EWSGrantForm(EWSGrantAdminForm):
@@ -22,19 +19,15 @@ class EWSGrantForm(EWSGrantAdminForm):
         self.fields["organization"].disabled = True
 
 
-class EWSGrantCreateView(PermissionRequiredMixin, LoginRequiredMixin, GrantModalMixin,
-                         GrantExtraMixin, CreateView):
+class EWSGrantCreateView(GrantCreateView):
     model = EWSGrant
     form_class = EWSGrantForm
     permission_required = "grants.add_ewsgrant"
     template_name = "grants/ewsgrant_update.html"
     success_url = reverse_lazy("grant-list")
 
-    def get_initial(self):
-        return {"organization": self.kwargs.get('org')}
 
-
-class EWSGrantUpdateView(PermissionRequiredMixin, LoginRequiredMixin, GrantExtraMixin, UpdateView):
+class EWSGrantUpdateView(GrantUpdateView):
     model = EWSGrant
     form_class = EWSGrantForm
     permission_required = "grants.change_ewsgrant"

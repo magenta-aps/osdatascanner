@@ -10,16 +10,17 @@ for importing organizations.
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
-from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.timezone import now
 from django.views import View
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import SingleObjectMixin
 
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
+from os2datascanner.projects.admin.adminapp.views.views import OrgRestrictedMixin
 from os2datascanner.projects.admin.organizations.views import MSGraphGrantRequestView
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.organizations.utils import get_user_org_or_404
+from os2datascanner.projects.admin.organizations.views.mixins import UserOrgFromURLMixin
 from ..models.msgraph_configuration import MSGraphConfiguration
 
 
@@ -42,7 +43,7 @@ class MSGraphEditForm(forms.ModelForm):
         ]
 
 
-class MSGraphAddView(View):
+class MSGraphAddView(LoginRequiredMixin, View):
     """
     View for adding a configuration for Microsoft Graph to import an organization.
     Works as a dispatcher depending on whether or not the user is logged into
@@ -52,7 +53,9 @@ class MSGraphAddView(View):
     type = "msgraph-add"
 
     def dispatch(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, pk=kwargs['org_id'])
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        org = get_user_org_or_404(request.user, kwargs['org_id'])
         if GraphGrant.objects.filter(organization=org).exists():
             handler = _MSGraphAddView.as_view()
         else:
@@ -62,7 +65,7 @@ class MSGraphAddView(View):
         return handler(request, *args, **kwargs)
 
 
-class _MSGraphAddView(LoginRequiredMixin, CreateView):
+class _MSGraphAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     """
     View for adding a configuration for importing organizations through
     Microsoft Graph by using a Tenant ID.
@@ -71,40 +74,35 @@ class _MSGraphAddView(LoginRequiredMixin, CreateView):
     success_url = reverse_lazy('organization-list')
     form_class = MSGraphEditForm
 
-    def setup(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, pk=kwargs['org_id'])
-        grant = GraphGrant.objects.filter(organization=org).first()
-        self.initial = {
-            "organization": org,
-            "grant": grant,
+    def get_grants(self):
+        return GraphGrant.objects.filter(organization=self.kwargs["organization"])
+
+    def get_initial(self):
+        return super().get_initial() | {
+            "organization": self.kwargs["organization"],
+            "grant": self.get_grants().first(),
         }
-        kwargs["organization"] = org
-        kwargs["grant"] = grant
-        return super().setup(request, *args, **kwargs)
 
     def get_form_kwargs(self):
-        org = get_object_or_404(Organization, pk=self.kwargs['org_id'])
-        return (super().get_form_kwargs() or {}) | {
-            "grants": GraphGrant.objects.filter(organization=org)
-        }
+        return (super().get_form_kwargs() or {}) | {"grants": self.get_grants()}
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_new'] = True
-        context["grant"] = self.kwargs["grant"]
+        context["grant"] = self.get_grants().first()
         context["organization"] = self.kwargs["organization"]
         return context
 
     def form_valid(self, form):
         form.instance.created = now()
         form.instance.last_modified = now()
-        form.instance.grant = self.kwargs["grant"]
+        form.instance.grant = self.get_grants().first()
         form.instance.organization = self.kwargs['organization']
         result = super().form_valid(form)
         return result
 
 
-class MSGraphUpdateView(LoginRequiredMixin, UpdateView):
+class MSGraphUpdateView(OrgRestrictedMixin, UpdateView):
     """
     Page where the user can edit the configuration for Microsoft Graph
     for importing organizations.
@@ -138,17 +136,14 @@ class MSGraphUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class MSGraphImportView(LoginRequiredMixin, DetailView):
+class MSGraphImportView(OrgRestrictedMixin, SingleObjectMixin, View):
     """
     View for creating background import jobs with MS Graph.
     """
 
     model = MSGraphConfiguration
 
-    def __init__(self):
-        self.object = None
-
-    def get(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         """
         Initiates importation of an organization through MS Graph.
         """

@@ -12,7 +12,7 @@ from ...adminapp.views.views import RestrictedListView
 from ..models import (OrganizationalUnit, Account, Position,
                       Organization, OrganizationalUnitSerializer)
 from os2datascanner.projects.utils.pagination import EmptyPagePaginator
-from ..utils import ClientAdminMixin
+from .mixins import ClientAdminMixin
 from os2datascanner.core_organizational_structure.models.position import Role
 from django.shortcuts import get_object_or_404
 from ..publish import publish_events
@@ -91,39 +91,48 @@ class OrganizationalUnitListView(ClientAdminMixin, PermissionRequiredMixin, Rest
         return self.request.GET.get('paginate_by', self.paginate_by)
 
     def post(self, request, *args, **kwargs):
+        org = self.kwargs['org']
+
+        def get_orgunit():
+            return get_object_or_404(
+                OrganizationalUnit, organization=org, pk=request.POST.get("orgunit"))
+
+        def get_account(uuid):
+            return get_object_or_404(Account, organization=org, uuid=uuid)
+
         # Add manager
         if new_manager_uuid := request.POST.get("add-manager", None):
-            orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
-            new_manager = Account.objects.get(uuid=new_manager_uuid)
+            orgunit = get_orgunit()
+            new_manager = get_account(new_manager_uuid)
             Position.managers.get_or_create(account=new_manager, unit=orgunit)
 
         # Remove manager
         if rem_manager_uuid := request.POST.get("rem-manager", None):
-            orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
-            rem_manager = Account.objects.get(uuid=rem_manager_uuid)
+            orgunit = get_orgunit()
+            rem_manager = get_account(rem_manager_uuid)
             Position.managers.filter(account=rem_manager, unit=orgunit).delete()
 
         # Add DPO
         if new_dpo_uuid := request.POST.get("add-dpo", None):
-            orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
-            new_dpo = Account.objects.get(uuid=new_dpo_uuid)
+            orgunit = get_orgunit()
+            new_dpo = get_account(new_dpo_uuid)
             Position.dpos.get_or_create(account=new_dpo, unit=orgunit)
 
         # Remove DPO
         if rem_dpo_uuid := request.POST.get("rem-dpo", None):
-            orgunit = OrganizationalUnit.objects.get(pk=request.POST.get("orgunit"))
-            rem_dpo = Account.objects.get(uuid=rem_dpo_uuid)
+            orgunit = get_orgunit()
+            rem_dpo = get_account(rem_dpo_uuid)
             Position.dpos.filter(account=rem_dpo, unit=orgunit).delete()
 
         # Add universal DPO
         if new_uni_dpo_uuid := request.POST.get("add-uni-dpo", None):
-            new_uni_dpo = Account.objects.get(uuid=new_uni_dpo_uuid)
+            new_uni_dpo = get_account(new_uni_dpo_uuid)
             new_uni_dpo.is_universal_dpo = True
             new_uni_dpo.save()
 
         # Remove universal DPO
         if rem_uni_dpo_uuid := request.POST.get("rem-uni-dpo", None):
-            rem_uni_dpo = Account.objects.get(uuid=rem_uni_dpo_uuid)
+            rem_uni_dpo = get_account(rem_uni_dpo_uuid)
             rem_uni_dpo.is_universal_dpo = False
             rem_uni_dpo.save()
 
