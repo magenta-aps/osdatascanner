@@ -16,6 +16,7 @@ logger = structlog.get_logger(__name__)
 
 
 class GoogleWorkspaceImportJob(BackgroundJob):
+    organization_path = "organization"
 
     organization = models.ForeignKey(
         'organizations.Organization',

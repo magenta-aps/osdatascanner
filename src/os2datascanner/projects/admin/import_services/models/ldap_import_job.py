@@ -19,6 +19,8 @@ logger = structlog.get_logger("import_services")
 
 
 class LDAPImportJob(BackgroundJob):
+    organization_path = "realm__organization"
+
     realm = models.ForeignKey(
         Realm,
         on_delete=models.CASCADE,

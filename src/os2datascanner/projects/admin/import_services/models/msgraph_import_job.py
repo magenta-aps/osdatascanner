@@ -28,6 +28,8 @@ del MSGraphSource
 
 
 class MSGraphImportJob(BackgroundJob):
+    organization_path = "organization"
+
     grant = models.ForeignKey(GraphGrant, on_delete=models.CASCADE)
 
     organization = models.ForeignKey(

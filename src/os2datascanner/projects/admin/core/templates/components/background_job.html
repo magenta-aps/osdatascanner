@@ -12,7 +12,8 @@
                 class="button button--outline-button button--icon-button"
                 aria-label="{% trans 'Cancel task' %}"
                 title="{% trans 'Cancel task' %}"
-                hx-get="{% url 'background_job_cancel' pk=job.pk %}"
+                hx-post="{% url 'background_job_cancel' pk=job.pk %}"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                 hx-swap="outerHTML"
                 hx-target="closest div.response"
                 hx-trigger="click">

@@ -69,6 +69,8 @@ def make_token():
 
 
 class OS2moImportJob(BackgroundJob):
+    organization_path = "organization"
+
     organization = models.ForeignKey(
         'organizations.Organization',
         on_delete=models.CASCADE,

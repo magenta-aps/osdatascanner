@@ -18,6 +18,7 @@ class AnalysisJob(BackgroundJob):
     """
     Model for running analysis job to get sizes of files
     """
+    organization_path = "scanner__organization"
 
     scanner = models.ForeignKey(Scanner,
                                 on_delete=models.CASCADE)
