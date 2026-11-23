@@ -285,7 +285,7 @@
                          class="button button--icon-button"
                          aria-label="{% trans "Edit Single SignOn configuration" %}"
                          title="{% trans "Edit Single SignOn configuration" %}">
-                        <div id="sso-icon-container">
+                        <div class="sso-icon-container">
                           <i id="cloud" class="material-symbols">cloud</i>
                           <i id="key" class="material-symbols">key</i>
                         </div>
@@ -293,10 +293,9 @@
                     {% else %}
                       <a href="{% url 'add-sso' organization.pk %}"
                          class="button button--icon-button"
-                         id="sso-button"
                          aria-label="{% trans "Configure Single SignOn" %}"
                          title="{% trans "Configure Single SignOn" %}">
-                        <div id="sso-icon-container">
+                        <div class="sso-icon-container">
                           <i id="cloud" class="material-symbols">cloud</i>
                           <i id="key" class="material-symbols">key</i>
                         </div>

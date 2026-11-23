@@ -8,6 +8,8 @@
   logging in and across clients. They now require login, only expose the user's own client's
   jobs, and cancelling requires a POST request.
 
+- Fixed buggy icons on "edit SSO" button.
+
 ## Version 3.34.1 10th November 2026
 
 "Wrong Bird"
