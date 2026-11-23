@@ -1370,37 +1370,35 @@ $relative_table_width--admin: calc(100vw - #{$sidemenu_and_content});
         flex-wrap: wrap;
       }
 
-      #sso-button {
-        /* A "diy" icon made with existing icons from the Material Symbols library*/
-        #sso-icon-container {
-          $standard-icon-size: 1.5rem; // Same as the standard icon font size
-          width: $standard-icon-size;
-          height: $standard-icon-size;
+      /* A "diy" icon made with existing icons from the Material Symbols library*/
+      .sso-icon-container {
+        $standard-icon-size: 1.5rem; // Same as the standard icon font size
+        width: $standard-icon-size;
+        height: $standard-icon-size;
 
-          position: relative;
+        position: relative;
 
-          i {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
+        i {
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          transform: translate(-50%, -50%);
 
-            &#cloud {
-              z-index: 1;
-            }
+          &#cloud {
+            z-index: 1;
+          }
 
-            &#key {
-              z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
-              padding-top: 0.25rem;
-              color: var(--color-btn-neutral);
-              font-variation-settings:
-                "FILL" 1,
-                "wght" 400,
-                "GRAD" -25,
-                "opsz" 20;
-              font-size: 18px;
-              text-align: center;
-            }
+          &#key {
+            z-index: 2; // Place it on top of cloud icon to imitate "cut-out" effect
+            padding-top: 0.25rem;
+            color: var(--color-btn-neutral);
+            font-variation-settings:
+              "FILL" 1,
+              "wght" 400,
+              "GRAD" -25,
+              "opsz" 20;
+            font-size: 18px;
+            text-align: center;
           }
         }
       }
