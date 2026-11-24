@@ -6,6 +6,7 @@
 import uuid
 
 import pytest
+from django.test import Client
 from django.urls import reverse
 from django.utils.timezone import now
 
@@ -63,7 +64,6 @@ IMPORT_JOB_MODELS = {
     "os2mo": OS2moImportJob,
     "googleworkspace": GoogleWorkspaceImportJob,
 }
-CONFIG_KINDS = list(IMPORT_JOB_MODELS)
 
 
 @pytest.fixture
@@ -74,7 +74,7 @@ def os2mo_enabled(settings):
 
 @pytest.mark.django_db
 class TestImportServiceScoping:
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_edit_other_client_config_is_404(
             self, client, user_admin, test_org2, kind):
         config = make_config(kind, test_org2)
@@ -84,7 +84,7 @@ class TestImportServiceScoping:
         assert client.get(url).status_code == 404
         assert client.post(url, {}).status_code == 404
 
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_edit_own_config_is_allowed(
             self, client, user_admin, test_org, kind):
         config = make_config(kind, test_org)
@@ -94,7 +94,7 @@ class TestImportServiceScoping:
 
         assert response.status_code == 200
 
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_add_for_other_client_org_is_404(
             self, client, user_admin, test_org2, os2mo_enabled, kind):
         if kind == "msgraph":
@@ -105,7 +105,7 @@ class TestImportServiceScoping:
         assert client.get(url).status_code == 404
         assert client.post(url, {}).status_code == 404
 
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_add_anonymous_redirects_without_org_lookup(
             self, client, os2mo_enabled, kind):
         response = client.get(reverse(f"add-{kind}", kwargs={"org_id": uuid.uuid4()}))
@@ -113,7 +113,7 @@ class TestImportServiceScoping:
         assert response.status_code == 302
         assert "login" in response.url
 
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_import_other_client_config_is_404(
             self, client, user_admin, test_org2, kind):
         config = make_config(kind, test_org2)
@@ -124,7 +124,7 @@ class TestImportServiceScoping:
         assert response.status_code == 404
         assert not IMPORT_JOB_MODELS[kind].objects.exists()
 
-    @pytest.mark.parametrize("kind", CONFIG_KINDS)
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
     def test_import_requires_post(self, client, user_admin, test_org, kind):
         config = make_config(kind, test_org)
         client.force_login(user_admin)
@@ -137,6 +137,17 @@ class TestImportServiceScoping:
 
         assert response.status_code == 302
         assert IMPORT_JOB_MODELS[kind].objects.count() == 1
+
+    @pytest.mark.parametrize("kind", IMPORT_JOB_MODELS)
+    def test_import_without_csrf_token_is_403(self, user_admin, test_org, kind):
+        config = make_config(kind, test_org)
+        client = Client(enforce_csrf_checks=True)
+        client.force_login(user_admin)
+
+        response = client.post(reverse(f"import-{kind}", kwargs={"pk": config.pk}))
+
+        assert response.status_code == 403
+        assert not IMPORT_JOB_MODELS[kind].objects.exists()
 
     def test_googleworkspace_add_offers_only_own_grants(
             self, client, user_admin, test_org, test_org2):

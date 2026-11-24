@@ -8,6 +8,8 @@ Views for adding and updating configurations for OS2mo
 for importing organizations.
 """
 
+from typing import override
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -68,6 +70,7 @@ class _OS2moAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     success_url = reverse_lazy('organization-list')
     form_class = OS2moEditForm
 
+    @override
     def get_initial(self):
         return super().get_initial() | {"organization": self.kwargs["organization"].pk}
 

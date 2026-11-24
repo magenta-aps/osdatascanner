@@ -13,6 +13,15 @@
 - Fixed admin scannerjob views, forms and listings exposing or accepting objects from other
   clients. They are now limited to the organizations of the user's client.
 
+- Organization, account, organizational unit, SSO, grant and import service (LDAP, Microsoft
+  Graph, OS2mo and Google Workspace) views in the admin module are now restricted to the
+  organizations of the user's own client. Starting an import now requires a POST request.
+
+- Google Workspace import configurations can now only use grants belonging to their own
+  organization.
+
+- Fixed a bug where creating a Microsoft Graph import configuration ignored the selected grant.
+
 ## Version 3.34.1 10th November 2026
 
 "Wrong Bird"
