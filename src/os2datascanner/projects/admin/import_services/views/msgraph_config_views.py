@@ -75,36 +75,29 @@ class _MSGraphAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     success_url = reverse_lazy('organization-list')
     form_class = MSGraphEditForm
 
-    def get_grants(self):
-        return GraphGrant.objects.filter(organization=self.kwargs["organization"])
-
     @override
     def get_initial(self):
-        return super().get_initial() | {
-            "organization": self.kwargs["organization"],
-            "grant": self.get_grants().first(),
-        }
+        return super().get_initial() | {"organization": self.kwargs["organization"]}
 
     @override
     def get_form_kwargs(self):
-        return (super().get_form_kwargs() or {}) | {"grants": self.get_grants()}
+        return super().get_form_kwargs() | {
+            "grants": GraphGrant.objects.filter(organization=self.kwargs["organization"])
+        }
 
     @override
     def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['is_new'] = True
-        context["grant"] = self.get_grants().first()
-        context["organization"] = self.kwargs["organization"]
-        return context
+        return super().get_context_data(**kwargs) | {
+            "is_new": True,
+            "organization": self.kwargs["organization"],
+        }
 
     @override
     def form_valid(self, form):
         form.instance.created = now()
         form.instance.last_modified = now()
-        form.instance.grant = self.get_grants().first()
-        form.instance.organization = self.kwargs['organization']
-        result = super().form_valid(form)
-        return result
+        form.instance.organization = self.kwargs["organization"]
+        return super().form_valid(form)
 
 
 class MSGraphUpdateView(OrgRestrictedMixin, UpdateView):

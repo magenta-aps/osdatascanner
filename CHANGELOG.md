@@ -20,6 +20,8 @@
 - Google Workspace import configurations can now only use grants belonging to their own
   organization.
 
+- Fixed a bug where creating a Microsoft Graph import configuration ignored the selected grant.
+
 ## Version 3.34.1 10th November 2026
 
 "Wrong Bird"
