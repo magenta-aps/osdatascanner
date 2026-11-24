@@ -8,9 +8,10 @@ from unittest.mock import patch
 import pytest
 from django.contrib.auth.models import Permission
 from django.urls import reverse
+from django.utils.timezone import now
 
 from os2datascanner.projects.admin.core.models.client import ImportSource
-from os2datascanner.projects.admin.import_services.models import Realm
+from os2datascanner.projects.admin.import_services.models import IdentityProvider, Realm
 from os2datascanner.projects.admin.organizations.models import (
     Account, Alias, OrganizationalUnit, Position)
 
@@ -29,6 +30,16 @@ def jaheira(test_org2):
     return Account.objects.create(
         username="jaheira", first_name="Jaheira", last_name="Harper",
         organization=test_org2)
+
+
+def make_idp(org):
+    org.client.import_source = ImportSource.LDAP
+    org.client.save()
+    realm = Realm.objects.create(realm_id=org.slug, organization=org, last_modified=now())
+    return IdentityProvider.objects.create(
+        realm=realm, entity_id="https://candlekeep.faerun/saml",
+        idp_entity_id="https://candlekeep.faerun/idp",
+        single_sign_on_service_url="https://candlekeep.faerun/sso")
 
 
 @pytest.fixture
@@ -124,14 +135,31 @@ class TestSSOViewScoping:
         assert not Realm.objects.exists()
         create_realm.assert_not_called()
 
-    @pytest.mark.parametrize("url_name", ["add-sso", "edit-sso"])
     @patch("os2datascanner.projects.admin.organizations.views.keycloak_sso_views.create_realm")
-    def test_sso_for_other_client_org_is_404(
-            self, create_realm, client, user_admin, test_org2, url_name):
+    def test_sso_create_for_other_client_org_is_404(
+            self, create_realm, client, user_admin, test_org2):
         client.force_login(user_admin)
 
-        response = client.get(reverse(url_name, kwargs={"org_id": test_org2.pk}))
+        response = client.get(reverse("add-sso", kwargs={"org_id": test_org2.pk}))
 
         assert response.status_code == 404
         assert not Realm.objects.exists()
         create_realm.assert_not_called()
+
+    def test_sso_edit_for_other_client_org_is_404(self, client, user_admin, test_org2):
+        idp = make_idp(test_org2)
+        client.force_login(user_admin)
+        url = reverse("edit-sso", kwargs={"org_id": test_org2.pk})
+
+        assert client.get(url).status_code == 404
+        assert client.post(url, {"metadata_url": "https://zhentarim.faerun"}).status_code == 404
+        idp.refresh_from_db()
+        assert idp.metadata_url is None
+
+    def test_sso_edit_for_own_org(self, client, user_admin, test_org):
+        make_idp(test_org)
+        client.force_login(user_admin)
+
+        response = client.get(reverse("edit-sso", kwargs={"org_id": test_org.pk}))
+
+        assert response.status_code == 200

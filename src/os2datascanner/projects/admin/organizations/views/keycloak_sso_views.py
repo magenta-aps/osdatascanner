@@ -3,6 +3,8 @@
 # v. 2.0. If a copy of the MPL was not distributed with this file, you can
 # obtain one at http://mozilla.org/MPL/2.0/.
 
+from typing import override
+
 import structlog
 from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -128,6 +130,7 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
     model = IdentityProvider
     form_class = IdPForm
 
+    @override
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
@@ -236,6 +239,7 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
     model = IdentityProvider
     form_class = IdPForm
 
+    @override
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
@@ -252,6 +256,7 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
 
         return super().dispatch(request, *args, **kwargs)
 
+    @override
     def get_object(self, queryset=None):
 
         return get_object_or_404(

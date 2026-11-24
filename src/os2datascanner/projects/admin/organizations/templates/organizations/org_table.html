@@ -231,6 +231,7 @@
                                   class="btn-text button button--outline-button button--text-button"
                                   data-sync-for="{{ organization.pk }}"
                                   hx-post="{% url "import-googleworkspace" pk=organization.pk %}"
+                                  hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
                                   hx-trigger="click"
                                   hx-target=".organizations-overview"
                                   hx-swap="innerHTML">{% trans "sync"|capfirst %}</button>

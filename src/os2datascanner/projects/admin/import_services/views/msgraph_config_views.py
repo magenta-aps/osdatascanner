@@ -7,6 +7,8 @@
 Views for adding and updating configurations for Microsoft Graph
 for importing organizations.
 """
+from typing import override
+
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect
@@ -46,22 +48,21 @@ class MSGraphEditForm(forms.ModelForm):
 class MSGraphAddView(LoginRequiredMixin, View):
     """
     View for adding a configuration for Microsoft Graph to import an organization.
-    Works as a dispatcher depending on whether or not the user is logged into
-    Microsoft Online.
+    Dispatches to the configuration form if the organization has a GraphGrant,
+    and to the Microsoft Online consent flow otherwise.
     """
-    model = MSGraphConfiguration
-    type = "msgraph-add"
 
+    @override
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return self.handle_no_permission()
-        org = get_user_org_or_404(request.user, kwargs['org_id'])
+        org = get_user_org_or_404(request.user, kwargs["org_id"])
         if GraphGrant.objects.filter(organization=org).exists():
             handler = _MSGraphAddView.as_view()
         else:
             handler = MSGraphGrantRequestView.as_view(
                     redirect_token="add-msgraph",
-                    redirect_kwargs=dict(org_id=str(kwargs["org_id"])))
+                    redirect_kwargs=dict(org_id=str(org.pk)))
         return handler(request, *args, **kwargs)
 
 
@@ -77,15 +78,18 @@ class _MSGraphAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     def get_grants(self):
         return GraphGrant.objects.filter(organization=self.kwargs["organization"])
 
+    @override
     def get_initial(self):
         return super().get_initial() | {
             "organization": self.kwargs["organization"],
             "grant": self.get_grants().first(),
         }
 
+    @override
     def get_form_kwargs(self):
         return (super().get_form_kwargs() or {}) | {"grants": self.get_grants()}
 
+    @override
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['is_new'] = True
@@ -93,6 +97,7 @@ class _MSGraphAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
         context["organization"] = self.kwargs["organization"]
         return context
 
+    @override
     def form_valid(self, form):
         form.instance.created = now()
         form.instance.last_modified = now()
