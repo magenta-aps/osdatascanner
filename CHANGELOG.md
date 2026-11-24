@@ -10,6 +10,9 @@
 
 - Fixed buggy icons on "edit SSO" button.
 
+- Fixed admin scannerjob views, forms and listings exposing or accepting objects from other
+  clients. They are now limited to the organizations of the user's client.
+
 ## Version 3.34.1 10th November 2026
 
 "Wrong Bird"

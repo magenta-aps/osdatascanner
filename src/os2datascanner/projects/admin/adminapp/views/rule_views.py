@@ -228,6 +228,12 @@ class CustomRuleDelete(RuleDelete):
 class CustomRuleConnect(LoginRequiredMixin, UpdateView):
     model = Rule
 
+    def get_queryset(self):
+        """System rules and rules belonging to the user's organizations."""
+        qs = super().get_queryset()
+        return (qs.filter(organization__isnull=True)
+                | qs.filter(UserWrapper(self.request.user).make_org_Q()))
+
     def post(self, request, *args, **kwargs):
         response = HttpResponse()
 

@@ -27,6 +27,7 @@ from os2datascanner.engine2.model.utilities.temp_resource import (
         NamedTemporaryResource)
 from os2datascanner.engine2.pipeline import messages, worker
 from os2datascanner.projects.admin import settings
+from os2datascanner.projects.admin.utilities import UserWrapper
 from .validators import customrule_validator
 from .rule_views import RuleCreate
 
@@ -46,15 +47,18 @@ class MiniScanner(TemplateView, LoginRequiredMixin):
     def get_context_data(self):
         context = super().get_context_data()
 
+        # System rules and rules belonging to the user's organizations
+        rules = (Rule.objects.filter(organization__isnull=True)
+                 | Rule.objects.filter(UserWrapper(self.request.user).make_org_Q())
+                 ).annotate(rule_field=F("raw_rule"))
+
         if self.request.GET.get('customrulepk'):
             try:
-                context['custom_rule'] = Rule.objects.annotate(
-                     rule_field=F("raw_rule")).get(
-                     pk=self.request.GET.get('customrulepk'))
+                context['custom_rule'] = rules.get(pk=self.request.GET.get('customrulepk'))
             except Rule.DoesNotExist:
                 logger.warning("Non-existant rule requested")
 
-        context["customrule_list"] = Rule.objects.annotate(rule_field=F("raw_rule"))
+        context["customrule_list"] = rules
 
         return context
 

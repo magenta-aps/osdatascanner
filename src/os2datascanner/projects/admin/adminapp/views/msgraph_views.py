@@ -9,6 +9,7 @@ from django.views import View
 from django.utils.translation import gettext_lazy as _
 from django.db import transaction
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 
 from os2datascanner.engine2.model.msgraph.utilities import MSGraphSource
 from os2datascanner.projects.grants.models.graphgrant import GraphGrant
@@ -439,10 +440,14 @@ class MSGraphSharepointScannerUpdate(GrantMixin, ScannerUpdate):
 
 class SharePointListing(ListAPIView):
     serializer_class = SharePointSiteSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user = UserWrapper(self.request.user)
         if grant_id := self.request.query_params.get('grantId', None):
-            grant = GraphGrant.objects.filter(uuid=grant_id).first()
+            grant = GraphGrant.objects.filter(user.make_org_Q(), uuid=grant_id).first()
+            if not grant:
+                return MSGraphSharePointSite.objects.none()
             if self.request.query_params.get('sync', False):
                 self._sync_sites(grant)
 

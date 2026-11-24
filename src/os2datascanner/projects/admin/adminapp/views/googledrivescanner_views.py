@@ -64,15 +64,13 @@ class GoogleDriveScannerUpdate(GrantMixin, ScannerUpdate):
         return {"google_api_grant": GoogleApiGrant}
 
 
-class GoogleDriveScannerCopy(ScannerCopy):
+class GoogleDriveScannerCopy(GrantMixin, ScannerCopy):
     """Create a new copy of an existing Google Drive Scanner"""
     model = GoogleDriveScanner
     fields = ScannerBase.fields + google_drive_scanner_fields
 
-    def get_initial(self):
-        initial = super(GoogleDriveScannerCopy, self).get_initial()
-        initial["user_emails"] = self.get_scanner_object().user_emails
-        return initial
+    def get_grant_models(self):
+        return {"google_api_grant": GoogleApiGrant}
 
 
 class GoogleDriveScannerCleanup(ScannerCleanupStaleAccounts):

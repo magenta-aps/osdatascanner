@@ -6,7 +6,7 @@
 from django import forms
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User, Permission
+from django.contrib.auth.models import User
 from django.db.models import Q
 
 from os2datascanner.projects.shared.forms import GroupingModelForm
@@ -18,6 +18,15 @@ from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.adminapp.models.rules import Rule
 
 from ...organizations.models.aliases import AliasType
+
+
+def get_possible_contacts(orgs):
+    """Returns the users who can be contacts for scanners in the given organizations."""
+    return User.objects.filter(
+        Q(administrator_for__client__in=orgs.values("client")) |
+        Q(groups__permissions__codename="view_client") |
+        Q(user_permissions__codename="view_client")
+    ).distinct()
 
 
 class Groups:
@@ -256,7 +265,7 @@ class ScannerForm(GroupingModelForm):
 
     contacts = forms.ModelMultipleChoiceField(
                     label=_("Contacts"),
-                    queryset=User.objects.all(),  # Should only be admins for the org or superusers
+                    queryset=User.objects.all(),
                     required=False,
                     widget=forms.SelectMultiple(attrs={
                         "hx-swap-oob": "true"
@@ -352,14 +361,8 @@ class ScannerForm(GroupingModelForm):
             & Q(aliases___value=0)
         )
 
-        # Only allow the user to choose between contacts who are admins for the organization client
-        # or superusers
-        view_client_perm = Permission.objects.get(codename="view_client")
-        self.fields["contacts"].queryset = self.fields["contacts"].queryset.filter(
-            Q(administrator_for__client=self.org.client) |
-            Q(user_permissions=view_client_perm) |
-            Q(groups__permissions=view_client_perm)
-        ).distinct()
+        self.fields["contacts"].queryset = get_possible_contacts(
+            Organization.objects.filter(pk=self.org.pk))
 
         # Only allow the user to choose between rules related to the organization
         self.fields["rule"].queryset = self.fields["rule"].queryset.filter(

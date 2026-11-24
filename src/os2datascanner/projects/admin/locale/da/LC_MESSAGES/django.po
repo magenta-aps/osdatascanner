@@ -3496,6 +3496,14 @@ msgstr ""
 "hele organisationen."
 
 #: adminapp/views/scanner_views.py
+msgid "Must belong to the selected organization."
+msgstr "Skal tilhøre den valgte organisation."
+
+#: adminapp/views/scanner_views.py
+msgid "Must belong to the organization of the selected grant."
+msgstr "Skal tilhøre organisationen for den valgte bevilling."
+
+#: adminapp/views/scanner_views.py
 msgid "The scannerjob was removed."
 msgstr "Scannerjobbet blev fjernet."
 

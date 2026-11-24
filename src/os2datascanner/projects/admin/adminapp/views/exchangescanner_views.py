@@ -7,6 +7,7 @@ from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from rest_framework.generics import ListAPIView
+from rest_framework.permissions import IsAuthenticated
 import re
 
 from os2datascanner.projects.grants.models import EWSGrant, GraphGrant
@@ -29,6 +30,7 @@ from ...organizations.models import OrganizationalUnit
 
 class OrganizationalUnitListing(ListAPIView):
     serializer_class = OrganizationalUnitSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         organization_id = self.request.query_params.get('organizationId', None)
@@ -36,6 +38,7 @@ class OrganizationalUnitListing(ListAPIView):
         if organization_id:
             # Filter by organization and exclude hidden units
             queryList = OrganizationalUnit.objects.filter(
+                UserWrapper(self.request.user).make_org_Q(),
                 organization=organization_id,
                 hidden=False
             )
