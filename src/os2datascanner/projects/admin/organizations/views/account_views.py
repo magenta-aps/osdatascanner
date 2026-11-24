@@ -28,7 +28,7 @@ from ..models.aliases import AliasType
 from ...adminapp.views.views import RestrictedListView
 from ...adminapp.models.scannerjobs.scanner import Scanner
 from os2datascanner.projects.utils.pagination import EmptyPagePaginator
-from ..utils import ClientAdminMixin
+from .mixins import ClientAdminMixin
 
 logger = structlog.get_logger("admin_organizations")
 
@@ -104,6 +104,9 @@ class AccountDetailView(LoginRequiredMixin, ClientAdminMixin, DetailView):
     model = Account
     template_name = "organizations/account_detail.html"
     context_object_name = "account"
+
+    def get_queryset(self):
+        return super().get_queryset().filter(organization=self.kwargs['org'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -220,7 +223,7 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["organization"] = self.kwargs['org']
-        context["account"] = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+        context["account"] = self.get_account()
 
         context["AliasType"] = (ac := list(AliasType))
         # Remediator associations are created through scanner jobs, not here
@@ -228,8 +231,12 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
 
         return context
 
+    def get_account(self):
+        return get_object_or_404(
+            Account, organization=self.kwargs['org'], uuid=self.kwargs.get('acc_uuid'))
+
     def form_valid(self, form: ModelForm):
-        form.instance.account = Account.objects.get(uuid=self.kwargs.get('acc_uuid'))
+        form.instance.account = self.get_account()
         try:
             form.save()
             messages.add_message(
@@ -255,6 +262,11 @@ class AliasCreateView(LoginRequiredMixin, ClientAdminMixin, CreateView):
 
 class AliasDeleteView(LoginRequiredMixin, ClientAdminMixin, DeleteView):
     model = Alias
+
+    def get_queryset(self):
+        return super().get_queryset().filter(
+            account__organization=self.kwargs['org'],
+            account__uuid=self.kwargs.get('acc_uuid'))
 
     def get_success_url(self):
         return reverse_lazy(

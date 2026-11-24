@@ -54,7 +54,7 @@ class GrantListView(RestrictedListView):
         grants = Grant.objects.select_subclasses().filter(final_filter)
 
         # Prefetch grants for each organization
-        queryset = self.model.objects.prefetch_related(
+        queryset = super().get_queryset(org_path="uuid").prefetch_related(
             Prefetch('grant', queryset=grants, to_attr='prefetched_grants')
         )
 

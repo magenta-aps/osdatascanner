@@ -8,9 +8,7 @@ from itertools import chain
 from django.apps import apps
 from django.db import connection, transaction
 from django.shortcuts import get_object_or_404
-from django.http import Http404
 from django.conf import settings
-from django.utils.translation import gettext_lazy as _
 from os2datascanner.utils.system_utilities import time_now
 from os2datascanner.core_organizational_structure.utils import get_serializer
 from .models import (Account, Alias, Position, OrganizationalUnit)
@@ -21,6 +19,7 @@ from ..core.models.administrator import Administrator
 from ..organizations.broadcast_bulk_events import (BulkCreateEvent, BulkUpdateEvent,
                                                    BulkDeleteEvent)
 from ..organizations.publish import publish_events
+from ..utilities import UserWrapper
 
 logger = structlog.get_logger("admin_organizations")
 
@@ -185,6 +184,13 @@ def prepare_and_publish(
     publish_events(event)
 
 
+def get_user_org_or_404(user, pk) -> Organization:
+    """Returns the Organization with the given primary key if the user may
+    administer it, and raises Http404 otherwise."""
+    return get_object_or_404(
+            Organization.objects.filter(UserWrapper(user).make_org_Q("uuid")), pk=pk)
+
+
 def user_allowed(user, org_slug):
     """Checks that the user is allowed to see content for the given org slug,
     and returns the Organization object."""
@@ -193,21 +199,3 @@ def user_allowed(user, org_slug):
                 user.has_perm("core.view_client") or Administrator.objects.filter(
                     user=user, client=org.client).exists())
     return org, allowed
-
-
-class ClientAdminMixin:
-    """Mixin for making sure, that the requesting user is either an admin for
-    the client, for which they are requesting data, or is a superuser."""
-
-    def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated:
-            return super().dispatch(request, *args, **kwargs)
-        org, allowed = user_allowed(request.user, kwargs['org_slug'])
-        # Add the organization to the kwargs for future use.
-        self.kwargs['org'] = org
-        if allowed:
-            return super().dispatch(request, *args, **kwargs)
-        else:
-            raise Http404(
-                _("Account not found.")
-                )

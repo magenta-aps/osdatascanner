@@ -9,13 +9,16 @@ from django.http import HttpResponseRedirect, HttpRequest
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.timezone import now
+from django.views import View
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.detail import DetailView
+from django.views.generic.detail import SingleObjectMixin
 
 from os2datascanner.projects.admin.import_services.keycloak_services import (
     request_create_component, create_realm, request_update_component)
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.adminapp.views.views import OrgRestrictedMixin
+from os2datascanner.projects.admin.organizations.views.mixins import UserOrgFromURLMixin
+from os2datascanner.projects.admin.utilities import UserWrapper
 from os2datascanner.projects.admin.import_services.models import LDAPConfig, Realm
 from os2datascanner.projects.admin.import_services.models.ldap_configuration import (
         LDAPUsernameAttributeMapper, LDAPSIDMapper,
@@ -109,16 +112,11 @@ class LDAPEditForm(forms.ModelForm):
         return fields
 
 
-class LDAPAddView(LoginRequiredMixin, CreateView):
+class LDAPAddView(LoginRequiredMixin, UserOrgFromURLMixin, CreateView):
     model = LDAPConfig
     template_name = 'import_services/ldap_edit.html'
     success_url = reverse_lazy('organization-list')
     form_class = LDAPEditForm
-
-    def setup(self, request, *args, **kwargs):
-        organization = get_object_or_404(Organization, pk=kwargs['org_id'])
-        kwargs['organization'] = organization
-        return super().setup(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -249,7 +247,7 @@ def _keycloak_update(config_instance):
     config_instance.delete_mapper("memberOf")
 
 
-class LDAPUpdateView(LoginRequiredMixin, UpdateView):
+class LDAPUpdateView(OrgRestrictedMixin, UpdateView):
     model = LDAPConfig
     template_name = 'import_services/ldap_edit.html'
     success_url = reverse_lazy('organization-list')
@@ -269,18 +267,12 @@ class LDAPUpdateView(LoginRequiredMixin, UpdateView):
         return super().form_valid(form)
 
 
-class LDAPImportView(LoginRequiredMixin, DetailView):
-    """Base class for view that handles starting of a scanner run."""
+class LDAPImportView(OrgRestrictedMixin, SingleObjectMixin, View):
+    """View that starts an LDAP import for an organization."""
 
     model = LDAPConfig
 
-    def __init__(self):
-        self.object = None
-
-    def get(self, request, *args, **kwargs):
-        """
-        Handle a get request to the LDAPImportView.
-        """
+    def post(self, request, *args, **kwargs):
         self.get_object().start_import()
 
         # redirect back to organizations
@@ -312,7 +304,10 @@ class LDAPTestConnectionView(LoginRequiredMixin, TemplateView):
                 exisiting_ldap_password = None
 
                 if ldap_conf_pk := request.POST.get("ldap_config"):
-                    ldap_conf = LDAPConfig.objects.get(pk=ldap_conf_pk)
+                    ldap_conf = get_object_or_404(
+                        LDAPConfig.objects.filter(
+                            UserWrapper(request.user).make_org_Q()),
+                        pk=ldap_conf_pk)
                     exisiting_ldap_password = ldap_conf.ldap_password
 
                 ldap_password = self.request.POST.get("_ldap_password")

@@ -12,7 +12,7 @@ from django.shortcuts import get_object_or_404
 from django.views.generic import CreateView, UpdateView, TemplateView
 from django.forms import ModelForm
 from django.utils.timezone import now
-from os2datascanner.projects.admin.organizations.models import Organization
+from os2datascanner.projects.admin.organizations.utils import get_user_org_or_404
 from os2datascanner.projects.admin.import_services.keycloak_services import (
         create_realm)
 
@@ -129,7 +129,10 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
     form_class = IdPForm
 
     def dispatch(self, request, *args, **kwargs):
-        org = self.kwargs["organization"]
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        org = get_user_org_or_404(request.user, kwargs["org_id"])
+        self.kwargs["organization"] = org
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
@@ -149,11 +152,6 @@ class SSOCreateView(LoginRequiredMixin, FetchMetadataUrlMixin, CreateView):
 
         self.kwargs['realm'] = realm
         return super().dispatch(request, *args, **kwargs)
-
-    def setup(self, request, *args, **kwargs):
-        organization = get_object_or_404(Organization, pk=kwargs['org_id'])
-        kwargs['organization'] = organization
-        return super().setup(request, *args, **kwargs)
 
     def post(self, request, *args, **kwargs):
         is_htmx = self.request.headers.get("HX-Request", False) == "true"
@@ -239,7 +237,10 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
     form_class = IdPForm
 
     def dispatch(self, request, *args, **kwargs):
-        org = get_object_or_404(Organization, pk=kwargs['org_id'])
+        if not request.user.is_authenticated:
+            return self.handle_no_permission()
+        org = get_user_org_or_404(request.user, kwargs["org_id"])
+        self.kwargs["organization"] = org
 
         # Yikes.. But basically, if not Keycloak enabled,
         # import service or SSO user creation disallowed.
@@ -251,15 +252,11 @@ class SSOUpdateView(LoginRequiredMixin, FetchMetadataUrlMixin, UpdateView):
 
         return super().dispatch(request, *args, **kwargs)
 
-    def setup(self, request, *args, **kwargs):
-        organization = get_object_or_404(Organization, pk=kwargs['org_id'])
-        kwargs['organization'] = organization
-        return super().setup(request, *args, **kwargs)
-
     def get_object(self, queryset=None):
 
-        return IdentityProvider.objects.prefetch_related("mappers").get(
-            realm__organization_id=self.kwargs["org_id"])
+        return get_object_or_404(
+            IdentityProvider.objects.prefetch_related("mappers"),
+            realm__organization=self.kwargs["organization"])
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()

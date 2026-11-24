@@ -29,15 +29,15 @@ class TestGrantListViewGetQueryset:
             ),
         ],
     )
-    def test_queryset_permissions(self, client, user, test_org,
+    def test_queryset_permissions(self, client, user_admin, test_org,
                                   exchange_grant, smb_grant, google_api_grant,
                                   msgraph_grant, perms, expected_types):
         """Call GrantListView via URL to test queryset permissions."""
 
         # Arrange: Assign permissions if any
         if perms:
-            user.user_permissions.add(*self._grant_perms(*perms))
-        client.force_login(user)
+            user_admin.user_permissions.add(*self._grant_perms(*perms))
+        client.force_login(user_admin)
 
         url = reverse("grant-list")
 
